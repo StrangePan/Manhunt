@@ -1,0 +1,10 @@
+name: Hunted
+version: 0.1
+main: com.bendude56.hunted.HuntedPlugin
+website: github.com/BenCmd/HuntedPlugin
+author: ben_dude56
+softdepend: [Spout]
+commands:
+    manhunt:
+        usage:
+        description: Controls all HuntedPlugin functions
