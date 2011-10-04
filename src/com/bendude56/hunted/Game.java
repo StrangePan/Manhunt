@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Game {
-	private long lastTick;
 	private HashMap<String, Long> timeout;
 	
 	private List<String> hunter;
@@ -27,7 +26,12 @@ public class Game {
 		timeout = new HashMap<String, Long>();
 		playing = false;
 		hunterRelease = 0;
-		lastTick = new Date().getTime();
+	}
+	
+	public void join(Player p) {
+		if (!playing) {
+			hunter.add(p.getName());
+		}
 	}
 	
 	public void onDie(String dead, boolean natural) {
@@ -41,9 +45,10 @@ public class Game {
 	
 	public void onTick() {
 		if (playing) {
-			
+			if (new Date().getTime() <= hunterRelease) {
+				
+			}
 		}
-		lastTick = new Date().getTime();
 	}
 	
 	public boolean onLogin(Player p) {

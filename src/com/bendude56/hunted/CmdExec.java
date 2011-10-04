@@ -1,8 +1,11 @@
 package com.bendude56.hunted;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class CmdExec implements CommandExecutor {
 	private HuntedPlugin plugin;
@@ -15,8 +18,16 @@ public class CmdExec implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command c, String cmd,
 			String[] args) {
-		sender.sendMessage("TEST");
-		return false;
+		if (args.length == 0) {
+			sender.sendMessage(ChatColor.RED + "Not enough arguments!");
+		} else if (args[0].equalsIgnoreCase("world")) {
+			if (sender instanceof Player) {
+				((Player) sender).teleport(Bukkit.getServer().getWorld("manhunt").getSpawnLocation());
+			} else {
+				sender.sendMessage(ChatColor.RED + "You can't do that from the console!");
+			}
+		}
+		return true;
 	}
 
 }

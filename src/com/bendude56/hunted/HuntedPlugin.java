@@ -1,15 +1,18 @@
 package com.bendude56.hunted;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World.Environment;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HuntedPlugin extends JavaPlugin {
 	
 	private Logger log = Logger.getLogger("Minecraft");
 	public boolean spoutEnabled;
+	public SpConnect spoutConnect;
 
 	@Override
 	public void onDisable() {
@@ -18,14 +21,25 @@ public class HuntedPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		new CmdExec(this);
-		new HuntedPlayerListener(this);
 		if (getServer().getPluginManager().isPluginEnabled("Spout")) {
 			spoutEnabled = true;
+			spoutConnect = new SpConnect();
 		} else {
 			log(Level.WARNING, "Spout installation not detected!");
 			spoutEnabled = false;
 		}
+		if (!new File("manhunt").exists()) {
+			log(Level.WARNING, "World 'manhunt' does not exist... Creating new world...");
+			getServer().createWorld("manhunt", Environment.NORMAL);
+		} else if (!new File("manhunt").isDirectory()) {
+			log(Level.SEVERE, "A file exists by the name of 'manhunt'! Delete it and restart the server...");
+			return;
+		} else {
+			log(Level.INFO, "Loading world 'manhunt'...");
+			getServer().createWorld("manhunt", Environment.NORMAL);
+		}
+		new CmdExec(this);
+		new HuntedPlayerListener(this);
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 	}
 	

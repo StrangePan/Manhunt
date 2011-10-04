@@ -23,6 +23,9 @@ public class HuntedPlayerListener extends PlayerListener {
 				event.getPlayer().teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
 			}
 		}
+		if (plugin.spoutEnabled) {
+			plugin.spoutConnect.showTime(1, 1, event.getPlayer());
+		}
 	}
 	
 	public void onPlayerKick(PlayerKickEvent event) {
