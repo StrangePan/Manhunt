@@ -101,6 +101,78 @@ public class Game {
 		return playing;
 	}
 	
+	public boolean isHunter(String name) {
+		if (this.hunter.contains(name)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean isHunted(String name) {
+		if (this.hunted.contains(name)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean isSpectator(String name) {
+		if (this.spectator.contains(name)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void makeHunter(String name) {
+		if (name == null) {
+			return;
+		}
+		this.hunted.remove(name);
+		this.spectator.remove(name);
+		if (!this.hunter.contains(name)) {
+			this.hunter.add(name);
+		}
+	}
+	
+	public void makeHunted(String name) {
+		if (name == null) {
+			return;
+		}
+		this.hunter.remove(name);
+		this.spectator.remove(name);
+		if (!this.hunted.contains(name)) {
+			this.hunted.add(name);
+		}
+	}
+	
+	public void makeSpectator(String name) {
+		if (name == null) {
+			return;
+		}
+		this.hunted.remove(name);
+		this.hunter.remove(name);
+		if (!this.spectator.contains(name)) {
+			this.spectator.add(name);
+		}
+	}
+	
+	public int HuntersAmount() {
+		int num = hunter.size();
+		return num;
+	}
+	
+	public int HuntedAmount() {
+		int num = hunted.size();
+		return num;
+	}
+	
+	public int SpectatorsAmount() {
+		int num = spectator.size();
+		return num;
+	}
+	
 	// Static methods
 	
 	private static Game instance = null;
