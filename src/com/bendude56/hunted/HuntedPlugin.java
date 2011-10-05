@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World.Environment;
+import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HuntedPlugin extends JavaPlugin {
@@ -30,13 +31,13 @@ public class HuntedPlugin extends JavaPlugin {
 		}
 		if (!new File("manhunt").exists()) {
 			log(Level.WARNING, "World 'manhunt' does not exist... Creating new world...");
-			getServer().createWorld("manhunt", Environment.NORMAL);
+			WorldCreator.name("manhunt").environment(Environment.NORMAL).createWorld();
 		} else if (!new File("manhunt").isDirectory()) {
 			log(Level.SEVERE, "A file exists by the name of 'manhunt'! Delete it and restart the server...");
 			return;
 		} else {
 			log(Level.INFO, "Loading world 'manhunt'...");
-			getServer().createWorld("manhunt", Environment.NORMAL);
+			WorldCreator.name("manhunt").environment(Environment.NORMAL).createWorld();
 		}
 		new CmdExec(this);
 		new HuntedPlayerListener(this);
