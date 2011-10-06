@@ -10,6 +10,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Game {
+	
+	HuntedPlugin plugin;
+	
 	private HashMap<String, Long> timeout;
 	
 	private List<String> hunter;
@@ -20,6 +23,7 @@ public class Game {
 	private long hunterRelease;
 	
 	private Game() {
+		plugin = HuntedPlugin.getInstance();
 		hunter = new ArrayList<String>();
 		hunted = new ArrayList<String>();
 		spectator = new ArrayList<String>();
@@ -39,8 +43,17 @@ public class Game {
 	}
 	
 	public void start() {
-		hunterRelease = new Date().getTime() + 120000L;
-		playing = true;
+		if (!playing) {
+			plugin.getWorld().setTime(23000);
+			this.broadcastHunted(ChatColor.GREEN +
+					"The Manhunt game has started! Prepare for sundown!");
+			this.broadcastHunters(ChatColor.GREEN +
+					"The Manhunt game has started! Prepare for the hunt!");
+			this.broadcastSpectator(ChatColor.GREEN +
+					"The Manhunt game has started! Hunters and hunted are preparing for sundown!");
+			hunterRelease = new Date().getTime() + 120000L;
+			playing = true;
+		}
 	}
 	
 	public void onTick() {
@@ -85,6 +98,33 @@ public class Game {
 				p.sendMessage(msg);
 			}
 		}
+		for (String n : spectator) {
+			Player p = Bukkit.getServer().getPlayerExact(n);
+			if (p != null) {
+				p.sendMessage(msg);
+			}
+		}
+	}
+	
+	public void broadcastHunters(String msg) {
+		for (String n : hunter) {
+			Player p = Bukkit.getServer().getPlayerExact(n);
+			if (p != null) {
+				p.sendMessage(msg);
+			}
+		}
+	}
+	
+	public void broadcastHunted(String msg) {
+		for (String n : hunter) {
+			Player p = Bukkit.getServer().getPlayerExact(n);
+			if (p != null) {
+				p.sendMessage(msg);
+			}
+		}
+	}
+	
+	public void broadcastSpectator(String msg) {
 		for (String n : spectator) {
 			Player p = Bukkit.getServer().getPlayerExact(n);
 			if (p != null) {
