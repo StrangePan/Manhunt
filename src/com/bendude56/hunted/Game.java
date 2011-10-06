@@ -35,6 +35,15 @@ public class Game {
 		huntStarted = false;
 		hunterReleaseTime = 0;
 		startTime = 0;
+		
+		//Schedule the onTick method!
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin,
+				new Runnable() {
+				public void run() {
+						plugin.manhuntGame.onTick();
+				}
+		}, 0, 1);
+		
 	}
 	
 	public void join(Player p) {

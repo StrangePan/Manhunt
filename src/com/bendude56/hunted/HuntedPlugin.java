@@ -41,7 +41,7 @@ public class HuntedPlugin extends JavaPlugin {
 			log(Level.WARNING, "World 'manhunt' does not exist... Creating new world...");
 			manhuntWorld = WorldCreator.name("manhunt").environment(Environment.NORMAL).createWorld();
 		} else if (!new File("manhunt").isDirectory()) {
-			log(Level.SEVERE, "A file exists by the name of 'manhunt'! Delete it and restart the server...");
+			log(Level.SEVERE, "A file exists by the name of 'manhunt'! Delete/rename it and restart the server...");
 			return;
 		} else {
 			log(Level.INFO, "Loading world 'manhunt'...");
