@@ -15,8 +15,9 @@ public class HuntedPlugin extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
-	
 	public World manhuntWorld;
+	public Game manhuntGame;
+	
 	public boolean friendlyFire = false;
 	public boolean pvpOnly = false;
 	public boolean hostileMobs = true;
@@ -48,6 +49,8 @@ public class HuntedPlugin extends JavaPlugin {
 		}
 		new CmdExec(this);
 		new HuntedPlayerListener(this);
+		new HuntedEntityListener(this);
+		manhuntGame = new Game(this);
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 	}
 	

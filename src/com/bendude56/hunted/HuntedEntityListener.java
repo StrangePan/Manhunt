@@ -28,9 +28,11 @@ import org.bukkit.event.entity.EntityListener;
 
 public class HuntedEntityListener extends EntityListener {
 	HuntedPlugin plugin;
+	Game game;
 	
 	public HuntedEntityListener(HuntedPlugin instance) {
 		plugin = instance;
+		game = plugin.manhuntGame;
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, this, Event.Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, plugin);
@@ -42,22 +44,41 @@ public class HuntedEntityListener extends EntityListener {
 			if (event.getDamager() instanceof Player
 					&& event.getEntity() instanceof Player) {
 				
+				if (!game.huntStarted()) {
+					event.setCancelled(true);
+					return;
+				}
+				
 				Player attackingPlayer = (Player) event.getDamager();
 				Player damagedPlayer = (Player) event.getEntity();
 				
-				if (Game.getInstance().isSpectator(attackingPlayer.getName())
-						|| Game.getInstance().isSpectator(damagedPlayer.getName())) {
+				if (game.isSpectator(attackingPlayer.getName())
+						|| game.isSpectator(damagedPlayer.getName())) {
 					event.setCancelled(true);
 				}
 				
 				if (!plugin.friendlyFire) {
-					if (Game.getInstance().isHunted(attackingPlayer.getName())
-							&& Game.getInstance().isHunted(damagedPlayer.getName())) {
+					if (game.isHunted(attackingPlayer.getName())
+							&& game.isHunted(damagedPlayer.getName())) {
 						event.setCancelled(true);
 					}
-					if (Game.getInstance().isHunter(attackingPlayer.getName())
-							&& Game.getInstance().isHunter(damagedPlayer.getName())) {
+					if (game.isHunter(attackingPlayer.getName())
+							&& game.isHunter(damagedPlayer.getName())) {
 						event.setCancelled(true);
+					}
+				}
+			} else if(event.getEntity() instanceof Player) {
+				Player player = (Player) event.getEntity();
+				if (game.gameStarted()) {
+					if (game.isSpectator(player.getName())) {
+						event.setCancelled(true);
+						return;
+					}
+					if (plugin.pvpOnly) {
+						if (event.getDamage() >= player.getHealth()) {
+							event.setDamage( player.getHealth()-1 );
+							return;
+						}
 					}
 				}
 			}
@@ -65,98 +86,103 @@ public class HuntedEntityListener extends EntityListener {
 	}
 	
 	public void onEntityDeath(EntityDeathEvent event) {
+		
+		if (!game.gameStarted()) {
+			return;
+		} else if(!game.huntStarted()) {
+			return;
+		}
+		
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			
-			if (!plugin.pvpOnly) {
-				if (Game.getInstance().isHunted(player.getName())) {
-					//Hunted is killed
-					Game.getInstance().makeSpectator(player.getName());
-					Game.getInstance().broadcastAll(
-							ChatColor.BLUE + "Hunted " + player.getName() + " "
-							+ ChatColor.GREEN + "died from natural causes!");
-					if (Game.getInstance().HuntedAmount() == 0) {
-						Game.getInstance().broadcastAll(
-								ChatColor.GREEN + "All the " + 
-								ChatColor.BLUE + "hunted " + 
-								ChatColor.GREEN + "have been slain! The manhunt is over! " +
-								ChatColor.RED + "Hunters win!");
-					} else {
-						Game.getInstance().broadcastAll(
-								ChatColor.RED + "Remaining hunters: "
-								+ Game.getInstance().HuntersAmount()
-								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ Game.getInstance().HuntedAmount());
-					}
-				}
-				if (Game.getInstance().isHunter(player.getName())) {
-					//Hunted killed a Hunter
-					Game.getInstance().makeSpectator(player.getName());
-					Game.getInstance().broadcastAll(
-							ChatColor.RED + "Hunter " + player.getName() + " "
-							+ ChatColor.GREEN + "died from natural causes!");
-					if (Game.getInstance().HuntersAmount() == 0) {
-						Game.getInstance().broadcastAll(
-								ChatColor.GREEN + "All the " + 
-								ChatColor.RED + "hunters " + 
-								ChatColor.GREEN + "have been slain! The manhunt is over! " +
-								ChatColor.BLUE + "Hunters lose!");
-					} else {
-						Game.getInstance().broadcastAll(
-								ChatColor.RED + "Remaining hunters: "
-								+ Game.getInstance().HuntersAmount()
-								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ Game.getInstance().HuntedAmount());
-					}
-				}
-			}
-			
 			if (player.getLastDamageCause().getEntity() instanceof Player) {
 				Player killer = (Player) player.getLastDamageCause().getEntity();
-				if (Game.getInstance().isHunter(killer.getName())
-						&& Game.getInstance().isHunted(player.getName())) {
+				if (game.isHunter(killer.getName())
+						&& game.isHunted(player.getName())) {
 					//Hunter killed a Hunted
-					Game.getInstance().makeSpectator(player.getName());
-					Game.getInstance().broadcastAll(
+					game.makeSpectator(player.getName());
+					game.broadcastAll(
 							ChatColor.RED + "Hunter " + killer.getName() + " "
 							+ ChatColor.GREEN + "has slain"
 							+ ChatColor.BLUE + " " + player.getName() + " "
 							+ ChatColor.GREEN + "!");
-					if (Game.getInstance().HuntedAmount() == 0) {
-						Game.getInstance().broadcastAll(
+					if (game.HuntedAmount() == 0) {
+						game.broadcastAll(
 								ChatColor.GREEN + "All the " + 
 								ChatColor.BLUE + "hunted " + 
 								ChatColor.GREEN + "have been slain! The manhunt is over! " +
 								ChatColor.RED + "Hunters win!");
 					} else {
-						Game.getInstance().broadcastAll(
+						game.broadcastAll(
 								ChatColor.RED + "Remaining hunters: "
-								+ Game.getInstance().HuntersAmount()
+								+ game.HuntersAmount()
 								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ Game.getInstance().HuntedAmount());
+								+ game.HuntedAmount());
 					}
 				}
-				if (Game.getInstance().isHunted(killer.getName())
-						&& Game.getInstance().isHunter(player.getName())) {
+				if (game.isHunted(killer.getName())
+						&& game.isHunter(player.getName())) {
 					//Hunted killed a Hunter
-					Game.getInstance().makeSpectator(player.getName());
-					Game.getInstance().broadcastAll(
+					game.makeSpectator(player.getName());
+					game.broadcastAll(
 							ChatColor.RED + "Hunter " + player.getName() + " "
 							+ ChatColor.GREEN + "has slain by"
 							+ ChatColor.BLUE + " " + killer.getName() + " "
 							+ ChatColor.GREEN + "!");
-					if (Game.getInstance().HuntersAmount() == 0) {
-						Game.getInstance().broadcastAll(
+					if (game.HuntersAmount() == 0) {
+						game.broadcastAll(
 								ChatColor.GREEN + "All the " + 
 								ChatColor.RED + "hunters " + 
 								ChatColor.GREEN + "have been slain! The manhunt is over! " +
 								ChatColor.BLUE + "Hunters lose!");
 					} else {
-						Game.getInstance().broadcastAll(
+						game.broadcastAll(
 								ChatColor.RED + "Remaining hunters: "
-								+ Game.getInstance().HuntersAmount()
+								+ game.HuntersAmount()
 								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ Game.getInstance().HuntedAmount());
+								+ game.HuntedAmount());
+					}
+				}
+			} else if(!plugin.pvpOnly) {
+				if (game.isHunted(player.getName())) {
+					//Hunted is killed
+					game.makeSpectator(player.getName());
+					game.broadcastAll(
+							ChatColor.BLUE + "Hunted " + player.getName() + " "
+							+ ChatColor.GREEN + "died from natural causes!");
+					if (game.HuntedAmount() == 0) {
+						game.broadcastAll(
+								ChatColor.GREEN + "All the " + 
+								ChatColor.BLUE + "hunted " + 
+								ChatColor.GREEN + "have been slain! The manhunt is over! " +
+								ChatColor.RED + "Hunters win!");
+					} else {
+						game.broadcastAll(
+								ChatColor.RED + "Remaining hunters: "
+								+ game.HuntersAmount()
+								+ ChatColor.BLUE + "  Remaining Prey: "
+								+ game.HuntedAmount());
+					}
+				}
+				if (game.isHunter(player.getName())) {
+					//Hunter is killed 
+					game.makeSpectator(player.getName());
+					game.broadcastAll(
+							ChatColor.RED + "Hunter " + player.getName() + " "
+							+ ChatColor.GREEN + "died from natural causes!");
+					if (game.HuntersAmount() == 0) {
+						game.broadcastAll(
+								ChatColor.GREEN + "All the " + 
+								ChatColor.RED + "hunters " + 
+								ChatColor.GREEN + "have been slain! The manhunt is over! " +
+								ChatColor.BLUE + "Hunters lose!");
+					} else {
+						game.broadcastAll(
+								ChatColor.RED + "Remaining hunters: "
+								+ game.HuntersAmount()
+								+ ChatColor.BLUE + "  Remaining Prey: "
+								+ game.HuntedAmount());
 					}
 				}
 			}
