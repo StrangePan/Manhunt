@@ -48,12 +48,6 @@ public class Game {
 		
 	}
 	
-	public void join(Player p) {
-		if (!gameRunning && !playerExists(p.getName())) {
-			this.makeHunter(p.getName());
-		}
-	}
-	
 	public void start() {
 		if (!gameRunning) {
 			plugin.getWorld().setTime(0);
@@ -192,7 +186,14 @@ public class Game {
 		}
 	}
 	
-	public boolean onLogin(Player p) {
+	public void onLogin(Player p) {
+		if (!gameStarted() && !playerExists(p.getName())) {
+			makeHunter(p.getName());
+			return;
+		} else if (gameStarted() && !playerExists(p.getName())) {
+			makeSpectator(p.getName());
+			return;
+		}
 		if (timeout.containsKey(p.getName())) {
 			timeout.remove(p.getName());
 			if (isHunter(p.getName())) {
@@ -203,27 +204,21 @@ public class Game {
 				broadcastAll(ChatColor.BLUE + p.getName() +
 					ChatColor.GREEN + " has reconnected and is back in the game!");
 			}
-			return true;
-		} else {
-			if (isSpectator(p.getName())) {
-				broadcastAll(ChatColor.YELLOW + p.getName() +
-						ChatColor.WHITE + " is watching the game.");
-			}
-			return false;
 		}
 	}
 	
 	public void onLogout(Player p) {
-		if ((hunter.contains(p.getName()) || hunted.contains(p.getName())) && plugin.offlineTimeout >= 0) {
-			timeout.put(p.getName(), new Date().getTime() + plugin.offlineTimeout*60000L);
+		String name = p.getName();
+		if ((hunter.contains(name) || hunted.contains(name)) && plugin.offlineTimeout >= 0 && gameStarted()) {
+			timeout.put(name, new Date().getTime() + plugin.offlineTimeout*60000L);
 			if (plugin.offlineTimeout > 0) {
-				broadcastAll(ChatColor.RED + p.getName() +
+				broadcastAll(ChatColor.RED + name +
 						" has diconnected. If they don't reconnect in " + plugin.offlineTimeout +
 						" minute, they will be booted from the game.");
 			}
-		} else if (spectator.contains(p.getName())) {
+		} else if (spectator.contains(p.getName()) && gameStarted()) {
 			p.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
-			spectator.remove(p.getName());
+			removeUser(p.getName());
 			broadcastAll(ChatColor.YELLOW + p.getName() +
 					ChatColor.WHITE + " is no longer spectating.");
 		}
@@ -367,8 +362,7 @@ public class Game {
 		if (!this.spectator.contains(name)) {
 			this.spectator.add(name);
 			this.broadcastAll(ChatColor.YELLOW + name +
-					ChatColor.GREEN + " is now a " +
-					ChatColor.YELLOW + "spectator" + ChatColor.GREEN + "!");
+					ChatColor.WHITE + " is now a watching the game.");
 		}
 	}
 	

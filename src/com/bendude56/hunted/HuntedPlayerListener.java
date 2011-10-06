@@ -3,6 +3,7 @@ package com.bendude56.hunted;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -20,27 +21,26 @@ public class HuntedPlayerListener extends PlayerListener {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_KICK, this, Event.Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Normal, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHANGED_WORLD, this, Event.Priority.Normal, plugin);
 	}
 	
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (game.gameStarted()) {
-			if (!game.onLogin(event.getPlayer()) && event.getPlayer().getWorld() == plugin.getWorld()) {
-				event.getPlayer().teleport(plugin.getWorld().getSpawnLocation());
+		if (event.getPlayer().getWorld() == plugin.getWorld()) {
+			game.onLogin(event.getPlayer());
+			if (plugin.spoutEnabled) {
+				plugin.spoutConnect.showTime(1, 1, event.getPlayer());
 			}
-		}
-		if (plugin.spoutEnabled) {
-			plugin.spoutConnect.showTime(1, 1, event.getPlayer());
 		}
 	}
 	
 	public void onPlayerKick(PlayerKickEvent event) {
-		if (game.gameStarted()) {
+		if (event.getPlayer().getWorld() == plugin.getWorld()) {
 			game.onLogout(event.getPlayer());
 		}
 	}
 	
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		if (game.gameStarted()) {
+		if (event.getPlayer().getWorld() == plugin.getWorld()) {
 			game.onLogout(event.getPlayer());
 		}
 	}
@@ -55,6 +55,15 @@ public class HuntedPlayerListener extends PlayerListener {
 					event.getPlayer().teleport(plugin.getWorld().getSpawnLocation());
 					player.sendMessage(ChatColor.RED + "You have wandered too far! The hunt hasn't started yet!");
 				}
+			}
+		}
+	}
+	
+	public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
+		if (event.getPlayer().getWorld() == plugin.getWorld()) {
+			game.onLogin(event.getPlayer());
+			if (plugin.spoutEnabled) {
+				plugin.spoutConnect.showTime(1, 1, event.getPlayer());
 			}
 		}
 	}
