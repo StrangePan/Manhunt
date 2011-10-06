@@ -22,6 +22,7 @@ public class HuntedPlugin extends JavaPlugin {
 	public boolean pvpOnly = false;
 	public boolean hostileMobs = true;
 	public boolean passiveMobs = true;
+	public int offlineTimeout = 1;
 
 	@Override
 	public void onDisable() {
