@@ -8,6 +8,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class Game {
@@ -366,6 +367,45 @@ public class Game {
 		}
 	}
 	
+	public void makeAllPlayersHunters() {
+		for (String p : hunted) {
+			makeHunter(p);
+		}
+		for (String p : spectator) {
+			makeHunter(p);
+		}
+	}
+	public void makeAllPlayersHunted() {
+		for (String p : hunter) {
+			makeHunted(p);
+		}
+		for (String p : spectator) {
+			makeHunted(p);
+		}
+	}
+	public void makeAllPlayersSpectators() {
+		for (String p : hunter) {
+			makeSpectator(p);
+		}
+		for (String p : hunted) {
+			makeSpectator(p);
+		}
+	}
+	
+	public void removeAll() {
+		hunted.clear();
+		hunter.clear();
+		spectator.clear();
+	}
+	public void removeAllHunters() {
+		hunter.clear();
+	}
+	public void removeAllHunted() {
+		hunted.clear();
+	}
+	public void removeAllSpectators() {
+		spectator.clear();
+	}
 	public void removeUser(String name) {
 		hunter.remove(name);
 		hunted.remove(name);
@@ -378,6 +418,31 @@ public class Game {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	public void kickSpectators() {
+		Player player;
+		for (String p : spectator) {
+			player = Bukkit.getPlayerExact(p);
+			player.kickPlayer("");
+		}
+		removeAllSpectators();
+	}
+	public boolean kickSpectators(String worldName) {
+		Player player;
+		World world = Bukkit.getWorld(worldName);
+		if (world == null) {
+			return false;
+		} else {
+			for (String p : spectator) {
+				player = Bukkit.getPlayerExact(p);
+				if (player != null) {
+					player.teleport(world.getSpawnLocation());					
+				}
+			}
+			removeAllSpectators();
+			return true;
 		}
 	}
 	

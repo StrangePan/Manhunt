@@ -23,6 +23,7 @@ public class HuntedPlugin extends JavaPlugin {
 	public boolean hostileMobs = true;
 	public boolean passiveMobs = true;
 	public int offlineTimeout = 1;
+	public boolean allowSpectators;
 
 	@Override
 	public void onDisable() {

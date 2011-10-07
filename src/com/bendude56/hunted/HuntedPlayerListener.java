@@ -61,6 +61,10 @@ public class HuntedPlayerListener extends PlayerListener {
 	
 	public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
 		if (event.getPlayer().getWorld() == plugin.getWorld()) {
+			if (!plugin.allowSpectators) {
+				event.getPlayer().teleport(event.getFrom().getSpawnLocation());
+				event.getPlayer().sendMessage(ChatColor.RED + "Spectating is not allowed in this manhunt!");
+			}
 			game.onLogin(event.getPlayer());
 			if (plugin.spoutEnabled) {
 				plugin.spoutConnect.showTime(1, 1, event.getPlayer());
