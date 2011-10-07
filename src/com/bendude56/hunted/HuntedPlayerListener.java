@@ -1,5 +1,6 @@
 package com.bendude56.hunted;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -26,6 +27,13 @@ public class HuntedPlayerListener extends PlayerListener {
 	
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (event.getPlayer().getWorld() == plugin.getWorld()) {
+			if (Bukkit.getServer().getWorlds().get(0) != plugin.getWorld() && game.gameStarted() && !plugin.allowSpectators) {
+				event.getPlayer().teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
+				return;
+			} else if (game.gameStarted() && !plugin.allowSpectators) {
+				event.getPlayer().kickPlayer("No spectating is allowed during this game!");
+				return;
+			}
 			game.onLogin(event.getPlayer());
 			if (plugin.spoutEnabled) {
 				plugin.spoutConnect.showTime(1, 1, event.getPlayer());

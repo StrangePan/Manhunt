@@ -423,9 +423,16 @@ public class Game {
 	
 	public void kickSpectators() {
 		Player player;
-		for (String p : spectator) {
-			player = Bukkit.getPlayerExact(p);
-			player.kickPlayer("");
+		if (Bukkit.getServer().getWorlds().get(0) == plugin.getWorld()) {
+			for (String p : spectator) {
+				player = Bukkit.getPlayerExact(p);
+				player.kickPlayer("Spectating is not allowed during this game!");
+			}
+		} else {
+			for (String p : spectator) {
+				player = Bukkit.getPlayerExact(p);
+				player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
+			}
 		}
 		removeAllSpectators();
 	}
@@ -503,19 +510,13 @@ public class Game {
 	}
 	
 	public double getDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
-		double distance = 0;
-		distance = Math.sqrt( Math.pow(x2-x1,2) + Math.pow(y2-y1,2) + Math.pow(z2-z1,2) );
-		return distance;
+		return Math.sqrt( Math.pow(x2-x1,2) + Math.pow(y2-y1,2) + Math.pow(z2-z1,2) );
 	}
 	public double getDistance(Location loc1, Location loc2) {
-		double distance = 0;
-		distance = getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getY(), loc2.getZ());
-		return distance;
+		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getY(), loc2.getZ());
 	}
 	public double getDistance(Player p1, Player p2) {
-		double distance = 0;
-		distance= getDistance(p1.getLocation(), p2.getLocation());
-		return distance;
+		return getDistance(p1.getLocation(), p2.getLocation());
 	}
 	
 }
