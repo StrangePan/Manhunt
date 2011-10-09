@@ -59,7 +59,7 @@ public class HuntedPlugin extends JavaPlugin {
 	}
 	
 	public static HuntedPlugin getInstance() {
-		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("HuntedPlugin");
+		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Hunted");
 	}
 	
 	public World getWorld() {
