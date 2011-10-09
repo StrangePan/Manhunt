@@ -5,15 +5,32 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.server.Packet29DestroyEntity;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class Game {
 	
-	HuntedPlugin plugin;
+	private static Game ag = null;
+	
+	public static Game newActiveGame(DataFile f) {
+		return ag = new Game(f);
+	}
+	
+	public static boolean isGameStarted() {
+		return ag != null;
+	}
+	
+	public static void deleteActiveGame() {
+		ag = null;
+	}
+	
+	public static Game getActiveGame() {
+		return ag;
+	}
 	
 	private HashMap<String, Long> timeout;
 	
@@ -22,228 +39,275 @@ public class Game {
 	private List<String> spectator;
 	
 	private boolean gameRunning;
-	private long hunterReleaseTime; //When the hunters are to be released
-	private boolean huntStarted; //TRUE = Preparation is over
-	private int dayLimit;
-	private long endTime;
+	private long hunterReleaseTick;
+	private long endTick;
 	
-	public Game(HuntedPlugin instance) {
-		plugin = instance;
+	private int tickSched;
+	
+	private DataFile dat;
+	
+	private Game(DataFile f) {
 		hunter = new ArrayList<String>();
 		hunted = new ArrayList<String>();
 		spectator = new ArrayList<String>();
 		timeout = new HashMap<String, Long>();
 		gameRunning = false;
-		huntStarted = false;
-		hunterReleaseTime = 0;
-		dayLimit = 3;
-		endTime = 0;
-		
-		//Schedule the onTick method!
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin,
-				new Runnable() {
-				public void run() {
-						plugin.manhuntGame.onTick();
-				}
-		}, 0, 1);
-		
+		hunterReleaseTick = 0;
+		endTick = 0;
+		dat = f;
+	}
+	
+	public DataFile getDataFile() {
+		return dat;
 	}
 	
 	public void start() {
 		if (!gameRunning) {
-			plugin.getWorld().setTime(0);
+			HuntedPlugin.getInstance().getWorld().setTime(0);
 			
-			this.broadcastPlayers(ChatColor.GREEN +
-					"The Manhunt game has been started! Start preparing for the hunt!");
+			this.broadcastAll(ChatColor.GREEN +
+					"The game has begun! The hunters will be released at sundown!");
 			this.broadcastHunted(ChatColor.GREEN +
-					"You have until sundown to prepare! Good luck!");
-			this.broadcastHunters(ChatColor.YELLOW +
-					"You are restricted to a 32 block radius around spawn. No cheating, now!");
-			this.broadcastSpectator(ChatColor.GREEN +
-					"The Manhunt game has started! Hunters and hunted are preparing for sundown!");
+					"You may now begin your preparations... Good luck!");
 			
-			hunterReleaseTime = plugin.getWorld().getFullTime() + 12000;
-			endTime = plugin.getWorld().getFullTime() + dayLimit*24000 + 14000;
+			hunterReleaseTick = HuntedPlugin.getInstance().manhuntWorld.getFullTime();
+			// endTick = HuntedPlugin.getInstance().getWorld().getFullTime() + dat.maxDays * 24000 + 14000;
 			gameRunning = true;
 			
-			for (String n : hunter) {
+			for (String n : hunted) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
 				if (p != null) {
-					p.teleport(plugin.getWorld().getSpawnLocation());
+					p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 				}
 			}
-			
+			for (String n : spectator) {
+				Player p = Bukkit.getServer().getPlayerExact(n);
+				p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+				for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
+					if (isHunter(p2) || isHunted(p2)) {
+						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet29DestroyEntity(p.getEntityId()));
+					}
+				}
+			}
+			tickSched = Bukkit.getScheduler().scheduleSyncRepeatingTask(HuntedPlugin.getInstance(),
+					new Runnable() {
+						public void run() {
+								onTick();
+						}
+				}, 0, 1);
 		}
 	}
 	
-	public void onTick() {
-		
+	public void stop() {
+		if (gameRunning) {
+			Bukkit.getScheduler().cancelTask(tickSched);
+		}
+	}
+	
+	public void onDie(Player p) {
+		p.sendMessage(ChatColor.RED + "You have died! You are now spectating the match!");
+		onDie(p.getName());
+	}
+	
+	private void onDie(String s) {
+		broadcastAll(ChatColor.BLUE + s + ChatColor.WHITE + " has died!");
+		if (hunter.contains(s.toLowerCase())) {
+			hunter.remove(s.toLowerCase());
+			if (hunter.size() == 0) {
+				broadcastAll(ChatColor.GREEN + "All hunters are now dead! Hunted win!");
+				stop();
+			} else {
+				spectator.add(s.toLowerCase());
+			}
+		} else if (hunted.contains(s.toLowerCase())) {
+			hunted.remove(s.toLowerCase());
+			if (hunted.size() == 0) {
+				broadcastAll(ChatColor.GREEN + "All hunted are now dead! Hunters win!");
+				stop();
+			} else {
+				spectator.add(s.toLowerCase());
+			}
+		}
+	}
+	
+	private void remGroups(String s) {
+		if (hunter.contains(s))
+			hunter.remove(s);
+		else if (hunted.contains(s))
+			hunted.remove(s);
+		else if (spectator.contains(s))
+			spectator.remove(s);
+	}
+	
+	private void timeout(String p) {
+		if (hunter.contains(p)) {
+			hunter.remove(p);
+		} else if (hunted.contains(p)) {
+			hunted.remove(p);
+		}
+		if (timeout.containsKey(p)) {
+			timeout.remove(p);
+		}
+		onDie(p);
+	}
+	
+	private void onTick() {
+		List<String> toRem = new ArrayList<String>();
 		for (String p : timeout.keySet()) {
 			if (new Date().getTime() >= timeout.get(p)) {
-				if (isHunter(p)) {
-					this.broadcastAll(ChatColor.RED + p +
-							ChatColor.YELLOW + " is no longer a " +
-							ChatColor.RED + "hunter" + ChatColor.YELLOW + "!");
-				} else if (isHunted(p)) {
-					this.broadcastAll(ChatColor.BLUE + p +
-							ChatColor.YELLOW + " is no longer one of the " +
-							ChatColor.BLUE + "hunted" + ChatColor.YELLOW + "!");
-				}
-				this.removeUser(p);
+				toRem.add(p);
 			}
 		}
 		
-		if (gameRunning) {
-			Long time = plugin.getWorld().getFullTime();
-			
-			if (time <= hunterReleaseTime) { //Near-start alerts
-				huntStarted = false;
-				if (time == hunterReleaseTime - 6000) {
-					this.broadcastAll(ChatColor.GREEN +
-							"It is high noon! Only 5 minutes left to prepare!");
-				} else if (time == hunterReleaseTime + 2400) {
-					this.broadcastAll(ChatColor.YELLOW +
-							"Sundown is approaching! The hunt begins in 2 minutes!");
-				} else if (time == hunterReleaseTime - 1200) {
-					this.broadcastAll(ChatColor.YELLOW +
-							"The time is nearing! Only 1 minute left till the hunt!");
-				} else if (time == hunterReleaseTime - 600) {
-					this.broadcastAll(ChatColor.YELLOW +
-							"30 SECONDS!");
-				} else if (time == hunterReleaseTime - 100) {
-					this.broadcastAll(ChatColor.YELLOW +
-							"5");
-				} else if (time == hunterReleaseTime - 100) {
-					this.broadcastAll(ChatColor.YELLOW +
-					"5");
-				} else if (time == hunterReleaseTime - 80) {
-					this.broadcastAll(ChatColor.YELLOW +
-					"4");
-				} else if (time == hunterReleaseTime - 60) {
-					this.broadcastAll(ChatColor.YELLOW +
-					"3");
-				} else if (time == hunterReleaseTime - 40) {
-					this.broadcastAll(ChatColor.YELLOW +
-					"2");
-				} else if (time == hunterReleaseTime - 20) {
-					this.broadcastAll(ChatColor.YELLOW +
-					"1");
-				}
-			
-			} else if (time >= hunterReleaseTime && huntStarted == false) { //Begin the hunt
-				huntStarted = true;
-				this.broadcastHunters(ChatColor.GREEN +
-						"The hunt has begun! Hunters, kill the hunted!");
-				this.broadcastHunters(ChatColor.GREEN +
-						"The hunt has begun! The hunters are on their way!");
-				this.broadcastHunters(ChatColor.GREEN +
-						"The hunt has begun! The hunters now on the move!");
-				
-			} else if (huntStarted == true && time < endTime) { //Near-end alerts
-				if (time == endTime - 24000) {
-					this.broadcastAll(ChatColor.YELLOW +
-							"One day left in the manhunt!");
-				} else if (time == endTime - 12000) {
-					this.broadcastAll(ChatColor.YELLOW +
-					"The manhunt will end at sundown!");
-				} else if (time == endTime - 6000) {
-					this.broadcastAll(ChatColor.GREEN +
-					"5 minutes left in the manhunt!");
-				} else if (time == endTime + 2400) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"Sundown is approaching! The hunt ends in 2 minutes!");
-				} else if (time == endTime - 1200) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"The time is nearing! Only 1 minute left in the hunt!");
-				} else if (time == endTime - 600) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"30 SECONDS!");
-				} else if (time == endTime - 100) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"5");
-				} else if (time == endTime - 100) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"5");
-				} else if (time == endTime - 80) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"4");
-				} else if (time == endTime - 60) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"3");	
-				} else if (time == endTime - 40) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"2");
-				} else if (time == endTime - 20) {
-					this.broadcastAll(ChatColor.YELLOW +
-						"1");
+		for (String p : toRem) {
+			timeout(p);
 		}
-				
+		
+		if (gameRunning) {
+			long tick = HuntedPlugin.getInstance().getWorld().getFullTime();
 			
-			} else if (huntStarted == true && time >= endTime) { //End the hunt
-				this.broadcastAll(ChatColor.GREEN +
-						"Time's up! The manhunt is OVER!");
-				endGameHunted();
+			for (String n : spectator) {
+				Player p = Bukkit.getServer().getPlayerExact(n);
+				for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
+					if (isHunter(p2) || isHunted(p2)) {
+						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet29DestroyEntity(p.getEntityId()));
+					}
+				}
+			}
+			
+			if (hunterReleaseTick != -1 && tick < hunterReleaseTick) {
+				int min;
+				int sec;
+				long totalsec = (hunterReleaseTick - tick) / 20;
+				min = (int) (totalsec / 60);
+				sec = (int) (totalsec % 60);
+				if (HuntedPlugin.getInstance().spoutEnabled) {
+					for (String s : hunter) {
+						Player p = Bukkit.getPlayerExact(s);
+						if (p != null) {
+							HuntedPlugin.getInstance().spoutConnect.showTime("Time until hunters are released", min, sec, p);
+						}
+					}
+					for (String s : hunted) {
+						Player p = Bukkit.getPlayerExact(s);
+						if (p != null) {
+							HuntedPlugin.getInstance().spoutConnect.showTime("Time until you are released", min, sec, p);
+						}
+					}
+					for (String s : spectator) {
+						Player p = Bukkit.getPlayerExact(s);
+						if (p != null) {
+							HuntedPlugin.getInstance().spoutConnect.showTime("Time until hunters are released", min, sec, p);
+						}
+					}
+				}
+				if (tick % 20 == 0) {
+					if (min == 1 && sec == 0) {
+						broadcastAll(ChatColor.RED + "1 minute until the hunters are released!");
+					} else if (sec == 0) {
+						broadcastAll(ChatColor.RED + String.valueOf(min) + " minutes until the hunters are released!");
+					} else if (min == 0 && sec == 30) {
+						broadcastAll(ChatColor.RED + "30 seconds until the hunters are released!");
+					} else if (min == 0 && sec == 10) {
+						broadcastAll(ChatColor.RED + "10 seconds until the hunters are released!");
+					} else if (min == 0 && sec == 5) {
+						broadcastAll(ChatColor.RED + "The hunters will be released in 5...");
+					} else if (min == 0 && sec < 5) {
+						broadcastAll(ChatColor.RED + String.valueOf(sec) + "...");
+					}
+				}
+			} else if (tick >= hunterReleaseTick) {
+				hunterReleaseTick = 0;
+				for (String s : hunter) {
+					Player p = Bukkit.getPlayerExact(s);
+					if (p != null) {
+						p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+					}
+				}
+				broadcastAll(ChatColor.RED + "The hunters have been released! The game will last " + dat.maxDays + " days.");
+				broadcastHunted(ChatColor.RED + "You are now being actively hunted... Watch your step!");
+				endTick = tick + dat.maxDays * 24000;
+			} else if (tick >= endTick) {
+				broadcastAll(ChatColor.GREEN + "Time has run out and the hunted have won!");
+				stop();
+			} else {
+				int min;
+				int sec;
+				long totalsec = (endTick - tick) / 20;
+				min = (int) (totalsec / 60);
+				sec = (int) (totalsec % 60);
+				if (HuntedPlugin.getInstance().spoutEnabled) {
+					for (String s : hunter) {
+						Player p = Bukkit.getPlayerExact(s);
+						if (p != null) {
+							HuntedPlugin.getInstance().spoutConnect.showTime("Time until the game is over", min, sec, p);
+						}
+					}
+					for (String s : hunted) {
+						Player p = Bukkit.getPlayerExact(s);
+						if (p != null) {
+							HuntedPlugin.getInstance().spoutConnect.showTime("Time until the game is over", min, sec, p);
+						}
+					}
+					for (String s : spectator) {
+						Player p = Bukkit.getPlayerExact(s);
+						if (p != null) {
+							HuntedPlugin.getInstance().spoutConnect.showTime("Time until the game is over", min, sec, p);
+						}
+					}
+				}
+				if (tick % 20 == 0) {
+					if (min == 1 && sec == 0) {
+						broadcastAll(ChatColor.RED + "1 minute until the game is over!");
+					} else if (sec == 0 && (min % 5 == 0 || min < 5)) {
+						broadcastAll(ChatColor.RED + String.valueOf(min) + " minutes until the game is over!");
+					} else if (min == 0 && sec == 30) {
+						broadcastAll(ChatColor.RED + "30 seconds until the game is over!");
+					} else if (min == 0 && sec == 10) {
+						broadcastAll(ChatColor.RED + "10 seconds until the game is over!");
+					} else if (min == 0 && sec == 5) {
+						broadcastAll(ChatColor.RED + "The game is over in 5...");
+					} else if (min == 0 && sec < 5) {
+						broadcastAll(ChatColor.RED + String.valueOf(sec) + "...");
+					}
+				}
 			}
 		}
 	}
 	
 	public void onLogin(Player p) {
-		if (!gameStarted() && !playerExists(p.getName())) {
-			makeHunter(p.getName());
-			return;
-		} else if (gameStarted() && !playerExists(p.getName())) {
-			makeSpectator(p.getName());
-			return;
-		}
-		if (timeout.containsKey(p.getName())) {
-			timeout.remove(p.getName());
-			if (isHunter(p.getName())) {
-				broadcastAll(ChatColor.RED + p.getName() +
-					ChatColor.GREEN + " has reconnected and is back in the game!");
-			}
-			if (isHunted(p.getName())) {
-				broadcastAll(ChatColor.BLUE + p.getName() +
-					ChatColor.GREEN + " has reconnected and is back in the game!");
-			}
+		if (gameRunning && (isHunter(p) || isHunted(p))) {
+			broadcastAll(ChatColor.BLUE + p.getName() +
+					ChatColor.WHITE + " has reconnected and is back in the game!");
+			timeout.remove(p);
 		}
 	}
 	
 	public void onLogout(Player p) {
-		String name = p.getName();
-		if ((hunter.contains(name) || hunted.contains(name)) && plugin.offlineTimeout >= 0 && gameStarted()) {
-			timeout.put(name, new Date().getTime() + plugin.offlineTimeout*60000L);
-			if (plugin.offlineTimeout > 0) {
-				broadcastAll(ChatColor.RED + name +
-						" has diconnected. If they don't reconnect in " + plugin.offlineTimeout +
-						" minute, they will be booted from the game.");
+		if (isHunter(p) || isHunted(p)) {
+			if (hasGameBegun()) {
+				broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+						" has disconnected...");
+				broadcastAll(ChatColor.WHITE + "If they don't reconnect in " +
+						(dat.disTimeout / 1000) + " seconds, they will be considered dead!");
+			} else {
+				remGroups(p.getName().toLowerCase());
+				broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+						" has disconnected...");
+				broadcastAll(ChatColor.WHITE + "They must rejoin when they connect.");
 			}
-		} else if (spectator.contains(p.getName()) && gameStarted()) {
-			p.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
-			removeUser(p.getName());
-			broadcastAll(ChatColor.YELLOW + p.getName() +
-					ChatColor.WHITE + " is no longer spectating.");
+		} else if (isSpectating(p)) {
+			p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+			remGroups(p.getName().toLowerCase());
+			broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+					" is no longer spectating!");
 		}
 	}
 	
 	public void broadcastAll(String msg) {
-		for (String n : hunter) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			if (p != null) {
-				p.sendMessage(msg);
-			}
-		}
-		for (String n : hunted) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			if (p != null) {
-				p.sendMessage(msg);
-			}
-		}
-		for (String n : spectator) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			if (p != null) {
-				p.sendMessage(msg);
-			}
-		}
+		broadcastHunters(msg);
+		broadcastHunted(msg);
+		broadcastSpectators(msg);
 	}
 	public void broadcastHunters(String msg) {
 		for (String n : hunter) {
@@ -253,6 +317,7 @@ public class Game {
 			}
 		}
 	}
+	
 	public void broadcastHunted(String msg) {
 		for (String n : hunter) {
 			Player p = Bukkit.getServer().getPlayerExact(n);
@@ -261,21 +326,8 @@ public class Game {
 			}
 		}
 	}
-	public void broadcastPlayers(String msg) {
-		for (String n : hunter) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			if (p != null) {
-				p.sendMessage(msg);
-			}
-		}
-		for (String n : hunter) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			if (p != null) {
-				p.sendMessage(msg);
-			}
-		}
-	}
-	public void broadcastSpectator(String msg) {
+	
+	public void broadcastSpectators(String msg) {
 		for (String n : spectator) {
 			Player p = Bukkit.getServer().getPlayerExact(n);
 			if (p != null) {
@@ -284,51 +336,59 @@ public class Game {
 		}
 	}
 		
-	public boolean gameStarted() {
+	public boolean hasGameBegun() {
 		return gameRunning;
 	}
-	public boolean huntStarted() {
-		return huntStarted;
+	
+	public boolean isHunter(Player p) {
+		return (this.hunter.contains(p.getName().toLowerCase()));
 	}
 	
-	public boolean isHunter(String name) {
-		if (Bukkit.getServer().getPlayerExact(name) == null) {
-			return false;
-		}
-		Player player = Bukkit.getServer().getPlayerExact(name);
-		name = player.getName();
-		if (this.hunter.contains(name) && player.getWorld() == plugin.getWorld()) {
-			return true;
-		} else {
-			return false;
-		}
+	public boolean isHunted(Player p) {
+		return (this.hunted.contains(p.getName().toLowerCase()));
 	}
-	public boolean isHunted(String name) {
-		if (Bukkit.getServer().getPlayerExact(name) == null) {
-			return false;
-		}
-		Player player = Bukkit.getServer().getPlayerExact(name);
-		name = player.getName();
-		if (this.hunted.contains(name) && player.getWorld() == plugin.getWorld()) {
-			return true;
-		} else {
-			return false;
-		}
+	
+	public boolean isSpectating(Player p) {
+		return (this.spectator.contains(p.getName().toLowerCase()));
 	}
-	public boolean isSpectator(String name) {
-		if (Bukkit.getServer().getPlayerExact(name) == null) {
-			return false;
-		}
-		Player player = Bukkit.getServer().getPlayerExact(name);
-		name = player.getName();
-		if (this.spectator.contains(name) && player.getWorld() == plugin.getWorld()) {
-			return true;
-		} else {
-			return false;
+	
+	public void addHunter(Player p) {
+		if (hasGameBegun())
+			throw new UnsupportedOperationException("Cannot add hunters/hunted once game has begun!");
+		hunter.add(p.getName().toLowerCase());
+		broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+				" has joined as a hunter...");
+	}
+	
+	public void addHunted(Player p) {
+		if (hasGameBegun())
+			throw new UnsupportedOperationException("Cannot add hunters/hunted once game has begun!");
+		hunted.add(p.getName().toLowerCase());
+		broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+				" has joined as a hunted player...");
+	}
+	
+	public void addSpectator(Player p) {
+		spectator.add(p.getName().toLowerCase());
+		broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+				" is now spectating the game...");
+		p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+	}
+	
+	public void quit(Player p) {
+		if (isHunter(p) || isHunted(p)) {
+			onDie(p);
+			broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+					" has ragequit!");
+		} else if (isSpectating(p)) {
+			p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+			remGroups(p.getName().toLowerCase());
+			broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+					" is no longer spectating!");
 		}
 	}
 	
-	public void makeHunter(String name) {
+	/*public void makeHunter(String name) {
 		if (name == null) {
 			return;
 		}
@@ -341,6 +401,7 @@ public class Game {
 					ChatColor.RED + "hunters" + ChatColor.GREEN + "!");
 		}
 	}
+	
 	public void makeHunted(String name) {
 		if (name == null) {
 			return;
@@ -354,6 +415,7 @@ public class Game {
 					ChatColor.BLUE + "hunted" + ChatColor.GREEN + "!");
 		}
 	}
+	
 	public void makeSpectator(String name) {
 		if (name == null) {
 			return;
@@ -367,22 +429,6 @@ public class Game {
 		}
 	}
 	
-	public void makeAllPlayersHunters() {
-		for (String p : hunted) {
-			makeHunter(p);
-		}
-		for (String p : spectator) {
-			makeHunter(p);
-		}
-	}
-	public void makeAllPlayersHunted() {
-		for (String p : hunter) {
-			makeHunted(p);
-		}
-		for (String p : spectator) {
-			makeHunted(p);
-		}
-	}
 	public void makeAllPlayersSpectators() {
 		for (String p : hunter) {
 			makeSpectator(p);
@@ -411,6 +457,7 @@ public class Game {
 		hunted.remove(name);
 		spectator.remove(name);
 	}
+	
 	public boolean playerExists(String name) {
 		if (hunter.contains(name)
 				|| hunted.contains(name)
@@ -517,6 +564,6 @@ public class Game {
 	}
 	public double getDistance(Player p1, Player p2) {
 		return getDistance(p1.getLocation(), p2.getLocation());
-	}
+	}*/
 	
 }

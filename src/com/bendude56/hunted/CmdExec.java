@@ -8,19 +8,141 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdExec implements CommandExecutor {
-	private HuntedPlugin plugin;
-	private Game game;
 	
-	public CmdExec(HuntedPlugin instance) {
-		plugin = instance;
-		game = plugin.manhuntGame;
-		plugin.getCommand("manhunt").setExecutor(this);
+	public CmdExec() {
+		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command c, String cmd,
 			String[] args) {
-		if (args.length == 0) {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "The /manhunt command cannot be used from the console!");
+			return true;
+		}
+		Player p = (Player) sender;
+		// DataFile f = (Game.isGameStarted()) ? Game.getActiveGame().getDataFile() : null;
+		Game g = Game.getActiveGame();
+		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+			if (Game.isGameStarted()) {
+				if (g.isSpectating(p) || g.isHunter(p) || g.isHunted(p)) {
+					p.sendMessage(ChatColor.YELLOW + "/manhunt leave");
+					p.sendMessage(ChatColor.YELLOW + "    Leaves the current manhunt game");
+				} else {
+					if (!g.hasGameBegun()) {
+						p.sendMessage(ChatColor.YELLOW + "/manhunt join {hunter|hunted}");
+						p.sendMessage(ChatColor.YELLOW + "    Joins an existing manhunt game");
+					}
+					p.sendMessage(ChatColor.YELLOW + "/manhunt spectate");
+					p.sendMessage(ChatColor.YELLOW + "    Spectates an existing manhunt game");
+				}
+			} else if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
+			}
+			if (p.isOp()) {
+				if (Game.isGameStarted()) {
+					p.sendMessage(ChatColor.YELLOW + "/manhunt kick <player>");
+					p.sendMessage(ChatColor.YELLOW + "    Kicks a player from a manhunt game");
+				} else {
+					p.sendMessage(ChatColor.YELLOW + "/manhunt create <datafile>");
+					p.sendMessage(ChatColor.YELLOW + "    Creates a new manhunt game");
+				}
+				p.sendMessage(ChatColor.YELLOW + "/manhunt world");
+				p.sendMessage(ChatColor.YELLOW + "    Teleports you to the manhunt world");
+			}
+		} else if (args[0].equalsIgnoreCase("join")) {
+			if (!Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
+				return true;
+			} else if (g.hasGameBegun()) {
+				p.sendMessage(ChatColor.RED + "You cannot join a game already in progress!");
+			}
+			if (args.length == 1) {
+				p.sendMessage(ChatColor.RED + "Not enough arguments!");
+			} else if (args.length > 2) {
+				p.sendMessage(ChatColor.RED + "Too many arguments!");
+			} else {
+				if (args[1].equalsIgnoreCase("hunter")) {
+					g.addHunter(p);
+				} else if (args[1].equalsIgnoreCase("hunted")) {
+					g.addHunted(p);
+				} else {
+					p.sendMessage(ChatColor.RED + "Invalid argument: " + args[1]);
+				}
+			}
+		} else if (args[0].equalsIgnoreCase("leave")) {
+			if (!Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
+				return true;
+			} else if (!g.isHunted(p) && !g.isHunter(p) && !g.isSpectating(p)) {
+				p.sendMessage(ChatColor.RED + "How can you leave a game you aren't a part of?");
+				return true;
+			}
+			if (args.length > 1) {
+				p.sendMessage(ChatColor.RED + "Too many arguments!");
+			} else {
+				g.quit(p);
+			}
+		} else if (args[0].equalsIgnoreCase("spectate")) {
+			if (!Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
+				return true;
+			} else if (!g.isHunted(p) && !g.isHunter(p) && !g.isSpectating(p)) {
+				p.sendMessage(ChatColor.RED + "How can you spectate a game you're already a part of?");
+				return true;
+			}
+			if (args.length > 1) {
+				p.sendMessage(ChatColor.RED + "Too many arguments!");
+			} else {
+				g.addSpectator(p);
+			}
+		} else if (args[0].equalsIgnoreCase("world")) {
+			if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+				return true;
+			} else if (Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "You can't do that while a game is in progress!");
+				return true;
+			}
+			if (args.length > 1) {
+				p.sendMessage(ChatColor.RED + "Too many arguments!");
+			} else {
+				p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+			}
+		} else if (args[0].equalsIgnoreCase("create")) {
+			if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+				return true;
+			} else if (Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "You can't do that while a game is in progress!");
+				return true;
+			}
+			if (args.length == 1) {
+				p.sendMessage(ChatColor.RED + "Not enough arguments!");
+			} else if (args.length > 2) {
+				p.sendMessage(ChatColor.RED + "Too many arguments!");
+			} else {
+				if (!DataFile.exists(args[1])) {
+					p.sendMessage(ChatColor.RED + "No data file exists by the name '" + args[1] + ".dat'!");
+				} else {
+					DataFile df;
+					try {
+						df = new DataFile(args[1]);
+					} catch (Exception e) {
+						p.sendMessage(ChatColor.RED + "An error occured while loading the data file!");
+						Bukkit.getLogger().severe("An attempt to load a data file (" + args[1] + ".dat) failed:");
+						e.printStackTrace();
+						return true;
+					}
+					Game.newActiveGame(df);
+					p.sendMessage(ChatColor.GREEN + "A game was successfully created with that data file...");
+				}
+			}
+		} else {
+			Bukkit.dispatchCommand(p, "manhunt help");
+		}
+		return true;
+		/*if (args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Not enough arguments!");
 			
 		} else if (args[0].equalsIgnoreCase("help")
@@ -412,7 +534,7 @@ public class CmdExec implements CommandExecutor {
 				game.broadcastPlayers(ChatColor.GREEN + "New spawn location has been set!");
 			}
 		}
-		return true;
+		return true;*/
 	}
 
 }

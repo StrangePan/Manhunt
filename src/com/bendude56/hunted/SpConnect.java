@@ -11,7 +11,7 @@ public class SpConnect {
 	
 	private HashMap<Player, GenericLabel> lbls = new HashMap<Player, GenericLabel>();
 	
-	public void showTime(int min, int sec, Player p) {
+	public void showTime(String label, int min, int sec, Player p) {
 		GenericLabel lbl;
 		if (lbls.containsKey(p)) {
 			lbl = lbls.get(p);
@@ -21,7 +21,7 @@ public class SpConnect {
 			lbls.put(p, lbl);
 			SpoutManager.getPlayer(p).getMainScreen().attachWidget(HuntedPlugin.getInstance(), lbl);
 		}
-		lbl.setText("Time until hunters are released: " + toString(min) + ":" + toString(sec));
+		lbl.setText(label + ": " + toString(min) + ":" + toString(sec));
 		lbl.doResize();
 		lbl.setDirty(true);
 	}

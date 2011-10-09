@@ -1,5 +1,8 @@
 package com.bendude56.hunted;
 
+import net.minecraft.server.DamageSource;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
@@ -21,73 +24,143 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
-
-
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class HuntedEntityListener extends EntityListener {
-	HuntedPlugin plugin;
-	Game game;
 	
-	public HuntedEntityListener(HuntedPlugin instance) {
-		plugin = instance;
-		game = plugin.manhuntGame;
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, this, Event.Priority.Normal, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, plugin);
+	public HuntedEntityListener() {
+		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 	}
 	
 	public void onEntityDamage(EntityDamageEvent e) {
+		if (!e.getEntity().getWorld().equals(HuntedPlugin.getInstance().manhuntWorld)
+				|| !(e.getEntity() instanceof Player)) {
+			return;
+		}
+		Player p = (Player) e.getEntity();
+		Game g = Game.getActiveGame();
+		if (!Game.isGameStarted() || !g.hasGameBegun() || g.isSpectating(p)) {
+			e.setCancelled(true);
+			return;
+		}
 		if (e instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-			if (event.getDamager() instanceof Player
-					&& event.getEntity() instanceof Player) {
-				
-				if (!game.huntStarted()) {
-					event.setCancelled(true);
+			if (event.getDamager() instanceof Player) {
+				Player p2 = (Player) event.getDamager();
+				if (g.isSpectating(p2)) {
+					e.setCancelled(true);
+					return;
+				} else if (g.getDataFile().noFriendlyFire && 
+						((g.isHunted(p) && g.isHunted(p2)) ||
+						(g.isHunter(p) && g.isHunter(p2)))) {
+					e.setCancelled(true);
+					return;
+				} else if (g.getDataFile().pvpDeathInstant) {
+					((CraftPlayer) p).getHandle().die(DamageSource.playerAttack(((CraftPlayer) p2).getHandle()));
+					e.setCancelled(true);
+					return;
+				} else if (g.getDataFile().pvpDamageHalf) {
+					e.setDamage(e.getDamage() / 2);
+				}
+			} else {
+				if (g.getDataFile().hostileNoDamage) {
+					e.setCancelled(true);
+					return;
+				} else if (g.getDataFile().natDamageHalf) {
+					e.setDamage(e.getDamage() / 2);
+				}
+			}
+		} else {
+			switch (e.getCause()) {
+			case FALL:
+				if (g.getDataFile().fallNoDamage) {
+					e.setCancelled(true);
 					return;
 				}
-				
-				Player attackingPlayer = (Player) event.getDamager();
-				Player damagedPlayer = (Player) event.getEntity();
-				
-				if (game.isSpectator(attackingPlayer.getName())
-						|| game.isSpectator(damagedPlayer.getName())) {
-					event.setCancelled(true);
+				break;
+			case FIRE:
+				if (g.getDataFile().fireNoDamage) {
+					e.setCancelled(true);
+					return;
 				}
-				
-				if (!plugin.friendlyFire) {
-					if (game.isHunted(attackingPlayer.getName())
-							&& game.isHunted(damagedPlayer.getName())) {
-						event.setCancelled(true);
-					}
-					if (game.isHunter(attackingPlayer.getName())
-							&& game.isHunter(damagedPlayer.getName())) {
-						event.setCancelled(true);
-					}
+				break;
+			case DROWNING:
+				if (g.getDataFile().drownNoDamage) {
+					e.setCancelled(true);
+					return;
 				}
-			} else if(event.getEntity() instanceof Player) {
-				Player player = (Player) event.getEntity();
-				if (game.gameStarted()) {
-					if (game.isSpectator(player.getName())) {
-						event.setCancelled(true);
-						return;
-					}
-					if (plugin.pvpOnly) {
-						if (event.getDamage() >= player.getHealth()) {
-							event.setDamage( player.getHealth()-1 );
-							return;
-						}
-					}
+				break;
+			case LAVA:
+				if (g.getDataFile().lavaNoDamage) {
+					e.setCancelled(true);
+					return;
 				}
+				break;
+			case STARVATION:
+				if (g.getDataFile().starveNoDamage) {
+					e.setCancelled(true);
+					return;
+				}
+				break;
+			default:
+				if (g.getDataFile().otherNoDamage) {
+					e.setCancelled(true);
+					return;
+				}
+				break;
+			}
+			if (g.getDataFile().natDamageHalf) {
+				e.setDamage(e.getDamage() / 2);
 			}
 		}
 	}
 	
-	public void onEntityDeath(EntityDeathEvent event) {
-		
-		if (!game.gameStarted()) {
+	public void onEntityDeath(EntityDeathEvent e) {
+		Game g = Game.getActiveGame();
+		if (!Game.isGameStarted() || !g.hasGameBegun()) {
+			return;
+		}
+		if (e instanceof PlayerDeathEvent) {
+			PlayerDeathEvent event = (PlayerDeathEvent) e;
+			Player p = (Player) event.getEntity();
+			if (!g.isHunted(p) && !g.isHunter(p)) {
+				return;
+			}
+			if (p.getLastDamageCause().getCause() == DamageCause.ENTITY_ATTACK) {
+				if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Player) {
+					if (g.isHunter(p) && g.getDataFile().huntersRespawn) {
+						p.setHealth(20);
+						p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+						g.broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE + " has been slain, and has been respawned!");
+					} else {
+						g.onDie(p);
+					}
+				} else {
+					if (g.getDataFile().mobDeathRespawn){
+						p.setHealth(20);
+						p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+						g.broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE + " has been slain, and has been respawned!");
+					} else {
+						g.onDie(p);
+					}
+				}
+			} else {
+				if (g.getDataFile().natDeathRespawn){
+					p.setHealth(20);
+					p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+					g.broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE + " has died of natural causes, and has been respawned!");
+				} else {
+					g.onDie(p);
+				}
+			}
+		}
+		/*if (!game.gameStarted()) {
 			return;
 		} else if(!game.huntStarted()) {
 			return;
@@ -186,33 +259,36 @@ public class HuntedEntityListener extends EntityListener {
 					}
 				}
 			}
-		}
+		}*/
 	}
 	
-	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (!plugin.hostileMobs && event.getLocation().getWorld() == plugin.getWorld()) {
-			Entity entity = event.getEntity();
-			if (entity instanceof Creeper
-					|| entity instanceof Zombie
-					|| entity instanceof Skeleton
-					|| entity instanceof Slime
-					|| entity instanceof Spider
-					|| entity instanceof CaveSpider
-					|| entity instanceof Enderman
-					|| entity instanceof Silverfish) {
-				event.setCancelled(true);
-			}
+	public void onCreatureSpawn(CreatureSpawnEvent e) {
+		if (e.getLocation().getWorld().equals(HuntedPlugin.getInstance().manhuntWorld)) {
+			return;
 		}
-		if (!plugin.passiveMobs && event.getLocation().getWorld() == plugin.getWorld()) {
-			Entity entity = event.getEntity();
-			if (entity instanceof Chicken
-					|| entity instanceof Pig
-					|| entity instanceof Cow
-					|| entity instanceof Wolf
-					|| entity instanceof Sheep
-					|| entity instanceof Squid) {
-				event.setCancelled(true);
-			}
+		Entity ent = e.getEntity();
+		Game g = Game.getActiveGame();
+		if (!Game.isGameStarted() || !g.hasGameBegun()) {
+			e.setCancelled(true);
+			return;
+		}
+		if (ent instanceof Zombie
+				|| ent instanceof Skeleton
+				|| ent instanceof Slime
+				|| ent instanceof Spider
+				|| ent instanceof CaveSpider
+				|| ent instanceof Enderman
+				|| ent instanceof Silverfish
+				|| ent instanceof Wolf) {
+			e.setCancelled(e.isCancelled() || !g.getDataFile().spawnHostile);
+		} else if (ent instanceof Creeper) {
+			e.setCancelled(e.isCancelled() || !g.getDataFile().spawnCreeper);
+		} else if (ent instanceof Chicken
+				|| ent instanceof Pig
+				|| ent instanceof Cow
+				|| ent instanceof Sheep
+				|| ent instanceof Squid) {
+			e.setCancelled(e.isCancelled() || !g.getDataFile().spawnAnimals);
 		}
 	}
 	

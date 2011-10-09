@@ -16,14 +16,13 @@ public class HuntedPlugin extends JavaPlugin {
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
 	public World manhuntWorld;
-	public Game manhuntGame;
 	
-	public boolean friendlyFire = false;
+	/*public boolean friendlyFire = false;
 	public boolean pvpOnly = false;
 	public boolean hostileMobs = true;
 	public boolean passiveMobs = true;
 	public int offlineTimeout = 1;
-	public boolean allowSpectators;
+	public boolean allowSpectators;*/
 
 	@Override
 	public void onDisable() {
@@ -49,10 +48,9 @@ public class HuntedPlugin extends JavaPlugin {
 			log(Level.INFO, "Loading world 'manhunt'...");
 			manhuntWorld = WorldCreator.name("manhunt").environment(Environment.NORMAL).createWorld();
 		}
-		new CmdExec(this);
-		new HuntedPlayerListener(this);
-		new HuntedEntityListener(this);
-		manhuntGame = new Game(this);
+		new CmdExec();
+		new HuntedPlayerListener();
+		new HuntedEntityListener();
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 	}
 	
