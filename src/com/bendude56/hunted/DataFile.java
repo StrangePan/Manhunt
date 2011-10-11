@@ -33,12 +33,12 @@ public class DataFile {
 	private static final int DIE_BAN = 1 << 3;
 	private static final int DIE_HUNTER_RESPAWN = 1 << 4;
 	
-	/*// Join control byte
+	// Join control byte
 	private static final int JOIN_OP_ONLY = 1 << 1;
 	private static final int JOIN_RANDOM = 1 << 2;
-	private static final int JOIN_OP_SETPOS = 1 << 3;
+	private static final int JOIN_OP_SETTEAM = 1 << 3;
 	private static final int JOIN_SPEC_ALLOW = 1 << 4;
-	private static final int JOIN_SPEC_OPONLY = 1 << 5;*/
+	private static final int JOIN_SPEC_OPONLY = 1 << 5;
 	
 	private String location;
 	
@@ -63,6 +63,12 @@ public class DataFile {
 	public boolean natDeathRespawn;
 	public boolean banOnDeath;
 	public boolean huntersRespawn;
+	
+	public boolean joinOpOnly;
+	public boolean joinRandomTeam;
+	public boolean joinOpsSetTeam;
+	public boolean joinAllowSpectators;
+	public boolean joinAllowOpSpectators;
 	
 	public int disTimeout;
 	public short maxDays;
@@ -114,6 +120,15 @@ public class DataFile {
 			die |= revBit(huntersRespawn, DIE_HUNTER_RESPAWN);
 			s.write(die);
 			
+			int join = 0;
+			join |= revBit(joinOpOnly, JOIN_OP_ONLY);
+			join |= revBit(joinRandomTeam, JOIN_RANDOM);
+			join |= revBit(joinOpsSetTeam, JOIN_OP_SETTEAM);
+			join |= revBit(joinAllowSpectators, JOIN_SPEC_ALLOW);
+			join |= revBit(joinAllowOpSpectators, JOIN_SPEC_OPONLY);
+			s.write(join);
+			
+			
 			s.flush();
 			s.close();
 			
@@ -153,6 +168,12 @@ public class DataFile {
 		banOnDeath = false;
 		huntersRespawn = false;
 		
+		joinOpOnly = false;
+		joinRandomTeam = false;
+		joinOpsSetTeam = false;
+		joinAllowSpectators = true;
+		joinAllowOpSpectators = true;
+		
 		disTimeout = 60000;
 		maxDays = 3;
 	}
@@ -186,6 +207,13 @@ public class DataFile {
 			natDeathRespawn = getBit(die, DIE_NAT_RESPAWN);
 			banOnDeath = getBit(die, DIE_BAN);
 			huntersRespawn = getBit(die, DIE_HUNTER_RESPAWN);
+			
+			int join = s.read();
+			joinOpOnly = getBit(join, JOIN_OP_ONLY);
+			joinRandomTeam = getBit(join, JOIN_RANDOM);
+			joinOpsSetTeam = getBit(join, JOIN_OP_SETTEAM);
+			joinAllowSpectators = getBit(join, JOIN_SPEC_ALLOW);
+			joinAllowOpSpectators = getBit(join, JOIN_SPEC_ALLOW);
 			
 			disTimeout = s.read();
 			disTimeout += s.read() * (Byte.MAX_VALUE - Byte.MIN_VALUE);

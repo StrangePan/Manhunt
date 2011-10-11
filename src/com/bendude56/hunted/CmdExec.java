@@ -58,10 +58,13 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.RED + "You cannot join a game already in progress!");
 			}
 			if (args.length == 1) {
-				p.sendMessage(ChatColor.RED + "Not enough arguments!");
+				p.sendMessage(ChatColor.RED + "You must choose a team!");
 			} else if (args.length > 2) {
 				p.sendMessage(ChatColor.RED + "Too many arguments!");
-			} else {
+			} else if (sender.isOp()
+					|| (!g.getDataFile().joinOpOnly
+					&& !g.getDataFile().joinOpsSetTeam)
+					&& !g.getDataFile().joinRandomTeam) {
 				if (args[1].equalsIgnoreCase("hunter")) {
 					g.addHunter(p);
 				} else if (args[1].equalsIgnoreCase("hunted")) {
@@ -69,6 +72,8 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.RED + "Invalid argument: " + args[1]);
 				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "You must be opped to do that!");
 			}
 		} else if (args[0].equalsIgnoreCase("leave")) {
 			if (!Game.isGameStarted()) {
