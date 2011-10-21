@@ -40,6 +40,8 @@ public class DataFile {
 	private static final int JOIN_SPEC_ALLOW = 1 << 4;
 	private static final int JOIN_SPEC_OPONLY = 1 << 5;
 	
+	// Hunted limit byte
+	
 	private String location;
 	
 	public boolean spawnAnimals;
@@ -70,6 +72,7 @@ public class DataFile {
 	public boolean joinAllowSpectators;
 	public boolean joinAllowOpSpectators;
 	
+	public short huntedLimit;
 	public int disTimeout;
 	public short maxDays;
 	
@@ -174,6 +177,7 @@ public class DataFile {
 		joinAllowSpectators = true;
 		joinAllowOpSpectators = true;
 		
+		huntedLimit = 1;
 		disTimeout = 60000;
 		maxDays = 3;
 	}
@@ -215,6 +219,9 @@ public class DataFile {
 			joinAllowSpectators = getBit(join, JOIN_SPEC_ALLOW);
 			joinAllowOpSpectators = getBit(join, JOIN_SPEC_ALLOW);
 			
+			huntedLimit = (short) s.read();
+			huntedLimit += s.read() * (Byte.MAX_VALUE - Byte.MIN_VALUE);
+			
 			disTimeout = s.read();
 			disTimeout += s.read() * (Byte.MAX_VALUE - Byte.MIN_VALUE);
 			disTimeout += s.read() * Math.pow((Byte.MAX_VALUE - Byte.MIN_VALUE), 2);
@@ -249,6 +256,7 @@ public class DataFile {
 				DataFile d = new DataFile();
 				d.location = "plugins/manhunt/" + dat + ".dat";
 				d.loadDefaults();
+				d.save();
 				return d;
 			} catch (IOException e) {
 				throw new RuntimeException(e);

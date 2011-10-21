@@ -56,9 +56,16 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			} else if (g.hasGameBegun()) {
 				p.sendMessage(ChatColor.RED + "You cannot join a game already in progress!");
+			} else if (Game.getActiveGame().getDataFile().joinOpOnly && !p.isOp()) {
+				p.sendMessage(ChatColor.RED + "Only OPs can join games!");
+				return true;
 			}
 			if (args.length == 1) {
-				p.sendMessage(ChatColor.RED + "You must choose a team!");
+				if (!Game.getActiveGame().getDataFile().joinRandomTeam) {
+					p.sendMessage(ChatColor.RED + "You must choose a team!");
+				} else {
+					
+				}
 			} else if (args.length > 2) {
 				p.sendMessage(ChatColor.RED + "Too many arguments!");
 			} else if (sender.isOp()
@@ -68,7 +75,11 @@ public class CmdExec implements CommandExecutor {
 				if (args[1].equalsIgnoreCase("hunter")) {
 					g.addHunter(p);
 				} else if (args[1].equalsIgnoreCase("hunted")) {
-					g.addHunted(p);
+					if (Game.getActiveGame().HuntedAmount() < Game.getActiveGame().getDataFile().huntedLimit) {
+						g.addHunted(p);
+					} else {
+						p.sendMessage(ChatColor.RED + "The hunted team is full.");
+					}
 				} else {
 					p.sendMessage(ChatColor.RED + "Invalid argument: " + args[1]);
 				}
@@ -119,11 +130,72 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
 				return true;
 			} else if (Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "You can't do that while a game is in progress!");
+				p.sendMessage(ChatColor.RED + "There is already a game running!");
 				return true;
 			}
 			if (args.length == 1) {
-				p.sendMessage(ChatColor.RED + "Not enough arguments!");
+				if (!DataFile.exists("preferences")) {
+					DataFile df;
+					try {
+						df = DataFile.newFile("preferences");
+					} catch (Exception e) {
+						p.sendMessage(ChatColor.RED + "An error occured while creating the new data file!");
+						Bukkit.getLogger().severe("An attempt to create a data file (preferences.dat) failed:");
+						e.printStackTrace();
+						return true;
+					}
+					Game.newActiveGame(df);
+					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
+				} else {
+					DataFile df;
+					try {
+						df = new DataFile("preferences");
+					} catch (Exception e) {
+						p.sendMessage(ChatColor.RED + "An error occured while loading the data file!");
+						Bukkit.getLogger().severe("An attempt to load a data file (preferences.dat) failed:");
+						e.printStackTrace();
+						return true;
+					}
+					Game.newActiveGame(df);
+					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
+				}
+			} else if (args.length > 1) {
+				p.sendMessage(ChatColor.RED + "Too many arguments!");
+			}
+		} else if (args[0].equalsIgnoreCase("load")) {
+			if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+				return true;
+			} else if (Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "There is already a game running!");
+				return true;
+			}
+			if (args.length == 1) {
+				if (!DataFile.exists("preferences")) {
+					DataFile df;
+					try {
+						df = DataFile.newFile("preferences");
+					} catch (Exception e) {
+						p.sendMessage(ChatColor.RED + "An error occured while creating the new data file!");
+						Bukkit.getLogger().severe("An attempt to create a data file (preferences.dat) failed:");
+						e.printStackTrace();
+						return true;
+					}
+					Game.newActiveGame(df);
+					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
+				} else {
+					DataFile df;
+					try {
+						df = new DataFile("preferences");
+					} catch (Exception e) {
+						p.sendMessage(ChatColor.RED + "An error occured while loading the data file!");
+						Bukkit.getLogger().severe("An attempt to load a data file (preferences.dat) failed:");
+						e.printStackTrace();
+						return true;
+					}
+					Game.newActiveGame(df);
+					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
+				}
 			} else if (args.length > 2) {
 				p.sendMessage(ChatColor.RED + "Too many arguments!");
 			} else {
@@ -140,7 +212,32 @@ public class CmdExec implements CommandExecutor {
 						return true;
 					}
 					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A game was successfully created with that data file...");
+					p.sendMessage(ChatColor.GREEN + "A game was successfully created with that data file!");
+				}
+			}
+		} else if (args[0].equalsIgnoreCase("new")) {
+			if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+				return true;
+			} else if (Game.isGameStarted()) {
+				p.sendMessage(ChatColor.RED + "There is already a game running!");
+				return true;
+			}
+			if (args.length == 1) {
+				p.sendMessage(ChatColor.RED + "Not enough arguments!");
+			} else {
+				if (!DataFile.exists(args[1])) {
+					DataFile df;
+					try {
+						df = DataFile.newFile(args[1]);
+					} catch (Exception e) {
+						p.sendMessage(ChatColor.RED + "An error occured while creating the new data file!");
+						Bukkit.getLogger().severe("An attempt to create a data file (" + args[1] + ".dat) failed:");
+						e.printStackTrace();
+						return true;
+					}
+					Game.newActiveGame(df);
+					p.sendMessage(ChatColor.GREEN + "A new game was successfully created with that data file.");
 				}
 			}
 		} else {

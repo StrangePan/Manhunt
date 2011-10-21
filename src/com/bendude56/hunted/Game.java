@@ -37,6 +37,7 @@ public class Game {
 	private List<String> hunter;
 	private List<String> hunted;
 	private List<String> spectator;
+	private List<String> waiting;
 	
 	private boolean gameRunning;
 	private long hunterReleaseTick;
@@ -352,6 +353,10 @@ public class Game {
 		return (this.spectator.contains(p.getName().toLowerCase()));
 	}
 	
+	public boolean isWaiting(Player p) {
+		return (this.waiting.contains(p.getName().toLowerCase()));
+	}
+	
 	public void addHunter(Player p) {
 		if (hasGameBegun())
 			throw new UnsupportedOperationException("Cannot add hunters/hunted once game has begun!");
@@ -373,6 +378,14 @@ public class Game {
 		broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
 				" is now spectating the game...");
 		p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+	}
+	
+	public void addWaiter(Player p) {
+		if (hasGameBegun())
+			throw new UnsupportedOperationException("Cannot be added to random list once the game has begun!");
+		waiting.add(p.getName().toLowerCase());
+		broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE +
+				" is waiting for the game.");
 	}
 	
 	public void quit(Player p) {
@@ -499,15 +512,16 @@ public class Game {
 			return true;
 		}
 	}
-	
 	public int HuntersAmount() {
 		int num = hunter.size();
 		return num;
 	}
+	*/
 	public int HuntedAmount() {
 		int num = hunted.size();
 		return num;
 	}
+	/*
 	public int SpectatorsAmount() {
 		int num = spectator.size();
 		return num;
