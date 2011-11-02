@@ -1,13 +1,10 @@
 package com.bendude56.hunted;
 
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HuntedPlugin extends JavaPlugin {
@@ -15,7 +12,9 @@ public class HuntedPlugin extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
-	public World manhuntWorld;
+	public World manhuntWorld = Bukkit.getWorlds().get(0); 
+	public SettingsFile settings;
+	public Game game;
 	
 	/*public boolean friendlyFire = false;
 	public boolean pvpOnly = false;
@@ -38,19 +37,12 @@ public class HuntedPlugin extends JavaPlugin {
 			log(Level.WARNING, "Spout installation not detected!");
 			spoutEnabled = false;
 		}
-		if (!new File("manhunt").exists()) {
-			log(Level.WARNING, "World 'manhunt' does not exist... Creating new world...");
-			manhuntWorld = WorldCreator.name("manhunt").environment(Environment.NORMAL).createWorld();
-		} else if (!new File("manhunt").isDirectory()) {
-			log(Level.SEVERE, "A file exists by the name of 'manhunt'! Delete/rename it and restart the server...");
-			return;
-		} else {
-			log(Level.INFO, "Loading world 'manhunt'...");
-			manhuntWorld = WorldCreator.name("manhunt").environment(Environment.NORMAL).createWorld();
-		}
+		
 		new CmdExec();
 		new HuntedPlayerListener();
 		new HuntedEntityListener();
+		settings = new SettingsFile();
+		game = new Game();
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 	}
 	

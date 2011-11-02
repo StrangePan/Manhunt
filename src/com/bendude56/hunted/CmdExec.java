@@ -22,116 +22,436 @@ public class CmdExec implements CommandExecutor {
 		}
 		Player p = (Player) sender;
 		// DataFile f = (Game.isGameStarted()) ? Game.getActiveGame().getDataFile() : null;
-		Game g = Game.getActiveGame();
+		Game g = HuntedPlugin.getInstance().game;
+		SettingsFile settings = HuntedPlugin.getInstance().settings;
 		if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-			if (Game.isGameStarted()) {
-				if (g.isSpectating(p) || g.isHunter(p) || g.isHunted(p)) {
-					p.sendMessage(ChatColor.YELLOW + "/manhunt leave");
-					p.sendMessage(ChatColor.YELLOW + "    Leaves the current manhunt game");
-				} else {
-					if (!g.hasGameBegun()) {
-						p.sendMessage(ChatColor.YELLOW + "/manhunt join {hunter|hunted}");
-						p.sendMessage(ChatColor.YELLOW + "    Joins an existing manhunt game");
-					}
-					p.sendMessage(ChatColor.YELLOW + "/manhunt spectate");
-					p.sendMessage(ChatColor.YELLOW + "    Spectates an existing manhunt game");
-				}
-			} else if (!p.isOp()) {
-				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
-			}
-			if (p.isOp()) {
-				if (Game.isGameStarted()) {
-					p.sendMessage(ChatColor.YELLOW + "/manhunt kick <player>");
-					p.sendMessage(ChatColor.YELLOW + "    Kicks a player from a manhunt game");
-				} else {
-					p.sendMessage(ChatColor.YELLOW + "/manhunt create <datafile>");
-					p.sendMessage(ChatColor.YELLOW + "    Creates a new manhunt game");
-				}
-				p.sendMessage(ChatColor.YELLOW + "/manhunt world");
+			if (!settings.opPermission || sender.isOp()) {
+				
+				p.sendMessage(ChatColor.YELLOW + "/manhunt quit");
+				p.sendMessage(ChatColor.YELLOW + "    Quits the current manhunt game and makes you a spectator.");
+				
+				p.sendMessage(ChatColor.YELLOW + "/manhunt join {hunter|hunted} <player>");
+				p.sendMessage(ChatColor.YELLOW + "    Joins the selected manhunt team.");
+				if (p.isOp()) p.sendMessage(ChatColor.YELLOW + "    Include an optional player name to assign them to that team.");
+				
+				p.sendMessage(ChatColor.YELLOW + "/manhunt spectate <player>");
+				p.sendMessage(ChatColor.YELLOW + "    Lets you spectate the manhunt game.");
+				if (p.isOp()) p.sendMessage(ChatColor.YELLOW + "     Include an optional player name to make them a spectator.");
+				
+				p.sendMessage(ChatColor.YELLOW + "/manhunt world <player>");
 				p.sendMessage(ChatColor.YELLOW + "    Teleports you to the manhunt world");
+				if (p.isOp()) p.sendMessage(ChatColor.YELLOW + "    Include an optional player name to teleport them to the world.");
+				
+				if (p.isOp()) {
+					p.sendMessage(ChatColor.YELLOW + "/manhunt kick {player}");
+					p.sendMessage(ChatColor.YELLOW + "    Kicks a player from the game and makes them a spectator.");
+				}
+				
 			}
 		} else if (args[0].equalsIgnoreCase("join")) {
-			if (!Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
-				return true;
-			} else if (g.hasGameBegun()) {
+			if (g.gameHasBegun()) {
 				p.sendMessage(ChatColor.RED + "You cannot join a game already in progress!");
-			} else if (Game.getActiveGame().getDataFile().joinOpOnly && !p.isOp()) {
-				p.sendMessage(ChatColor.RED + "Only OPs can join games!");
+				return true;
+			} else if (settings.opPermission && !p.isOp()) {
+				p.sendMessage(ChatColor.RED + "Only OPs have permission to do that.");
 				return true;
 			}
 			if (args.length == 1) {
-				if (!Game.getActiveGame().getDataFile().joinRandomTeam) {
-					p.sendMessage(ChatColor.RED + "You must choose a team!");
-				} else {
-					
-				}
-			} else if (args.length > 2) {
-				p.sendMessage(ChatColor.RED + "Too many arguments!");
-			} else if (sender.isOp()
-					|| (!g.getDataFile().joinOpOnly
-					&& !g.getDataFile().joinOpsSetTeam)
-					&& !g.getDataFile().joinRandomTeam) {
-				if (args[1].equalsIgnoreCase("hunter")) {
+				p.sendMessage(ChatColor.RED + "You must choose a team! Hunters or Hunted.");
+				return true;
+			} if (args[1].equalsIgnoreCase("hunter")) {
+				if (args.length == 2) {
 					g.addHunter(p);
-				} else if (args[1].equalsIgnoreCase("hunted")) {
-					if (Game.getActiveGame().HuntedAmount() < Game.getActiveGame().getDataFile().huntedLimit) {
-						g.addHunted(p);
-					} else {
-						p.sendMessage(ChatColor.RED + "The hunted team is full.");
-					}
-				} else {
-					p.sendMessage(ChatColor.RED + "Invalid argument: " + args[1]);
+					g.broadcastAll(ChatColor.RED + p.getName() + ChatColor.WHITE + " has joined team " + ChatColor.RED + "Hunters.");
+				} else if (args.length > 2 && p.isOp()) {
+					g.addHunter(args[2]);
+					g.broadcastAll(ChatColor.RED + args[2] + ChatColor.WHITE + " has joined team " + ChatColor.RED + "Hunters.");
+				}	
+			} else if (args[1].equalsIgnoreCase("hunted") || args[1].equalsIgnoreCase("prey")) {
+				if (args.length == 2) {
+					g.addHunted(p);
+					g.broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE + " has joined team " + ChatColor.BLUE + "Hunted.");
+				} else if (args.length > 2 && p.isOp()) {
+					g.addHunted(args[2]);
+					g.broadcastAll(ChatColor.BLUE + args[2] + ChatColor.WHITE + " has joined team " + ChatColor.BLUE + "Hunted.");
 				}
-			} else {
-				sender.sendMessage(ChatColor.RED + "You must be opped to do that!");
+			} else if (args[1].equalsIgnoreCase("spectators") || args[1].equalsIgnoreCase("spectator")) {
+				if (args.length == 2) {
+					g.addSpectator(p);
+					g.broadcastSpectators(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has become a spectator.");
+				} else if (args.length > 2 && p.isOp()) {
+					g.addHunted(args[2]);
+					g.broadcastSpectators(ChatColor.YELLOW + args[2] + ChatColor.WHITE + " has become a spectator.");
+				}
 			}
-		} else if (args[0].equalsIgnoreCase("leave")) {
-			if (!Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
-				return true;
-			} else if (!g.isHunted(p) && !g.isHunter(p) && !g.isSpectating(p)) {
-				p.sendMessage(ChatColor.RED + "How can you leave a game you aren't a part of?");
+		} else if (args[0].equalsIgnoreCase("quit")) {
+			if (g.isHunted(p) || g.isHunter(p)) {
+				g.onDie(p);
+				p.sendMessage(ChatColor.YELLOW + "You have quit the game and are now spectating.");
 				return true;
 			}
-			if (args.length > 1) {
-				p.sendMessage(ChatColor.RED + "Too many arguments!");
-			} else {
-				g.quit(p);
+		} else if (args[0].equalsIgnoreCase("kick")) {
+			if (args.length >= 2) {
+				Player p2 = Bukkit.getPlayerExact(args[1]);
+				if (p2 == null) {
+					p.sendMessage(ChatColor.RED + "No player named " + args[1] + " exists!");
+					return true;
+				}
+				if (p.isOp() && !p2.isOp() && p != p2) {
+					g.onDie(p2);
+					p2.sendMessage(ChatColor.RED + "You have been kicked from the game. You are now spectating.");
+					return true;
+				}
 			}
 		} else if (args[0].equalsIgnoreCase("spectate")) {
-			if (!Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "No manhunt game is currently available for joining...");
+			if ((g.isHunted(p) || g.isHunter(p)) && args.length == 1) {
+				p.sendMessage(ChatColor.RED + "You can't spectate while you're playing! Type \"/manhunt quit\" if you want to quit the game.");
 				return true;
-			} else if (!g.isHunted(p) && !g.isHunter(p) && !g.isSpectating(p)) {
-				p.sendMessage(ChatColor.RED + "How can you spectate a game you're already a part of?");
+			} else if (p.isOp() || !settings.opPermission) {
+				if (args.length==1) {
+					g.addSpectator(p);
+					g.broadcastAll(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " is now spectating the match.");
+					return true;
+				} else if (args.length >= 2 && p.isOp()) {
+					g.addSpectator(args[1]);
+					g.broadcastAll(ChatColor.YELLOW + args[1] + ChatColor.WHITE + " is now spectating the match.");
+					return true;
+				}
+			}
+		} else if (args[0].equalsIgnoreCase("world") || args[0].equalsIgnoreCase("spawn")) {
+			
+			if (p.isOp() || !settings.opPermission || g.isSpectating(p)) {
+				if (args.length == 1) {
+					if (g.isSpectating(p) || !g.gameHasBegun()) {
+						p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+						return true;
+					} else {
+						p.sendMessage(ChatColor.RED + "You can't warp to the manhunt spawn once the game has started!");
+						return true;
+					}
+				} else if (args.length >= 2 && p.isOp()) {
+					Player p2 = Bukkit.getPlayerExact(args[1]);
+					if (p2 == null) {
+						p.sendMessage(ChatColor.RED + "Player " + args[1] + " does not exist!");
+						return true;
+					}
+					if (g.isSpectating(p2) || !g.gameHasBegun()) {
+						p2.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+						p2.sendMessage(ChatColor.YELLOW + "You have been teleported to the manhunt world spawn.");
+						p.sendMessage(ChatColor.YELLOW + args[1] + " has been teleported to the manhunt world spawn.");
+						return true;
+					}
+				}
+			}
+		} else if (args[0].equalsIgnoreCase("setspawn")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("You can't do that from the console!");
 				return true;
 			}
-			if (args.length > 1) {
-				p.sendMessage(ChatColor.RED + "Too many arguments!");
-			} else {
-				g.addSpectator(p);
-			}
-		} else if (args[0].equalsIgnoreCase("world")) {
 			if (!p.isOp()) {
-				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+				p.sendMessage(ChatColor.RED + "Only ops can start the game!");
 				return true;
-			} else if (Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "You can't do that while a game is in progress!");
-				return true;
-			}
-			if (args.length > 1) {
-				p.sendMessage(ChatColor.RED + "Too many arguments!");
 			} else {
-				p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+				if (p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+					HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
+					p.sendMessage(ChatColor.GREEN + "World spawn set!");
+					return true;
+				} else {
+					p.sendMessage(ChatColor.RED + "You must be in the manhunt world to set it's spawn. Use \"/manhunt world\" to teleport to the manhunt world.");
+					return true;
+				}
 			}
-		} else if (args[0].equalsIgnoreCase("create")) {
-			if (!p.isOp()) {
-				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+		} else if (args[0].equalsIgnoreCase("startgame")) {
+			if (!p.isOp() && (sender instanceof Player)) {
+				p.sendMessage(ChatColor.RED + "Only ops can start the manhunt game!");
 				return true;
-			} else if (Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "There is already a game running!");
+			}
+			if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
+				p.sendMessage(ChatColor.RED + "There must be at least one Hunter and Hunted to start the game!");
 				return true;
+			}
+			g.start();
+			p.sendMessage(ChatColor.GRAY + "You have successfully started the manhunt game!");
+			return true;
+		} else if (args[0].equalsIgnoreCase("stopgame")) {
+			if (!p.isOp() && (sender instanceof Player)) {
+				p.sendMessage(ChatColor.RED + "Only ops can quit the manhunt game!");
+				return true;
+			}
+			g.stop();
+			g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has stopped the game!");
+		} else if (args[0].equalsIgnoreCase("setting") || args[0].equalsIgnoreCase("settings")
+				|| args[0].equalsIgnoreCase("preferences") || args[0].equalsIgnoreCase("properties")) {
+			if (!p.isOp() && (sender instanceof Player)) {
+				p.sendMessage(ChatColor.RED + "Only ops can change manhunt game settings!");
+			}
+			if (args.length == 1 || (args.length ==  2 && args[1].equalsIgnoreCase("1"))) {
+				p.sendMessage(ChatColor.YELLOW + "Available manhunt settings: (1/3)");
+				p.sendMessage(ChatColor.YELLOW + "    opPermission [true]  Only ops have access to all mahunt commands.");
+				p.sendMessage(ChatColor.YELLOW + "                 [false] Anyone can choose their team and warp to world spawn.");
+				p.sendMessage(ChatColor.YELLOW + "    allTalk      [true]  All players can text chat.");
+				p.sendMessage(ChatColor.YELLOW + "                 [false] Hunters, hunted, and spectators can't chat with eachother.");
+				p.sendMessage(ChatColor.YELLOW + "    spawnPassive [true]  Passive mobs will spawn.");
+				p.sendMessage(ChatColor.YELLOW + "                 [false] Passive mobs will not spawn.");
+				p.sendMessage(ChatColor.YELLOW + "    spawnHostile [true]  Hostile mobs will spawn.");
+				p.sendMessage(ChatColor.YELLOW + "                 [false] Hostile mobs will not spawn.");
+			} else if (args.length == 1 || (args.length == 2 && args[1].equalsIgnoreCase("2"))) {
+				p.sendMessage(ChatColor.YELLOW + "Available manhunt settings: (2/3)");
+				p.sendMessage(ChatColor.YELLOW + "    envDeath     [true]  Players can die from mobs and enviromental hazards.");
+				p.sendMessage(ChatColor.YELLOW + "                 [false] Players can be damaged, but never die by the cruel world.");
+				p.sendMessage(ChatColor.YELLOW + "    envHunterRespawn [true]  Hunters respawn from enviromental death.");
+				p.sendMessage(ChatColor.YELLOW + "                     [false] Hunters are eliminated by enviromental death.");
+				p.sendMessage(ChatColor.YELLOW + "    envHuntedRespawn [true]  The Hunted respawn from enviromental death.");
+				p.sendMessage(ChatColor.YELLOW + "                     [false] The Hunted are eliminated by enviromental death.");
+				p.sendMessage(ChatColor.YELLOW + "    friendlyFire [true]  Players on same team can kill eachother.");
+				p.sendMessage(ChatColor.YELLOW + "                 [false] Players on same team can't hurt eachother.");
+			} else if (args.length == 1 || (args.length == 2 && args[1].equalsIgnoreCase("3"))) {
+				p.sendMessage(ChatColor.YELLOW + "Available manhunt settings: (3/3)");
+				p.sendMessage(ChatColor.YELLOW + "    pvpInstantDeath  [true]  PvP damage causes instant DEATH");
+				p.sendMessage(ChatColor.YELLOW + "                     [false] PvP damage is vanilla.");
+				p.sendMessage(ChatColor.YELLOW + "    dayLimit       [integer]  How many days that the game lasts (MC days)");
+				p.sendMessage(ChatColor.YELLOW + "    offlineTimeout [minutes]  How long absent players have till they're disqualified. (-1 = disable)");
+				p.sendMessage(ChatColor.YELLOW + "    globalBoundry  [blocks ]  Blocks from spawn players are allowed to venture. (-1 = infinity)");
+				p.sendMessage(ChatColor.YELLOW + "    hunterBoundry  [blocks ]  Blocks from spawn hunters are confined to. (pre-game) (-1 = infinity)");
+			}
+			
+			else if (args.length >= 2) {
+				if (args[1].equalsIgnoreCase("oppermission")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.opPermission = true;
+							p.sendMessage(ChatColor.GREEN + "opPermission [true]. Only ops have access to the manhunt commands.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.opPermission = false;
+							p.sendMessage(ChatColor.GREEN + "opPermission [false]. All players have access to a few commands.");
+						}
+					} else {
+						if (settings.opPermission) {
+							settings.opPermission = false;
+							p.sendMessage(ChatColor.GREEN + "opPermission [false]. All players have access to a few commands.");
+						} else {
+							settings.opPermission = true;
+							p.sendMessage(ChatColor.GREEN + "opPermission [true]. Only ops have access to the manhunt commands.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("alltalk")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.allTalk = true;
+							p.sendMessage(ChatColor.GREEN + "allTalk [true]. All players can communicate.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.allTalk = false;
+							p.sendMessage(ChatColor.GREEN + "allTalk [false]. Players can only communicate with their teams.");
+						}
+					} else {
+						if (settings.allTalk) {
+							settings.allTalk = false;
+							p.sendMessage(ChatColor.GREEN + "allTalk [false]. Players can only communicate with their teams.");
+						} else {
+							settings.allTalk = true;
+							p.sendMessage(ChatColor.GREEN + "allTalk [true]. All players can communicate.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("spawnpassive")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.spawnPassive = true;
+							p.sendMessage(ChatColor.GREEN + "spawnPassive [true]. Passive mobs will NOW spawn.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.spawnPassive = false;
+							p.sendMessage(ChatColor.GREEN + "spawnPassive [false]. Passive mobs will NOT spawn.");
+						}
+					} else {
+						if (settings.spawnPassive) {
+							settings.spawnPassive = false;
+							p.sendMessage(ChatColor.GREEN + "spawnPassive [false]. Passive mobs will NOT spawn.");
+						} else {
+							settings.spawnPassive = true;
+							p.sendMessage(ChatColor.GREEN + "spawnPassive [true]. Passive mobs will NOW spawn.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("spawnhostile")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.spawnHostile = true;
+							p.sendMessage(ChatColor.GREEN + "spawnHostile [true]. Hostile mobs will NOW spawn.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.spawnHostile = false;
+							p.sendMessage(ChatColor.GREEN + "spawnHostile [false]. Hostile mobs will NOT spawn.");
+						}
+					} else {
+						if (settings.spawnHostile) {
+							settings.spawnHostile = false;
+							p.sendMessage(ChatColor.GREEN + "spawnHostile [false]. Hostile mobs will NOT spawn.");
+						} else {
+							settings.spawnHostile = true;
+							p.sendMessage(ChatColor.GREEN + "spawnHostile [true]. Hostile mobs will NOW spawn.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("envdeath")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.envDeath = true;
+							p.sendMessage(ChatColor.GREEN + "envDeath [true]. Players can now die by inviromental hazards.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.envDeath = false;
+							p.sendMessage(ChatColor.GREEN + "envDeath [false]. Players can't die by inviromental hazards.");
+						}
+					} else {
+						if (settings.envDeath) {
+							settings.envDeath = false;
+							p.sendMessage(ChatColor.GREEN + "envDeath [false]. Players can't die by inviromental hazards.");
+						} else {
+							settings.envDeath = true;
+							p.sendMessage(ChatColor.GREEN + "envDeath [true]. Players can now die by inviromental hazards.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("envhunterrespawn")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.envHunterRespawn = true;
+							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [true]. Hunters respawn after dying from environmental hazards.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.envHunterRespawn = false;
+							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [false]. Hunters can be eliminated by enviromental hazards.");
+						}
+					} else {
+						if (settings.envHunterRespawn) {
+							settings.envHunterRespawn = false;
+							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [false]. Hunters can be eliminated by enviromental hazards.");
+						} else {
+							settings.envHunterRespawn = true;
+							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [true]. Hunters respawn after dying from environmental hazards.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("envhuntedRespawn")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.envHuntedRespawn = true;
+							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [true]. The Hunted respawn after dying from environmental hazards.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.envHuntedRespawn = false;
+							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [false]. The Hunted can be eliminated by environmental hazards.");
+						}
+					} else {
+						if (settings.envHuntedRespawn) {
+							settings.envHuntedRespawn = false;
+							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [false]. The Hunted can be eliminated by environmental hazards.");
+						} else {
+							settings.envHuntedRespawn = true;
+							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [true]. The Hunted respawn after dying from environmental hazards.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("friendlyfire")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.friendlyFire = true;
+							p.sendMessage(ChatColor.GREEN + "friendlyFire [true]. Teammates can kill each other.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.friendlyFire = false;
+							p.sendMessage(ChatColor.GREEN + "friendlyFire [false]. Teammates can't hurt each other.");
+						}
+					} else {
+						if (settings.friendlyFire) {
+							settings.friendlyFire = false;
+							p.sendMessage(ChatColor.GREEN + "friendlyFire [false]. Teammates can't hurt each other.");
+						} else {
+							settings.friendlyFire = true;
+							p.sendMessage(ChatColor.GREEN + "friendlyFire [true]. Teammates can kill each other.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("pvpinstantdeath")){ 
+					if (args.length == 3) {
+						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.pvpInstantDeath = true;
+							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [true]. A single punch can fully kill the enemy.");
+						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+							settings.pvpInstantDeath = false;
+							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [false]. PvP damage is now vanilla again.");
+						}
+					} else {
+						if (settings.pvpInstantDeath) {
+							settings.pvpInstantDeath = false;
+							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [false]. PvP damage is now vanilla again.");
+						} else {
+							settings.pvpInstantDeath = true;
+							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [true]. A single punch can fully kill the enemy.");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("daylimit")){ 
+					if (args.length == 3) {
+						try {
+							int value = Integer.parseInt(args[2]);
+							if (value < 1) {
+								p.sendMessage(ChatColor.RED + "You must enter an number greater than 0!");
+							} else {
+								settings.dayLimit = value;
+								p.sendMessage(ChatColor.GREEN + "Day time limit set to " + value + " days.");
+							}
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie 1, 3, 5...)");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("offlinetimeout")){ 
+					if (args.length == 3) {
+						try {
+							int value = Integer.parseInt(args[2]);
+							if (value <= -1) {
+								settings.offlineTimeout = -1;
+								p.sendMessage(ChatColor.GREEN + "Offline timeout has been disabled. Players may come and go as they please.");
+							} else {
+								settings.offlineTimeout = value;
+								p.sendMessage(ChatColor.GREEN + "Offline timeout has been set to " + value + " minutes.");
+							}
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 0, 3...)");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("globalboundry")){ 
+					if (args.length == 3) {
+						try {
+							int value = Integer.parseInt(args[2]);
+							if (value <= -1) {
+								settings.globalBoundry = -1;
+								p.sendMessage(ChatColor.GREEN + "The global boundry has been lifted. Players can venture out indefinately.");
+							} else if (value < 256) {
+								settings.globalBoundry = value;
+								p.sendMessage(ChatColor.GREEN + "The global boundry has been set to 256 blocks. (minimum)");
+							} else {
+								settings.globalBoundry = value;
+								p.sendMessage(ChatColor.GREEN + "The global boundry has been set to " + value + " blocks.");
+							}
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 256, 1000...)");
+						}
+					}
+				} else if (args[1].equalsIgnoreCase("hunterboundry")){ 
+					if (args.length == 3) {
+						try {
+							int value = Integer.parseInt(args[2]);
+							if (value <= -1) {
+								settings.hunterBoundry = -1;
+								p.sendMessage(ChatColor.GREEN + "The hunter's pre-game restriction has been lifted.");
+							} else {
+								settings.hunterBoundry = value;
+								p.sendMessage(ChatColor.GREEN + "The hunter's pre-game restriction has been set to " + value + " blocks.");
+							}
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 3, 16...)");
+						}
+					}
+				}
+			}
+		}
+		return true;
+			/*} else if (args[0].equalsIgnoreCase("create")) {
+				if (!p.isOp()) {
+					p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
+					return true;
+				} else if (Game.isGameStarted()) {
+					p.sendMessage(ChatColor.RED + "There is already a game running!");
+					return true;
+				}
 			}
 			if (args.length == 1) {
 				if (!DataFile.exists("preferences")) {
@@ -243,7 +563,7 @@ public class CmdExec implements CommandExecutor {
 		} else {
 			Bukkit.dispatchCommand(p, "manhunt help");
 		}
-		return true;
+		return true;*/
 		/*if (args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "Not enough arguments!");
 			
@@ -638,5 +958,4 @@ public class CmdExec implements CommandExecutor {
 		}
 		return true;*/
 	}
-
 }
