@@ -12,7 +12,7 @@ public class HuntedPlugin extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
-	public World manhuntWorld = Bukkit.getWorlds().get(0); 
+	public World manhuntWorld;
 	public SettingsFile settings;
 	public Game game;
 	
@@ -38,6 +38,7 @@ public class HuntedPlugin extends JavaPlugin {
 			spoutEnabled = false;
 		}
 		
+		manhuntWorld = Bukkit.getWorlds().get(0);
 		new CmdExec();
 		new HuntedPlayerListener();
 		new HuntedEntityListener();

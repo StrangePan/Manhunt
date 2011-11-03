@@ -331,7 +331,7 @@ public class Game {
 	}
 	
 	public void broadcastHunted(String msg) {
-		for (String n : hunter) {
+		for (String n : hunted) {
 			Player p = Bukkit.getServer().getPlayerExact(n);
 			if (p != null) {
 				p.sendMessage(msg);
@@ -432,6 +432,18 @@ public class Game {
 	
 	public ChatColor getColor(String p) {
 		return getColor(Bukkit.getPlayerExact(p));
+	}
+	
+	public List<String> getHunters() {
+		return hunter;
+	}
+	
+	public List<String> getHunted() {
+		return hunted;
+	}
+	
+	public List<String> getSpectators() {
+		return spectator;
 	}
 	
 	/*public void makeHunter(String name) {

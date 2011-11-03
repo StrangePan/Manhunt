@@ -11,6 +11,7 @@ public class CmdExec implements CommandExecutor {
 	
 	public CmdExec() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
+		Bukkit.getPluginCommand("mhunt").setExecutor(this);
 	}
 
 	@Override
@@ -78,17 +79,24 @@ public class CmdExec implements CommandExecutor {
 			} else if (args[1].equalsIgnoreCase("spectators") || args[1].equalsIgnoreCase("spectator")) {
 				if (args.length == 2) {
 					g.addSpectator(p);
-					g.broadcastSpectators(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has become a spectator.");
+					g.broadcastSpectators(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
 				} else if (args.length > 2 && p.isOp()) {
 					g.addHunted(args[2]);
-					g.broadcastSpectators(ChatColor.YELLOW + args[2] + ChatColor.WHITE + " has become a spectator.");
+					g.broadcastSpectators(ChatColor.YELLOW + args[2] + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
 				}
 			}
 		} else if (args[0].equalsIgnoreCase("quit")) {
 			if (g.isHunted(p) || g.isHunter(p)) {
-				g.onDie(p);
-				p.sendMessage(ChatColor.YELLOW + "You have quit the game and are now spectating.");
-				return true;
+				if (g.gameHasBegun()) {
+					g.broadcastSpectators(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has quit the game to become a " + ChatColor.YELLOW + "Spectator.");
+					g.onDie(p);
+					p.sendMessage(ChatColor.YELLOW + "You have quit the game and are now spectating.");
+					return true;
+				} else {
+					g.addSpectator(p);
+					g.broadcastSpectators(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
+					return true;
+				}
 			}
 		} else if (args[0].equalsIgnoreCase("kick")) {
 			if (args.length >= 2) {
@@ -98,26 +106,74 @@ public class CmdExec implements CommandExecutor {
 					return true;
 				}
 				if (p.isOp() && !p2.isOp() && p != p2) {
+					g.broadcastAll(g.getColor(p2) + p2.getName() + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
 					g.onDie(p2);
 					p2.sendMessage(ChatColor.RED + "You have been kicked from the game. You are now spectating.");
 					return true;
 				}
 			}
 		} else if (args[0].equalsIgnoreCase("spectate")) {
-			if ((g.isHunted(p) || g.isHunter(p)) && args.length == 1) {
-				p.sendMessage(ChatColor.RED + "You can't spectate while you're playing! Type \"/manhunt quit\" if you want to quit the game.");
+			if ((g.isHunted(p) || g.isHunter(p)) && g.gameHasBegun() && args.length == 1) {
+				p.sendMessage(ChatColor.RED + "You can't spectate while you're playing!");
+				p.sendMessage(ChatColor.RED + "Use \"/manhunt quit\" if you want to quit the game.");
 				return true;
 			} else if (p.isOp() || !settings.opPermission) {
 				if (args.length==1) {
 					g.addSpectator(p);
-					g.broadcastAll(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " is now spectating the match.");
+					g.broadcastSpectators(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
 					return true;
 				} else if (args.length >= 2 && p.isOp()) {
-					g.addSpectator(args[1]);
-					g.broadcastAll(ChatColor.YELLOW + args[1] + ChatColor.WHITE + " is now spectating the match.");
-					return true;
+					Player p2 = Bukkit.getPlayerExact(args[1]);
+					if (p2 == null) {
+						p.sendMessage(ChatColor.RED + args[1] + " does not exist!");
+						return true;
+					}
+					if ((g.isHunted(p2) || g.isHunter(p2)) && g.gameHasBegun()) {
+						p.sendMessage(ChatColor.RED + args[1] + " is in the middle of a game!");
+						p.sendMessage(ChatColor.RED + "Use \"/manhunt kick <" + args[1] + ">\" to properly kick them.");
+						return true;
+					} else {
+						g.broadcastSpectators(g.getColor(p2) + p2.getName() + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
+						g.addSpectator(p2);
+						return true;
+					}
 				}
 			}
+			
+		}else if (args[0].equalsIgnoreCase("list")) {
+			if (settings.opPermission && !p.isOp()) {
+				p.sendMessage(ChatColor.RED + "You don'thave permission to do that!");
+				return true;
+			} else if (args.length == 1 || (args.length >= 2 && args[1].equalsIgnoreCase("all"))) {
+				p.sendMessage(ChatColor.GREEN + "Manhunt players: (" + (g.HuntedAmount()+g.HuntersAmount()+g.SpectatorsAmount()) + ")");
+				for (String s : g.getHunters()) {
+					p.sendMessage(ChatColor.RED + "  " + s);
+				}
+				for (String s : g.getHunted()) {
+					p.sendMessage(ChatColor.BLUE + "  " + s);
+				}
+				for (String s : g.getSpectators()) {
+					p.sendMessage(ChatColor.YELLOW + "  " + s);
+				}
+			} else if (args.length >= 2 && args[1].equalsIgnoreCase("hunters")) {
+				p.sendMessage(ChatColor.GREEN + "Team HUNTERS: (" + g.HuntersAmount() + ")");
+				for (String s : g.getHunters()) {
+					p.sendMessage(ChatColor.RED + "  " + s);
+				}
+			} else if (args.length >= 2 && args[1].equalsIgnoreCase("hunted")) {
+				p.sendMessage(ChatColor.GREEN + "Team HUNTED: (" + g.HuntedAmount() + ")");
+				for (String s : g.getHunted()) {
+					p.sendMessage(ChatColor.BLUE + "  " + s);
+				}
+			} else if (args.length >= 2 && args[1].equalsIgnoreCase("spectators")) {
+				p.sendMessage(ChatColor.GREEN + "Manhunt SPECTATORS: (" + g.SpectatorsAmount() + ")");
+				for (String s : g.getSpectators()) {
+					p.sendMessage(ChatColor.YELLOW + "  " + s);
+				}
+			} else {
+				p.sendMessage(ChatColor.RED + "Invalid team. Available teams: Hunters, Hunted, Spectators, All.");
+			}
+			
 		} else if (args[0].equalsIgnoreCase("world") || args[0].equalsIgnoreCase("spawn")) {
 			
 			if (p.isOp() || !settings.opPermission || g.isSpectating(p)) {

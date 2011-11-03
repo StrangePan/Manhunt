@@ -8,3 +8,4 @@ commands:
     manhunt:
         usage:
         description: Controls all HuntedPlugin functions
+mhunt:        usage:        description: Alias of manhunt command
