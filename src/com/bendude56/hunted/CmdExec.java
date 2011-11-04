@@ -367,6 +367,12 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.BLUE + "pvpInstantDeath " +
 							ChatColor.RED + "[false]" + ChatColor.WHITE + " PvP damage is vanilla.");
+				} if (settings.autoHunter) {
+					p.sendMessage(ChatColor.BLUE + "autoHunter " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " New players are automatically Hunters.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "autoHunter " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " New players are only Spectators.");
 				}
 					p.sendMessage(ChatColor.BLUE + "dayLimit " + ChatColor.GREEN +
 							"[" + settings.dayLimit + "]" + ChatColor.WHITE + " How many Minecraft days the game lasts.");
@@ -381,7 +387,7 @@ public class CmdExec implements CommandExecutor {
 							"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
 				} else {
 					p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.RED +
-							"[off]" + ChatColor.WHITE + "This plugin won't limit players.");
+							"[off]" + ChatColor.WHITE + "Players can venture out indefinately.");
 				} if (settings.hunterBoundry >= 0) {
 					p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
 							"[" + settings.globalBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
@@ -501,73 +507,119 @@ public class CmdExec implements CommandExecutor {
 								ChatColor.RED + "[false]" + ChatColor.WHITE + " PvP damage is vanilla.");
 					}
 					
+				} else if (args[1].equalsIgnoreCase("autohunter")){
+					if ((args.length == 2 && settings.autoHunter == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("autoHunter", "true");
+						p.sendMessage(ChatColor.BLUE + "autoHunter " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " New players are automatically Hunters.");
+					
+					} else if ((args.length == 2 && settings.pvpInstantDeath == false) || args[2].equalsIgnoreCase("false")  || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("autoHunter", "false");
+						p.sendMessage(ChatColor.BLUE + "autoHunter " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " New players are only Spectators.");
+					}
+					
 				} else if (args[1].equalsIgnoreCase("daylimit")){ 
-					if (args.length == 3) {
+					if (args.length >= 3) {
 						try {
 							int value = Integer.parseInt(args[2]);
 							if (value < 1) {
 								p.sendMessage(ChatColor.RED + "You must enter an number greater than 0!");
 							} else {
 								settings.changeSetting("dayLimit", Integer.toString(value));
-								p.sendMessage(ChatColor.GREEN + "Day time limit set to " + value + " days.");
+								p.sendMessage(ChatColor.BLUE + "dayLimit " + ChatColor.GREEN +
+										"[" + settings.dayLimit + "]" + ChatColor.WHITE + " How many Minecraft days the game lasts.");
 							}
 						} catch (NumberFormatException e) {
 							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie 1, 3, 5...)");
 						}
+					} else {
+						p.sendMessage(ChatColor.BLUE + "dayLimit " + ChatColor.GREEN +
+								"[" + settings.dayLimit + "]" + ChatColor.WHITE + " How many Minecraft days the game lasts.");
 					}
 				
 				} else if (args[1].equalsIgnoreCase("offlinetimeout")){ 
-					if (args.length == 3) {
+					if (args.length >= 3) {
 						try {
-							int value = Integer.parseInt(args[2]);
+							int value;
+							if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+								value = -1;
+							} else {
+								value = Integer.parseInt(args[2]);
+							}
 							if (value <= -1) {
 								settings.changeSetting("offlineTimeout","-1");
-								p.sendMessage(ChatColor.GREEN + "Offline timeout has been disabled. Players may come and go as they please.");
+								p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.RED +
+										"[off]" + ChatColor.WHITE + " Players won't be kicked when logging off.");
 							} else {
 								settings.changeSetting("offlineTimeout",Integer.toString(value));
-								p.sendMessage(ChatColor.GREEN + "Offline timeout has been set to " + value + " minutes.");
+								p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.GREEN +
+										"[" + settings.offlineTimeout + "]" + ChatColor.WHITE + " How long absent players have till they're disqualified.");
 							}
 						} catch (NumberFormatException e) {
-							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 0, 3...)");
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER (ie -1, 0, 3...) or \"OFF\".");
 						}
+					} else {
+						p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.GREEN +
+								"[" + settings.offlineTimeout + "]" + ChatColor.WHITE + " How long absent players have till they're disqualified.");
 					}
 				
 				} else if (args[1].equalsIgnoreCase("globalboundry")){ 
-					if (args.length == 3) {
+					if (args.length >= 3) {
 						try {
-							int value = Integer.parseInt(args[2]);
+							int value;
+							if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+								value = -1;
+							} else {
+								value = Integer.parseInt(args[2]);
+							}
 							if (value <= -1) {
 								settings.changeSetting("globalBoundry","-1");
-								p.sendMessage(ChatColor.GREEN + "The global boundry has been lifted. Players can venture out indefinately.");
+								p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.RED +
+										"[off]" + ChatColor.WHITE + "Players can venture out indefinately.");
 							} else if (value < 256) {
 								settings.changeSetting("globalBoundry","256");
-								p.sendMessage(ChatColor.GREEN + "The global boundry has been set to 256 blocks. (minimum)");
+								p.sendMessage(ChatColor.RED + "256 blocks is the minimum setting for this!");
+								p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
+										"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
 							} else {
 								settings.changeSetting("globalBoundry",Integer.toString(value));
-								p.sendMessage(ChatColor.GREEN + "The global boundry has been set to " + value + " blocks.");
+								p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
+										"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
 							}
 						} catch (NumberFormatException e) {
-							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 256, 1000...)");
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER (ie -1, 256, 1000...) or \"OFF\"");
 						}
 					}
 				
-				} else if (args[1].equalsIgnoreCase("hunterboundry")){ 
-					if (args.length == 3) {
+				} else if (args[1].equalsIgnoreCase("hunterboundry")){
+					if (args.length >= 3) {
 						try {
-							int value = Integer.parseInt(args[2]);
+							int value;
+							if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+								value = -1;
+							} else {
+								value = Integer.parseInt(args[2]);
+							}
 							if (value <= -1) {
 								settings.changeSetting("hunterBoundry","-1");
-								p.sendMessage(ChatColor.GREEN + "The hunter's pre-game restriction has been lifted.");
+								p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.RED +
+										"[off]" + ChatColor.WHITE + "Hunters are not confined to spawn.");
 							} else {
 								settings.changeSetting("hunterBoundry",Integer.toString(value));
-								p.sendMessage(ChatColor.GREEN + "The hunter's pre-game restriction has been set to " + value + " blocks.");
+								p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
+										"[" + settings.globalBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
 							}
 						} catch (NumberFormatException e) {
-							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 3, 16...)");
+							p.sendMessage(ChatColor.RED + "You must enter an INTEGER (ie -1, 3, 16...) or \"OFF\"");
 						}
 					}
+				} else {
+					p.sendMessage(ChatColor.RED + "Invalid setting. Type \"/manhunt settings <page#>\" for a complete list.");
 				}
 			}
+		} else {
+			p.sendMessage(ChatColor.RED + "Unknown Manhunt command! Type \"/manhunt help\" for help.");
 		}
 		return true;
 			/*} else if (args[0].equalsIgnoreCase("create")) {

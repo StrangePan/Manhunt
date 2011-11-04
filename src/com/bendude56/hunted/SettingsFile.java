@@ -25,6 +25,7 @@ public class SettingsFile extends Properties {
 	
 	public boolean opPermission;
 	public boolean allTalk;
+	public boolean autoHunter;
 	
 	public int offlineTimeout;
 	public int dayLimit;
@@ -99,6 +100,7 @@ public class SettingsFile extends Properties {
 		envHuntedRespawn = false;
 		friendlyFire = false;
 		pvpInstantDeath = false;
+		autoHunter = true;
 		dayLimit = 3;
 		offlineTimeout = 5;
 		globalBoundry = -1;
@@ -186,6 +188,15 @@ public class SettingsFile extends Properties {
 			}
 		} else pvpInstantDeath = false;
 		put("pvpInstantDeath", Boolean.toString(pvpInstantDeath));
+		
+		if (containsKey("autoHunter")) {
+			if (getProperty("autoHunter").length() > 0 && getProperty("autoHunter").equalsIgnoreCase("true")) {
+				autoHunter = true;
+			} else {
+				autoHunter = false;
+			}
+		} else autoHunter = true;
+		put("autoHunter", Boolean.toString(autoHunter));
 		
 		if (containsKey("dayLimit")) {
 			if (getProperty("dayLimit").length() > 0) {
