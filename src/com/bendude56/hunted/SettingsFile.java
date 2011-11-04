@@ -5,11 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class SettingsFile extends Properties {
 	private static final long serialVersionUID = 0L;
 	
 	public String location;
+	public String directory;
 	
 	public boolean spawnPassive;
 	public boolean spawnHostile;
@@ -31,29 +33,59 @@ public class SettingsFile extends Properties {
 	public int hunterBoundry;
 	
 	public SettingsFile() {
+		location = "plugins/Hunted/config.db";
+		directory = "plugins/Hunted/";
 		loadFile();
-		location = "plugins/manhunt/manhuntsettings.dat";
 	}
 	
 	public void loadFile() {
-		File file = new File("manhunt");
-		if (file.exists()) {
+		File file = new File(location);
+		File dir = new File(directory);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+				return;
+			}
 			try {
 				load(new FileInputStream(file));
+				return;
 			} catch (IOException e) {
+				HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
 		}
+		loadValues();
+		saveFile();
 	}
 	
 	public void saveFile() {
-		File file = new File("manhunt");
-		if (file.exists()) {
+		File file = new File(location);
+		File dir = new File(directory);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		if (!file.exists()) {
 			try {
-				store(new FileOutputStream(file), "-Manhunt Settings-");
+				file.createNewFile();
 			} catch (IOException e) {
+				HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
+		}
+		try {
+			store(new FileOutputStream(file), "-Manhunt Settings-");
+		} catch (IOException e) {
+			HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			return;
 		}
 	}
 	
@@ -198,8 +230,6 @@ public class SettingsFile extends Properties {
 			} else hunterBoundry = 16;
 		} else hunterBoundry = 16;
 		put("hunterBoundry", Integer.toString(hunterBoundry));
-		
-		saveFile();
 	}
 	
 	public void changeSetting(String setting, String value) {

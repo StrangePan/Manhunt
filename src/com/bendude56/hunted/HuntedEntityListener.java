@@ -54,7 +54,7 @@ public class HuntedEntityListener extends EntityListener {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 			if (event.getDamager() instanceof Player) {
 				Player p2 = (Player) event.getDamager();
-				if (g.isSpectating(p2)) {
+				if (g.isSpectating(p2) || !g.huntHasBegun()) {
 					e.setCancelled(true);
 					return;
 				} else if (!settings.friendlyFire && 

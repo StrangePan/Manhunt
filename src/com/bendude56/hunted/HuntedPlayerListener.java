@@ -28,7 +28,10 @@ public class HuntedPlayerListener extends PlayerListener {
 		SettingsFile settings = HuntedPlugin.getInstance().settings;
 		Player p = e.getPlayer();
 		
-		if (!g.gameHasBegun() || settings.allTalk) {
+		if (settings.allTalk) {
+			return;
+		}
+		if (!g.gameHasBegun()) {
 			return;
 		}
 		
@@ -72,10 +75,10 @@ public class HuntedPlayerListener extends PlayerListener {
 	public void onPlayerMove(PlayerMoveEvent e) {
 		Game g = HuntedPlugin.getInstance().game;
 		Player p = e.getPlayer();
-		if (g.gameHasBegun() && !g.isSpectating(p) && g.isHunted(p) && g.isHunter(p)) {
-			if (!g.huntHasBegun() && g.isHunter(p)) {
-				if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.hunterBoundry);
+		if (g.gameHasBegun() && g.isHunter(p) && !g.huntHasBegun() && HuntedPlugin.getInstance().settings.hunterBoundry >= 0) {
+			if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.hunterBoundry) {
 				p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+				p.sendMessage(ChatColor.RED + "You've ventured too far! Teleporting you back to spawn!");
 			}
 		}
 	}

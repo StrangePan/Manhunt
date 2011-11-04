@@ -301,7 +301,7 @@ public class Game {
 				if (settings.offlineTimeout > 0) {
 					broadcastAll(ChatColor.WHITE + "If they don't reconnect in " + ChatColor.RED +
 							(settings.offlineTimeout) + " minutes" + ChatColor.WHITE + ", they will be disqualified!");
-					timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout * 1200);
+					timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout * 72000);
 				} else if (settings.offlineTimeout == 0) {
 					broadcastAll(ChatColor.WHITE + "They are now disqualified from the game.");
 					p.sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
@@ -383,33 +383,42 @@ public class Game {
 	}
 	
 	public void addHunter(String p) {
-		hunter.add(p.toLowerCase());
+		if (hunter.contains(p.toLowerCase())) {
+			hunter.remove(p.toLowerCase());
+		}
 		if (hunted.contains(p.toLowerCase())) {
 			hunted.remove(p.toLowerCase());
 		}
 		if (spectator.contains(p.toLowerCase())) {
 			spectator.remove(p.toLowerCase());
 		}
+		hunter.add(p.toLowerCase());
 	}
 	
 	public void addHunted(String p) {
-		hunted.add(p.toLowerCase());
-		if (hunter.contains(p.toLowerCase())) {
-			hunter.remove(p.toLowerCase());
-		}
-		if (spectator.contains(p.toLowerCase())) {
-			spectator.remove(p.toLowerCase());
-		}
-	}
-	
-	public void addSpectator(String p) {
-		spectator.add(p.toLowerCase());
 		if (hunter.contains(p.toLowerCase())) {
 			hunter.remove(p.toLowerCase());
 		}
 		if (hunted.contains(p.toLowerCase())) {
 			hunted.remove(p.toLowerCase());
 		}
+		if (spectator.contains(p.toLowerCase())) {
+			spectator.remove(p.toLowerCase());
+		}
+		hunted.add(p.toLowerCase());
+	}
+	
+	public void addSpectator(String p) {
+		if (hunter.contains(p.toLowerCase())) {
+			hunter.remove(p.toLowerCase());
+		}
+		if (hunted.contains(p.toLowerCase())) {
+			hunted.remove(p.toLowerCase());
+		}
+		if (spectator.contains(p.toLowerCase())) {
+			spectator.remove(p.toLowerCase());
+		}
+		spectator.add(p.toLowerCase());
 	}
 	
 	public void quit(Player p) {
@@ -574,7 +583,7 @@ public class Game {
 	}
 	
 	public double getDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
-		return Math.sqrt( Math.pow(x2-x1,2) + Math.pow(y2-y1,2) + Math.pow(z2-z1,2) );
+		return Math.sqrt( Math.pow((x2-x1),2) + Math.pow((y2-y1),2) + Math.pow((z2-z1),2) );
 	}
 	
 	public double getDistance(Location loc1, Location loc2) {
@@ -584,5 +593,4 @@ public class Game {
 	public double getDistance(Player p1, Player p2) {
 		return getDistance(p1.getLocation(), p2.getLocation());
 	}
-	
 }

@@ -11,7 +11,7 @@ public class CmdExec implements CommandExecutor {
 	
 	public CmdExec() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
-		Bukkit.getPluginCommand("mhunt").setExecutor(this);
+		//Bukkit.getPluginCommand("mhunt").setExecutor(this);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class CmdExec implements CommandExecutor {
 				}
 			}
 			
-		}else if (args[0].equalsIgnoreCase("list")) {
+		} else if (args[0].equalsIgnoreCase("list")) {
 			if (settings.opPermission && !p.isOp()) {
 				p.sendMessage(ChatColor.RED + "You don'thave permission to do that!");
 				return true;
@@ -236,204 +236,229 @@ public class CmdExec implements CommandExecutor {
 			}
 			g.stop();
 			g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has stopped the game!");
+			return true;
+			
+		} else if (args[0].equalsIgnoreCase("restoredefaults") || args[0].equalsIgnoreCase("defaultsettings") || args[0].equals("loaddefaults")) {
+			if (p.isOp()) {
+				settings.loadDefaults();
+				settings.saveFile();
+				return true;
+			} else {
+				p.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+				return true;
+			}
+		} else if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("load")) {
+			if (p.isOp()) {
+				settings.loadFile();
+				return true;
+			} else {
+				p.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+				return true;
+			}
 		} else if (args[0].equalsIgnoreCase("setting") || args[0].equalsIgnoreCase("settings")
 				|| args[0].equalsIgnoreCase("preferences") || args[0].equalsIgnoreCase("properties")) {
 			if (!p.isOp() && (sender instanceof Player)) {
 				p.sendMessage(ChatColor.RED + "Only ops can change manhunt game settings!");
 			}
+			
 			if (args.length == 1 || (args.length ==  2 && args[1].equalsIgnoreCase("1"))) {
-				p.sendMessage(ChatColor.YELLOW + "Available manhunt settings: (1/3)");
-				p.sendMessage(ChatColor.YELLOW + "    opPermission [true]  Only ops have access to all mahunt commands.");
-				p.sendMessage(ChatColor.YELLOW + "                 [false] Anyone can choose their team and warp to world spawn.");
-				p.sendMessage(ChatColor.YELLOW + "    allTalk      [true]  All players can text chat.");
-				p.sendMessage(ChatColor.YELLOW + "                 [false] Hunters, hunted, and spectators can't chat with eachother.");
-				p.sendMessage(ChatColor.YELLOW + "    spawnPassive [true]  Passive mobs will spawn.");
-				p.sendMessage(ChatColor.YELLOW + "                 [false] Passive mobs will not spawn.");
-				p.sendMessage(ChatColor.YELLOW + "    spawnHostile [true]  Hostile mobs will spawn.");
-				p.sendMessage(ChatColor.YELLOW + "                 [false] Hostile mobs will not spawn.");
-			} else if (args.length == 1 || (args.length == 2 && args[1].equalsIgnoreCase("2"))) {
-				p.sendMessage(ChatColor.YELLOW + "Available manhunt settings: (2/3)");
-				p.sendMessage(ChatColor.YELLOW + "    envDeath     [true]  Players can die from mobs and enviromental hazards.");
-				p.sendMessage(ChatColor.YELLOW + "                 [false] Players can be damaged, but never die by the cruel world.");
-				p.sendMessage(ChatColor.YELLOW + "    envHunterRespawn [true]  Hunters respawn from enviromental death.");
-				p.sendMessage(ChatColor.YELLOW + "                     [false] Hunters are eliminated by enviromental death.");
-				p.sendMessage(ChatColor.YELLOW + "    envHuntedRespawn [true]  The Hunted respawn from enviromental death.");
-				p.sendMessage(ChatColor.YELLOW + "                     [false] The Hunted are eliminated by enviromental death.");
-				p.sendMessage(ChatColor.YELLOW + "    friendlyFire [true]  Players on same team can kill eachother.");
-				p.sendMessage(ChatColor.YELLOW + "                 [false] Players on same team can't hurt eachother.");
-			} else if (args.length == 1 || (args.length == 2 && args[1].equalsIgnoreCase("3"))) {
-				p.sendMessage(ChatColor.YELLOW + "Available manhunt settings: (3/3)");
-				p.sendMessage(ChatColor.YELLOW + "    pvpInstantDeath  [true]  PvP damage causes instant DEATH");
-				p.sendMessage(ChatColor.YELLOW + "                     [false] PvP damage is vanilla.");
-				p.sendMessage(ChatColor.YELLOW + "    dayLimit       [integer]  How many days that the game lasts (MC days)");
-				p.sendMessage(ChatColor.YELLOW + "    offlineTimeout [minutes]  How long absent players have till they're disqualified. (-1 = disable)");
-				p.sendMessage(ChatColor.YELLOW + "    globalBoundry  [blocks ]  Blocks from spawn players are allowed to venture. (-1 = infinity)");
-				p.sendMessage(ChatColor.YELLOW + "    hunterBoundry  [blocks ]  Blocks from spawn hunters are confined to. (pre-game) (-1 = infinity)");
+				p.sendMessage(ChatColor.GOLD + "Available manhunt settings: (1/3)");
+				if (settings.opPermission) {
+					p.sendMessage(ChatColor.BLUE + "opPermission " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players need op permissions to any manhunt commands.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "opPermission " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Players can choose their team and warp to world spawn.");
+				} if (settings.allTalk) {
+					p.sendMessage(ChatColor.BLUE + "allTalk " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Teams can see eachother's chat.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "allTalk " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters, hunted, and spectators can't chat with eachother.");
+				} if (settings.spawnPassive) {
+					p.sendMessage(ChatColor.BLUE + "spawnPassive " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Passive mobs will spawn.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "spawnPassive " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Passive mobs will not spawn.");
+				} if (settings.spawnHostile) {
+					p.sendMessage(ChatColor.BLUE + "spawnHostile " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Hostile mobs will spawn.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "spawnHostile " + 
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hostile mobs will not spawn.");
+				}
+				
+			} else if (args.length == 2 && args[1].equalsIgnoreCase("2")) {
+				p.sendMessage(ChatColor.GOLD + "Available manhunt settings: (2/3)");
+				if (settings.envDeath) {
+					p.sendMessage(ChatColor.BLUE + "envDeath " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players can die from mobs and enviromental hazards.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "envDeath " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Players can be damaged by environment, but never die.");
+				} if (settings.envHunterRespawn) {
+					p.sendMessage(ChatColor.BLUE + "envHunterRespawn " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Hunters respawn from enviromental death.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "envHunterRespawn " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters are eliminated by enviromental death.");
+				} if (settings.envHuntedRespawn) {
+					p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Hunted respawn from enviromental death.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " + 
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " The Hunted are eliminated by enviromental death.");
+				} if (settings.friendlyFire) {
+					p.sendMessage(ChatColor.BLUE + "friendlyFire " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players can kill their teammates.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "friendlyFire " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Players can't hurt their teammates.");
+				}
+				
+			} else if (args.length == 2 && args[1].equalsIgnoreCase("3")) {
+				p.sendMessage(ChatColor.GOLD + "Available manhunt settings: (3/3)");
+				if (settings.pvpInstantDeath) {
+					p.sendMessage(ChatColor.BLUE + "pvpInstantDeath " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " PvP damage causes instant death.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "pvpInstantDeath " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " PvP damage is vanilla.");
+				}
+					p.sendMessage(ChatColor.BLUE + "dayLimit " + ChatColor.GREEN +
+							"[" + settings.dayLimit + "]" + ChatColor.WHITE + " How many Minecraft days the game lasts.");
+				if (settings.offlineTimeout >= 0) {
+					p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.GREEN +
+							"[" + settings.offlineTimeout + "]" + ChatColor.WHITE + " How long absent players have till they're disqualified.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.RED +
+							"[off]" + ChatColor.WHITE + " Players won't be kicked when logging off.");
+				} if (settings.globalBoundry >= 0) {
+					p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
+							"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.RED +
+							"[off]" + ChatColor.WHITE + "This plugin won't limit players.");
+				} if (settings.hunterBoundry >= 0) {
+					p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
+							"[" + settings.globalBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.RED +
+							"[off]" + ChatColor.WHITE + "Hunters are not confined to spawn.");
+				}
 			}
 			
 			else if (args.length >= 2) {
+				
 				if (args[1].equalsIgnoreCase("oppermission")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.opPermission = true;
-							p.sendMessage(ChatColor.GREEN + "opPermission [true]. Only ops have access to the manhunt commands.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.opPermission = false;
-							p.sendMessage(ChatColor.GREEN + "opPermission [false]. All players have access to a few commands.");
-						}
-					} else {
-						if (settings.opPermission) {
-							settings.opPermission = false;
-							p.sendMessage(ChatColor.GREEN + "opPermission [false]. All players have access to a few commands.");
-						} else {
-							settings.opPermission = true;
-							p.sendMessage(ChatColor.GREEN + "opPermission [true]. Only ops have access to the manhunt commands.");
-						}
+					if ((args.length == 2 && settings.opPermission == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("opPermission", "true");
+						p.sendMessage(ChatColor.BLUE + "opPermission " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players need op permissions to any manhunt commands.");
+						
+					} else if ((args.length ==2 && settings.opPermission == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("opPermission", "false");
+						p.sendMessage(ChatColor.BLUE + "opPermission " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Players can choose their team and warp to world spawn.");
 					}
+						
 				} else if (args[1].equalsIgnoreCase("alltalk")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.allTalk = true;
-							p.sendMessage(ChatColor.GREEN + "allTalk [true]. All players can communicate.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.allTalk = false;
-							p.sendMessage(ChatColor.GREEN + "allTalk [false]. Players can only communicate with their teams.");
-						}
-					} else {
-						if (settings.allTalk) {
-							settings.allTalk = false;
-							p.sendMessage(ChatColor.GREEN + "allTalk [false]. Players can only communicate with their teams.");
-						} else {
-							settings.allTalk = true;
-							p.sendMessage(ChatColor.GREEN + "allTalk [true]. All players can communicate.");
-						}
+					if ((args.length == 2 && settings.allTalk == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+							settings.changeSetting("allTalk", "true");
+							p.sendMessage(ChatColor.BLUE + "allTalk " +
+									ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Teams can see eachother's chat.");
+							
+					} else if ((args.length == 2 && settings.allTalk == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("allTalk", "false");
+						p.sendMessage(ChatColor.BLUE + "allTalk " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters, hunted, and spectators can't chat with eachother.");
 					}
+						
 				} else if (args[1].equalsIgnoreCase("spawnpassive")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.spawnPassive = true;
-							p.sendMessage(ChatColor.GREEN + "spawnPassive [true]. Passive mobs will NOW spawn.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.spawnPassive = false;
-							p.sendMessage(ChatColor.GREEN + "spawnPassive [false]. Passive mobs will NOT spawn.");
-						}
-					} else {
-						if (settings.spawnPassive) {
-							settings.spawnPassive = false;
-							p.sendMessage(ChatColor.GREEN + "spawnPassive [false]. Passive mobs will NOT spawn.");
-						} else {
-							settings.spawnPassive = true;
-							p.sendMessage(ChatColor.GREEN + "spawnPassive [true]. Passive mobs will NOW spawn.");
-						}
+					if ((args.length == 2 && settings.spawnPassive == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("spawnPassive", "true");
+						p.sendMessage(ChatColor.BLUE + "spawnPassive " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Passive mobs will spawn.");
+					
+					} else if ((args.length == 2 && settings.spawnPassive == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("spawnPassive" , "false");
+						p.sendMessage(ChatColor.BLUE + "spawnPassive " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Passive mobs will not spawn.");
 					}
+					
 				} else if (args[1].equalsIgnoreCase("spawnhostile")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.spawnHostile = true;
-							p.sendMessage(ChatColor.GREEN + "spawnHostile [true]. Hostile mobs will NOW spawn.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.spawnHostile = false;
-							p.sendMessage(ChatColor.GREEN + "spawnHostile [false]. Hostile mobs will NOT spawn.");
-						}
-					} else {
-						if (settings.spawnHostile) {
-							settings.spawnHostile = false;
-							p.sendMessage(ChatColor.GREEN + "spawnHostile [false]. Hostile mobs will NOT spawn.");
-						} else {
-							settings.spawnHostile = true;
-							p.sendMessage(ChatColor.GREEN + "spawnHostile [true]. Hostile mobs will NOW spawn.");
-						}
+					if ((args.length == 2 && settings.spawnHostile == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("spawnHostile", "true");
+						p.sendMessage(ChatColor.BLUE + "spawnHostile " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Hostile mobs will spawn.");
+					
+					} else if ((args.length == 2 && settings.spawnHostile == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("spawnHostile", "false");
+						p.sendMessage(ChatColor.BLUE + "spawnHostile " + 
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hostile mobs will not spawn.");
 					}
+				
 				} else if (args[1].equalsIgnoreCase("envdeath")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.envDeath = true;
-							p.sendMessage(ChatColor.GREEN + "envDeath [true]. Players can now die by inviromental hazards.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.envDeath = false;
-							p.sendMessage(ChatColor.GREEN + "envDeath [false]. Players can't die by inviromental hazards.");
-						}
-					} else {
-						if (settings.envDeath) {
-							settings.envDeath = false;
-							p.sendMessage(ChatColor.GREEN + "envDeath [false]. Players can't die by inviromental hazards.");
-						} else {
-							settings.envDeath = true;
-							p.sendMessage(ChatColor.GREEN + "envDeath [true]. Players can now die by inviromental hazards.");
-						}
+					if ((args.length == 2 && settings.envDeath == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("envDeath", "true");
+						p.sendMessage(ChatColor.BLUE + "envDeath " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players can die from mobs and enviromental hazards.");
+					
+					} else if ((args.length == 2 && settings.envDeath == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("envDeath", "false");
+						p.sendMessage(ChatColor.BLUE + "envDeath " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Players can be damaged by environment, but never die.");
 					}
+					
 				} else if (args[1].equalsIgnoreCase("envhunterrespawn")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.envHunterRespawn = true;
-							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [true]. Hunters respawn after dying from environmental hazards.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.envHunterRespawn = false;
-							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [false]. Hunters can be eliminated by enviromental hazards.");
-						}
-					} else {
-						if (settings.envHunterRespawn) {
-							settings.envHunterRespawn = false;
-							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [false]. Hunters can be eliminated by enviromental hazards.");
-						} else {
-							settings.envHunterRespawn = true;
-							p.sendMessage(ChatColor.GREEN + "envHunterRespawn [true]. Hunters respawn after dying from environmental hazards.");
-						}
+					if ((args.length == 2 && settings.envHunterRespawn == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("envHunterRespawn", "true");
+						p.sendMessage(ChatColor.BLUE + "envHunterRespawn " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Hunters respawn from enviromental death.");
+					
+					} else if ((args.length == 2 && settings.envHunterRespawn == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("envHunterRespawn", "false");
+						p.sendMessage(ChatColor.BLUE + "envHunterRespawn " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters are eliminated by enviromental death.");
 					}
+					
 				} else if (args[1].equalsIgnoreCase("envhuntedRespawn")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.envHuntedRespawn = true;
-							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [true]. The Hunted respawn after dying from environmental hazards.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.envHuntedRespawn = false;
-							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [false]. The Hunted can be eliminated by environmental hazards.");
-						}
-					} else {
-						if (settings.envHuntedRespawn) {
-							settings.envHuntedRespawn = false;
-							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [false]. The Hunted can be eliminated by environmental hazards.");
-						} else {
-							settings.envHuntedRespawn = true;
-							p.sendMessage(ChatColor.GREEN + "envHuntedRespawn [true]. The Hunted respawn after dying from environmental hazards.");
-						}
+					if ((args.length == 2 && settings.envHuntedRespawn == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("envHuntedRespawn", "true");
+						p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Hunted respawn from enviromental death.");
+					
+					} else if ((args.length == 2 && settings.envHuntedRespawn == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("envHuntedRespawn", "false");
+						p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " + 
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " The Hunted are eliminated by enviromental death.");
 					}
+					
 				} else if (args[1].equalsIgnoreCase("friendlyfire")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.friendlyFire = true;
-							p.sendMessage(ChatColor.GREEN + "friendlyFire [true]. Teammates can kill each other.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.friendlyFire = false;
-							p.sendMessage(ChatColor.GREEN + "friendlyFire [false]. Teammates can't hurt each other.");
-						}
-					} else {
-						if (settings.friendlyFire) {
-							settings.friendlyFire = false;
-							p.sendMessage(ChatColor.GREEN + "friendlyFire [false]. Teammates can't hurt each other.");
-						} else {
-							settings.friendlyFire = true;
-							p.sendMessage(ChatColor.GREEN + "friendlyFire [true]. Teammates can kill each other.");
-						}
+					if ((args.length == 2 && settings.friendlyFire == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("friendlyFire", "true");
+						p.sendMessage(ChatColor.BLUE + "friendlyFire " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players can kill their teammates.");
+					
+					} else if ((args.length == 2 && settings.friendlyFire == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("friendlyFire", "false");
+						p.sendMessage(ChatColor.BLUE + "friendlyFire " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Players can't hurt their teammates.");
 					}
+					
 				} else if (args[1].equalsIgnoreCase("pvpinstantdeath")){ 
-					if (args.length == 3) {
-						if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-							settings.pvpInstantDeath = true;
-							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [true]. A single punch can fully kill the enemy.");
-						} else if (args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-							settings.pvpInstantDeath = false;
-							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [false]. PvP damage is now vanilla again.");
-						}
-					} else {
-						if (settings.pvpInstantDeath) {
-							settings.pvpInstantDeath = false;
-							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [false]. PvP damage is now vanilla again.");
-						} else {
-							settings.pvpInstantDeath = true;
-							p.sendMessage(ChatColor.GREEN + "pvpInstantDeath [true]. A single punch can fully kill the enemy.");
-						}
+					if ((args.length == 2 && settings.pvpInstantDeath == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("pvpInstantDeath", "true");
+						p.sendMessage(ChatColor.BLUE + "pvpInstantDeath " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " PvP damage causes instant death.");
+					
+					} else if ((args.length == 2 && settings.pvpInstantDeath == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("pvpInstantDeath", "false");
+						p.sendMessage(ChatColor.BLUE + "pvpInstantDeath " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " PvP damage is vanilla.");
 					}
+					
 				} else if (args[1].equalsIgnoreCase("daylimit")){ 
 					if (args.length == 3) {
 						try {
@@ -441,55 +466,58 @@ public class CmdExec implements CommandExecutor {
 							if (value < 1) {
 								p.sendMessage(ChatColor.RED + "You must enter an number greater than 0!");
 							} else {
-								settings.dayLimit = value;
+								settings.changeSetting("dayLimit", Integer.toString(value));
 								p.sendMessage(ChatColor.GREEN + "Day time limit set to " + value + " days.");
 							}
 						} catch (NumberFormatException e) {
 							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie 1, 3, 5...)");
 						}
 					}
+				
 				} else if (args[1].equalsIgnoreCase("offlinetimeout")){ 
 					if (args.length == 3) {
 						try {
 							int value = Integer.parseInt(args[2]);
 							if (value <= -1) {
-								settings.offlineTimeout = -1;
+								settings.changeSetting("offlineTimeout","-1");
 								p.sendMessage(ChatColor.GREEN + "Offline timeout has been disabled. Players may come and go as they please.");
 							} else {
-								settings.offlineTimeout = value;
+								settings.changeSetting("offlineTimeout",Integer.toString(value));
 								p.sendMessage(ChatColor.GREEN + "Offline timeout has been set to " + value + " minutes.");
 							}
 						} catch (NumberFormatException e) {
 							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 0, 3...)");
 						}
 					}
+				
 				} else if (args[1].equalsIgnoreCase("globalboundry")){ 
 					if (args.length == 3) {
 						try {
 							int value = Integer.parseInt(args[2]);
 							if (value <= -1) {
-								settings.globalBoundry = -1;
+								settings.changeSetting("globalBoundry","-1");
 								p.sendMessage(ChatColor.GREEN + "The global boundry has been lifted. Players can venture out indefinately.");
 							} else if (value < 256) {
-								settings.globalBoundry = value;
+								settings.changeSetting("globalBoundry","256");
 								p.sendMessage(ChatColor.GREEN + "The global boundry has been set to 256 blocks. (minimum)");
 							} else {
-								settings.globalBoundry = value;
+								settings.changeSetting("globalBoundry",Integer.toString(value));
 								p.sendMessage(ChatColor.GREEN + "The global boundry has been set to " + value + " blocks.");
 							}
 						} catch (NumberFormatException e) {
 							p.sendMessage(ChatColor.RED + "You must enter an INTEGER. (ie -1, 256, 1000...)");
 						}
 					}
+				
 				} else if (args[1].equalsIgnoreCase("hunterboundry")){ 
 					if (args.length == 3) {
 						try {
 							int value = Integer.parseInt(args[2]);
 							if (value <= -1) {
-								settings.hunterBoundry = -1;
+								settings.changeSetting("hunterBoundry","-1");
 								p.sendMessage(ChatColor.GREEN + "The hunter's pre-game restriction has been lifted.");
 							} else {
-								settings.hunterBoundry = value;
+								settings.changeSetting("hunterBoundry",Integer.toString(value));
 								p.sendMessage(ChatColor.GREEN + "The hunter's pre-game restriction has been set to " + value + " blocks.");
 							}
 						} catch (NumberFormatException e) {
