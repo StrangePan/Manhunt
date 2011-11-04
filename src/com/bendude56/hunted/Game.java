@@ -494,16 +494,7 @@ public class Game {
 			this.broadcastAll(ChatColor.YELLOW + name +
 					ChatColor.WHITE + " is now a watching the game.");
 		}
-	}
-	
-	public void makeAllPlayersSpectators() {
-		for (String p : hunter) {
-			makeSpectator(p);
-		}
-		for (String p : hunted) {
-			makeSpectator(p);
-		}
-	}
+	} 
 	
 	public void removeAll() {
 		hunted.clear();

@@ -140,6 +140,47 @@ public class CmdExec implements CommandExecutor {
 				}
 			}
 			
+		} else if (args[0].equalsIgnoreCase("makeall") || args[0].equalsIgnoreCase("makeeveryone")) {
+			if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "You don't have permission to do that!");
+				return true;
+			}
+			if (args.length == 1) {
+				p.sendMessage(ChatColor.RED + "You must specify a team to move everyone to!");
+				return true;
+			}
+			if (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("hunters")) {
+				for (Player s : Bukkit.getOnlinePlayers()) {
+					if (g.isHunted(s) || g.isSpectating(p)) {
+						g.addHunted(s);
+						s.sendMessage(ChatColor.WHITE + "You have been moved to team " + ChatColor.RED + "Hunters.");
+					}
+				}
+				g.broadcastAll(ChatColor.WHITE + "All players have been moved to team " + ChatColor.RED + "Hunters.");
+				return true;
+			} else if (args[1].equalsIgnoreCase("hunted") || args[1].equalsIgnoreCase("prey")) {
+				for (Player s : Bukkit.getOnlinePlayers()) {
+					if (g.isHunter(s) || g.isSpectating(p)) {
+						g.addHunted(s);
+						s.sendMessage(ChatColor.WHITE + "You have been moved to team " + ChatColor.BLUE+ "Hunted.");
+					}
+				}
+				g.broadcastAll(ChatColor.WHITE + "All players have been moved to team " + ChatColor.BLUE + "Hunted.");
+				return true;
+			} else if (args[1].equalsIgnoreCase("spectator") || args[1].equalsIgnoreCase("spectators")) {
+				for (Player s : Bukkit.getOnlinePlayers()) {
+					if (g.isHunter(s) || g.isHunted(p)) {
+						g.addSpectator(s);
+						s.sendMessage(ChatColor.WHITE + "You are now a " + ChatColor.YELLOW+ "Spectator.");
+					}
+				}
+				g.broadcastAll(ChatColor.WHITE + "All players are now " + ChatColor.YELLOW + "Spectating.");
+				return true;
+			} else {
+				p.sendMessage(ChatColor.RED + "Invalid team. {Hunters|Hunted|Spectator}");
+			}
+			return true;
+			
 		} else if (args[0].equalsIgnoreCase("list")) {
 			if (settings.opPermission && !p.isOp()) {
 				p.sendMessage(ChatColor.RED + "You don'thave permission to do that!");
@@ -259,6 +300,7 @@ public class CmdExec implements CommandExecutor {
 				|| args[0].equalsIgnoreCase("preferences") || args[0].equalsIgnoreCase("properties")) {
 			if (!p.isOp() && (sender instanceof Player)) {
 				p.sendMessage(ChatColor.RED + "Only ops can change manhunt game settings!");
+				return true;
 			}
 			
 			if (args.length == 1 || (args.length ==  2 && args[1].equalsIgnoreCase("1"))) {

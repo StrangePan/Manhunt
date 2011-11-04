@@ -191,6 +191,7 @@ public class SettingsFile extends Properties {
 			if (getProperty("dayLimit").length() > 0) {
 				try {
 					dayLimit = Integer.parseInt(getProperty("dayLimit"));
+					if (dayLimit < 1) dayLimit = 1;
 				} catch (NumberFormatException e) {
 					dayLimit = 3;
 				}
@@ -202,6 +203,7 @@ public class SettingsFile extends Properties {
 			if (getProperty("offlineTimeout").length() > 0) {
 				try {
 					offlineTimeout = Integer.parseInt(getProperty("offlineTimeout"));
+					if (offlineTimeout < -1) offlineTimeout = -1;
 				} catch (NumberFormatException e) {
 					offlineTimeout = 5;
 				}
@@ -213,6 +215,7 @@ public class SettingsFile extends Properties {
 			if (getProperty("globalBoundry").length() > 0) {
 				try {
 					globalBoundry = Integer.parseInt(getProperty("globalBoundry"));
+					if (globalBoundry < 256) globalBoundry = 256;
 				} catch (NumberFormatException e) {
 					globalBoundry = -1;
 				}
@@ -224,6 +227,7 @@ public class SettingsFile extends Properties {
 			if (getProperty("hunterBoundry").length() > 0) {
 				try {
 					hunterBoundry = Integer.parseInt(getProperty("hunterBoundry"));
+					if (hunterBoundry < -1) hunterBoundry = -1;
 				} catch (NumberFormatException e) {
 					hunterBoundry = 16;
 				}
