@@ -584,4 +584,17 @@ public class Game {
 	public double getDistance(Player p1, Player p2) {
 		return getDistance(p1.getLocation(), p2.getLocation());
 	}
+	
+	public void stepPlayer(Player p, Double d, Location l) {
+		double x1 = p.getLocation().getX();
+		double z1 = p.getLocation().getZ();
+		double x2 = l.getX();
+		double z2 = l.getZ();
+		Location destination = p.getLocation();
+		
+		destination.setX(x1+d*(x2-x1)/getDistance(x1, 0, z1, x2, 0, z2));
+		destination.setZ(z1+d*(z2-z1)/getDistance(z1, 0, z1, z2, 0, z2));
+		
+		p.teleport(destination);
+	}
 }

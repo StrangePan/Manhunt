@@ -75,10 +75,18 @@ public class HuntedPlayerListener extends PlayerListener {
 	public void onPlayerMove(PlayerMoveEvent e) {
 		Game g = HuntedPlugin.getInstance().game;
 		Player p = e.getPlayer();
-		if (g.gameHasBegun() && g.isHunter(p) && !g.huntHasBegun() && HuntedPlugin.getInstance().settings.hunterBoundry >= 0) {
+		//If Hunters venture too far during pre-game...
+		if (g.gameHasBegun() && g.isHunter(p) && !g.huntHasBegun() && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
 			if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.hunterBoundry) {
-				p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
-				p.sendMessage(ChatColor.RED + "You've ventured too far! Teleporting you back to spawn!");
+				g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+				p.sendMessage(ChatColor.RED + "You've ventured too far!");
+			}
+		}
+		//If any player ventures too far...
+		if (g.gameHasBegun() && (g.isHunter(p) || g.isHunted(p)) && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+			if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.globalBoundry) {
+				g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+				p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			}
 		}
 	}
