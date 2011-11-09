@@ -322,9 +322,9 @@ public class SettingsFile extends Properties {
 	} public void changeSetting(String setting, Location loc) {
 		if (containsKey(setting)) {
 			String value = "";
-			value += loc.getX() + ",";
-			value += loc.getY() + ",";
-			value += loc.getZ();
+			value += loc.getBlockX() + ",";
+			value += loc.getBlockY() + ",";
+			value += loc.getBlockZ();
 			put(setting, value);
 		}
 	}

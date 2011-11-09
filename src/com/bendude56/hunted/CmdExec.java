@@ -49,7 +49,7 @@ public class CmdExec implements CommandExecutor {
 				}
 				
 			}
-		} else if (args[0].equalsIgnoreCase("join")) {
+		} else if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("assign")) {
 			if (g.gameHasBegun()) {
 				p.sendMessage(ChatColor.RED + "You cannot join a game already in progress!");
 				return true;
@@ -254,6 +254,12 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			}
 			if (args.length == 1) {
+				if (settings.hunterSpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+					settings.changeSetting("hunterSpawn", p.getLocation());
+				}
+				if (settings.preySpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+					settings.changeSetting("preySpawn", p.getLocation());
+				}
 				HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
 				p.sendMessage(ChatColor.GREEN + "World spawn set!");
 				return true;
@@ -267,6 +273,12 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.BLUE + "Prey" + ChatColor.GREEN + " spawn set!");
 				}
 				if (args[2].equalsIgnoreCase("waiting") || args[2].equalsIgnoreCase("pregame")) {
+					if (settings.hunterSpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+						settings.changeSetting("hunterSpawn", p.getLocation());
+					}
+					if (settings.preySpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+						settings.changeSetting("preySpawn", p.getLocation());
+					}
 					HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
 					p.sendMessage(ChatColor.GREEN + "Pregame" + ChatColor.GREEN + " spawn set! (AKA World Spawn)");
 				}

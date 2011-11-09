@@ -177,8 +177,11 @@ public class HuntedEntityListener extends EntityListener {
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.hunterSpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+							HuntedPlugin.getInstance().settings.hunterSpawn)
+							<= HuntedPlugin.getInstance().settings.noBuildRange
+					|| g.getDistance(e.getBlock().getLocation(),
+							HuntedPlugin.getInstance().getWorld().getSpawnLocation())
+							<= HuntedPlugin.getInstance().settings.noBuildRange) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunter(e.getPlayer())
