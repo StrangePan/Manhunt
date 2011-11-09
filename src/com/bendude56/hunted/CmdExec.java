@@ -11,7 +11,7 @@ public class CmdExec implements CommandExecutor {
 	
 	public CmdExec() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
-		//Bukkit.getPluginCommand("mhunt").setExecutor(this);
+		Bukkit.getPluginCommand("mhunt").setExecutor(this);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.YELLOW + "/manhunt quit");
 				p.sendMessage(ChatColor.YELLOW + "    Quits the current manhunt game and makes you a spectator.");
 				
-				p.sendMessage(ChatColor.YELLOW + "/manhunt join {hunter|hunted} <player>");
+				p.sendMessage(ChatColor.YELLOW + "/manhunt join {hunter|prey} <player>");
 				p.sendMessage(ChatColor.YELLOW + "    Joins the selected manhunt team.");
 				if (p.isOp()) p.sendMessage(ChatColor.YELLOW + "    Include an optional player name to assign them to that team.");
 				
@@ -58,7 +58,7 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			}
 			if (args.length == 1) {
-				p.sendMessage(ChatColor.RED + "You must choose a team! Hunters or Hunted.");
+				p.sendMessage(ChatColor.RED + "You must choose a team! Hunters or Prey.");
 				return true;
 			} if (args[1].equalsIgnoreCase("hunter")) {
 				if (args.length == 2) {
@@ -71,10 +71,10 @@ public class CmdExec implements CommandExecutor {
 			} else if (args[1].equalsIgnoreCase("hunted") || args[1].equalsIgnoreCase("prey")) {
 				if (args.length == 2) {
 					g.addHunted(p);
-					g.broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE + " has joined team " + ChatColor.BLUE + "Hunted.");
+					g.broadcastAll(ChatColor.BLUE + p.getName() + ChatColor.WHITE + " has joined team " + ChatColor.BLUE + "Prey.");
 				} else if (args.length > 2 && p.isOp()) {
 					g.addHunted(args[2]);
-					g.broadcastAll(ChatColor.BLUE + args[2] + ChatColor.WHITE + " has joined team " + ChatColor.BLUE + "Hunted.");
+					g.broadcastAll(ChatColor.BLUE + args[2] + ChatColor.WHITE + " has joined team " + ChatColor.BLUE + "Prey.");
 				}
 			} else if (args[1].equalsIgnoreCase("spectators") || args[1].equalsIgnoreCase("spectator")) {
 				if (args.length == 2) {
@@ -162,10 +162,10 @@ public class CmdExec implements CommandExecutor {
 				for (Player s : Bukkit.getOnlinePlayers()) {
 					if (g.isHunter(s) || g.isSpectating(p)) {
 						g.addHunted(s);
-						s.sendMessage(ChatColor.WHITE + "You have been moved to team " + ChatColor.BLUE+ "Hunted.");
+						s.sendMessage(ChatColor.WHITE + "You have been moved to team " + ChatColor.BLUE+ "Prey.");
 					}
 				}
-				g.broadcastAll(ChatColor.WHITE + "All players have been moved to team " + ChatColor.BLUE + "Hunted.");
+				g.broadcastAll(ChatColor.WHITE + "All players have been moved to team " + ChatColor.BLUE + "Prey.");
 				return true;
 			} else if (args[1].equalsIgnoreCase("spectator") || args[1].equalsIgnoreCase("spectators")) {
 				for (Player s : Bukkit.getOnlinePlayers()) {
@@ -177,7 +177,7 @@ public class CmdExec implements CommandExecutor {
 				g.broadcastAll(ChatColor.WHITE + "All players are now " + ChatColor.YELLOW + "Spectating.");
 				return true;
 			} else {
-				p.sendMessage(ChatColor.RED + "Invalid team. {Hunters|Hunted|Spectator}");
+				p.sendMessage(ChatColor.RED + "Invalid team. {Hunters|Prey|Spectator}");
 			}
 			return true;
 			
@@ -201,7 +201,7 @@ public class CmdExec implements CommandExecutor {
 				for (String s : g.getHunters()) {
 					p.sendMessage(ChatColor.RED + "  " + s);
 				}
-			} else if (args.length >= 2 && args[1].equalsIgnoreCase("hunted")) {
+			} else if (args.length >= 2 && args[1].equalsIgnoreCase("prey")) {
 				p.sendMessage(ChatColor.GREEN + "Team HUNTED: (" + g.HuntedAmount() + ")");
 				for (String s : g.getHunted()) {
 					p.sendMessage(ChatColor.BLUE + "  " + s);
@@ -212,7 +212,7 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.YELLOW + "  " + s);
 				}
 			} else {
-				p.sendMessage(ChatColor.RED + "Invalid team. Available teams: Hunters, Hunted, Spectators, All.");
+				p.sendMessage(ChatColor.RED + "Invalid team. Available teams: Hunters, Prey, Spectators, All.");
 			}
 			
 		} else if (args[0].equalsIgnoreCase("world") || args[0].equalsIgnoreCase("spawn")) {
@@ -246,16 +246,29 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			}
 			if (!p.isOp()) {
-				p.sendMessage(ChatColor.RED + "Only ops can start the game!");
+				p.sendMessage(ChatColor.RED + "Only ops can set spawns!");
+				return true;
+			}
+			if (!p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+				p.sendMessage(ChatColor.RED + "You must be in the manhunt world to set it's spawn. Use \"/manhunt world\" to teleport to the manhunt world.");
+				return true;
+			}
+			if (args.length == 1) {
+				HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
+				p.sendMessage(ChatColor.GREEN + "World spawn set!");
 				return true;
 			} else {
-				if (p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+				if (args[2].equalsIgnoreCase("hunter") || args[2].equalsIgnoreCase("hunters")) {
+					settings.changeSetting("hunterSpawn", p.getLocation());
+					p.sendMessage(ChatColor.RED + "Hunter" + ChatColor.GREEN + " spawn set!");
+				}
+				if (args[2].equalsIgnoreCase("hunted") || args[2].equalsIgnoreCase("prey")) {
+					settings.changeSetting("preySpawn", p.getLocation());
+					p.sendMessage(ChatColor.BLUE + "Prey" + ChatColor.GREEN + " spawn set!");
+				}
+				if (args[2].equalsIgnoreCase("waiting") || args[2].equalsIgnoreCase("pregame")) {
 					HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
-					p.sendMessage(ChatColor.GREEN + "World spawn set!");
-					return true;
-				} else {
-					p.sendMessage(ChatColor.RED + "You must be in the manhunt world to set it's spawn. Use \"/manhunt world\" to teleport to the manhunt world.");
-					return true;
+					p.sendMessage(ChatColor.GREEN + "Pregame" + ChatColor.GREEN + " spawn set! (AKA World Spawn)");
 				}
 			}
 		} else if (args[0].equalsIgnoreCase("startgame")) {
@@ -264,8 +277,13 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			}
 			if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
-				p.sendMessage(ChatColor.RED + "There must be at least one Hunter and Hunted to start the game!");
+				p.sendMessage(ChatColor.RED + "There must be at least one Hunter and Prey to start the game!");
 				return true;
+			} else {
+				if (!(g.HuntersAmount()==1 || (g.HuntersAmount()/g.HuntedAmount()) >= 4)) {
+					p.sendMessage(ChatColor.RED + "There must be at least 4 hunters per prey!");
+					return true;
+				}
 			}
 			g.start();
 			p.sendMessage(ChatColor.GRAY + "You have successfully started the manhunt game!");
@@ -316,7 +334,7 @@ public class CmdExec implements CommandExecutor {
 							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Teams can see eachother's chat.");
 				} else {
 					p.sendMessage(ChatColor.BLUE + "allTalk " +
-							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters, hunted, and spectators can't chat with eachother.");
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters, prey, and spectators can't chat with eachother.");
 				} if (settings.spawnPassive) {
 					p.sendMessage(ChatColor.BLUE + "spawnPassive " +
 							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Passive mobs will spawn.");
@@ -345,12 +363,12 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.BLUE + "envHunterRespawn " +
 							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters are eliminated by enviromental death.");
-				} if (settings.envHuntedRespawn) {
-					p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " +
-							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Hunted respawn from enviromental death.");
+				} if (settings.envPreyRespawn) {
+					p.sendMessage(ChatColor.BLUE + "envPreyRespawn " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Prey respawn from enviromental death.");
 				} else {
-					p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " + 
-							ChatColor.RED + "[false]" + ChatColor.WHITE + " The Hunted are eliminated by enviromental death.");
+					p.sendMessage(ChatColor.BLUE + "envPreyRespawn " + 
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " The Prey are eliminated by enviromental death.");
 				} if (settings.friendlyFire) {
 					p.sendMessage(ChatColor.BLUE + "friendlyFire " +
 							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players can kill their teammates.");
@@ -367,6 +385,12 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.BLUE + "pvpInstantDeath " +
 							ChatColor.RED + "[false]" + ChatColor.WHITE + " PvP damage is vanilla.");
+				} if (settings.loadouts) {
+					p.sendMessage(ChatColor.BLUE + "loadouts " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players will start with a pre-set inventory.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "loadouts " +
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Players' inventorys will not be reset.");
 				} if (settings.autoHunter) {
 					p.sendMessage(ChatColor.BLUE + "autoHunter " +
 							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " New players are automatically Hunters.");
@@ -387,13 +411,19 @@ public class CmdExec implements CommandExecutor {
 							"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
 				} else {
 					p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.RED +
-							"[off]" + ChatColor.WHITE + "Players can venture out indefinately.");
+							"[off]" + ChatColor.WHITE + " Players can venture out indefinately.");
 				} if (settings.hunterBoundry >= 0) {
 					p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
-							"[" + settings.globalBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
+							"[" + settings.hunterBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
 				} else {
 					p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.RED +
-							"[off]" + ChatColor.WHITE + "Hunters are not confined to spawn.");
+							"[off]" + ChatColor.WHITE + " Hunters are not confined to spawn.");
+				} if (settings.noBuildRange >= 0) {
+					p.sendMessage(ChatColor.BLUE + "noBuildRange " + ChatColor.GREEN +
+							"[" + settings.noBuildRange + "]" + ChatColor.WHITE + " Hunter/Prey spawn points are protected.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "noBuildRange " + ChatColor.RED +
+							"[off]" + ChatColor.WHITE + " Huners and Prey can build anywhere.");
 				}
 			}
 			
@@ -420,7 +450,7 @@ public class CmdExec implements CommandExecutor {
 					} else if ((args.length == 2 && settings.allTalk == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
 						settings.changeSetting("allTalk", "false");
 						p.sendMessage(ChatColor.BLUE + "allTalk " +
-								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters, hunted, and spectators can't chat with eachother.");
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters, prey, and spectators can't chat with eachother.");
 					}
 						
 				} else if (args[1].equalsIgnoreCase("spawnpassive")){ 
@@ -471,16 +501,16 @@ public class CmdExec implements CommandExecutor {
 								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters are eliminated by enviromental death.");
 					}
 					
-				} else if (args[1].equalsIgnoreCase("envhuntedRespawn")){ 
-					if ((args.length == 2 && settings.envHuntedRespawn == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
-						settings.changeSetting("envHuntedRespawn", "true");
-						p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " +
-								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Hunted respawn from enviromental death.");
+				} else if (args[1].equalsIgnoreCase("envpreyRespawn")){ 
+					if ((args.length == 2 && settings.envPreyRespawn == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("envPreyRespawn", "true");
+						p.sendMessage(ChatColor.BLUE + "envPreyRespawn " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Prey respawn from enviromental death.");
 					
-					} else if ((args.length == 2 && settings.envHuntedRespawn == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
-						settings.changeSetting("envHuntedRespawn", "false");
-						p.sendMessage(ChatColor.BLUE + "envHuntedRespawn " + 
-								ChatColor.RED + "[false]" + ChatColor.WHITE + " The Hunted are eliminated by enviromental death.");
+					} else if ((args.length == 2 && settings.envPreyRespawn == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("envPreyRespawn", "false");
+						p.sendMessage(ChatColor.BLUE + "envPreyRespawn " + 
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " The Prey are eliminated by enviromental death.");
 					}
 					
 				} else if (args[1].equalsIgnoreCase("friendlyfire")){ 
@@ -519,6 +549,18 @@ public class CmdExec implements CommandExecutor {
 								ChatColor.RED + "[false]" + ChatColor.WHITE + " New players are only Spectators.");
 					}
 					
+				} else if (args[1].equalsIgnoreCase("loadouts")){
+					if ((args.length == 2 && settings.loadouts == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("loadouts", "true");
+						p.sendMessage(ChatColor.BLUE + "loadouts " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players will start with a pre-set inventory.");
+					
+					} else if ((args.length == 2 && settings.loadouts == false) || args[2].equalsIgnoreCase("false")  || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("loadouts", "false");
+						p.sendMessage(ChatColor.BLUE + "loadouts " +
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Players' inventorys will not be reset.");
+					}
+					
 				} else if (args[1].equalsIgnoreCase("daylimit")){ 
 					if (args.length >= 3) {
 						try {
@@ -540,24 +582,25 @@ public class CmdExec implements CommandExecutor {
 				
 				} else if (args[1].equalsIgnoreCase("offlinetimeout")){ 
 					if (args.length >= 3) {
-						try {
-							int value;
-							if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
-								value = -1;
-							} else {
+						int value;
+						if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+							value = -1;
+						} else {
+							try {
 								value = Integer.parseInt(args[2]);
+							} catch (NumberFormatException e) {
+								p.sendMessage(ChatColor.RED + "Invalid value. You must enter an Integer or \"OFF\"");
+								return true;
 							}
-							if (value <= -1) {
-								settings.changeSetting("offlineTimeout","-1");
-								p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.RED +
-										"[off]" + ChatColor.WHITE + " Players won't be kicked when logging off.");
-							} else {
-								settings.changeSetting("offlineTimeout",Integer.toString(value));
-								p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.GREEN +
-										"[" + settings.offlineTimeout + "]" + ChatColor.WHITE + " How long absent players have till they're disqualified.");
-							}
-						} catch (NumberFormatException e) {
-							p.sendMessage(ChatColor.RED + "You must enter an INTEGER (ie -1, 0, 3...) or \"OFF\".");
+						}
+						if (value <= -1) {
+							settings.changeSetting("offlineTimeout","-1");
+							p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.RED +
+									"[off]" + ChatColor.WHITE + " Players won't be kicked when logging off.");
+						} else {
+							settings.changeSetting("offlineTimeout",Integer.toString(value));
+							p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.GREEN +
+									"[" + settings.offlineTimeout + "]" + ChatColor.WHITE + " How long absent players have till they're disqualified.");
 						}
 					} else {
 						p.sendMessage(ChatColor.BLUE + "offlineTimeout " + ChatColor.GREEN +
@@ -566,574 +609,96 @@ public class CmdExec implements CommandExecutor {
 				
 				} else if (args[1].equalsIgnoreCase("globalboundry")){ 
 					if (args.length >= 3) {
-						try {
-							int value;
-							if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
-								value = -1;
-							} else {
+						int value;
+						if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+							value = -1;
+						} else {
+							try {
 								value = Integer.parseInt(args[2]);
+							} catch (NumberFormatException e) {
+								p.sendMessage(ChatColor.RED + "Invalid value. You must enter an Integer or \"OFF\"");
+								return true;
 							}
-							if (value <= -1) {
-								settings.changeSetting("globalBoundry","-1");
-								p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.RED +
-										"[off]" + ChatColor.WHITE + "Players can venture out indefinately.");
-							} else if (value < 256) {
-								settings.changeSetting("globalBoundry","256");
-								p.sendMessage(ChatColor.RED + "256 blocks is the minimum setting for this!");
-								p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
-										"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
-							} else {
-								settings.changeSetting("globalBoundry",Integer.toString(value));
-								p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
-										"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
-							}
-						} catch (NumberFormatException e) {
-							p.sendMessage(ChatColor.RED + "You must enter an INTEGER (ie -1, 256, 1000...) or \"OFF\"");
 						}
+						if (value <= -1) {
+							settings.changeSetting("globalBoundry","-1");
+							p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.RED +
+									"[off]" + ChatColor.WHITE + "Players can venture out indefinately.");
+						} else if (value < 256) {
+							settings.changeSetting("globalBoundry","256");
+							p.sendMessage(ChatColor.RED + "256 blocks is the minimum setting for this!");
+							p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
+									"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
+						} else {
+							settings.changeSetting("globalBoundry",Integer.toString(value));
+							p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
+									"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
+						}
+					} else {
+						p.sendMessage(ChatColor.BLUE + "globalBoundry " + ChatColor.GREEN +
+								"[" + settings.globalBoundry + "]" + ChatColor.WHITE +" Blocks from spawn players are allowed to venture.");
 					}
-				
+				//PROBLEM WITH BOUNDRIES IN HERE
+					//CHECK "-1" LOGIC
 				} else if (args[1].equalsIgnoreCase("hunterboundry")){
 					if (args.length >= 3) {
-						try {
-							int value;
-							if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
-								value = -1;
-							} else {
+						int value;
+						if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+							value = -1;
+						} else {
+							try {
 								value = Integer.parseInt(args[2]);
+							} catch (NumberFormatException e) {
+								p.sendMessage(ChatColor.RED + "Invalid value. You must enter an Integer or \"OFF\"");
+								return true;
 							}
-							if (value <= -1) {
-								settings.changeSetting("hunterBoundry","-1");
-								p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.RED +
-										"[off]" + ChatColor.WHITE + "Hunters are not confined to spawn.");
-							} else {
-								settings.changeSetting("hunterBoundry",Integer.toString(value));
-								p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
-										"[" + settings.globalBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
-							}
-						} catch (NumberFormatException e) {
-							p.sendMessage(ChatColor.RED + "You must enter an INTEGER (ie -1, 3, 16...) or \"OFF\"");
 						}
+						if (value <= -1) {
+							settings.changeSetting("hunterBoundry","-1");
+							p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.RED +
+									"[off]" + ChatColor.WHITE + "Hunters are not confined to spawn.");
+						} else {
+							settings.changeSetting("hunterBoundry",Integer.toString(value));
+							p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
+									"[" + settings.hunterBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
+						}
+					} else {
+						p.sendMessage(ChatColor.BLUE + "hunterBoundry " + ChatColor.GREEN +
+								"[" + settings.hunterBoundry + "]" + ChatColor.WHITE + " Blocks from spawn hunters are confined to.");
+					}
+				} else if (args[1].equalsIgnoreCase("nobuildrange")){
+					if (args.length >= 3) {
+						int value;
+						if (args[2].equalsIgnoreCase("off") || args[2].equalsIgnoreCase("disable")) {
+							value = -1;
+						} else {
+							try {
+								value = Integer.parseInt(args[2]);
+							} catch (NumberFormatException e) {
+								p.sendMessage(ChatColor.RED + "Invalid value. You must enter an Integer or \"OFF\"");
+								return true;
+							}
+						}
+						if (value <= -1) {
+							settings.changeSetting("nobuildrange","-1");
+							p.sendMessage(ChatColor.BLUE + "noBuildRange " + ChatColor.RED +
+									"[off]" + ChatColor.WHITE + " Huners and Prey can build anywhere.");
+						} else {
+							settings.changeSetting("nobuildrange",Integer.toString(value));
+							p.sendMessage(ChatColor.BLUE + "noBuildRange " + ChatColor.GREEN +
+									"[" + settings.noBuildRange + "]" + ChatColor.WHITE + " Hunter/Prey spawn points are protected.");
+						}
+					} else {
+						p.sendMessage(ChatColor.BLUE + "noBuildRange " + ChatColor.GREEN +
+								"[" + settings.noBuildRange + "]" + ChatColor.WHITE + " Hunter/Prey spawn points are protected.");
 					}
 				} else {
-					p.sendMessage(ChatColor.RED + "Invalid setting. Type \"/manhunt settings <page#>\" for a complete list.");
+					p.sendMessage(ChatColor.RED + "Invalid setting. Type \"/manhunt settings <pg>\" for a complete list.");
 				}
 			}
 		} else {
 			p.sendMessage(ChatColor.RED + "Unknown Manhunt command! Type \"/manhunt help\" for help.");
 		}
 		return true;
-			/*} else if (args[0].equalsIgnoreCase("create")) {
-				if (!p.isOp()) {
-					p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
-					return true;
-				} else if (Game.isGameStarted()) {
-					p.sendMessage(ChatColor.RED + "There is already a game running!");
-					return true;
-				}
-			}
-			if (args.length == 1) {
-				if (!DataFile.exists("preferences")) {
-					DataFile df;
-					try {
-						df = DataFile.newFile("preferences");
-					} catch (Exception e) {
-						p.sendMessage(ChatColor.RED + "An error occured while creating the new data file!");
-						Bukkit.getLogger().severe("An attempt to create a data file (preferences.dat) failed:");
-						e.printStackTrace();
-						return true;
-					}
-					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
-				} else {
-					DataFile df;
-					try {
-						df = new DataFile("preferences");
-					} catch (Exception e) {
-						p.sendMessage(ChatColor.RED + "An error occured while loading the data file!");
-						Bukkit.getLogger().severe("An attempt to load a data file (preferences.dat) failed:");
-						e.printStackTrace();
-						return true;
-					}
-					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
-				}
-			} else if (args.length > 1) {
-				p.sendMessage(ChatColor.RED + "Too many arguments!");
-			}
-		} else if (args[0].equalsIgnoreCase("load")) {
-			if (!p.isOp()) {
-				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
-				return true;
-			} else if (Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "There is already a game running!");
-				return true;
-			}
-			if (args.length == 1) {
-				if (!DataFile.exists("preferences")) {
-					DataFile df;
-					try {
-						df = DataFile.newFile("preferences");
-					} catch (Exception e) {
-						p.sendMessage(ChatColor.RED + "An error occured while creating the new data file!");
-						Bukkit.getLogger().severe("An attempt to create a data file (preferences.dat) failed:");
-						e.printStackTrace();
-						return true;
-					}
-					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
-				} else {
-					DataFile df;
-					try {
-						df = new DataFile("preferences");
-					} catch (Exception e) {
-						p.sendMessage(ChatColor.RED + "An error occured while loading the data file!");
-						Bukkit.getLogger().severe("An attempt to load a data file (preferences.dat) failed:");
-						e.printStackTrace();
-						return true;
-					}
-					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A new game was successfully created!");
-				}
-			} else if (args.length > 2) {
-				p.sendMessage(ChatColor.RED + "Too many arguments!");
-			} else {
-				if (!DataFile.exists(args[1])) {
-					p.sendMessage(ChatColor.RED + "No data file exists by the name '" + args[1] + ".dat'!");
-				} else {
-					DataFile df;
-					try {
-						df = new DataFile(args[1]);
-					} catch (Exception e) {
-						p.sendMessage(ChatColor.RED + "An error occured while loading the data file!");
-						Bukkit.getLogger().severe("An attempt to load a data file (" + args[1] + ".dat) failed:");
-						e.printStackTrace();
-						return true;
-					}
-					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A game was successfully created with that data file!");
-				}
-			}
-		} else if (args[0].equalsIgnoreCase("new")) {
-			if (!p.isOp()) {
-				p.sendMessage(ChatColor.RED + "You're not allowed to do that!");
-				return true;
-			} else if (Game.isGameStarted()) {
-				p.sendMessage(ChatColor.RED + "There is already a game running!");
-				return true;
-			}
-			if (args.length == 1) {
-				p.sendMessage(ChatColor.RED + "Not enough arguments!");
-			} else {
-				if (!DataFile.exists(args[1])) {
-					DataFile df;
-					try {
-						df = DataFile.newFile(args[1]);
-					} catch (Exception e) {
-						p.sendMessage(ChatColor.RED + "An error occured while creating the new data file!");
-						Bukkit.getLogger().severe("An attempt to create a data file (" + args[1] + ".dat) failed:");
-						e.printStackTrace();
-						return true;
-					}
-					Game.newActiveGame(df);
-					p.sendMessage(ChatColor.GREEN + "A new game was successfully created with that data file.");
-				}
-			}
-		} else {
-			Bukkit.dispatchCommand(p, "manhunt help");
-		}
-		return true;*/
-		/*if (args.length == 0) {
-			sender.sendMessage(ChatColor.RED + "Not enough arguments!");
-			
-		} else if (args[0].equalsIgnoreCase("help")
-				|| args[0].equalsIgnoreCase("commands")) {
-			
-			sender.sendMessage(ChatColor.YELLOW + "/manhunt spawn");
-			sender.sendMessage(ChatColor.WHITE + "   sends you to the manhunt world spawn.");
-			
-			if (sender.isOp()) {
-				sender.sendMessage(ChatColor.YELLOW + "/manhunt hunter <name> <name> <name> ...");
-				sender.sendMessage(ChatColor.WHITE + "   Adds the listed players to the 'hunters' team.");
-
-				sender.sendMessage(ChatColor.YELLOW + "/manhunt prey <name> <name> <name> ...");
-				sender.sendMessage(ChatColor.WHITE + "   Adds the listed players to the 'hunted' team.");
-
-				sender.sendMessage(ChatColor.YELLOW + "/manhunt spectator <name> <name> <name> ...");
-				sender.sendMessage(ChatColor.WHITE + "   Makes the listed players 'spectators'.");
-				
-				sender.sendMessage(ChatColor.YELLOW + "/manhunt moveall <hunters|prey|spectators>");
-				sender.sendMessage(ChatColor.WHITE + "   Moves all current players to the specified team.");
-				
-				sender.sendMessage(ChatColor.YELLOW + "/manhunt timeout <minutes>");
-				sender.sendMessage(ChatColor.WHITE + "   Adds a kick timer when someone loses connection. Use 'none' to disable it.");
-				
-				sender.sendMessage(ChatColor.YELLOW + "/manhunt timeout <minutes>");
-				sender.sendMessage(ChatColor.WHITE + "   adds a kick timer when someone loses connection. Use 'none' to disable it");
-			}
-			
-			
-		} else if (args[0].equalsIgnoreCase("world") || args[0].equalsIgnoreCase("spawn")) {
-			if (sender instanceof Player) {
-				((Player) sender).teleport(Bukkit.getServer().getWorld("manhunt").getSpawnLocation());
-			} else {
-				sender.sendMessage(ChatColor.RED + "You can't do that from the console!");
-			}
-			
-		} else if (args[0].equalsIgnoreCase("hunter")
-				|| args[0].equalsIgnoreCase("hunters")
-				|| args[0].equalsIgnoreCase("addhunters")
-				|| args[0].equalsIgnoreCase("addhunters")
-				|| args[0].equalsIgnoreCase("sethunters")
-				|| args[0].equalsIgnoreCase("makehunter")
-				|| args[0].equalsIgnoreCase("addhunter")
-				|| args[0].equalsIgnoreCase("sethunter")
-				|| args[0].equalsIgnoreCase("makehunters")) {
-			
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				sender.sendMessage(ChatColor.RED + "You need to list some names!");
-				return true;
-			}
-			
-			for (int i=1 ; i < args.length ; i++) {
-				game.makeHunter(args[i]);
-			}
-			
-		} else if (args[0].equalsIgnoreCase("hunted")
-				|| args[0].equalsIgnoreCase("addhunted")
-				|| args[0].equalsIgnoreCase("sethunted")
-				|| args[0].equalsIgnoreCase("makehunted")
-				|| args[0].equalsIgnoreCase("prey")
-				|| args[0].equalsIgnoreCase("addprey")
-				|| args[0].equalsIgnoreCase("makeprey")
-				|| args[0].equalsIgnoreCase("setprey")) {
-
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				sender.sendMessage(ChatColor.RED + "You need to list some names!");
-				return true;
-			}
-			
-			for (int i=1 ; i < args.length ; i++) {
-				game.makeHunted(args[i]);
-			}
-			
-		} else if (args[0].equalsIgnoreCase("spectator")
-				|| args[0].equalsIgnoreCase("spectate")
-				|| args[0].equalsIgnoreCase("spectators")
-				|| args[0].equalsIgnoreCase("makespectator")
-				|| args[0].equalsIgnoreCase("makespectators")
-				|| args[0].equalsIgnoreCase("setspectator")
-				|| args[0].equalsIgnoreCase("setspectators")
-				|| args[0].equalsIgnoreCase("addspectator")
-				|| args[0].equalsIgnoreCase("addspectators")
-				|| args[0].equalsIgnoreCase("addspectate")
-				|| args[0].equalsIgnoreCase("makespectate")
-				|| args[0].equalsIgnoreCase("setspectate")
-				|| args[0].equalsIgnoreCase("watchers")
-				|| args[0].equalsIgnoreCase("makewatcher")
-				|| args[0].equalsIgnoreCase("forcewatch")
-				|| args[0].equalsIgnoreCase("setwatcher")) {
-
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				sender.sendMessage(ChatColor.RED + "You need to list some names!");
-				return true;
-			}
-			
-			for (int i=1 ; i < args.length ; i++) {
-				game.makeSpectator(args[i]);
-			}
-			
-		} else if (args[0].equals("moveall")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				sender.sendMessage(ChatColor.RED + "You need to specify a team to move everyone to!");
-			}
-			if (args[1].equalsIgnoreCase("hunters")
-					|| args[1].equalsIgnoreCase("hunter")) {
-				game.makeAllPlayersHunters();
-			} else if (args[1].equalsIgnoreCase("hunted")
-					|| args[1].equalsIgnoreCase("prey")) {
-				game.makeAllPlayersHunted();
-			} else if (args[1].equalsIgnoreCase("spectator")
-					|| args[1].equalsIgnoreCase("spectators")
-					|| args[1].equalsIgnoreCase("spectate")) {
-				game.makeAllPlayersSpectators();
-			}
-			
-		} else if (args[0].equalsIgnoreCase("clear")
-				|| args[0].equalsIgnoreCase("clearall")) {
-			if (args.length == 1) {
-				game.removeAll();
-			} else if (args[1].equalsIgnoreCase("hunters")) {
-				game.removeAllHunters();
-			} else if (args[1].equalsIgnoreCase("hunted")) {
-				game.removeAllHunted();
-			} else if (args[1].equalsIgnoreCase("spectators")) {
-				game.removeAllSpectators();
-			}
-			
-		} else if (args[0].equalsIgnoreCase("kickspectators")) {
-			if (args.length == 1) {
-				game.kickSpectators();
-				sender.sendMessage(ChatColor.YELLOW + "All spectators have been kicked from the server!");
-			} else if (args.length == 2) {
-				if (game.kickSpectators(args[1])) {
-					sender.sendMessage(ChatColor.YELLOW + "All spectators have been teleported to world " + args[1] + ".");
-				} else {
-					if (!args[1].equalsIgnoreCase("world")) {
-						sender.sendMessage(ChatColor.RED + "That world does not exist! Try 'world'.");
-					} else {
-						sender.sendMessage(ChatColor.RED + "That world does not exist!");
-					}
-				}
-			} else {
-				sender.sendMessage(ChatColor.GREEN + "Too many arguments!");
-			}
-			
-		} else if (args[0].equalsIgnoreCase("pvponly")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				if (plugin.pvpOnly == false) {
-					plugin.pvpOnly = true;
-					game.broadcastPlayers(ChatColor.GREEN + "PvP ONLY mode has been activated. You can only be killed by other players!");
-				} else {
-					plugin.pvpOnly = false;
-					game.broadcastPlayers(ChatColor.GREEN + "PvP ONLY mode has been deactivated. Beware the creepers!");
-				}
-			} else if (args[1].equalsIgnoreCase("true")
-					|| args[1].equalsIgnoreCase("yes")
-					|| args[1].equalsIgnoreCase("1")) {
-				plugin.pvpOnly = true;
-				game.broadcastPlayers(ChatColor.GREEN + "PvP ONLY mode has been activated. You can only be killed by other players!");
-			} else if (args[1].equalsIgnoreCase("false")
-					|| args[1].equalsIgnoreCase("no")
-					|| args[1].equalsIgnoreCase("0")) {
-				plugin.pvpOnly = false;
-				game.broadcastPlayers(ChatColor.GREEN + "PvP ONLY mode has been deactivated. Beware the creepers!");
-			}
-			
-		} else if (args[0].equalsIgnoreCase("friendlyfire")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				if (plugin.friendlyFire == false) {
-					plugin.friendlyFire = true;
-					game.broadcastPlayers(ChatColor.GREEN + "Friendly fire is enabled! You can be killed by your own team!");
-				} else {
-					plugin.friendlyFire = false;
-					game.broadcastPlayers(ChatColor.GREEN + "Friendly fire is disabled! You can only be killed by the enemy!");
-				}
-			} else if (args[1].equalsIgnoreCase("true")
-					|| args[1].equalsIgnoreCase("yes")
-					|| args[1].equalsIgnoreCase("1")) {
-				plugin.friendlyFire = true;
-				game.broadcastPlayers(ChatColor.GREEN + "Friendly fire is enabled! You can be killed by your own team!");
-			} else if (args[1].equalsIgnoreCase("false")
-					|| args[1].equalsIgnoreCase("no")
-					|| args[1].equalsIgnoreCase("0")) {
-				plugin.friendlyFire = false;
-				game.broadcastPlayers(ChatColor.GREEN + "Friendly fire is disabled! You can only be killed by the enemy!");
-			}
-			
-		} else if (args[0].equalsIgnoreCase("passivemobs")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				if (plugin.passiveMobs == false) {
-					plugin.passiveMobs = true;
-					game.broadcastPlayers(ChatColor.GREEN + "Passive mobs can now spawn!");
-				} else {
-					plugin.passiveMobs = false;
-					game.broadcastPlayers(ChatColor.GREEN + "Passive mobs can no longer spawn!");
-				}
-			} else if (args[1].equalsIgnoreCase("true")
-					|| args[1].equalsIgnoreCase("yes")
-					|| args[1].equalsIgnoreCase("1")) {
-				plugin.passiveMobs = true;
-				game.broadcastPlayers(ChatColor.GREEN + "Passive mobs can now spawn!");
-			} else if (args[1].equalsIgnoreCase("false")
-					|| args[1].equalsIgnoreCase("no")
-					|| args[1].equalsIgnoreCase("0")) {
-				plugin.passiveMobs = false;
-				game.broadcastPlayers(ChatColor.GREEN + "Passive mobs can no longer spawn!");
-			}
-			
-		} else if (args[0].equalsIgnoreCase("allowspectators")
-				|| args[0].equalsIgnoreCase("allowspectating")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				if (plugin.allowSpectators == false) {
-					plugin.allowSpectators = true;
-					game.broadcastPlayers(ChatColor.GREEN + "Spectating is now allowed!");
-				} else {
-					plugin.allowSpectators = false;
-					game.broadcastPlayers(ChatColor.GREEN + "Spectating is no longer allowd!");
-				}
-			} else if (args[1].equalsIgnoreCase("true")
-					|| args[1].equalsIgnoreCase("yes")
-					|| args[1].equalsIgnoreCase("1")) {
-				plugin.allowSpectators = true;
-				game.broadcastPlayers(ChatColor.GREEN + "Spectating is now allowed!");
-			} else if (args[1].equalsIgnoreCase("false")
-					|| args[1].equalsIgnoreCase("no")
-					|| args[1].equalsIgnoreCase("0")) {
-				plugin.allowSpectators = false;
-				game.broadcastPlayers(ChatColor.GREEN + "Spectating is no longer allowd!");
-			}
-			
-		
-		} else if (args[0].equalsIgnoreCase("offlinetimeout")
-				|| args[0].equalsIgnoreCase("timeout")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				sender.sendMessage(ChatColor.RED + "You must specify a number of minutes!");
-				return true;
-			} else try {
-				if (args[1].equalsIgnoreCase("none")
-						|| args[1].equalsIgnoreCase("off")) {
-					args[1] = "-1";
-				}
-				plugin.offlineTimeout = Integer.parseInt(args[1]);
-				if (plugin.offlineTimeout < 0) {
-					plugin.offlineTimeout = -1;
-				}
-				if (plugin.offlineTimeout > 1) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout set to " + plugin.offlineTimeout + " minutes! If you disconnect, you will only have");
-					game.broadcastPlayers(ChatColor.GREEN + "" + plugin.offlineTimeout + " minutes to reconnect before you are booted from the game!");
-				} else if (plugin.offlineTimeout == 1) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout set to 1 minute! If you disconnect, you will only have");
-					game.broadcastPlayers(ChatColor.GREEN + "1 minute to reconnect before you are booted from the game!");
-				} else if (plugin.offlineTimeout == 0) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout set to 0 minutes! If you disconnect, you will be immediately");
-					game.broadcastPlayers(ChatColor.GREEN + "booted from the game!");
-				} else if (plugin.offlineTimeout == -1) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout has been removed! If you disconnect, you will never be");
-					game.broadcastPlayers(ChatColor.GREEN + "booted from the game!");
-				} 
-			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + "Invalid number of minutes! You must use an integer!");
-				return true;
-			}
-			
-		} else if (args[0].equalsIgnoreCase("offlinetimeout")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			if (args.length == 1) {
-				sender.sendMessage(ChatColor.RED + "You must specify a number of minutes!");
-				return true;
-			} else try {
-				if (args[1].equalsIgnoreCase("none")
-						|| args[1].equalsIgnoreCase("off")) {
-					args[1] = "-1";
-				}
-				plugin.offlineTimeout = Integer.parseInt(args[1]);
-				if (plugin.offlineTimeout < 0) {
-					plugin.offlineTimeout = -1;
-				}
-				if (plugin.offlineTimeout > 1) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout set to " + plugin.offlineTimeout + " minutes! If you disconnect, you will only have");
-					game.broadcastPlayers(ChatColor.GREEN + "" + plugin.offlineTimeout + " minutes to reconnect before you are booted from the game!");
-				} else if (plugin.offlineTimeout == 1) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout set to 1 minute! If you disconnect, you will only have");
-					game.broadcastPlayers(ChatColor.GREEN + "1 minute to reconnect before you are booted from the game!");
-				} else if (plugin.offlineTimeout == 0) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout set to 0 minutes! If you disconnect, you will be immediately");
-					game.broadcastPlayers(ChatColor.GREEN + "booted from the game!");
-				} else if (plugin.offlineTimeout == -1) {
-					game.broadcastPlayers(ChatColor.GREEN + "Timeout has been removed! If you disconnect, you will never be");
-					game.broadcastPlayers(ChatColor.GREEN + "booted from the game!");
-				} 
-			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + "Invalid number of minutes! You must use an integer!");
-				return true;
-			}
-			
-		} else if (args[0].equalsIgnoreCase("setspawn")) {
-			if (!sender.isOp()) {
-				sender.sendMessage(ChatColor.RED + "You need to be an operator to do that!");
-				return true;
-			}
-			if (game.gameStarted()) {
-				sender.sendMessage(ChatColor.RED + "You can't do that while the game is in progress!");
-				return true;
-			}
-			Player player = (Player) sender;
-			if (((Player) sender).getWorld() == plugin.getWorld()) {
-				plugin.getWorld().setSpawnLocation(player.getLocation().getBlockX(),
-													player.getLocation().getBlockY(),
-													player.getLocation().getBlockZ());
-				game.broadcastPlayers(ChatColor.GREEN + "New spawn location has been set!");
-			}
-		}
-		return true;*/
 	}
 }

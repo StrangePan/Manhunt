@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -32,9 +34,12 @@ public class HuntedPlayerListener extends PlayerListener {
 			return;
 		}
 		if (!g.gameHasBegun()) {
-			return;
+			if (!g.gameHasBegun()) {
+				g.broadcastAll(g.getColor(p) + "[" + p.getName() + "] " + ChatColor.WHITE + e.getMessage());
+				e.setCancelled(true);
+				return;
+			}
 		}
-		
 		if (g.isHunter(p)) {
 			g.broadcastHunters(ChatColor.RED + "[" + p.getName() + "] " + ChatColor.WHITE + e.getMessage());
 			e.setCancelled(true);
@@ -47,7 +52,7 @@ public class HuntedPlayerListener extends PlayerListener {
 		} else {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (g.isHunted(player) && g.isHunter(player) && g.isSpectating(player)) {
-					player.sendMessage(ChatColor.WHITE + "<" + ChatColor.YELLOW + p.getName() + ChatColor.WHITE + "] " + e.getMessage());
+					player.sendMessage(ChatColor.WHITE + "<" + p.getName() + "> " + e.getMessage());
 				}
 			}
 			e.setCancelled(true);
@@ -76,14 +81,14 @@ public class HuntedPlayerListener extends PlayerListener {
 		Game g = HuntedPlugin.getInstance().game;
 		Player p = e.getPlayer();
 		//If Hunters venture too far during pre-game...
-		if (g.gameHasBegun() && g.isHunter(p) && !g.huntHasBegun() && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+		if (g.gameHasBegun() && g.isHunter(p) && HuntedPlugin.getInstance().settings.hunterBoundry >= 0 && !g.huntHasBegun() && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
 			if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.hunterBoundry) {
 				g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 				p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			}
 		}
-		//If any player ventures too far...
-		if (g.gameHasBegun() && (g.isHunter(p) || g.isHunted(p)) && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+		//If any player ventures too far from spawn...
+		if (g.gameHasBegun() && (g.isHunter(p) || g.isHunted(p)) && HuntedPlugin.getInstance().settings.globalBoundry >= 256 && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
 			if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.globalBoundry) {
 				g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 				p.sendMessage(ChatColor.RED + "You've ventured too far!");
@@ -98,6 +103,48 @@ public class HuntedPlayerListener extends PlayerListener {
 			g.onLogin(p);
 		} else {
 			g.onLogout(p);
+		}
+	}
+	
+	public void onBucketEmptyEvent(PlayerBucketEmptyEvent e) {
+		Game g = HuntedPlugin.getInstance().game;
+		if (g.gameHasBegun()) {
+			if (g.isSpectating(e.getPlayer())) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunted(e.getPlayer())
+					&& g.getDistance(e.getBlockClicked().getLocation(),
+					HuntedPlugin.getInstance().settings.hunterSpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunter(e.getPlayer())
+					&& g.getDistance(e.getBlockClicked().getLocation(),
+					HuntedPlugin.getInstance().settings.preySpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	public void onBucketFillEvent(PlayerBucketFillEvent e) {
+		Game g = HuntedPlugin.getInstance().game;
+		if (g.gameHasBegun()) {
+			if (g.isSpectating(e.getPlayer())) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunted(e.getPlayer())
+					&& g.getDistance(e.getBlockClicked().getLocation(),
+					HuntedPlugin.getInstance().settings.hunterSpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunter(e.getPlayer())
+					&& g.getDistance(e.getBlockClicked().getLocation(),
+					HuntedPlugin.getInstance().settings.preySpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
 		}
 	}
 }

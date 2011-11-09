@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import org.bukkit.Location;
+
 public class SettingsFile extends Properties {
 	private static final long serialVersionUID = 0L;
 	
@@ -18,13 +20,14 @@ public class SettingsFile extends Properties {
 	
 	public boolean envDeath;
 	public boolean envHunterRespawn;
-	public boolean envHuntedRespawn;
+	public boolean envPreyRespawn;
 	
 	public boolean friendlyFire;
 	public boolean pvpInstantDeath;
 	
 	public boolean opPermission;
 	public boolean allTalk;
+	public boolean loadouts;
 	public boolean autoHunter;
 	
 	public int offlineTimeout;
@@ -32,6 +35,10 @@ public class SettingsFile extends Properties {
 	
 	public int globalBoundry;
 	public int hunterBoundry;
+	public int noBuildRange;
+	
+	public Location hunterSpawn;
+	public Location preySpawn;
 	
 	public SettingsFile() {
 		location = "plugins/Hunted/config.db";
@@ -97,14 +104,18 @@ public class SettingsFile extends Properties {
 		spawnHostile = true;
 		envDeath = false;
 		envHunterRespawn = false;
-		envHuntedRespawn = false;
+		envPreyRespawn = false;
 		friendlyFire = false;
 		pvpInstantDeath = false;
 		autoHunter = true;
+		loadouts = false;
 		dayLimit = 3;
 		offlineTimeout = 5;
 		globalBoundry = -1;
 		hunterBoundry = 16;
+		noBuildRange = 8;
+		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+		preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	}
 	
 	public void loadValues() {
@@ -162,14 +173,14 @@ public class SettingsFile extends Properties {
 		} else envHunterRespawn = true;
 		put("envHunterRespawn", Boolean.toString(envHunterRespawn));
 		
-		if (containsKey("envHuntedRespawn")) {
-			if (getProperty("envHuntedRespawn").length() > 0 && getProperty("envHuntedRespawn").equalsIgnoreCase("true")) {
-				envHuntedRespawn = true;
+		if (containsKey("envPreyRespawn")) {
+			if (getProperty("envPreyRespawn").length() > 0 && getProperty("envPreyRespawn").equalsIgnoreCase("true")) {
+				envPreyRespawn = true;
 			} else {
-				envHuntedRespawn = false;
+				envPreyRespawn = false;
 			}
-		} else envHuntedRespawn = true;
-		put("envHuntedRespawn", Boolean.toString(envHuntedRespawn));
+		} else envPreyRespawn = true;
+		put("envPreyRespawn", Boolean.toString(envPreyRespawn));
 		
 		if (containsKey("friendlyFire")) {
 			if (getProperty("friendlyFire").length() > 0 && getProperty("friendlyFire").equalsIgnoreCase("true")) {
@@ -188,6 +199,15 @@ public class SettingsFile extends Properties {
 			}
 		} else pvpInstantDeath = false;
 		put("pvpInstantDeath", Boolean.toString(pvpInstantDeath));
+		
+		if (containsKey("loadouts")) {
+			if (getProperty("loadouts").length() > 0 && getProperty("loadouts").equalsIgnoreCase("true")) {
+				loadouts = true;
+			} else {
+				loadouts = false;
+			}
+		} else loadouts = false;
+		put("loadouts", Boolean.toString(loadouts));
 		
 		if (containsKey("autoHunter")) {
 			if (getProperty("autoHunter").length() > 0 && getProperty("autoHunter").equalsIgnoreCase("true")) {
@@ -226,7 +246,7 @@ public class SettingsFile extends Properties {
 			if (getProperty("globalBoundry").length() > 0) {
 				try {
 					globalBoundry = Integer.parseInt(getProperty("globalBoundry"));
-					if (globalBoundry < 256) globalBoundry = 256;
+					if (globalBoundry < 256 && globalBoundry > -1) globalBoundry = 256;
 				} catch (NumberFormatException e) {
 					globalBoundry = -1;
 				}
@@ -245,12 +265,67 @@ public class SettingsFile extends Properties {
 			} else hunterBoundry = 16;
 		} else hunterBoundry = 16;
 		put("hunterBoundry", Integer.toString(hunterBoundry));
+		
+		if (containsKey("noBuildRange")) {
+			if (getProperty("noBuildRange").length() > 0) {
+				try {
+					noBuildRange = Integer.parseInt(getProperty("noBuildRange"));
+					if (noBuildRange < -1) noBuildRange = -1;
+				} catch (NumberFormatException e) {
+					noBuildRange = 8;
+				}
+			} else noBuildRange = 8;
+		} else noBuildRange = 8;
+		put("noBuildRange", Integer.toString(noBuildRange));
+		
+		if (containsKey("hunterSpawn")) {
+			if (getProperty("hunterSpawn").split(",").length >= 3) {
+				String[] loc = getProperty("hunterSpawn").split(",");
+				try {
+					hunterSpawn.setX(Double.parseDouble(loc[0]));
+					hunterSpawn.setY(Double.parseDouble(loc[1]));
+					hunterSpawn.setZ(Double.parseDouble(loc[2]));
+				} catch (NumberFormatException e) {
+					hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+				}
+			} else {
+				hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+			}
+		} else {
+			hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+		}
+		
+		if (containsKey("preySpawn")) {
+			if (getProperty("preySpawn").split(",").length >= 3) {
+				String[] loc = getProperty("preySpawn").split(",");
+				try {
+					preySpawn.setX(Double.parseDouble(loc[0]));
+					preySpawn.setY(Double.parseDouble(loc[1]));
+					preySpawn.setZ(Double.parseDouble(loc[2]));
+				} catch (NumberFormatException e) {
+					preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+				}
+			} else {
+				preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+			}
+		} else {
+			preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+		}
 	}
 	
 	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {
 			put(setting, value);
+			loadValues();
 			saveFile();
+		}
+	} public void changeSetting(String setting, Location loc) {
+		if (containsKey(setting)) {
+			String value = "";
+			value += loc.getX() + ",";
+			value += loc.getY() + ",";
+			value += loc.getZ();
+			put(setting, value);
 		}
 	}
 }

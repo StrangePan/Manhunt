@@ -21,12 +21,15 @@ import org.bukkit.entity.Squid;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
@@ -35,52 +38,59 @@ public class HuntedEntityListener extends EntityListener {
 	public HuntedEntityListener() {
 		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_TARGET, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_PLACE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 	}
 	
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (!e.getEntity().getWorld().equals(HuntedPlugin.getInstance().getWorld())
-				|| !(e.getEntity() instanceof Player)) {
+		if (!e.getEntity().getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
 			return;
 		}
-		Player p = (Player) e.getEntity();
 		Game g = HuntedPlugin.getInstance().game;
 		SettingsFile settings = HuntedPlugin.getInstance().settings;
-		if (!g.gameHasBegun() || g.isSpectating(p)) {
-			e.setCancelled(true);
-			return;
-		}
-		if (e instanceof EntityDamageByEntityEvent) {
+		if ((e instanceof EntityDamageByEntityEvent)) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 			if (event.getDamager() instanceof Player) {
-				Player p2 = (Player) event.getDamager();
-				if (g.isSpectating(p2) || !g.huntHasBegun()) {
+				if (g.isSpectating((Player) event.getDamager())) {
 					e.setCancelled(true);
 					return;
-				} else if (!settings.friendlyFire && 
-						((g.isHunted(p) && g.isHunted(p2)) ||
-						(g.isHunter(p) && g.isHunter(p2)))) {
-					e.setCancelled(true);
-					return;
-				} else if (settings.pvpInstantDeath) {
-					if ((g.isHunted(p) && g.isHunter(p2)) || (g.isHunter(p) && g.isHunted(p2))) {
-						((CraftPlayer) p).getHandle().die(DamageSource.playerAttack(((CraftPlayer) p2).getHandle()));
-					}
-					e.setCancelled(true);
-					return;
-				}
-			} else {
-				if (!settings.envDeath) {
-					if (e.getDamage() >= p.getHealth()) {
-						e.setDamage(p.getHealth()-1);
-					}
 				}
 			}
-		} else {
-			if (!settings.envDeath) {
+			if (event.getEntity() instanceof Player) {
+				if (g.isSpectating((Player) event.getEntity()) || !g.huntHasBegun()) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+			if ((event.getEntity() instanceof Player) && (event.getDamager() instanceof Player)) {
+				Player p = (Player) event.getEntity();
+				Player p2 = (Player) event.getDamager();
+				
+				if (!settings.friendlyFire) {
+					if ((g.isHunter(p) && g.isHunter(p2)) || (g.isHunted(p) && g.isHunted(p2))) {
+						e.setCancelled(true);
+						return;
+					}
+				}
+				if (settings.pvpInstantDeath) {
+					if ((g.isHunter(p) && g.isHunted(p2)) || (g.isHunted(p) && g.isHunter(p2))) {
+						((CraftPlayer) p).getHandle().die(DamageSource.playerAttack(((CraftPlayer) p2).getHandle()));
+						e.setCancelled(true);
+						return;
+					}
+				}
+			} else if ((event.getEntity() instanceof Player) && !(event.getDamager() instanceof Player) && !settings.envDeath) {
+				Player p = (Player) e.getEntity();
 				if (e.getDamage() >= p.getHealth()) {
 					e.setDamage(p.getHealth()-1);
 				}
+			}
+		} else if ((e.getEntity() instanceof Player) && !settings.envDeath) {
+			Player p = (Player) e.getEntity();
+			if (e.getDamage() >= p.getHealth()) {
+				e.setDamage(p.getHealth()-1);
 			}
 		}
 	}
@@ -116,7 +126,7 @@ public class HuntedEntityListener extends EntityListener {
 					g.onDie(p);
 					}
 				} else {
-					if ((settings.envHunterRespawn && g.isHunter(p)) || (settings.envHuntedRespawn && g.isHunted(p))){
+					if ((settings.envHunterRespawn && g.isHunter(p)) || (settings.envPreyRespawn && g.isHunted(p))){
 						p.setHealth(20);
 						p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
 						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes, and has respawned!");
@@ -126,7 +136,7 @@ public class HuntedEntityListener extends EntityListener {
 					}
 				}
 			} else {
-				if ((settings.envHunterRespawn && g.isHunter(p)) || (settings.envHuntedRespawn && g.isHunted(p))){
+				if ((settings.envHunterRespawn && g.isHunter(p)) || (settings.envPreyRespawn && g.isHunted(p))){
 					p.setHealth(20);
 					p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
 					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes, and has respawned!");
@@ -136,106 +146,57 @@ public class HuntedEntityListener extends EntityListener {
 				}
 			}
 		}
-		/*if (!game.gameStarted()) {
-			return;
-		} else if(!game.huntStarted()) {
-			return;
-		}
-		
-		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
-			
-			if (player.getLastDamageCause().getEntity() instanceof Player) {
-				Player killer = (Player) player.getLastDamageCause().getEntity();
-				if (game.isHunter(killer.getName())
-						&& game.isHunted(player.getName())) {
-					//Hunter killed a Hunted
-					game.makeSpectator(player.getName());
-					game.broadcastAll(
-							ChatColor.RED + "Hunter " + killer.getName() + " "
-							+ ChatColor.GREEN + "has slain"
-							+ ChatColor.BLUE + " " + player.getName() + " "
-							+ ChatColor.GREEN + "!");
-					if (game.HuntedAmount() == 0) {
-						game.broadcastAll(
-								ChatColor.GREEN + "All the " + 
-								ChatColor.BLUE + "hunted " + 
-								ChatColor.GREEN + "have been slain! The manhunt is over! " +
-								ChatColor.RED + "Hunters win!");
-					} else {
-						game.broadcastAll(
-								ChatColor.RED + "Remaining hunters: "
-								+ game.HuntersAmount()
-								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ game.HuntedAmount());
-					}
-				}
-				if (game.isHunted(killer.getName())
-						&& game.isHunter(player.getName())) {
-					//Hunted killed a Hunter
-					game.makeSpectator(player.getName());
-					game.broadcastAll(
-							ChatColor.RED + "Hunter " + player.getName() + " "
-							+ ChatColor.GREEN + "has slain by"
-							+ ChatColor.BLUE + " " + killer.getName() + " "
-							+ ChatColor.GREEN + "!");
-					if (game.HuntersAmount() == 0) {
-						game.broadcastAll(
-								ChatColor.GREEN + "All the " + 
-								ChatColor.RED + "hunters " + 
-								ChatColor.GREEN + "have been slain! The manhunt is over! " +
-								ChatColor.BLUE + "Hunters lose!");
-					} else {
-						game.broadcastAll(
-								ChatColor.RED + "Remaining hunters: "
-								+ game.HuntersAmount()
-								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ game.HuntedAmount());
-					}
-				}
-			} else if(!plugin.pvpOnly) {
-				if (game.isHunted(player.getName())) {
-					//Hunted is killed
-					game.makeSpectator(player.getName());
-					game.broadcastAll(
-							ChatColor.BLUE + "Hunted " + player.getName() + " "
-							+ ChatColor.GREEN + "died from natural causes!");
-					if (game.HuntedAmount() == 0) {
-						game.broadcastAll(
-								ChatColor.GREEN + "All the " + 
-								ChatColor.BLUE + "hunted " + 
-								ChatColor.GREEN + "have been slain! The manhunt is over! " +
-								ChatColor.RED + "Hunters win!");
-					} else {
-						game.broadcastAll(
-								ChatColor.RED + "Remaining hunters: "
-								+ game.HuntersAmount()
-								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ game.HuntedAmount());
-					}
-				}
-				if (game.isHunter(player.getName())) {
-					//Hunter is killed 
-					game.makeSpectator(player.getName());
-					game.broadcastAll(
-							ChatColor.RED + "Hunter " + player.getName() + " "
-							+ ChatColor.GREEN + "died from natural causes!");
-					if (game.HuntersAmount() == 0) {
-						game.broadcastAll(
-								ChatColor.GREEN + "All the " + 
-								ChatColor.RED + "hunters " + 
-								ChatColor.GREEN + "have been slain! The manhunt is over! " +
-								ChatColor.BLUE + "Hunters lose!");
-					} else {
-						game.broadcastAll(
-								ChatColor.RED + "Remaining hunters: "
-								+ game.HuntersAmount()
-								+ ChatColor.BLUE + "  Remaining Prey: "
-								+ game.HuntedAmount());
-					}
-				}
+	}
+	
+	public void onBlockPlace(BlockPlaceEvent e) {
+		Game g = HuntedPlugin.getInstance().game;
+		if (g.gameHasBegun()) {
+			if (g.isSpectating(e.getPlayer())) {
+				e.setCancelled(true);
 			}
-		}*/
+			else if (g.isHunted(e.getPlayer())
+					&& g.getDistance(e.getBlock().getLocation(),
+					HuntedPlugin.getInstance().settings.hunterSpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunter(e.getPlayer())
+					&& g.getDistance(e.getBlock().getLocation(),
+					HuntedPlugin.getInstance().settings.preySpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	public void onBlockBreak(BlockBreakEvent e) {
+		Game g = HuntedPlugin.getInstance().game;
+		if (g.gameHasBegun()) {
+			if (g.isSpectating(e.getPlayer())) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunted(e.getPlayer())
+					&& g.getDistance(e.getBlock().getLocation(),
+					HuntedPlugin.getInstance().settings.hunterSpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+			else if (g.isHunter(e.getPlayer())
+					&& g.getDistance(e.getBlock().getLocation(),
+					HuntedPlugin.getInstance().settings.preySpawn)
+					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	public void onEntityTarget(EntityTargetEvent e) {
+		Game g = HuntedPlugin.getInstance().game;
+		if (e.getTarget() instanceof Player) {
+			if (g.isSpectating((Player) e.getTarget()) && g.gameHasBegun()) {
+				e.setCancelled(true);
+			}
+		}
 	}
 	
 	public void onCreatureSpawn(CreatureSpawnEvent e) {
