@@ -21,8 +21,6 @@ import org.bukkit.entity.Squid;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -39,8 +37,6 @@ public class HuntedEntityListener extends EntityListener {
 		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_TARGET, this, Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_PLACE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 	}
 	
@@ -85,12 +81,18 @@ public class HuntedEntityListener extends EntityListener {
 				Player p = (Player) e.getEntity();
 				if (e.getDamage() >= p.getHealth()) {
 					e.setDamage(p.getHealth()-1);
+					return;
 				}
 			}
-		} else if ((e.getEntity() instanceof Player) && !settings.envDeath) {
+		} else if (e.getEntity() instanceof Player) {
 			Player p = (Player) e.getEntity();
-			if (e.getDamage() >= p.getHealth()) {
+			if (!g.huntHasBegun()) {
+				e.setCancelled(true);
+				return;
+			}
+			if (!settings.envDeath && e.getDamage() >= p.getHealth()) {
 				e.setDamage(p.getHealth()-1);
+				return;
 			}
 		}
 	}
@@ -144,51 +146,6 @@ public class HuntedEntityListener extends EntityListener {
 					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now on the sidelines!");
 					g.onDie(p);
 				}
-			}
-		}
-	}
-	
-	public void onBlockPlace(BlockPlaceEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			}
-			else if (g.isHunted(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.hunterSpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
-				e.setCancelled(true);
-			}
-			else if (g.isHunter(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.preySpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
-				e.setCancelled(true);
-			}
-		}
-	}
-	
-	public void onBlockBreak(BlockBreakEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			}
-			else if (g.isHunted(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-							HuntedPlugin.getInstance().settings.hunterSpawn)
-							<= HuntedPlugin.getInstance().settings.noBuildRange
-					|| g.getDistance(e.getBlock().getLocation(),
-							HuntedPlugin.getInstance().getWorld().getSpawnLocation())
-							<= HuntedPlugin.getInstance().settings.noBuildRange) {
-				e.setCancelled(true);
-			}
-			else if (g.isHunter(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.preySpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
-				e.setCancelled(true);
 			}
 		}
 	}

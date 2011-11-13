@@ -321,10 +321,41 @@ public class CmdExec implements CommandExecutor {
 		} else if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("load")) {
 			if (p.isOp()) {
 				settings.loadFile();
+				p.sendMessage(ChatColor.GREEN + "Settings file loaded.");
 				return true;
 			} else {
 				p.sendMessage(ChatColor.RED + "You don't have permission to do that!");
 				return true;
+			}
+		} else if (args[0].equalsIgnoreCase("weather")) {
+			if (p.isOp()) {
+				if (args.length == 1) {
+					p.sendMessage(ChatColor.RED + "You must choose a weather: sunny, rain, or storm.");
+					return true;
+				}
+				if (args[1].equalsIgnoreCase("sunny") || args[1].equalsIgnoreCase("norain")
+						|| args[1].equalsIgnoreCase("clear")) {
+					HuntedPlugin.getInstance().getWorld().setStorm(false);
+					HuntedPlugin.getInstance().getWorld().setThundering(false);
+					p.sendMessage(ChatColor.GREEN + "Weather set to \"sunny\"");
+					return true;
+				} else if (args[1].equalsIgnoreCase("rain") || args[1].equalsIgnoreCase("rainy")) {
+					HuntedPlugin.getInstance().getWorld().setStorm(true);
+					HuntedPlugin.getInstance().getWorld().setThundering(false);
+					p.sendMessage(ChatColor.GREEN + "Weather set to \"rainy\"");
+					return true;
+				} else if (args[1].equalsIgnoreCase("storm") || args[1].equalsIgnoreCase("stormy")
+						|| args[1].equalsIgnoreCase("lightning") || args[1].equalsIgnoreCase("thunder")) {
+					HuntedPlugin.getInstance().getWorld().setStorm(false);
+					HuntedPlugin.getInstance().getWorld().setThundering(false);
+					p.sendMessage(ChatColor.GREEN + "Weather set to \"sunny\"");
+					return true;
+				} else {
+					p.sendMessage(ChatColor.RED + "You must choose a weather: sunny, rain, or storm.");
+					return true;
+				}
+			} else {
+				p.sendMessage(ChatColor.RED + "You don't have permission to do that!");
 			}
 		} else if (args[0].equalsIgnoreCase("setting") || args[0].equalsIgnoreCase("settings")
 				|| args[0].equalsIgnoreCase("preferences") || args[0].equalsIgnoreCase("properties")) {
