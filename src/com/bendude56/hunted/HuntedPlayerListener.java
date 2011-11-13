@@ -1,5 +1,7 @@
 package com.bendude56.hunted;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -29,34 +31,44 @@ public class HuntedPlayerListener extends PlayerListener {
 		Game g = HuntedPlugin.getInstance().game;
 		SettingsFile settings = HuntedPlugin.getInstance().settings;
 		Player p = e.getPlayer();
-		
-		if (settings.allTalk) {
-			return;
-		}
 		if (!g.gameHasBegun()) {
 			if (!g.gameHasBegun()) {
-				g.broadcastAll(g.getColor(p) + "[" + p.getName() + "] " + ChatColor.WHITE + e.getMessage());
+				g.broadcastAll(ChatColor.WHITE + "<" + g.getColor(p) + p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 				e.setCancelled(true);
+				HuntedPlugin.getInstance().log(Level.INFO, "<" + p.getName() + "> " + e.getMessage());
 				return;
 			}
 		}
-		if (g.isHunter(p)) {
-			g.broadcastHunters(ChatColor.RED + "[" + p.getName() + "] " + ChatColor.WHITE + e.getMessage());
-			e.setCancelled(true);
-		} else if (g.isHunted(p)) {
-			g.broadcastHunted(ChatColor.BLUE + "[" + p.getName() + "] " + ChatColor.WHITE + e.getMessage());
-			e.setCancelled(true);
-		} else if (g.isSpectating(p)) {
-			g.broadcastSpectators(ChatColor.YELLOW + "[" + p.getName() + "] " + ChatColor.WHITE + e.getMessage());
-			e.setCancelled(true);
-		} else {
+		if (settings.allTalk) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (g.isHunted(player) && g.isHunter(player) && g.isSpectating(player)) {
-					player.sendMessage(ChatColor.WHITE + "<" + p.getName() + "> " + e.getMessage());
-				}
+				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p) + p.getName() +
+						ChatColor.WHITE + "> " + e.getMessage());
 			}
 			e.setCancelled(true);
+			HuntedPlugin.getInstance().log(Level.INFO, "<" + p.getName() + "> " + e.getMessage());
+			return;
 		}
+		if (g.isHunter(p)) {
+			g.broadcastHunters(ChatColor.WHITE + "<" + ChatColor.RED + p.getName() +
+					ChatColor.WHITE + "> " + e.getMessage());
+			HuntedPlugin.getInstance().log(Level.INFO, "<" + p.getName() + "> " + e.getMessage());
+			e.setCancelled(true);
+		} else if (g.isHunted(p)) {
+			g.broadcastHunted(ChatColor.WHITE + "<" + ChatColor.BLUE + p.getName() +
+					ChatColor.WHITE + "> " + e.getMessage());
+			e.setCancelled(true);
+		} else if (g.isSpectating(p)) {
+			g.broadcastSpectators(ChatColor.WHITE + "<" + ChatColor.YELLOW + p.getName() +
+					ChatColor.WHITE + "> " + e.getMessage());
+			e.setCancelled(true);
+		} else for (Player player : Bukkit.getOnlinePlayers()) {
+			if (!g.isHunted(player) && !g.isHunter(player) && !g.isSpectating(player)) {
+				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p) + p.getName() +
+						ChatColor.WHITE + "> " + e.getMessage());
+			}
+		}
+		e.setCancelled(true);
+		HuntedPlugin.getInstance().log(Level.INFO, "<" + p.getName() + "> " + e.getMessage());
 	}
 	
 	public void onPlayerJoin(PlayerJoinEvent e) {
@@ -88,9 +100,13 @@ public class HuntedPlayerListener extends PlayerListener {
 			}
 		}
 		//If any player ventures too far from spawn...
-		if (g.gameHasBegun() && (g.isHunter(p) || g.isHunted(p)) && HuntedPlugin.getInstance().settings.globalBoundry >= 256 && p.getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+		if (g.gameHasBegun() && (g.isHunter(p) || g.isHunted(p)) && HuntedPlugin.getInstance().settings.globalBoundry >= 256 && p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			if (g.getDistance(p.getLocation(), HuntedPlugin.getInstance().getWorld().getSpawnLocation()) > HuntedPlugin.getInstance().settings.globalBoundry) {
-				g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+				if (g.isHunted(p)) {
+					g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().settings.preySpawn);
+				} else if (g.isHunter(p)) {
+					g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().settings.hunterSpawn);
+				}
 				p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			}
 		}

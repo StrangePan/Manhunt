@@ -42,6 +42,7 @@ public class HuntedPlugin extends JavaPlugin {
 		new CmdExec();
 		new HuntedPlayerListener();
 		new HuntedEntityListener();
+		new HuntedBlockListener();
 		settings = new SettingsFile();
 		game = new Game();
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");

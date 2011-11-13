@@ -8,6 +8,10 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
+//import org.bukkit.Material;
+//import org.bukkit.inventory.ItemStack;
+//import org.bukkit.material.MaterialData;
+//import org.bukkit.material.TexturedMaterial;
 
 public class SettingsFile extends Properties {
 	private static final long serialVersionUID = 0L;
@@ -27,8 +31,12 @@ public class SettingsFile extends Properties {
 	
 	public boolean opPermission;
 	public boolean allTalk;
-	public boolean loadouts;
 	public boolean autoHunter;
+	public boolean loadouts;
+	public boolean woolHats;
+	
+	//public ItemStack[] preyLoadout;
+	//public ItemStack[] hunterLoadout;
 	
 	public int offlineTimeout;
 	public int dayLimit;
@@ -41,8 +49,8 @@ public class SettingsFile extends Properties {
 	public Location preySpawn;
 	
 	public SettingsFile() {
-		location = "plugins/Hunted/config.db";
 		directory = "plugins/Hunted/";
+		location = directory + "config.db";
 		loadFile();
 	}
 	
@@ -60,15 +68,15 @@ public class SettingsFile extends Properties {
 				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
-			try {
-				load(new FileInputStream(file));
-				return;
-			} catch (IOException e) {
-				HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
-				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
-				return;
-			}
 		}
+		try {
+			load(new FileInputStream(file));
+		} catch (IOException e) {
+			HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			return;
+		}
+		
 		loadValues();
 		saveFile();
 	}
@@ -109,6 +117,7 @@ public class SettingsFile extends Properties {
 		pvpInstantDeath = false;
 		autoHunter = true;
 		loadouts = false;
+		woolHats = true;
 		dayLimit = 3;
 		offlineTimeout = 5;
 		globalBoundry = -1;
@@ -208,6 +217,15 @@ public class SettingsFile extends Properties {
 			}
 		} else loadouts = false;
 		put("loadouts", Boolean.toString(loadouts));
+		
+		if (containsKey("woolHats")) {
+			if (getProperty("woolHats").length() > 0 && getProperty("woolHats").equalsIgnoreCase("true")) {
+				woolHats = true;
+			} else {
+				woolHats = false;
+			}
+		} else woolHats = false;
+		put("woolHats", Boolean.toString(woolHats));
 		
 		if (containsKey("autoHunter")) {
 			if (getProperty("autoHunter").length() > 0 && getProperty("autoHunter").equalsIgnoreCase("true")) {
@@ -311,6 +329,42 @@ public class SettingsFile extends Properties {
 		} else {
 			preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
+		
+		/*if (containsKey("hunterLoadout")) {
+			hunterLoadout = new ItemStack[41];
+			String[] stack = getProperty("hunterLoadout").split("/");
+			for (int i = 0 ; (i < stack.length && i < 41) ; i++) {
+				if (stack[i].split(",").length == 3) {
+					try {
+						hunterLoadout[i] = new ItemStack(Material.matchMaterial(stack[i].split(",")[0]),
+								Integer.parseInt(stack[i].split(",")[1]),
+								Short.parseShort(stack[i].split(",")[2]));
+					} catch (Exception e) {
+						hunterLoadout[i] = new ItemStack(Material.AIR, 0);
+					}
+				} else {
+					hunterLoadout[i] = new ItemStack(Material.AIR, 0);
+				}
+			}
+		}
+		
+		if (containsKey("preyLoadout")) {
+			preyLoadout = new ItemStack[41];
+			String[] stack = getProperty("preyLoadout").split("/");
+			for (int i = 0 ; (i < stack.length && i < 41) ; i++) {
+				if (stack[i].split(",").length == 3) {
+					try {
+						preyLoadout[i] = new ItemStack(Material.matchMaterial(stack[i].split(",")[0]),
+								Integer.parseInt(stack[i].split(",")[1]),
+								Short.parseShort(stack[i].split(",")[2]));
+					} catch (Exception e) {
+						preyLoadout[i] = new ItemStack(Material.AIR, 0);
+					}
+				} else {
+					preyLoadout[i] = new ItemStack(Material.AIR, 0);
+				}
+			}
+		}*/
 	}
 	
 	public void changeSetting(String setting, String value) {
@@ -326,6 +380,19 @@ public class SettingsFile extends Properties {
 			value += loc.getBlockY() + ",";
 			value += loc.getBlockZ();
 			put(setting, value);
+			saveFile();
 		}
-	}
+	} /*public void changeSetting(String setting, ItemStack[] inventory) {
+		if (containsKey(setting)) {
+			String value = "";
+			for (ItemStack i : inventory) {
+				value += "/";
+				value += i.getData().getItemType().toString() + ",";
+				value += i.getAmount() + ",";
+				value += i.getDurability() + ",";
+			}
+			put(setting, value);
+			saveFile();
+		}
+	}*/
 }

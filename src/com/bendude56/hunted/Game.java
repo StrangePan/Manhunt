@@ -10,11 +10,13 @@ import net.minecraft.server.Packet29DestroyEntity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Wool;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class Game {
@@ -66,7 +68,7 @@ public class Game {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (p != null) {
-					if (settings.loadouts) loadouts(p.getInventory());
+					if (settings.loadouts) preyLoadout(p.getInventory());
 					p.teleport(settings.preySpawn);
 				}
 			}
@@ -99,23 +101,23 @@ public class Game {
 			Bukkit.getScheduler().cancelTask(tickSched);
 		}
 		gameRunning = false;
-		for (String n : hunter) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
-				((CraftPlayer) p2).getHandle().netServerHandler
-				.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			if (isSpectating(p)) {
+				for (String n : hunter) {
+					Player p2 = Bukkit.getServer().getPlayerExact(n);
+					((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+				}
+				for (String n : hunted) {
+					Player p2 = Bukkit.getServer().getPlayerExact(n);
+					((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+				}
 			}
 		}
-		for (String n : hunted) {
-			Player p = Bukkit.getServer().getPlayerExact(n);
-			for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
-				((CraftPlayer) p2).getHandle().netServerHandler
-				.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
-			}
-		}
+		
 		if (settings.autoHunter) {
 			for (String s : spectator) {
 				hunter.add(s);
+				broadcastAll(ChatColor.RED + s + ChatColor.WHITE + " has joined team " + ChatColor.RED + "Hunters");
 			}
 			spectator.clear();
 		}
@@ -227,37 +229,37 @@ public class Game {
 					if (tick >= hunterReleaseTick - 6000 && countdown == 0) {
 						broadcastAll(ChatColor.GOLD + "5 minutes until sundown!");
 						countdown++;
-					} else if (tick >= 4800 && countdown == 1) {
+					} else if (tick >= hunterReleaseTick - 4800 && countdown == 1) {
 						broadcastHunted(ChatColor.GOLD + "4 minutes until sundown!");
 						countdown++;
-					} else if (tick >= 3600 && countdown == 2) {
+					} else if (tick >= hunterReleaseTick - 3600 && countdown == 2) {
 						broadcastHunted(ChatColor.GOLD + "3 minutes until sundown!");
 						countdown++;
-					} else if (tick >= 2400 && countdown == 3) {
+					} else if (tick >= hunterReleaseTick - 2400 && countdown == 3) {
 						broadcastHunted(ChatColor.GOLD + "2 minutes suntil sundown!");
 						countdown++;
-					} else if (tick >= 1200 && countdown == 4) {
+					} else if (tick >= hunterReleaseTick - 1200 && countdown == 4) {
 						broadcastAll(ChatColor.GOLD + "1 minute until sundown!");
 						countdown++;
-					} else if (tick >= 600 && countdown == 5) {
+					} else if (tick >= hunterReleaseTick - 600 && countdown == 5) {
 						broadcastAll(ChatColor.GOLD + "30 seconds until sundown!");
 						countdown++;
-					} else if (tick >= 200 && countdown == 6) {
+					} else if (tick >= hunterReleaseTick - 200 && countdown == 6) {
 						broadcastAll(ChatColor.GOLD + "10 seconds until sundown!");
 						countdown++;
-					} else if (tick >= 100 && countdown == 7) {
+					} else if (tick >= hunterReleaseTick - 100 && countdown == 7) {
 						broadcastAll(ChatColor.GOLD + "5...");
 						countdown++;
-					} else if (tick >= 80 && countdown == 8) {
+					} else if (tick >= hunterReleaseTick - 80 && countdown == 8) {
 						broadcastAll(ChatColor.GOLD + "4...");
 						countdown++;
-					} else if (tick >= 60 && countdown == 9) {
+					} else if (tick >= hunterReleaseTick - 60 && countdown == 9) {
 						broadcastAll(ChatColor.GOLD + "3...");
 						countdown++;
-					} else if (tick >= 40 && countdown == 10) {
+					} else if (tick >= hunterReleaseTick - 40 && countdown == 10) {
 						broadcastAll(ChatColor.GOLD + "2...");
 						countdown++;
-					} else if (tick >= 20 && countdown == 11) {
+					} else if (tick >= hunterReleaseTick - 20 && countdown == 11) {
 						broadcastAll(ChatColor.GOLD + "1...");
 						countdown++;
 					}
@@ -267,7 +269,7 @@ public class Game {
 				for (String s : hunter) {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
-						if (settings.loadouts) loadouts(p.getInventory());
+						if (settings.loadouts) hunterLoadout(p.getInventory());
 						p.teleport(settings.hunterSpawn);
 					}
 				}
@@ -435,6 +437,16 @@ public class Game {
 		} else return false;
 	}
 	
+	public long getTick() {
+		return HuntedPlugin.getInstance().getWorld().getFullTime();
+	}
+	public long getHunterReleaseTick() {
+		return hunterReleaseTick;
+	}
+	public long getEndTick() {
+		return endTick;
+	}
+	
 	public boolean isHunter(Player p) {
 		return (this.hunter.contains(p.getName().toLowerCase()));
 	}
@@ -573,20 +585,46 @@ public class Game {
 	}
 	
 	
-	public Inventory loadouts(Inventory inv) {
+	public Inventory hunterLoadout(Inventory inv) {
 		inv.clear();
-		inv.addItem(new ItemStack(Material.STONE_SWORD));
-		inv.addItem(new ItemStack(Material.BOW));
-		inv.addItem(new ItemStack(Material.STONE_PICKAXE));
-		inv.addItem(new ItemStack(Material.STONE_SPADE));
-		inv.addItem(new ItemStack(Material.STONE_AXE));
-		inv.addItem(new ItemStack(Material.TORCH, 32));
-		inv.addItem(new ItemStack(Material.BREAD, 8));
-		inv.addItem(new ItemStack(Material.ARROW, 64));
-		inv.addItem(new ItemStack(Material.LEATHER_BOOTS));
-		inv.addItem(new ItemStack(Material.LEATHER_HELMET));
-		inv.addItem(new ItemStack(Material.LEATHER_CHESTPLATE));
-		inv.addItem(new ItemStack(Material.LEATHER_LEGGINGS));
+		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
+		inv.setItem(1, new ItemStack(Material.BOW, 1));
+		inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
+		inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
+		inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
+		inv.setItem(5, new ItemStack(Material.TORCH, 32));
+		inv.setItem(6, new ItemStack(Material.BREAD, 8));
+		inv.setItem(7, new ItemStack(Material.ARROW, 64));
+		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
+		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		if (settings.woolHats) {
+			inv.setItem(39, (new Wool(DyeColor.RED).toItemStack()));
+		} else {
+			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
+		}
+		return inv;
+	}
+	
+	public Inventory preyLoadout(Inventory inv) {
+		inv.clear();
+		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
+		inv.setItem(1, new ItemStack(Material.BOW, 1));
+		inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
+		inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
+		inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
+		inv.setItem(5, new ItemStack(Material.TORCH, 32));
+		inv.setItem(6, new ItemStack(Material.BREAD, 8));
+		inv.setItem(7, new ItemStack(Material.ARROW, 64));
+		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
+		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		if (settings.woolHats) {
+			//inv.setItem(39, (new Wool(DyeColor.BLUE).toItemStack()));
+			inv.setItem(39, new ItemStack(Material.LEAVES, 1));
+		} else {
+			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
+		}
 		return inv;
 	}
 	
