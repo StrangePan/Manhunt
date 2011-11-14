@@ -101,6 +101,7 @@ public class Game {
 			Bukkit.getScheduler().cancelTask(tickSched);
 		}
 		gameRunning = false;
+		hunterReleaseTick = 0;
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			if (isSpectating(p)) {
 				for (String n : hunter) {
@@ -163,6 +164,13 @@ public class Game {
 	}
 	
 	private void timeout(String p) {
+		if (Bukkit.getPlayerExact(p).isOnline()
+				&& Bukkit.getPlayerExact(p).getWorld() == HuntedPlugin.getInstance().getWorld()) {
+			if (timeout.containsKey(p)) {
+				timeout.remove(p);
+			}
+			return;
+		}
 		if (hunter.contains(p)) {
 			hunter.remove(p);
 			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for not being online/in the manhunt world!");
@@ -271,6 +279,8 @@ public class Game {
 					if (p != null) {
 						if (settings.loadouts) hunterLoadout(p.getInventory());
 						p.teleport(settings.hunterSpawn);
+						p.setHealth(20);
+						p.setFoodLevel(20);
 					}
 				}
 				broadcastSpectators(ChatColor.RED + "The hunters have been released! They have " + settings.dayLimit + " days to slay the hunted.");
@@ -589,19 +599,19 @@ public class Game {
 		inv.clear();
 		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
 		inv.setItem(1, new ItemStack(Material.BOW, 1));
-		inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
-		inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
-		inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
-		inv.setItem(5, new ItemStack(Material.TORCH, 32));
-		inv.setItem(6, new ItemStack(Material.BREAD, 8));
-		inv.setItem(7, new ItemStack(Material.ARROW, 64));
-		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		//inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
+		//inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
+		//inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
+		inv.setItem(2, new ItemStack(Material.TORCH, 3));
+		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 3));
+		inv.setItem(4, new ItemStack(Material.ARROW, 64));
+		//inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
+		//inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		//inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
 		if (settings.woolHats) {
 			inv.setItem(39, (new Wool(DyeColor.RED).toItemStack()));
 		} else {
-			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
+			//inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
 		}
 		return inv;
 	}
@@ -610,20 +620,20 @@ public class Game {
 		inv.clear();
 		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
 		inv.setItem(1, new ItemStack(Material.BOW, 1));
-		inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
-		inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
-		inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
-		inv.setItem(5, new ItemStack(Material.TORCH, 32));
-		inv.setItem(6, new ItemStack(Material.BREAD, 8));
-		inv.setItem(7, new ItemStack(Material.ARROW, 64));
-		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		//inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
+		//inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
+		//inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
+		inv.setItem(2, new ItemStack(Material.TORCH, 3));
+		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 1));
+		inv.setItem(4, new ItemStack(Material.ARROW, 64));
+		//inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
+		//inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		//inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
 		if (settings.woolHats) {
 			//inv.setItem(39, (new Wool(DyeColor.BLUE).toItemStack()));
 			inv.setItem(39, new ItemStack(Material.LEAVES, 1));
 		} else {
-			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
+			//inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
 		}
 		return inv;
 	}

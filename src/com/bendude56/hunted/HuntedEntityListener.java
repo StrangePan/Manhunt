@@ -1,9 +1,8 @@
 package com.bendude56.hunted;
 
-import net.minecraft.server.DamageSource;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Cow;
@@ -29,7 +28,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class HuntedEntityListener extends EntityListener {
 	
@@ -41,57 +39,81 @@ public class HuntedEntityListener extends EntityListener {
 	}
 	
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (!e.getEntity().getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
-			return;
-		}
 		Game g = HuntedPlugin.getInstance().game;
 		SettingsFile settings = HuntedPlugin.getInstance().settings;
-		if ((e instanceof EntityDamageByEntityEvent)) {
-			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-			if (event.getDamager() instanceof Player) {
-				if (g.isSpectating((Player) event.getDamager())) {
-					e.setCancelled(true);
-					return;
-				}
-			}
-			if (event.getEntity() instanceof Player) {
-				if (g.isSpectating((Player) event.getEntity()) || !g.huntHasBegun()) {
-					e.setCancelled(true);
-					return;
-				}
-			}
-			if ((event.getEntity() instanceof Player) && (event.getDamager() instanceof Player)) {
-				Player p = (Player) event.getEntity();
-				Player p2 = (Player) event.getDamager();
-				
-				if (!settings.friendlyFire) {
-					if ((g.isHunter(p) && g.isHunter(p2)) || (g.isHunted(p) && g.isHunted(p2))) {
-						e.setCancelled(true);
-						return;
-					}
-				}
-				if (settings.pvpInstantDeath) {
-					if ((g.isHunter(p) && g.isHunted(p2)) || (g.isHunted(p) && g.isHunter(p2))) {
-						((CraftPlayer) p).getHandle().die(DamageSource.playerAttack(((CraftPlayer) p2).getHandle()));
-						e.setCancelled(true);
-						return;
-					}
-				}
-			} else if ((event.getEntity() instanceof Player) && !(event.getDamager() instanceof Player) && !settings.envDeath) {
-				Player p = (Player) e.getEntity();
-				if (e.getDamage() >= p.getHealth()) {
-					e.setDamage(p.getHealth()-1);
-					return;
-				}
-			}
-		} else if (e.getEntity() instanceof Player) {
-			Player p = (Player) e.getEntity();
-			if (!g.huntHasBegun()) {
+		Player p;
+		
+		//SPECTATOR EXCEPTIONS
+		if (e.getEntity() instanceof Player) {
+			if (g.isSpectating((Player) e.getEntity())) {
 				e.setCancelled(true);
 				return;
 			}
-			if (!settings.envDeath && e.getDamage() >= p.getHealth()) {
-				e.setDamage(p.getHealth()-1);
+		}
+		if (e instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+			if (event.getDamager() instanceof Player) {
+				if (g.isSpectating((Player) event.getEntity())) {
+					e.setCancelled(true);
+					return;
+				}
+			}
+		}
+		//END SPECTATOR EXCEPTIONS
+		
+		if (!(e.getEntity() instanceof Player)) {
+			return;
+		} else {
+			p = (Player) e.getEntity();
+		}
+		
+		if (g.isSpectating(p)) {
+			e.setCancelled(true);
+			return;
+		}
+		
+		if (e instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+			Player p2;
+			
+			if (event.getDamager() instanceof Arrow) {
+				if (((Arrow) event.getDamager()).getShooter() instanceof Player) {
+					p2 = (Player) ((Arrow) event.getDamager()).getShooter();
+				} else {
+					if (!settings.envDeath) {
+						if (e.getDamage() >= p.getHealth()) {
+							e.setDamage(p.getHealth()-1);
+						}
+					}
+					return;
+				}
+			} else if (event.getDamager() instanceof Player) {
+				p2 = (Player) event.getDamager();
+			} else {
+				if (!settings.envDeath) {
+					if (e.getDamage() >= p.getHealth()) {
+						e.setDamage(p.getHealth()-1);
+					}
+				}
+				return;
+			}
+			
+			if (g.isSpectating(p2)) {
+				e.setCancelled(true);
+				return;
+			}
+				
+			if (!settings.friendlyFire
+					&& ((g.isHunter(p) && g.isHunted(p2))
+							|| (g.isHunted(p) && g.isHunted(p2)))) {
+				e.setCancelled(true);
+				return;
+			}
+			
+			if (settings.pvpInstantDeath &&
+					((g.isHunter(p) && g.isHunted(p2))
+							|| (g.isHunted(p) && g.isHunter(p2)))) {
+				e.setDamage(100);
 				return;
 			}
 		}
