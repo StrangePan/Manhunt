@@ -238,14 +238,14 @@ public class CmdExec implements CommandExecutor {
 			p.sendMessage(ChatColor.AQUA + "Status of this Manhunt game");
 			if (g.huntHasBegun()) {
 				p.sendMessage(ChatColor.GOLD + "Time remaining:  "
-						+ Math.floor((g.getEndTick()-g.getTick())/72000) + ":"
-						+ (Math.floor((g.getEndTick()-g.getTick())/1200)-Math.floor((g.getEndTick()-g.getTick())/72000)*60) + ":"
-						+ (Math.floor((g.getEndTick()-g.getTick())/20)-(Math.floor((g.getEndTick()-g.getTick())/1200)-Math.floor((g.getEndTick()-g.getTick())/72000))*60));
+						+ (int)Math.floor((g.getEndTick()-g.getTick())/72000) + ":"
+						+ (int)(Math.floor((g.getEndTick()-g.getTick())/1200)-Math.floor((g.getEndTick()-g.getTick())/72000)*60) + ":"
+						+ (int)(Math.floor((g.getEndTick()-g.getTick())/20)-(Math.floor((g.getEndTick()-g.getTick())/1200)-Math.floor((g.getEndTick()-g.getTick())/72000))*60));
 			} else {
 				p.sendMessage(ChatColor.GOLD + "Time remaining:  "
-						+ Math.floor((g.getHunterReleaseTick()-g.getTick())/72000) + ":"
-						+ (Math.floor((g.getHunterReleaseTick()-g.getTick())/1200)-Math.floor((g.getHunterReleaseTick()-g.getTick())/72000)*60) + ":"
-						+ (Math.floor((g.getHunterReleaseTick()-g.getTick())/20)-(Math.floor((g.getHunterReleaseTick()-g.getTick())/1200)-Math.floor((g.getHunterReleaseTick()-g.getTick())/72000))*60));
+						+ (int)Math.floor((g.getHunterReleaseTick()-g.getTick())/72000) + ":"
+						+ (int)(Math.floor((g.getHunterReleaseTick()-g.getTick())/1200)-Math.floor((g.getHunterReleaseTick()-g.getTick())/72000)*60) + ":"
+						+ (int)(Math.floor((g.getHunterReleaseTick()-g.getTick())/20)-(Math.floor((g.getHunterReleaseTick()-g.getTick())/1200)-Math.floor((g.getHunterReleaseTick()-g.getTick())/72000))*60));
 			}
 			p.sendMessage(ChatColor.RED + "Hunters: " + g.HuntersAmount() +
 					ChatColor.BLUE + "  Prey: " + g.HuntedAmount() +
@@ -495,6 +495,12 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.BLUE + "envPreyRespawn " + 
 							ChatColor.RED + "[false]" + ChatColor.WHITE + " The Prey are eliminated by enviromental death.");
+				} if (settings.envPreyRespawn) {
+					p.sendMessage(ChatColor.BLUE + "preyFinder " +
+							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Hunters can use a compass to find the direction to the nearest Prey.");
+				} else {
+					p.sendMessage(ChatColor.BLUE + "preyFinder " + 
+							ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters have to find the Prey the old-fashioned way.");
 				} if (settings.friendlyFire) {
 					p.sendMessage(ChatColor.BLUE + "friendlyFire " +
 							ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Players can kill their teammates.");
@@ -709,6 +715,27 @@ public class CmdExec implements CommandExecutor {
 						settings.changeSetting("envPreyRespawn", "false");
 						p.sendMessage(ChatColor.BLUE + "envPreyRespawn " + 
 								ChatColor.RED + "[false]" + ChatColor.WHITE + " The Prey are eliminated by enviromental death.");
+					}
+					
+				} else if (args[1].equalsIgnoreCase("preyfinder")){
+					if (args.length == 2) {
+						if (settings.envPreyRespawn) {
+							p.sendMessage(ChatColor.BLUE + "preyFinder " +
+									ChatColor.GREEN + "[true]" + ChatColor.WHITE + " The Prey respawn from enviromental death.");
+						} else {
+							p.sendMessage(ChatColor.BLUE + "preyFinder " + 
+									ChatColor.RED + "[false]" + ChatColor.WHITE + " The Prey are eliminated by enviromental death.");
+						}
+					}
+					if ((args.length == 2 && settings.preyFinder == false) || args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("on")) {
+						settings.changeSetting("preyFinder", "true");
+						p.sendMessage(ChatColor.BLUE + "preyFinder " +
+								ChatColor.GREEN + "[true]" + ChatColor.WHITE + " Hunters can use a compass to find the direction to the nearest Prey.");
+					
+					} else if ((args.length == 2 && settings.preyFinder == true) || args[2].equalsIgnoreCase("false") || args[2].equalsIgnoreCase("1") || args[2].equalsIgnoreCase("off")) {
+						settings.changeSetting("preyFinder", "false");
+						p.sendMessage(ChatColor.BLUE + "preyFinder " + 
+								ChatColor.RED + "[false]" + ChatColor.WHITE + " Hunters have to find the Prey the old-fashioned way.");
 					}
 					
 				} else if (args[1].equalsIgnoreCase("friendlyfire")){

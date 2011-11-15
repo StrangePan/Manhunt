@@ -25,6 +25,7 @@ public class SettingsFile extends Properties {
 	public boolean envDeath;
 	public boolean envHunterRespawn;
 	public boolean envPreyRespawn;
+	public boolean preyFinder;
 	
 	public boolean friendlyFire;
 	public boolean pvpInstantDeath;
@@ -113,6 +114,7 @@ public class SettingsFile extends Properties {
 		envDeath = false;
 		envHunterRespawn = false;
 		envPreyRespawn = false;
+		preyFinder = true;
 		friendlyFire = false;
 		pvpInstantDeath = false;
 		autoHunter = true;
@@ -190,6 +192,15 @@ public class SettingsFile extends Properties {
 			}
 		} else envPreyRespawn = true;
 		put("envPreyRespawn", Boolean.toString(envPreyRespawn));
+		
+		if (containsKey("preyFinder")) {
+			if (getProperty("preyFinder").length() > 0 && getProperty("preyFinder").equalsIgnoreCase("true")) {
+				preyFinder = true;
+			} else {
+				preyFinder = false;
+			}
+		} else preyFinder = true;
+		put("preyFinder", Boolean.toString(preyFinder));
 		
 		if (containsKey("friendlyFire")) {
 			if (getProperty("friendlyFire").length() > 0 && getProperty("friendlyFire").equalsIgnoreCase("true")) {

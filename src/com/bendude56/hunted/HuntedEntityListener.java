@@ -113,7 +113,7 @@ public class HuntedEntityListener extends EntityListener {
 			if (settings.pvpInstantDeath &&
 					((g.isHunter(p) && g.isHunted(p2))
 							|| (g.isHunted(p) && g.isHunter(p2)))) {
-				e.setDamage(100);
+				p.setHealth(0);
 				return;
 			}
 		}
@@ -122,6 +122,7 @@ public class HuntedEntityListener extends EntityListener {
 	public void onEntityDeath(EntityDeathEvent e) {
 		Game g = HuntedPlugin.getInstance().game;
 		SettingsFile settings = HuntedPlugin.getInstance().settings;
+
 		if (!e.getEntity().getWorld().equals(HuntedPlugin.getInstance().getWorld())
 				|| !(e.getEntity() instanceof Player)) {
 			return;
@@ -135,40 +136,48 @@ public class HuntedEntityListener extends EntityListener {
 			if (!g.isHunted(p) && !g.isHunter(p)) {
 				return;
 			}
-			if (p.getLastDamageCause().getCause() == DamageCause.ENTITY_ATTACK) {
-				if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Player) {
-					Player p2 = (Player) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager();
-					if (g.isHunter(p) && g.isHunter(p2)) {
-						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.YELLOW + " has been slain by "
-								+ g.getColor(p2) + "teammate " + p2.getName() + "!");
-					} else if (g.isHunted(p) && g.isHunted(p2)) {
-						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.YELLOW + " has been slain by "
-								+ g.getColor(p2) + "teammate " + p2.getName() + "!");
-					} else {
-						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.YELLOW + " has been slain by "
-								+ g.getColor(p2) + p2.getName() + "!");
-					g.onDie(p);
+			if (g.getLocatorByPlayer(p) != -1) { //PLAYER IS IN LOCATOR LIST
+				g.stopLocator(p);
+			}
+			if (p.getLastDamageCause().getCause().equals(DamageCause.ENTITY_ATTACK)) {
+				Player p2 = null;
+				if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Arrow) {
+					if (((Arrow) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter() instanceof Player) {
+						p2 = (Player) ((Arrow) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter();
 					}
-				} else {
-					if ((settings.envHunterRespawn && g.isHunter(p)) || (settings.envPreyRespawn && g.isHunted(p))){
+				}
+				if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Player) {
+				}
+				if (p2 == null) {
+					if ((settings.envHunterRespawn && g.isHunter(p))
+						|| (settings.envPreyRespawn && g.isHunted(p))) {
 						p.setHealth(20);
-						p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
+						p.setFoodLevel(20);
+						
+						if (g.isHunter(p)) {
+							p.teleport(settings.hunterSpawn);
+						} else {
+							p.teleport(settings.preySpawn);
+						}
 						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes, and has respawned!");
 					} else {
-						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now on the sidelines!");
-						g.onDie(p);
+						g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "Spectating!");
 					}
-				}
-			} else {
-				if ((settings.envHunterRespawn && g.isHunter(p)) || (settings.envPreyRespawn && g.isHunted(p))){
-					p.setHealth(20);
-					p.teleport(HuntedPlugin.getInstance().manhuntWorld.getSpawnLocation());
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes, and has respawned!");
-				} else {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now on the sidelines!");
+					
 					g.onDie(p);
+					return;
+				}
+					
+				if ((g.isHunter(p) && g.isHunter(p2))
+					|| (g.isHunted(p) && g.isHunted(p2))) {
+					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has been slain by "
+							+ g.getColor(p2) + "teammate " + p2.getName() + "!");
+				} else {
+					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has been slain by "
+						+ g.getColor(p2) + p2.getName() + "!");
 				}
 			}
+		g.onDie(p);
 		}
 	}
 	

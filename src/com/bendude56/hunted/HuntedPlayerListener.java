@@ -4,12 +4,16 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -124,6 +128,51 @@ public class HuntedPlayerListener extends PlayerListener {
 			}
 			g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 			p.sendMessage(ChatColor.RED + "You've ventured too far!");
+		}
+		if (g.getLocatorByPlayer(p) != -1 && g.getLocatorStage(g.getLocatorByPlayer(p))!=2) { //PLAYER IS IN LOCATOR LIST
+			if (g.getDistance(p.getLocation(), g.getLocatorLocation(g.getLocatorByPlayer(p))) > 1.5
+					|| p.getPlayer().equals(HuntedPlugin.getInstance().getWorld())) {
+				p.sendMessage(ChatColor.RED + "You moved before nearest prey could be found!");
+				g.stopLocator(p);
+			}
+		}
+	}
+	
+	public void onPlayerItemHeld(PlayerItemHeldEvent e) {
+		Player p = e.getPlayer();
+		if (!p.getItemInHand().equals(Material.COMPASS)
+				&& HuntedPlugin.getInstance().game.getLocatorByPlayer(p) != -1) {
+			p.sendMessage(ChatColor.RED + "Prey locating cancelled.");
+			HuntedPlugin.getInstance().game.stopLocator(p);
+		}
+	}
+	
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		Player p = e.getPlayer();
+		Game g = HuntedPlugin.getInstance().game;
+		if ((!g.huntHasBegun() || !g.isHunter(p) || !HuntedPlugin.getInstance().getWorld().equals(p.getWorld()))
+				&& HuntedPlugin.getInstance().settings.preyFinder) {
+			return;
+		}
+		if ((e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+				|| e.getAction().equals(Action.RIGHT_CLICK_AIR))) {
+			if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer()))==2) {
+				p.sendMessage(ChatColor.RED + "Prey locator is still charging. Time left: " +
+						(int) Math.floor((g.getLocatorTick(g.getLocatorByPlayer(p))-g.getTick())/1200)
+						+ ":" +
+						(int) (Math.floor((g.getLocatorTick(g.getLocatorByPlayer(p))-g.getTick())/20)-
+								(int) Math.floor((g.getLocatorTick(g.getLocatorByPlayer(p))-g.getTick())/1200)*60)
+						);
+				return;
+			}
+			
+			if (HuntedPlugin.getInstance().getWorld().equals(p.getWorld())) {
+				if (p.getItemInHand().equals(Material.COMPASS)) {
+					
+					g.startLocator(p);
+					p.sendMessage(ChatColor.GOLD + "Beginning search for nearby Prey... Stand still for 10 seconds.");
+				}
+			}
 		}
 	}
 	

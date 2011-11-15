@@ -27,6 +27,8 @@ public class Game {
 	private List<String> hunter;
 	private List<String> hunted;
 	private List<String> spectator;
+	//private List<String> dead;
+	private List<String> locator;
 	
 	private int countdown;
 	private boolean gameRunning;
@@ -197,6 +199,8 @@ public class Game {
 		
 		if (gameRunning) {
 			long tick = HuntedPlugin.getInstance().getWorld().getFullTime();
+			
+			manageLocators();
 			
 			for (String n : spectator) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -402,6 +406,9 @@ public class Game {
 			broadcastAll(ChatColor.YELLOW + p.getName() + ChatColor.WHITE +
 					" is no longer spectating.");
 		}
+		if (getLocatorByPlayer(p) != -1) { //PLAYER IS IN LOCATOR LIST
+			stopLocator(p);
+			}
 	}
 	
 	public void broadcastAll(String msg) {
@@ -594,6 +601,135 @@ public class Game {
 		p.teleport(destination);
 	}
 	
+	public void manageLocators() {
+		for (int i = 0 ; i < locator.size() ; i++) {
+			if (getTick() >= getLocatorTick(i)-3640 && getLocatorStage(i) == 0) {
+				getLocatorPlayer(i).sendMessage(ChatColor.GOLD + "Got it!");
+				setLocatorStage(i, getLocatorStage(i) + 1);
+			} else if (getTick() >= getLocatorTick(i)-3600 && getLocatorStage(i) == 1) {
+				if (getLocatorPlayer(i).getFoodLevel() <= 4) {
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator!");
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must not have at least two and a half nuggets!");
+					stopLocator(i);
+					return;
+				}
+				if (getDistance(getLocatorPlayer(i).getLocation(), getLocatorLocation(i)) > 1.5) {
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You've moved too far. Could not get direction!");
+					stopLocator(i);
+					return;
+				}
+				if (!getLocatorPlayer(i).getItemInHand().equals(Material.COMPASS)) {
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Prey locating cancelled.");
+					stopLocator(i);
+					return;
+				}
+				sendNearestPrey(getLocatorPlayer(i));
+				getLocatorPlayer(i).setFoodLevel(getLocatorPlayer(i).getFoodLevel()-5);
+			} else if (getTick() >= getLocatorTick(i)) {
+				stopLocator(getLocatorPlayer(i));
+			}
+		}
+	}
+	
+	public void startLocator(Player p) {
+		stopLocator(p);
+		locator.add(p.getName() + "/" +
+				p.getLocation().getX() + "," + p.getLocation().getY() + "," + p.getLocation().getZ() + "/" +
+				(getTick()+3800) + "/" + "0");
+	}
+	
+	public void startLocator(Player p, int i) {
+		stopLocator(p);
+		locator.add(p.getName() + "/" +
+				p.getLocation().getX() + "," + p.getLocation().getY() + "," + p.getLocation().getZ() + "/" +
+				getTick() + "/" + i);
+	}
+	public long getLocatorTick(int i) {
+		try {
+			return Long.parseLong(locator.get(i).split("/")[2]);
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	public Player getLocatorPlayer(int i) {
+		try {
+			return Bukkit.getPlayerExact(locator.get(i).split("/")[0]);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	public int getLocatorByPlayer(Player p) {
+		for (int i = 0 ; i < locator.size() ; i++) {
+			if (p == getLocatorPlayer(i)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	public Location getLocatorLocation(int i) {
+		try {
+			return new Location(HuntedPlugin.getInstance().getWorld(),
+					Long.parseLong(locator.get(i).split("/")[1].split(",")[0]),
+					Long.parseLong(locator.get(i).split("/")[1].split(",")[1]),
+					Long.parseLong(locator.get(i).split("/")[1].split(",")[2]));
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	public int getLocatorStage(int i) {
+		try {
+			return Integer.parseInt((locator.get(i).split("/")[3]));
+		} catch (Exception e) {
+			return -0;
+		}
+	}
+	public void setLocatorStage(int i, int stage) {
+		startLocator(getLocatorPlayer(i), stage);
+		stopLocator(i);
+	}
+	public void stopLocator(Player p) {
+		for (int i = 0 ; i < locator.size() ; i++) {
+			if (p == getLocatorPlayer(i)) {
+				locator.remove(i);
+			}
+		}
+	}
+	public void stopLocator(int i) {
+		locator.remove(i);
+	}
+	public void sendNearestPrey(Player h) {
+		Player p = null; //Closest Prey
+		
+		for (String prey : getHunted()) {
+			if (Bukkit.getPlayerExact(prey) != null
+					&& Bukkit.getPlayerExact(prey).isOnline()) {
+				Player p2 = Bukkit.getPlayerExact(prey);
+				
+				if (p == null) {
+					p = p2;
+				} else {
+					if (getDistance(h, p2) < getDistance(h, p)) {
+						p = p2;
+					}
+				}
+			}
+		}
+		String direction = "";
+		
+		double angle = Math.acos((p.getLocation().getX() - h.getLocation().getX())/getDistance(h, p));
+					
+		if (angle > 338) direction = "South";
+		else if (angle > 293) direction = "South-West";
+		else if (angle > 248) direction = "West";
+		else if (angle > 203) direction = "North-West";
+		else if (angle > 158) direction = "North";
+		else if (angle > 113) direction = "North-East";
+		else if (angle > 68) direction = "East";
+		else if (angle > 23) direction = "South-East";
+		else direction = "South";
+		
+		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + ChatColor.GOLD +" of you!");
+	}
 	
 	public Inventory hunterLoadout(Inventory inv) {
 		inv.clear();
