@@ -305,7 +305,7 @@ public class SettingsFile extends Properties {
 			if (getProperty("noBuildRange").length() > 0) {
 				try {
 					noBuildRange = Integer.parseInt(getProperty("noBuildRange"));
-					if (noBuildRange < -1) noBuildRange = -1;
+					if (noBuildRange < 0) noBuildRange = -1;
 				} catch (NumberFormatException e) {
 					noBuildRange = 8;
 				}

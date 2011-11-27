@@ -11,6 +11,7 @@ import net.minecraft.server.Packet29DestroyEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -68,22 +69,37 @@ public class Game {
 			
 			for (String n : hunted) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
+				if (p == null) {
+					return;
+				}
+				p.setGameMode(GameMode.SURVIVAL);
+				p.setFireTicks(0);
 				p.setHealth(20);
 				p.setFoodLevel(20);
-				if (p != null) {
-					if (settings.loadouts) preyLoadout(p.getInventory());
-					p.teleport(settings.preySpawn);
-				}
+				if (settings.loadouts) preyLoadout(p.getInventory());
+				p.teleport(settings.preySpawn);
 			}
 			for (String n : hunter) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
+				if (p == null) {
+					return;
+				}
+				p.setGameMode(GameMode.SURVIVAL);
+				p.setFireTicks(0);
 				p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 				p.setHealth(20);
 				p.setFoodLevel(20);
+				if (settings.loadouts) {
+					clearInventory(p.getInventory());
+				}
 			}
 			
 			for (String n : spectator) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
+				if (p == null) {
+					return;
+				}
+				clearInventory(p.getInventory());
 				for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
 					if (isHunter(p2) || isHunted(p2)) {
 						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet29DestroyEntity(p.getEntityId()));
@@ -100,20 +116,24 @@ public class Game {
 	}
 	
 	public void stop() {
-		if (gameRunning) {
-			Bukkit.getScheduler().cancelTask(tickSched);
-		}
+		Bukkit.getScheduler().cancelTask(tickSched);
 		gameRunning = false;
 		hunterReleaseTick = 0;
+		endTick = 0;
+		countdown = 0;
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			if (isSpectating(p)) {
 				for (String n : hunter) {
 					Player p2 = Bukkit.getServer().getPlayerExact(n);
-					((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+					if (p2 != null) {
+						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+					}
 				}
 				for (String n : hunted) {
 					Player p2 = Bukkit.getServer().getPlayerExact(n);
-					((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+					if (p2 != null) {
+						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
+					}
 				}
 			}
 		}
@@ -125,6 +145,7 @@ public class Game {
 			}
 			spectator.clear();
 		}
+		locator.clear();
 	}
 	
 	public void onDie(Player p) {
@@ -134,22 +155,28 @@ public class Game {
 	public void onDie(String s) {
 		if (hunter.contains(s.toLowerCase())) {
 			hunter.remove(s.toLowerCase());
-			Bukkit.getPlayerExact(s).teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+			Bukkit.getPlayerExact(s).teleport(HuntedPlugin.getInstance().settings.hunterSpawn);
 			if (hunter.size() == 0) {
-				broadcastAll(ChatColor.GREEN + "All " + ChatColor.RED + "hunters" + ChatColor.GREEN + " are now dead! The " + ChatColor.BLUE + "Hunted" + ChatColor.GREEN + " win!");
+				broadcastAll(ChatColor.GOLD + "-------------------------------------");
+				broadcastAll(ChatColor.GREEN + "All " + ChatColor.RED + "Hunters" + ChatColor.GREEN + " are now dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GREEN + " win!");
+				broadcastAll(ChatColor.GOLD + "-------------------------------------");
+				spectator.add(s.toLowerCase());
 				stop();
 			} else {
-				spectator.add(s.toLowerCase());
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
+				spectator.add(s.toLowerCase());
 			}
 		} else if (hunted.contains(s.toLowerCase())) {
 			hunted.remove(s.toLowerCase());
 			if (hunted.size() == 0) {
-				broadcastAll(ChatColor.GREEN + "All of the " + ChatColor.BLUE + "Hunted" + ChatColor.GREEN + " are now dead! The " + ChatColor.RED + "Hunters" + ChatColor.GREEN +" win!");
+				broadcastAll(ChatColor.GOLD + "-------------------------------------");
+				broadcastAll(ChatColor.GREEN + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GREEN + " are now dead! The " + ChatColor.RED + "Hunters" + ChatColor.GREEN +" win!");
+				broadcastAll(ChatColor.GOLD + "-------------------------------------");
+				spectator.add(s.toLowerCase());
 				stop();
 			} else {
-				spectator.add(s.toLowerCase());
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
+				spectator.add(s.toLowerCase());
 			}
 		}
 	}
@@ -167,23 +194,28 @@ public class Game {
 	}
 	
 	private void timeout(String p) {
-		if (Bukkit.getPlayerExact(p).isOnline()
-				&& Bukkit.getPlayerExact(p).getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			if (timeout.containsKey(p)) {
-				timeout.remove(p);
+		if (Bukkit.getPlayerExact(p) != null) {
+			if (Bukkit.getPlayerExact(p).getWorld() == HuntedPlugin.getInstance().getWorld()) {
+				if (timeout.containsKey(p)) {
+					timeout.remove(p);
+				}
+				return;
 			}
-			return;
 		}
 		if (hunter.contains(p)) {
 			hunter.remove(p);
 			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for not being online/in the manhunt world!");
 			if (Bukkit.getPlayerExact(p) != null) {
-				Bukkit.getPlayerExact(p).sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
+				if (Bukkit.getPlayerExact(p) != null) {
+					Bukkit.getPlayerExact(p).sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
+				}
 			}
 		} else if (hunted.contains(p)) {
 			hunted.remove(p);
 			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for not being online/in the manhunt world!");
-			Bukkit.getPlayerExact(p).sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
+			if (Bukkit.getPlayerExact(p) != null) {
+				Bukkit.getPlayerExact(p).sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
+			}
 		}
 		if (timeout.containsKey(p)) {
 			timeout.remove(p);
@@ -212,7 +244,7 @@ public class Game {
 				}
 			}
 			
-			if (hunterReleaseTick != -1 && tick < hunterReleaseTick) {
+			if (hunterReleaseTick != 0 && tick < hunterReleaseTick) {
 				int min;
 				int sec;
 				long totalsec = (hunterReleaseTick - tick) / 20;
@@ -241,15 +273,15 @@ public class Game {
 				if (tick < hunterReleaseTick) {
 					if (tick >= hunterReleaseTick - 6000 && countdown == 0) {
 						broadcastAll(ChatColor.GOLD + "5 minutes until sundown!");
-						countdown++;
+						countdown=1;
 					} else if (tick >= hunterReleaseTick - 4800 && countdown == 1) {
-						broadcastHunted(ChatColor.GOLD + "4 minutes until sundown!");
+						broadcastAll(ChatColor.GOLD + "4 minutes until sundown!");
 						countdown++;
 					} else if (tick >= hunterReleaseTick - 3600 && countdown == 2) {
-						broadcastHunted(ChatColor.GOLD + "3 minutes until sundown!");
+						broadcastAll(ChatColor.GOLD + "3 minutes until sundown!");
 						countdown++;
 					} else if (tick >= hunterReleaseTick - 2400 && countdown == 3) {
-						broadcastHunted(ChatColor.GOLD + "2 minutes suntil sundown!");
+						broadcastAll(ChatColor.GOLD + "2 minutes until sundown!");
 						countdown++;
 					} else if (tick >= hunterReleaseTick - 1200 && countdown == 4) {
 						broadcastAll(ChatColor.GOLD + "1 minute until sundown!");
@@ -466,15 +498,27 @@ public class Game {
 	}
 	
 	public boolean isHunter(Player p) {
-		return (this.hunter.contains(p.getName().toLowerCase()));
+		return isHunter(p.getName());
 	}
 	
 	public boolean isHunted(Player p) {
-		return (this.hunted.contains(p.getName().toLowerCase()));
+		return isHunted(p.getName());
 	}
 	
 	public boolean isSpectating(Player p) {
-		return (this.spectator.contains(p.getName().toLowerCase()));
+		return isSpectating(p.getName());
+	}
+	
+	public boolean isHunter(String p) {
+		return (this.hunter.contains(p.toLowerCase()));
+	}
+	
+	public boolean isHunted(String p) {
+		return (this.hunted.contains(p.toLowerCase()));
+	}
+	
+	public boolean isSpectating(String p) {
+		return (this.spectator.contains(p.toLowerCase()));
 	}
 	
 	public void addHunter(Player p) {
@@ -528,6 +572,24 @@ public class Game {
 		spectator.add(p.toLowerCase());
 	}
 	
+	public void deletePlayer(String p) {
+		if (hunter.contains(p.toLowerCase())) {
+			hunter.remove(p.toLowerCase());
+		}
+		if (hunted.contains(p.toLowerCase())) {
+			hunted.remove(p.toLowerCase());
+		}
+		if (spectator.contains(p.toLowerCase())) {
+			spectator.remove(p.toLowerCase());
+		}
+		if (locator.contains(p.toLowerCase())) {
+			locator.remove(p.toLowerCase());
+		}
+		if (timeout.containsKey(p.toLowerCase())) {
+			timeout.remove(p.toLowerCase());
+		}
+	}
+	
 	public void quit(Player p) {
 		if (isHunter(p) || isHunted(p)) {
 			onDie(p);
@@ -578,11 +640,11 @@ public class Game {
 	}
 	
 	public double getDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
-		return Math.sqrt( Math.pow((x2-x1),2) + Math.pow((y2-y1),2) + Math.pow((z2-z1),2) );
+		return Math.sqrt( Math.pow((x2-x1),2) + Math.pow((z2-z1),2) );
 	}
 	
 	public double getDistance(Location loc1, Location loc2) {
-		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getY(), loc2.getZ());
+		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getZ(), loc2.getZ());
 	}
 	
 	public double getDistance(Player p1, Player p2) {
@@ -604,11 +666,16 @@ public class Game {
 	
 	public void manageLocators() {
 		for (int i = 0 ; i < locator.size() ; i++) {
+			if (getLocatorPlayer(i).getItemInHand().getType() != Material.COMPASS) {
+				getLocatorPlayer(i).sendMessage(ChatColor.RED + "You're not holding the compass! Prey locating cancelled!");
+				stopLocator(i);
+				return;
+			}
 			if (getTick() >= getLocatorTick(i)-3640 && getLocatorStage(i) == 0) {
 				getLocatorPlayer(i).sendMessage(ChatColor.GOLD + "Got it!");
-				setLocatorStage(i, getLocatorStage(i) + 1);
+				setLocatorStage(i, 1);
 			} else if (getTick() >= getLocatorTick(i)-3600 && getLocatorStage(i) == 1) {
-				if (getLocatorPlayer(i).getFoodLevel() <= 4) {
+				if (getLocatorPlayer(i).getFoodLevel() < 5) {
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator!");
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must not have at least two and a half nuggets!");
 					stopLocator(i);
@@ -619,13 +686,9 @@ public class Game {
 					stopLocator(i);
 					return;
 				}
-				if (!getLocatorPlayer(i).getItemInHand().equals(Material.COMPASS)) {
-					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Prey locating cancelled.");
-					stopLocator(i);
-					return;
-				}
 				sendNearestPrey(getLocatorPlayer(i));
 				getLocatorPlayer(i).setFoodLevel(getLocatorPlayer(i).getFoodLevel()-5);
+				setLocatorStage(i, 2);
 			} else if (getTick() >= getLocatorTick(i)) {
 				stopLocator(getLocatorPlayer(i));
 			}
@@ -636,7 +699,7 @@ public class Game {
 		stopLocator(p);
 		locator.add(p.getName() + "/" +
 				p.getLocation().getX() + "," + p.getLocation().getY() + "," + p.getLocation().getZ() + "/" +
-				(getTick()+3800) + "/" + "0");
+				(getTick()+3000) + "/" + "0");
 	}
 	
 	public void startLocator(Player p, int i) {
@@ -670,10 +733,10 @@ public class Game {
 	public Location getLocatorLocation(int i) {
 		try {
 			return new Location(HuntedPlugin.getInstance().getWorld(),
-					Long.parseLong(locator.get(i).split("/")[1].split(",")[0]),
-					Long.parseLong(locator.get(i).split("/")[1].split(",")[1]),
-					Long.parseLong(locator.get(i).split("/")[1].split(",")[2]));
-		} catch (Exception e) {
+					Double.parseDouble( locator.get(i).split("/")[1].split(",")[0] ),
+					Double.parseDouble( locator.get(i).split("/")[1].split(",")[1] ),
+					Double.parseDouble( locator.get(i).split("/")[1].split(",")[2] ));
+		} catch (NumberFormatException e) {
 			return null;
 		}
 	}
@@ -717,7 +780,7 @@ public class Game {
 		}
 		String direction = "";
 		
-		double angle = Math.acos((p.getLocation().getX() - h.getLocation().getX())/getDistance(h, p));
+		double angle = Math.toDegrees(Math.acos((p.getLocation().getX() - h.getLocation().getX())/getDistance(h, p)));
 					
 		if (angle > 338) direction = "South";
 		else if (angle > 293) direction = "South-West";
@@ -729,11 +792,20 @@ public class Game {
 		else if (angle > 23) direction = "South-East";
 		else direction = "South";
 		
-		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + ChatColor.GOLD +" of you!");
+		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + ChatColor.GOLD +" of you! (Sun rises in the " + ChatColor.BLUE + "East!)");
+	}
+	
+	public Inventory clearInventory(Inventory inv) {
+		inv.clear();
+		inv.clear(36);
+		inv.clear(37);
+		inv.clear(38);
+		inv.clear(39);
+		return inv;
 	}
 	
 	public Inventory hunterLoadout(Inventory inv) {
-		inv.clear();
+		clearInventory(inv);
 		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
 		inv.setItem(1, new ItemStack(Material.BOW, 1));
 		//inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
@@ -742,19 +814,22 @@ public class Game {
 		inv.setItem(2, new ItemStack(Material.TORCH, 3));
 		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 3));
 		inv.setItem(4, new ItemStack(Material.ARROW, 64));
-		//inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		//inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		//inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+		if (settings.preyFinder) {
+			inv.setItem(5, new ItemStack(Material.COMPASS, 1));
+		}
+		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
+		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
+		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
 		if (settings.woolHats) {
 			inv.setItem(39, (new Wool(DyeColor.RED).toItemStack()));
 		} else {
-			//inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
+			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
 		}
 		return inv;
 	}
 	
 	public Inventory preyLoadout(Inventory inv) {
-		inv.clear();
+		clearInventory(inv);
 		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
 		inv.setItem(1, new ItemStack(Material.BOW, 1));
 		//inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
