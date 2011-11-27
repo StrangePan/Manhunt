@@ -40,6 +40,7 @@ public class Game {
 	public Game() {
 		hunter = new ArrayList<String>();
 		hunted = new ArrayList<String>();
+		locator = new ArrayList<String>();
 		spectator = new ArrayList<String>();
 		timeout = new HashMap<String, Long>();
 		gameRunning = false;
@@ -684,8 +685,8 @@ public class Game {
 		}
 	}
 	public void setLocatorStage(int i, int stage) {
-		startLocator(getLocatorPlayer(i), stage);
-		stopLocator(i);
+		String val = (locator.get(i).subSequence(0, locator.get(i).lastIndexOf("/"))).toString() + "/" + stage;
+		locator.set(i, val);
 	}
 	public void stopLocator(Player p) {
 		for (int i = 0 ; i < locator.size() ; i++) {

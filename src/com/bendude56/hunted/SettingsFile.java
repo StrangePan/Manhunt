@@ -46,8 +46,14 @@ public class SettingsFile extends Properties {
 	public int hunterBoundry;
 	public int noBuildRange;
 	
-	public Location hunterSpawn;
-	public Location preySpawn;
+	public Location hunterSpawn = new Location(HuntedPlugin.getInstance().getWorld(),
+									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
+									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getY(),
+									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
+	public Location preySpawn = new Location(HuntedPlugin.getInstance().getWorld(),
+									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
+									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getY(),
+									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
 	
 	public SettingsFile() {
 		directory = "plugins/Hunted/";
@@ -308,7 +314,7 @@ public class SettingsFile extends Properties {
 		put("noBuildRange", Integer.toString(noBuildRange));
 		
 		if (containsKey("hunterSpawn")) {
-			if (getProperty("hunterSpawn").split(",").length >= 3) {
+			if (getProperty("hunterSpawn").split(",").length == 3) {
 				String[] loc = getProperty("hunterSpawn").split(",");
 				try {
 					hunterSpawn.setX(Double.parseDouble(loc[0]));
@@ -323,9 +329,10 @@ public class SettingsFile extends Properties {
 		} else {
 			hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
+		put("hunterSpawn", hunterSpawn.getBlockX() + "," + hunterSpawn.getBlockY() + "," + hunterSpawn.getBlockZ());
 		
 		if (containsKey("preySpawn")) {
-			if (getProperty("preySpawn").split(",").length >= 3) {
+			if (getProperty("preySpawn").split(",").length == 3) {
 				String[] loc = getProperty("preySpawn").split(",");
 				try {
 					preySpawn.setX(Double.parseDouble(loc[0]));
@@ -340,6 +347,7 @@ public class SettingsFile extends Properties {
 		} else {
 			preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
+		put("reySpawn", preySpawn.getBlockX() + "," + preySpawn.getBlockY() + "," + preySpawn.getBlockZ());
 		
 		/*if (containsKey("hunterLoadout")) {
 			hunterLoadout = new ItemStack[41];
@@ -386,11 +394,11 @@ public class SettingsFile extends Properties {
 		}
 	} public void changeSetting(String setting, Location loc) {
 		if (containsKey(setting)) {
-			String value = "";
-			value += loc.getBlockX() + ",";
-			value += loc.getBlockY() + ",";
-			value += loc.getBlockZ();
+			String value = loc.getBlockX() + ","
+					+ loc.getBlockY() + ","
+					+ loc.getBlockZ();
 			put(setting, value);
+			loadValues();
 			saveFile();
 		}
 	} /*public void changeSetting(String setting, ItemStack[] inventory) {

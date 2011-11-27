@@ -1,4 +1,4 @@
-package com.bendude56.hunted;
+	package com.bendude56.hunted;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -266,12 +266,14 @@ public class CmdExec implements CommandExecutor {
 					if (args[1].equalsIgnoreCase("prey")) {
 						if (g.gameHasBegun()) {
 							p.sendMessage(ChatColor.RED + "You can't teleport there while the game is running!");
+							return true;
 						}
 						if (args.length == 2) {
 							p.teleport(settings.preySpawn);
 							p.sendMessage(ChatColor.GREEN + "Teleported to the " + ChatColor.BLUE + "Prey" + ChatColor.GREEN + " spawn.");
-						} else {
-							Player p2 = Bukkit.getPlayerExact(args[1]);
+							return true;
+						} else if (args.length > 3) {
+							Player p2 = Bukkit.getPlayerExact(args[2]);
 							if (p2 == null) {
 								p.sendMessage(ChatColor.RED + "Player " + args[1] + " does not exist!");
 								return true;
@@ -286,40 +288,41 @@ public class CmdExec implements CommandExecutor {
 							}
 						}
 					} else if (args[1].equalsIgnoreCase("hunter")) {
-						if (args[1].equalsIgnoreCase("prey")) {
-							if (g.gameHasBegun()) {
-								p.sendMessage(ChatColor.RED + "You can't teleport there while the game is running!");
+						if (g.gameHasBegun()) {
+							p.sendMessage(ChatColor.RED + "You can't teleport there while the game is running!");
+							return true;
+						}
+						if (args.length == 2) {
+							p.teleport(settings.preySpawn);
+							p.sendMessage(ChatColor.GREEN + "Teleported to the " + ChatColor.RED + "Hunter" + ChatColor.GREEN + " spawn.");
+							return true;
+						} else if (args.length > 2){
+							Player p2 = Bukkit.getPlayerExact(args[2]);
+							if (p2 == null) {
+								p.sendMessage(ChatColor.RED + "Player " + args[1] + " does not exist!");
+								return true;
 							}
-							if (args.length == 2) {
-								p.teleport(settings.preySpawn);
-								p.sendMessage(ChatColor.GREEN + "Teleported to the " + ChatColor.RED + "Hunter" + ChatColor.GREEN + " spawn.");
-							} else {
-								Player p2 = Bukkit.getPlayerExact(args[1]);
-								if (p2 == null) {
-									p.sendMessage(ChatColor.RED + "Player " + args[1] + " does not exist!");
-									return true;
-								}
-								if (g.isSpectating(p2) || !g.gameHasBegun()) {
-									p2.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
-									p2.sendMessage(ChatColor.YELLOW + "You have been teleported to the "
-											+ ChatColor.RED + "Hunter" + ChatColor.YELLOW + " spawn.");
-									p.sendMessage(ChatColor.YELLOW + args[1] + " has been teleported to the "
-											+ ChatColor.RED + "Hunter" + ChatColor.YELLOW + " spawn.");
-									return true;
-								}
+							if (g.isSpectating(p2) || !g.gameHasBegun()) {
+								p2.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+								p2.sendMessage(ChatColor.YELLOW + "You have been teleported to the "
+										+ ChatColor.RED + "Hunter" + ChatColor.YELLOW + " spawn.");
+								p.sendMessage(ChatColor.YELLOW + args[1] + " has been teleported to the "
+										+ ChatColor.RED + "Hunter" + ChatColor.YELLOW + " spawn.");
+								return true;
 							}
 						}
-					}
-					Player p2 = Bukkit.getPlayerExact(args[1]);
-					if (p2 == null) {
-						p.sendMessage(ChatColor.RED + "Player " + args[1] + " does not exist!");
-						return true;
-					}
-					if (g.isSpectating(p2) || !g.gameHasBegun()) {
-						p2.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
-						p2.sendMessage(ChatColor.YELLOW + "You have been teleported to the manhunt world spawn.");
-						p.sendMessage(ChatColor.YELLOW + args[1] + " has been teleported to the manhunt world spawn.");
-						return true;
+					} else {
+						Player p2 = Bukkit.getPlayerExact(args[1]);
+						if (p2 == null) {
+							p.sendMessage(ChatColor.RED + "Player " + args[1] + " does not exist!");
+							return true;
+						}
+						if (g.isSpectating(p2) || !g.gameHasBegun()) {
+							p2.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+							p2.sendMessage(ChatColor.YELLOW + "You have been teleported to the manhunt world spawn.");
+							p.sendMessage(ChatColor.YELLOW + args[1] + " has been teleported to the manhunt world spawn.");
+							return true;
+						}
 					}
 				}
 			}
@@ -337,33 +340,36 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			}
 			if (args.length == 1) {
-				if (settings.hunterSpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+				if (settings.hunterSpawn == HuntedPlugin.getInstance().getWorld().getSpawnLocation()) {
 					settings.changeSetting("hunterSpawn", p.getLocation());
 				}
-				if (settings.preySpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+				if (settings.preySpawn == HuntedPlugin.getInstance().getWorld().getSpawnLocation()) {
 					settings.changeSetting("preySpawn", p.getLocation());
 				}
 				HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
 				p.sendMessage(ChatColor.GREEN + "World spawn set!");
 				return true;
-			} else {
-				if (args[2].equalsIgnoreCase("hunter") || args[2].equalsIgnoreCase("hunters")) {
+			} else if (args.length == 2) {
+				if (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("hunters")) {
 					settings.changeSetting("hunterSpawn", p.getLocation());
 					p.sendMessage(ChatColor.RED + "Hunter" + ChatColor.GREEN + " spawn set!");
+					return true;
 				}
-				if (args[2].equalsIgnoreCase("hunted") || args[2].equalsIgnoreCase("prey")) {
+				if (args[1].equalsIgnoreCase("hunted") || args[1].equalsIgnoreCase("prey")) {
 					settings.changeSetting("preySpawn", p.getLocation());
 					p.sendMessage(ChatColor.BLUE + "Prey" + ChatColor.GREEN + " spawn set!");
+					return true;
 				}
-				if (args[2].equalsIgnoreCase("waiting") || args[2].equalsIgnoreCase("pregame")) {
-					if (settings.hunterSpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+				if (args[1].equalsIgnoreCase("waiting") || args[1].equalsIgnoreCase("pregame")) {
+					if (settings.hunterSpawn == HuntedPlugin.getInstance().getWorld().getSpawnLocation()) {
 						settings.changeSetting("hunterSpawn", p.getLocation());
 					}
-					if (settings.preySpawn.equals(HuntedPlugin.getInstance().getWorld().getSpawnLocation())) {
+					if (settings.preySpawn == HuntedPlugin.getInstance().getWorld().getSpawnLocation()) {
 						settings.changeSetting("preySpawn", p.getLocation());
 					}
 					HuntedPlugin.getInstance().getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
 					p.sendMessage(ChatColor.GREEN + "Pregame" + ChatColor.GREEN + " spawn set! (AKA World Spawn)");
+					return true;
 				}
 			}
 		} else if (args[0].equalsIgnoreCase("startgame")) {
