@@ -60,7 +60,7 @@ public class Game {
 			this.broadcastHunters(ChatColor.YELLOW +
 					"The game has started! The " + ChatColor.BLUE + "Hunted" + ChatColor.YELLOW + " are preparing for nightfall.");
 			this.broadcastHunted(ChatColor.YELLOW +
-					"The game has started! The " + ChatColor.RED + "Hunters" + ChatColor.YELLOW + " will be released at sundown!");
+					"The game has started! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.YELLOW + " will be released at sundown!");
 			
 			countdown = 0;
 			hunterReleaseTick = HuntedPlugin.getInstance().manhuntWorld.getFullTime() + 12000;
@@ -136,12 +136,13 @@ public class Game {
 					}
 				}
 			}
+			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 		}
 		
 		if (settings.autoHunter) {
 			for (String s : spectator) {
 				hunter.add(s);
-				broadcastAll(ChatColor.RED + s + ChatColor.WHITE + " has joined team " + ChatColor.RED + "Hunters");
+				broadcastAll(ChatColor.DARK_RED + s + ChatColor.WHITE + " has joined team " + ChatColor.DARK_RED + "Hunters");
 			}
 			spectator.clear();
 		}
@@ -158,7 +159,7 @@ public class Game {
 			Bukkit.getPlayerExact(s).teleport(HuntedPlugin.getInstance().settings.hunterSpawn);
 			if (hunter.size() == 0) {
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				broadcastAll(ChatColor.GREEN + "All " + ChatColor.RED + "Hunters" + ChatColor.GREEN + " are now dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GREEN + " win!");
+				broadcastAll(ChatColor.GOLD + "All " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are now dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win!");
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				spectator.add(s.toLowerCase());
 				stop();
@@ -170,7 +171,7 @@ public class Game {
 			hunted.remove(s.toLowerCase());
 			if (hunted.size() == 0) {
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				broadcastAll(ChatColor.GREEN + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GREEN + " are now dead! The " + ChatColor.RED + "Hunters" + ChatColor.GREEN +" win!");
+				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are now dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win!");
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				spectator.add(s.toLowerCase());
 				stop();
@@ -234,6 +235,19 @@ public class Game {
 			long tick = HuntedPlugin.getInstance().getWorld().getFullTime();
 			
 			manageLocators();
+			
+			if (settings.northCompass) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (p.getWorld() == HuntedPlugin.getInstance().getWorld()
+							&& (isHunter(p) || isHunted(p) || isSpectating(p))) {
+						p.setCompassTarget(new Location(
+								p.getWorld(),
+								p.getLocation().getX(),
+								p.getLocation().getY(),
+								p.getLocation().getZ()-1000));
+					}
+				}
+			}
 			
 			for (String n : spectator) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -320,9 +334,9 @@ public class Game {
 						p.setFoodLevel(20);
 					}
 				}
-				broadcastSpectators(ChatColor.RED + "The hunters have been released! They have " + settings.dayLimit + " days to slay the hunted.");
-				broadcastHunters(ChatColor.RED + "You have been released! Go get 'em!");
-				broadcastHunted(ChatColor.RED + "The hunters are on the move! Good luck!");
+				broadcastAll(ChatColor.GOLD + "-------------------------------------");
+				broadcastAll(ChatColor.GOLD + "The Manhunt game has begun! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are free!");
+				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				endTick = tick + settings.dayLimit* 24000;
 			} else if (tick >= endTick) {
 				broadcastAll(ChatColor.GREEN + "Time has run out! The hunted have won the game!");
@@ -415,6 +429,7 @@ public class Game {
 		} else if (gameHasBegun()) {
 			addSpectator(p);
 		} else if (!gameHasBegun()) {
+			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 			addHunter(p);
 		}
 	}
@@ -425,8 +440,8 @@ public class Game {
 				broadcastAll(getColor(p) + p.getName() + ChatColor.WHITE +
 						" has disconnected.");
 				if (settings.offlineTimeout > 0) {
-					broadcastAll(ChatColor.WHITE + "If they don't reconnect in " + ChatColor.RED +
-							(settings.offlineTimeout) + " minutes" + ChatColor.WHITE + ", they will be disqualified!");
+					broadcastAll(ChatColor.WHITE + "They will be removed from the game in " + ChatColor.RED +
+							(settings.offlineTimeout) + " MINUTES.");
 					timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout * 72000);
 				} else if (settings.offlineTimeout == 0) {
 					broadcastAll(ChatColor.WHITE + "They are now disqualified from the game.");
@@ -602,7 +617,7 @@ public class Game {
 		if (p == null) {
 			return ChatColor.YELLOW;
 		} else if (isHunter(p)) {
-			return ChatColor.RED;
+			return ChatColor.DARK_RED;
 		} else if (isHunted(p)) {
 			return ChatColor.BLUE;
 		} else return ChatColor.YELLOW;
@@ -677,7 +692,7 @@ public class Game {
 			} else if (getTick() >= getLocatorTick(i)-3600 && getLocatorStage(i) == 1) {
 				if (getLocatorPlayer(i).getFoodLevel() < 5) {
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator!");
-					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must not have at least two and a half nuggets!");
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must not have at least two food nuggets!");
 					stopLocator(i);
 					return;
 				}
@@ -780,7 +795,7 @@ public class Game {
 		}
 		String direction = "";
 		
-		double angle = Math.toDegrees(Math.acos((p.getLocation().getX() - h.getLocation().getX())/getDistance(h, p)));
+		double angle = Math.toDegrees(Math.acos((p.getLocation().getZ() - h.getLocation().getZ())/getDistance(h, p)));
 					
 		if (angle > 338) direction = "South";
 		else if (angle > 293) direction = "South-West";

@@ -12,12 +12,14 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class HuntedPlayerListener extends PlayerListener {
@@ -33,10 +35,19 @@ public class HuntedPlayerListener extends PlayerListener {
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(
-				Event.Type.PLAYER_CHANGED_WORLD, this, Event.Priority.Normal,
-				HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_CHANGED_WORLD, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_BUCKET_FILL, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_BUCKET_EMPTY, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_PICKUP_ITEM, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 	}
 
@@ -209,7 +220,7 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 	}
 
-	public void onBucketEmptyEvent(PlayerBucketEmptyEvent e) {
+	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
 		Game g = HuntedPlugin.getInstance().game;
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
@@ -228,7 +239,7 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 	}
 
-	public void onBucketFillEvent(PlayerBucketFillEvent e) {
+	public void onBucketFill(PlayerBucketFillEvent e) {
 		Game g = HuntedPlugin.getInstance().game;
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
@@ -246,4 +257,21 @@ public class HuntedPlayerListener extends PlayerListener {
 			}
 		}
 	}
+	
+	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
+		if (HuntedPlugin.getInstance().game.gameHasBegun()) {
+			if (HuntedPlugin.getInstance().game.isSpectating(e.getPlayer())) {
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	public void onPlayerDropItem(PlayerDropItemEvent e) {
+		if (HuntedPlugin.getInstance().game.gameHasBegun()) {
+			if (HuntedPlugin.getInstance().game.isSpectating(e.getPlayer())) {
+				e.setCancelled(true);
+			}
+		}
+	}
+	
 }

@@ -35,6 +35,7 @@ public class SettingsFile extends Properties {
 	public boolean autoHunter;
 	public boolean loadouts;
 	public boolean woolHats;
+	public boolean northCompass;
 	
 	//public ItemStack[] preyLoadout;
 	//public ItemStack[] hunterLoadout;
@@ -126,6 +127,7 @@ public class SettingsFile extends Properties {
 		autoHunter = true;
 		loadouts = false;
 		woolHats = true;
+		northCompass = true;
 		dayLimit = 3;
 		offlineTimeout = 5;
 		globalBoundry = -1;
@@ -243,6 +245,15 @@ public class SettingsFile extends Properties {
 			}
 		} else woolHats = false;
 		put("woolHats", Boolean.toString(woolHats));
+		
+		if (containsKey("northCompass")) {
+			if (getProperty("northCompass").length() > 0 && getProperty("northCompass").equalsIgnoreCase("true")) {
+				northCompass = true;
+			} else {
+				northCompass = false;
+			}
+		} else northCompass = false;
+		put("northCompass", Boolean.toString(northCompass));
 		
 		if (containsKey("autoHunter")) {
 			if (getProperty("autoHunter").length() > 0 && getProperty("autoHunter").equalsIgnoreCase("true")) {
