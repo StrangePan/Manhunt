@@ -31,6 +31,7 @@ public class SettingsFile extends Properties {
 	public boolean pvpInstantDeath;
 	
 	public boolean opPermission;
+	public boolean easyCommands;
 	public boolean allTalk;
 	public boolean autoHunter;
 	public boolean loadouts;
@@ -115,6 +116,7 @@ public class SettingsFile extends Properties {
 	
 	public void loadDefaults() {
 		opPermission = true;
+		easyCommands = true;
 		allTalk = false;
 		spawnPassive = true;
 		spawnHostile = true;
@@ -146,6 +148,15 @@ public class SettingsFile extends Properties {
 			}
 		} else opPermission = true;
 		put("opPermission", Boolean.toString(opPermission));
+		
+		if (containsKey("easyCommands")) {
+			if (getProperty("easyCommands").length() > 0 && getProperty("easyCommands").equalsIgnoreCase("true")) {
+				easyCommands = true;
+			} else {
+				easyCommands = false;
+			}
+		} else easyCommands = true;
+		put("easyCommands", Boolean.toString(easyCommands));
 		
 		if (containsKey("allTalk")) {
 			if (getProperty("allTalk").length() > 0 && getProperty("allTalk").equalsIgnoreCase("true")) {
@@ -412,7 +423,8 @@ public class SettingsFile extends Properties {
 			loadValues();
 			saveFile();
 		}
-	} /*public void changeSetting(String setting, ItemStack[] inventory) {
+	}
+	/*public void changeSetting(String setting, ItemStack[] inventory) {
 		if (containsKey(setting)) {
 			String value = "";
 			for (ItemStack i : inventory) {
