@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -13,6 +14,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -38,6 +40,8 @@ public class HuntedPlayerListener extends PlayerListener {
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this,
+				Event.Priority.Normal, HuntedPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_GAME_MODE_CHANGE, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_CHANGED_WORLD, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
@@ -182,30 +186,35 @@ public class HuntedPlayerListener extends PlayerListener {
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		Game g = HuntedPlugin.getInstance().game;
-		if (!g.huntHasBegun() || !g.isHunter(p)
-				|| HuntedPlugin.getInstance().getWorld() != p.getWorld()
-				|| !HuntedPlugin.getInstance().settings.preyFinder) {
+		if (!g.huntHasBegun()
+				|| HuntedPlugin.getInstance().getWorld() != p.getWorld()) {
 			return;
 		}
-		if ((e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR)
-				&& p.getItemInHand().getType() == Material.COMPASS) {
-			if (g.getLocatorByPlayer(p) == -1) {
-				g.startLocator(p);
-				p.sendMessage(ChatColor.GOLD
-						+ "Beginning search for nearby Prey... Stand still for 10 seconds.");
-			} else {
-				if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer())) == 2) {
-					p.sendMessage(ChatColor.RED
-							+ "Prey locator is still charging. Time left: "
-							+ (int) Math.floor((g.getLocatorTick(g
-									.getLocatorByPlayer(p)) - g.getTick()) / 1200)
-							+ ":"
-							+ (int) (Math.floor((g.getLocatorTick(g
-									.getLocatorByPlayer(p)) - g.getTick()) / 20) - (int) Math.floor((g
-									.getLocatorTick(g.getLocatorByPlayer(p)) - g
-									.getTick()) / 1200) * 60));
-				}
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
+			if (g.isSpectating(p)) {
+				e.setCancelled(true);
 				return;
+			}
+			if (g.isHunter(p) && p.getItemInHand().getType() == Material.COMPASS
+					&& HuntedPlugin.getInstance().settings.preyFinder) {
+				if (g.getLocatorByPlayer(p) == -1) {
+					g.startLocator(p);
+					p.sendMessage(ChatColor.GOLD
+							+ "Beginning search for nearby Prey... Stand still for 10 seconds.");
+				} else {
+					if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer())) == 2) {
+						p.sendMessage(ChatColor.RED
+								+ "Prey locator is still charging. Time left: "
+								+ (int) Math.floor((g.getLocatorTick(g
+										.getLocatorByPlayer(p)) - g.getTick()) / 1200)
+								+ ":"
+								+ (int) (Math.floor((g.getLocatorTick(g
+										.getLocatorByPlayer(p)) - g.getTick()) / 20) - (int) Math.floor((g
+										.getLocatorTick(g.getLocatorByPlayer(p)) - g
+										.getTick()) / 1200) * 60));
+					}
+					return;
+				}
 			}
 		}
 	}
@@ -239,6 +248,31 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 	}
 
+	public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
+		Game g = HuntedPlugin.getInstance().game;
+		Player p = e.getPlayer();
+		if (p.getWorld() != HuntedPlugin.getInstance().getWorld()) {
+			return;
+		}
+		if (!g.gameHasBegun()) {
+			return;
+		}
+		
+		if (g.isHunter(p) || g.isHunted(p)) {
+			if (e.getNewGameMode() != GameMode.SURVIVAL) {
+				e.setCancelled(true);
+				return;
+			}
+		}
+		if (g.isSpectating(p)) {
+			if (HuntedPlugin.getInstance().settings.flyingSpectators) {
+				if (e.getNewGameMode() != GameMode.SURVIVAL) {
+					e.setCancelled(true);
+				}
+			}
+		}
+	}
+	
 	public void onBucketFill(PlayerBucketFillEvent e) {
 		Game g = HuntedPlugin.getInstance().game;
 		if (g.gameHasBegun()) {

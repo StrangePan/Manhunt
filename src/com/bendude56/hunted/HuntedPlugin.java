@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,6 +26,11 @@ public class HuntedPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		for (String s : game.getCreative()) {
+			if (Bukkit.getPlayerExact(s) != null) {
+				Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
+			}
+		}
 		log(Level.INFO, "Unloaded from memory...");
 	}
 
@@ -39,12 +45,12 @@ public class HuntedPlugin extends JavaPlugin {
 		}
 		
 		manhuntWorld = Bukkit.getWorlds().get(0);
+		settings = new SettingsFile();
+		game = new Game();
 		new CmdExec();
 		new HuntedPlayerListener();
 		new HuntedEntityListener();
 		new HuntedBlockListener();
-		settings = new SettingsFile();
-		game = new Game();
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 	}
 	

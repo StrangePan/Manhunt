@@ -28,7 +28,7 @@ public class Game {
 	private List<String> hunter;
 	private List<String> hunted;
 	private List<String> spectator;
-	//private List<String> dead;
+	private List<String> creative;
 	private List<String> locator;
 	
 	private int countdown;
@@ -41,8 +41,9 @@ public class Game {
 	public Game() {
 		hunter = new ArrayList<String>();
 		hunted = new ArrayList<String>();
-		locator = new ArrayList<String>();
 		spectator = new ArrayList<String>();
+		creative = new ArrayList<String>();
+		locator = new ArrayList<String>();
 		timeout = new HashMap<String, Long>();
 		gameRunning = false;
 		countdown = 0;
@@ -72,6 +73,9 @@ public class Game {
 				if (p == null) {
 					return;
 				}
+				if (p.getGameMode() == GameMode.CREATIVE) {
+					creative.add(p.getName());
+				}
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setFireTicks(0);
 				p.setHealth(20);
@@ -83,6 +87,9 @@ public class Game {
 				Player p = Bukkit.getServer().getPlayerExact(n);
 				if (p == null) {
 					return;
+				}
+				if (p.getGameMode() == GameMode.CREATIVE) {
+					creative.add(p.getName());
 				}
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setFireTicks(0);
@@ -98,6 +105,14 @@ public class Game {
 				Player p = Bukkit.getServer().getPlayerExact(n);
 				if (p == null) {
 					return;
+				}
+				if (p.getGameMode() == GameMode.CREATIVE) {
+					creative.add(p.getName());
+				}
+				if (settings.flyingSpectators) {
+					p.setGameMode(GameMode.CREATIVE);
+				} else {
+					p.setGameMode(GameMode.SURVIVAL);
 				}
 				clearInventory(p.getInventory());
 				for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
@@ -135,7 +150,12 @@ public class Game {
 						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
 					}
 				}
+				if (creative.contains(p.getName())) {
+					p.setGameMode(GameMode.CREATIVE);
+					creative.remove(p.getName());
+				}
 			}
+			creative.clear();
 			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 		}
 		
@@ -165,6 +185,7 @@ public class Game {
 				stop();
 			} else {
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
+				if (settings.flyingSpectators) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				spectator.add(s.toLowerCase());
 			}
 		} else if (hunted.contains(s.toLowerCase())) {
@@ -177,6 +198,7 @@ public class Game {
 				stop();
 			} else {
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
+				if (settings.flyingSpectators) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				spectator.add(s.toLowerCase());
 			}
 		}
@@ -428,6 +450,14 @@ public class Game {
 			timeout.remove(p);
 		} else if (gameHasBegun()) {
 			addSpectator(p);
+			if (p.getGameMode() == GameMode.CREATIVE) {
+				if (!creative.contains(p.getName())) creative.add(p.getName());
+			}
+			if (settings.flyingSpectators) {
+				p.setGameMode(GameMode.CREATIVE);
+			} else {
+				p.setGameMode(GameMode.SURVIVAL);
+			}
 		} else if (!gameHasBegun()) {
 			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 			addHunter(p);
@@ -435,6 +465,13 @@ public class Game {
 	}
 	
 	public void onLogout(Player p) {
+		if (creative.contains(p.getName())) {
+			p.setGameMode(GameMode.CREATIVE);
+			creative.remove(p.getName());
+		} else {
+			p.setGameMode(GameMode.SURVIVAL);
+			creative.remove(p.getName());
+		}
 		if (isHunter(p) || isHunted(p)) {
 			if (gameHasBegun() && settings.offlineTimeout >= 0) {
 				broadcastAll(getColor(p) + p.getName() + ChatColor.WHITE +
@@ -524,16 +561,36 @@ public class Game {
 		return isSpectating(p.getName());
 	}
 	
+	public boolean isCreative(Player p) {
+		return isCreative(p.getName());
+	}
+	
 	public boolean isHunter(String p) {
-		return (this.hunter.contains(p.toLowerCase()));
+		for (String s : hunter) {
+			if (s.equalsIgnoreCase(p)) return true;
+		}
+		return false;
 	}
 	
 	public boolean isHunted(String p) {
-		return (this.hunted.contains(p.toLowerCase()));
+		for (String s : hunted) {
+			if (s.equalsIgnoreCase(p)) return true;
+		}
+		return false;
 	}
 	
 	public boolean isSpectating(String p) {
-		return (this.spectator.contains(p.toLowerCase()));
+		for (String s : spectator) {
+			if (s.equalsIgnoreCase(p)) return true;
+		}
+		return false;
+	}
+	
+	public boolean isCreative(String p) {
+		for (String s : creative) {
+			if (s.equalsIgnoreCase(p)) return true;
+		}
+		return false;
 	}
 	
 	public void addHunter(Player p) {
@@ -549,59 +606,79 @@ public class Game {
 	}
 	
 	public void addHunter(String p) {
-		if (hunter.contains(p.toLowerCase())) {
-			hunter.remove(p.toLowerCase());
+		if (Bukkit.getPlayerExact(p) == null) {
+			return;
+		} else {
+			p = Bukkit.getPlayerExact(p).getName();
 		}
-		if (hunted.contains(p.toLowerCase())) {
-			hunted.remove(p.toLowerCase());
+		if (hunter.contains(p)) {
+			hunter.remove(p);
 		}
-		if (spectator.contains(p.toLowerCase())) {
-			spectator.remove(p.toLowerCase());
+		if (hunted.contains(p)) {
+			hunted.remove(p);
 		}
-		hunter.add(p.toLowerCase());
+		if (spectator.contains(p)) {
+			spectator.remove(p);
+		}
+		hunter.add(p);
 	}
 	
 	public void addHunted(String p) {
-		if (hunter.contains(p.toLowerCase())) {
-			hunter.remove(p.toLowerCase());
+		if (Bukkit.getPlayerExact(p) == null) {
+			return;
+		} else {
+			p = Bukkit.getPlayerExact(p).getName();
 		}
-		if (hunted.contains(p.toLowerCase())) {
-			hunted.remove(p.toLowerCase());
+		if (hunter.contains(p)) {
+			hunter.remove(p);
 		}
-		if (spectator.contains(p.toLowerCase())) {
-			spectator.remove(p.toLowerCase());
+		if (hunted.contains(p)) {
+			hunted.remove(p);
 		}
-		hunted.add(p.toLowerCase());
+		if (spectator.contains(p)) {
+			spectator.remove(p);
+		}
+		hunted.add(p);
 	}
 	
 	public void addSpectator(String p) {
-		if (hunter.contains(p.toLowerCase())) {
-			hunter.remove(p.toLowerCase());
+		if (Bukkit.getPlayerExact(p) == null) {
+			return;
+		} else {
+			p = Bukkit.getPlayerExact(p).getName();
 		}
-		if (hunted.contains(p.toLowerCase())) {
-			hunted.remove(p.toLowerCase());
+		if (hunter.contains(p)) {
+			hunter.remove(p);
 		}
-		if (spectator.contains(p.toLowerCase())) {
-			spectator.remove(p.toLowerCase());
+		if (hunted.contains(p)) {
+			hunted.remove(p);
 		}
-		spectator.add(p.toLowerCase());
+		if (spectator.contains(p)) {
+			spectator.remove(p);
+		}
+		spectator.add(p);
 	}
 	
 	public void deletePlayer(String p) {
-		if (hunter.contains(p.toLowerCase())) {
-			hunter.remove(p.toLowerCase());
+		for (int i=0 ; i<hunter.size() ; i++) {
+			if (p.equalsIgnoreCase(hunter.get(i))) {
+				hunter.remove(i);
+			}
 		}
-		if (hunted.contains(p.toLowerCase())) {
-			hunted.remove(p.toLowerCase());
+		for (int i=0 ; i<hunted.size() ; i++) {
+			if (p.equalsIgnoreCase(hunted.get(i))) {
+				hunted.remove(i);
+			}
 		}
-		if (spectator.contains(p.toLowerCase())) {
-			spectator.remove(p.toLowerCase());
+		for (int i=0 ; i<spectator.size() ; i++) {
+			if (p.equalsIgnoreCase(spectator.get(i))) {
+				spectator.remove(i);
+			}
 		}
-		if (locator.contains(p.toLowerCase())) {
-			locator.remove(p.toLowerCase());
-		}
-		if (timeout.containsKey(p.toLowerCase())) {
-			timeout.remove(p.toLowerCase());
+		for (String i : timeout.keySet()) {
+			if (i.equalsIgnoreCase(p)) {
+				timeout.remove(i);
+			}
 		}
 	}
 	
@@ -637,6 +714,10 @@ public class Game {
 	
 	public List<String> getSpectators() {
 		return spectator;
+	}
+	
+	public List<String> getCreative() {
+		return creative;
 	}
 	
 	public int HuntersAmount() {

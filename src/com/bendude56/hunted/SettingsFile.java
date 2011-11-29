@@ -29,6 +29,7 @@ public class SettingsFile extends Properties {
 	
 	public boolean friendlyFire;
 	public boolean pvpInstantDeath;
+	public boolean flyingSpectators;
 	
 	public boolean opPermission;
 	public boolean easyCommands;
@@ -126,6 +127,7 @@ public class SettingsFile extends Properties {
 		preyFinder = true;
 		friendlyFire = false;
 		pvpInstantDeath = false;
+		flyingSpectators = true;
 		autoHunter = true;
 		loadouts = false;
 		woolHats = true;
@@ -238,6 +240,15 @@ public class SettingsFile extends Properties {
 			}
 		} else pvpInstantDeath = false;
 		put("pvpInstantDeath", Boolean.toString(pvpInstantDeath));
+		
+		if (containsKey("flyingSpectators")) {
+			if (getProperty("flyingSpectators").length() > 0 && getProperty("flyingSpectators").equalsIgnoreCase("true")) {
+				flyingSpectators = true;
+			} else {
+				flyingSpectators = false;
+			}
+		} else flyingSpectators = false;
+		put("flyingSpectators", Boolean.toString(flyingSpectators));
 		
 		if (containsKey("loadouts")) {
 			if (getProperty("loadouts").length() > 0 && getProperty("loadouts").equalsIgnoreCase("true")) {

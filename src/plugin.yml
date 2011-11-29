@@ -29,6 +29,9 @@ commands:
     hunter:
         usage:
         description: Joins team hunters
+    hunters:
+        usage:
+        description: Joins team hunters
     prey:
         usage:
         description: Joins team prey
@@ -54,6 +57,9 @@ commands:
         usage:
         description: Kicks a player from the game
     setting:
+        usage:
+        description: Lists or changes a setting
+    settings:
         usage:
         description: Lists or changes a setting
     list:
