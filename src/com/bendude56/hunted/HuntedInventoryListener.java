@@ -16,17 +16,17 @@ public class HuntedInventoryListener extends InventoryListener {
 	}
 	
 	public void onInventoryClick(InventoryClickEvent e) {
-		if (HuntedPlugin.getInstance().settings.woolHats
-				&& HuntedPlugin.getInstance().game.gameHasBegun()
-				&& (HuntedPlugin.getInstance().game.isHunter(e.getPlayer())
-				|| HuntedPlugin.getInstance().game.isHunted(e.getPlayer()))
+		if (HuntedPlugin.getInstance().getSettings().woolHats()
+				&& HuntedPlugin.getInstance().getGame().gameHasBegun()
+				&& (HuntedPlugin.getInstance().getGame().isHunter(e.getPlayer())
+				|| HuntedPlugin.getInstance().getGame().isHunted(e.getPlayer()))
 				&& e.getSlot() == 40) {
 			e.setCancelled(true);
 			return;
 		}
-		if (HuntedPlugin.getInstance().game.isSpectating(e.getPlayer())
+		if (HuntedPlugin.getInstance().getGame().isSpectating(e.getPlayer())
 				&& e.getPlayer().getGameMode() == GameMode.CREATIVE
-				&& !HuntedPlugin.getInstance().game.isCreative(e.getPlayer())
+				&& !HuntedPlugin.getInstance().getGame().isCreative(e.getPlayer())
 				&& !e.getPlayer().isOp()) {
 			e.setCancelled(true);
 			return;

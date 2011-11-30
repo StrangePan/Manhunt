@@ -12,7 +12,7 @@ public class CmdExec implements CommandExecutor {
 	public CmdExec() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 		Bukkit.getPluginCommand("m").setExecutor(this);
-		if (settings.easyCommands) {
+		if (settings.easyCommands()) {
 			Bukkit.getPluginCommand("startgame").setExecutor(this);
 			Bukkit.getPluginCommand("stopgame").setExecutor(this);
 			Bukkit.getPluginCommand("join").setExecutor(this);
@@ -36,8 +36,8 @@ public class CmdExec implements CommandExecutor {
 		}
 	}
 	
-	Game g = HuntedPlugin.getInstance().game;
-	SettingsFile settings = HuntedPlugin.getInstance().settings;
+	Game g = HuntedPlugin.getInstance().getGame();
+	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command c, String cmd,
@@ -266,7 +266,7 @@ public class CmdExec implements CommandExecutor {
 	private void helpCommand(String[] args, Player p) {
 		if (args.length == 0) args[0] = "1";
 		
-		if (settings.easyCommands) {
+		if (settings.easyCommands()) {
 			if (args[0].equalsIgnoreCase("1")) {
 				p.sendMessage(ChatColor.GOLD + "Manhunt help: (1/2)");
 				p.sendMessage(ChatColor.GREEN + "/startgame" + ChatColor.YELLOW + " Starts the Manhunt game.");
@@ -352,7 +352,7 @@ public class CmdExec implements CommandExecutor {
 			p.sendMessage(ChatColor.RED
 					+ "You cannot join a game already in progress!");
 			return;
-		} else if (settings.opPermission && !p.isOp()) {
+		} else if (settings.opPermission() && !p.isOp()) {
 			p.sendMessage(ChatColor.RED
 					+ "Only OPs have permission to do that.");
 			return;
@@ -473,7 +473,7 @@ public class CmdExec implements CommandExecutor {
 			p.sendMessage(ChatColor.RED
 					+ "Use \"/manhunt quit\" if you want to quit the game.");
 			return;
-		} else if (p.isOp() || !settings.opPermission) {
+		} else if (p.isOp() || !settings.opPermission()) {
 			if (args.length == 0) {
 				g.addSpectator(p);
 				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
@@ -566,7 +566,7 @@ public class CmdExec implements CommandExecutor {
 	}
 	
 	private void listCommand(String[] args, Player p) {
-		if (settings.opPermission && !p.isOp()) {
+		if (settings.opPermission() && !p.isOp()) {
 			p.sendMessage(ChatColor.RED
 					+ "You don'thave permission to do that!");
 			return;
@@ -647,7 +647,7 @@ public class CmdExec implements CommandExecutor {
 	}
 	
 	private void spawnCommand(String[] args, Player p) {
-		if (p.isOp() || !settings.opPermission || g.isSpectating(p)) {
+		if (p.isOp() || !settings.opPermission() || g.isSpectating(p)) {
 			if (args.length == 0) {
 				if (g.isSpectating(p) || !g.gameHasBegun()) {
 					p.teleport(HuntedPlugin.getInstance().getWorld()
@@ -900,7 +900,7 @@ public class CmdExec implements CommandExecutor {
 				|| (args.length == 1 && args[0].equalsIgnoreCase("1"))) {
 			p.sendMessage(ChatColor.GOLD
 					+ "Available manhunt settings: (1/3)");
-			if (settings.opPermission) {
+			if (settings.opPermission()) {
 				p.sendMessage(ChatColor.BLUE
 						+ "opPermission "
 						+ ChatColor.GREEN
@@ -915,7 +915,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.WHITE
 						+ " Players can choose their team and warp to world spawn.");
 			}
-			if (settings.easyCommands) {
+			if (settings.easyCommands()) {
 				p.sendMessage(ChatColor.BLUE
 						+ "easyCommands "
 						+ ChatColor.GREEN
@@ -930,7 +930,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.WHITE
 						+ " You must prefex every command with /manhunt.");
 			}
-			if (settings.allTalk) {
+			if (settings.allTalk()) {
 				p.sendMessage(ChatColor.BLUE + "allTalk " + ChatColor.GREEN
 						+ "[true]" + ChatColor.WHITE
 						+ " Teams can see eachother's chat.");
@@ -942,7 +942,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.WHITE
 						+ " Hunters, prey, and spectators can't chat with eachother.");
 			}
-			if (settings.spawnPassive) {
+			if (settings.spawnPassive()) {
 				p.sendMessage(ChatColor.BLUE + "spawnPassive "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Passive mobs will spawn.");
@@ -951,7 +951,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[false]" + ChatColor.WHITE
 						+ " Passive mobs will not spawn.");
 			}
-			if (settings.spawnHostile) {
+			if (settings.spawnHostile()) {
 				p.sendMessage(ChatColor.BLUE + "spawnHostile "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Hostile mobs will spawn.");
@@ -960,7 +960,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[false]" + ChatColor.WHITE
 						+ " Hostile mobs will not spawn.");
 			}
-			if (settings.envDeath) {
+			if (settings.envDeath()) {
 				p.sendMessage(ChatColor.BLUE
 						+ "envDeath "
 						+ ChatColor.GREEN
@@ -975,7 +975,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.WHITE
 						+ " Players can be damaged by environment, but never die.");
 			}
-			if (settings.envHunterRespawn) {
+			if (settings.envHunterRespawn()) {
 				p.sendMessage(ChatColor.BLUE + "envHunterRespawn "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Hunters respawn from enviromental death.");
@@ -984,7 +984,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[false]" + ChatColor.WHITE
 						+ " Hunters are eliminated by enviromental death.");
 			}
-			if (settings.envPreyRespawn) {
+			if (settings.envPreyRespawn()) {
 				p.sendMessage(ChatColor.BLUE + "envPreyRespawn "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " The Prey respawn from enviromental death.");
@@ -998,7 +998,7 @@ public class CmdExec implements CommandExecutor {
 			p.sendMessage(ChatColor.GOLD
 					+ "Available manhunt settings: (2/3)");
 			
-			if (settings.preyFinder) {
+			if (settings.preyFinder()) {
 				p.sendMessage(ChatColor.BLUE
 						+ "preyFinder "
 						+ ChatColor.GREEN
@@ -1013,7 +1013,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.WHITE
 						+ " Hunters have to find the Prey the old-fashioned way.");
 			}
-			if (settings.friendlyFire) {
+			if (settings.friendlyFire()) {
 				p.sendMessage(ChatColor.BLUE + "friendlyFire "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Players can kill their teammates.");
@@ -1022,7 +1022,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[false]" + ChatColor.WHITE
 						+ " Players can't hurt their teammates.");
 			}
-			if (settings.pvpInstantDeath) {
+			if (settings.pvpInstantDeath()) {
 				p.sendMessage(ChatColor.BLUE + "pvpInstantDeath "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " PvP damage causes instant death.");
@@ -1031,7 +1031,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[false]" + ChatColor.WHITE
 						+ " PvP damage is vanilla.");
 			}
-			if (settings.flyingSpectators) {
+			if (settings.flyingSpectators()) {
 				p.sendMessage(ChatColor.BLUE + "flyingSpectators "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Spectators can fly.");
@@ -1040,7 +1040,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[false]" + ChatColor.WHITE
 						+ " Spectators are earth-bound.");
 			}
-			if (settings.loadouts) {
+			if (settings.loadouts()) {
 				p.sendMessage(ChatColor.BLUE + "loadouts "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Players will start with a pre-set inventory.");
@@ -1049,7 +1049,7 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]" + ChatColor.WHITE
 						+ " Players' inventorys will not be reset.");
 			}
-			if (settings.woolHats) {
+			if (settings.woolHats()) {
 				p.sendMessage(ChatColor.BLUE + "woolHats "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Teams get identifying headwear.");
@@ -1058,7 +1058,7 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]" + ChatColor.WHITE
 						+ " No fancy headwear for you!");
 			}
-			if (settings.northCompass) {
+			if (settings.northCompass()) {
 				p.sendMessage(ChatColor.BLUE + "northCompass "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " Hunters' compasses always point North.");
@@ -1071,7 +1071,7 @@ public class CmdExec implements CommandExecutor {
 		} else if (args.length == 1 && args[0].equalsIgnoreCase("3")) {
 			p.sendMessage(ChatColor.GOLD
 					+ "Available manhunt settings: (3/3)");
-			if (settings.autoHunter) {
+			if (settings.autoHunter()) {
 				p.sendMessage(ChatColor.BLUE + "autoHunter "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " New players are automatically Hunters.");
@@ -1081,14 +1081,14 @@ public class CmdExec implements CommandExecutor {
 						+ " New players are only Spectators.");
 			}
 			p.sendMessage(ChatColor.BLUE + "dayLimit " + ChatColor.GREEN
-					+ "[" + settings.dayLimit + "]" + ChatColor.WHITE
+					+ "[" + settings.dayLimit() + "]" + ChatColor.WHITE
 					+ " How many Minecraft days the game lasts.");
-			if (settings.offlineTimeout >= 0) {
+			if (settings.offlineTimeout() >= 0) {
 				p.sendMessage(ChatColor.BLUE
 						+ "offlineTimeout "
 						+ ChatColor.GREEN
 						+ "["
-						+ settings.offlineTimeout
+						+ settings.offlineTimeout()
 						+ "]"
 						+ ChatColor.WHITE
 						+ " How long absent players have till they're disqualified.");
@@ -1097,12 +1097,12 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Players won't be kicked when logging off.");
 			}
-			if (settings.globalBoundry >= 0) {
+			if (settings.globalBoundry() >= 0) {
 				p.sendMessage(ChatColor.BLUE
 						+ "globalBoundry "
 						+ ChatColor.GREEN
 						+ "["
-						+ settings.globalBoundry
+						+ settings.globalBoundry()
 						+ "]"
 						+ ChatColor.WHITE
 						+ " Blocks from spawn players are allowed to venture.");
@@ -1111,9 +1111,9 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Players can venture out indefinately.");
 			}
-			if (settings.hunterBoundry >= 0) {
+			if (settings.hunterBoundry() >= 0) {
 				p.sendMessage(ChatColor.BLUE + "hunterBoundry "
-						+ ChatColor.GREEN + "[" + settings.hunterBoundry
+						+ ChatColor.GREEN + "[" + settings.hunterBoundry()
 						+ "]" + ChatColor.WHITE
 						+ " Blocks from spawn hunters are confined to.");
 			} else {
@@ -1121,9 +1121,9 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Hunters are not confined to spawn.");
 			}
-			if (settings.noBuildRange >= 0) {
+			if (settings.noBuildRange() >= 0) {
 				p.sendMessage(ChatColor.BLUE + "noBuildRange "
-						+ ChatColor.GREEN + "[" + settings.noBuildRange
+						+ ChatColor.GREEN + "[" + settings.noBuildRange()
 						+ "]" + ChatColor.WHITE
 						+ " Hunter/Prey spawn points are protected.");
 			} else {
@@ -1137,7 +1137,7 @@ public class CmdExec implements CommandExecutor {
 
 			if (args[0].equalsIgnoreCase("oppermission")) {
 				if (args.length == 1) {
-					if (settings.opPermission) {
+					if (settings.opPermission()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "opPermission "
 								+ ChatColor.GREEN
@@ -1180,7 +1180,7 @@ public class CmdExec implements CommandExecutor {
 				
 			} else if (args[0].equalsIgnoreCase("easycommands")) {
 				if (args.length == 1) {
-					if (settings.easyCommands) {
+					if (settings.easyCommands()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "easyCommands "
 								+ ChatColor.GREEN
@@ -1223,7 +1223,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("alltalk")) {
 				if (args.length == 1) {
-					if (settings.allTalk) {
+					if (settings.allTalk()) {
 						p.sendMessage(ChatColor.BLUE + "allTalk "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1261,7 +1261,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("spawnpassive")) {
 				if (args.length == 1) {
-					if (settings.spawnPassive) {
+					if (settings.spawnPassive()) {
 						p.sendMessage(ChatColor.BLUE + "spawnPassive "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1295,7 +1295,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("spawnhostile")) {
 				if (args.length == 1) {
-					if (settings.spawnHostile) {
+					if (settings.spawnHostile()) {
 						p.sendMessage(ChatColor.BLUE + "spawnHostile "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1329,7 +1329,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("envdeath")) {
 				if (args.length == 1) {
-					if (settings.envDeath) {
+					if (settings.envDeath()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "envDeath "
 								+ ChatColor.GREEN
@@ -1373,7 +1373,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("envhunterrespawn")) {
 				if (args.length == 1) {
-					if (settings.envHunterRespawn) {
+					if (settings.envHunterRespawn()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "envHunterRespawn "
 								+ ChatColor.GREEN
@@ -1413,7 +1413,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("envpreyrespawn")) {
 				if (args.length == 1) {
-					if (settings.envPreyRespawn) {
+					if (settings.envPreyRespawn()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "envPreyRespawn "
 								+ ChatColor.GREEN
@@ -1453,7 +1453,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("preyfinder")) {
 				if (args.length == 1) {
-					if (settings.envPreyRespawn) {
+					if (settings.envPreyRespawn()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "preyFinder "
 								+ ChatColor.GREEN
@@ -1496,7 +1496,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("northCompass")) {
 				if (args.length == 1) {
-					if (settings.northCompass) {
+					if (settings.northCompass()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "northCompass "
 								+ ChatColor.GREEN
@@ -1539,7 +1539,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("friendlyfire")) {
 				if (args.length == 1) {
-					if (settings.friendlyFire) {
+					if (settings.friendlyFire()) {
 						p.sendMessage(ChatColor.BLUE + "friendlyFire "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1573,7 +1573,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("pvpinstantdeath")) {
 				if (args.length == 1) {
-					if (settings.pvpInstantDeath) {
+					if (settings.pvpInstantDeath()) {
 						p.sendMessage(ChatColor.BLUE + "pvpInstantDeath "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1607,7 +1607,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("flyingspectators")) {
 				if (args.length == 1) {
-					if (settings.flyingSpectators) {
+					if (settings.flyingSpectators()) {
 						p.sendMessage(ChatColor.BLUE + "flyingSpectators "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1641,7 +1641,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("autohunter")) {
 				if (args.length == 1) {
-					if (settings.autoHunter) {
+					if (settings.autoHunter()) {
 						p.sendMessage(ChatColor.BLUE + "autoHunter "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1675,7 +1675,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("loadouts")) {
 				if (args.length == 1) {
-					if (settings.loadouts) {
+					if (settings.loadouts()) {
 						p.sendMessage(ChatColor.BLUE
 								+ "loadouts "
 								+ ChatColor.GREEN
@@ -1714,7 +1714,7 @@ public class CmdExec implements CommandExecutor {
 
 			} else if (args[0].equalsIgnoreCase("woolhats")) {
 				if (args.length == 1) {
-					if (settings.woolHats) {
+					if (settings.woolHats()) {
 						p.sendMessage(ChatColor.BLUE + "woolHats "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
@@ -1760,7 +1760,7 @@ public class CmdExec implements CommandExecutor {
 									+ "dayLimit "
 									+ ChatColor.GREEN
 									+ "["
-									+ settings.dayLimit
+									+ settings.dayLimit()
 									+ "]"
 									+ ChatColor.WHITE
 									+ " How many Minecraft days the game lasts.");
@@ -1771,7 +1771,7 @@ public class CmdExec implements CommandExecutor {
 					}
 				} else {
 					p.sendMessage(ChatColor.BLUE + "dayLimit "
-							+ ChatColor.GREEN + "[" + settings.dayLimit
+							+ ChatColor.GREEN + "[" + settings.dayLimit()
 							+ "]" + ChatColor.WHITE
 							+ " How many Minecraft days the game lasts.");
 				}
@@ -1806,7 +1806,7 @@ public class CmdExec implements CommandExecutor {
 								+ "offlineTimeout "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.offlineTimeout
+								+ settings.offlineTimeout()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " How long absent players have till they're disqualified.");
@@ -1816,7 +1816,7 @@ public class CmdExec implements CommandExecutor {
 							+ "offlineTimeout "
 							+ ChatColor.GREEN
 							+ "["
-							+ settings.offlineTimeout
+							+ settings.offlineTimeout()
 							+ "]"
 							+ ChatColor.WHITE
 							+ " How long absent players have till they're disqualified.");
@@ -1850,7 +1850,7 @@ public class CmdExec implements CommandExecutor {
 								+ "globalBoundry "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.globalBoundry
+								+ settings.globalBoundry()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn players are allowed to venture.");
@@ -1861,7 +1861,7 @@ public class CmdExec implements CommandExecutor {
 								+ "globalBoundry "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.globalBoundry
+								+ settings.globalBoundry()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn players are allowed to venture.");
@@ -1871,7 +1871,7 @@ public class CmdExec implements CommandExecutor {
 							+ "globalBoundry "
 							+ ChatColor.GREEN
 							+ "["
-							+ settings.globalBoundry
+							+ settings.globalBoundry()
 							+ "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn players are allowed to venture.");
@@ -1903,7 +1903,7 @@ public class CmdExec implements CommandExecutor {
 								+ "hunterBoundry "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.hunterBoundry
+								+ settings.hunterBoundry()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn hunters are confined to.");
@@ -1911,7 +1911,7 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.BLUE + "hunterBoundry "
 							+ ChatColor.GREEN + "["
-							+ settings.hunterBoundry + "]"
+							+ settings.hunterBoundry() + "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn hunters are confined to.");
 				}
@@ -1942,14 +1942,14 @@ public class CmdExec implements CommandExecutor {
 								+ "noBuildRange "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.noBuildRange
+								+ settings.noBuildRange()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Hunter/Prey spawn points are protected.");
 					}
 				} else {
 					p.sendMessage(ChatColor.BLUE + "noBuildRange "
-							+ ChatColor.GREEN + "[" + settings.noBuildRange
+							+ ChatColor.GREEN + "[" + settings.noBuildRange()
 							+ "]" + ChatColor.WHITE
 							+ " Hunter/Prey spawn points are protected.");
 				}

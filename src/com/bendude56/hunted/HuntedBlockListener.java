@@ -12,47 +12,48 @@ public class HuntedBlockListener extends BlockListener {
 		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_PLACE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
 	}
+
+	private Game g = HuntedPlugin.getInstance().getGame();
+	private SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 	
 	public void onBlockPlace(BlockPlaceEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.hunterSpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+					settings.hunterSpawn)
+					<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.preySpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+					settings.preySpawn)
+					<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
 	}
 	
 	public void onBlockBreak(BlockBreakEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-							HuntedPlugin.getInstance().settings.hunterSpawn)
-							<= HuntedPlugin.getInstance().settings.noBuildRange
+							settings.hunterSpawn)
+							<= settings.noBuildRange()
 					|| g.getDistance(e.getBlock().getLocation(),
 							HuntedPlugin.getInstance().getWorld().getSpawnLocation())
-							<= HuntedPlugin.getInstance().settings.noBuildRange) {
+							<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					HuntedPlugin.getInstance().settings.preySpawn)
-					<= HuntedPlugin.getInstance().settings.noBuildRange) {
+					settings.preySpawn)
+					<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}

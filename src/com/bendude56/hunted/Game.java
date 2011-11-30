@@ -49,7 +49,7 @@ public class Game {
 		countdown = 0;
 		hunterReleaseTick = 0;
 		endTick = 0;
-		settings = HuntedPlugin.getInstance().settings;
+		settings = HuntedPlugin.getInstance().getSettings();
 	}
 	
 	public void start() {
@@ -64,8 +64,8 @@ public class Game {
 					"The game has started! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.YELLOW + " will be released at sundown!");
 			
 			countdown = 0;
-			hunterReleaseTick = HuntedPlugin.getInstance().manhuntWorld.getFullTime() + 12000;
-			endTick = hunterReleaseTick + settings.dayLimit * 24000;
+			hunterReleaseTick = HuntedPlugin.getInstance().getWorld().getFullTime() + 12000;
+			endTick = hunterReleaseTick + settings.dayLimit() * 24000;
 			gameRunning = true;
 			
 			for (String n : hunted) {
@@ -80,7 +80,7 @@ public class Game {
 				p.setFireTicks(0);
 				p.setHealth(20);
 				p.setFoodLevel(20);
-				if (settings.loadouts) preyLoadout(p.getInventory());
+				if (settings.loadouts()) preyLoadout(p.getInventory());
 				p.teleport(settings.preySpawn);
 			}
 			for (String n : hunter) {
@@ -96,7 +96,7 @@ public class Game {
 				p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 				p.setHealth(20);
 				p.setFoodLevel(20);
-				if (settings.loadouts) {
+				if (settings.loadouts()) {
 					clearInventory(p.getInventory());
 				}
 			}
@@ -109,7 +109,7 @@ public class Game {
 				if (p.getGameMode() == GameMode.CREATIVE) {
 					creative.add(p.getName());
 				}
-				if (settings.flyingSpectators) {
+				if (settings.flyingSpectators()) {
 					p.setGameMode(GameMode.CREATIVE);
 				} else {
 					p.setGameMode(GameMode.SURVIVAL);
@@ -159,7 +159,7 @@ public class Game {
 			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 		}
 		
-		if (settings.autoHunter) {
+		if (settings.autoHunter()) {
 			for (String s : spectator) {
 				hunter.add(s);
 				broadcastAll(ChatColor.DARK_RED + s + ChatColor.WHITE + " has joined team " + ChatColor.DARK_RED + "Hunters");
@@ -176,7 +176,7 @@ public class Game {
 	public void onDie(String s) {
 		if (hunter.contains(s.toLowerCase())) {
 			hunter.remove(s.toLowerCase());
-			Bukkit.getPlayerExact(s).teleport(HuntedPlugin.getInstance().settings.hunterSpawn);
+			Bukkit.getPlayerExact(s).teleport(settings.hunterSpawn);
 			if (hunter.size() == 0) {
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				broadcastAll(ChatColor.GOLD + "All " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are now dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win!");
@@ -185,7 +185,7 @@ public class Game {
 				stop();
 			} else {
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
-				if (settings.flyingSpectators) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
+				if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				spectator.add(s.toLowerCase());
 			}
 		} else if (hunted.contains(s.toLowerCase())) {
@@ -198,7 +198,7 @@ public class Game {
 				stop();
 			} else {
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
-				if (settings.flyingSpectators) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
+				if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				spectator.add(s.toLowerCase());
 			}
 		}
@@ -258,7 +258,7 @@ public class Game {
 			
 			manageLocators();
 			
-			if (settings.northCompass) {
+			if (settings.northCompass()) {
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (p.getWorld() == HuntedPlugin.getInstance().getWorld()
 							&& (isHunter(p) || isHunted(p) || isSpectating(p))) {
@@ -350,7 +350,7 @@ public class Game {
 				for (String s : hunter) {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
-						if (settings.loadouts) hunterLoadout(p.getInventory());
+						if (settings.loadouts()) hunterLoadout(p.getInventory());
 						p.teleport(settings.hunterSpawn);
 						p.setHealth(20);
 						p.setFoodLevel(20);
@@ -359,7 +359,7 @@ public class Game {
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				broadcastAll(ChatColor.GOLD + "The Manhunt game has begun! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are free!");
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				endTick = tick + settings.dayLimit* 24000;
+				endTick = tick + settings.dayLimit()* 24000;
 			} else if (tick >= endTick) {
 				broadcastAll(ChatColor.GREEN + "Time has run out! The hunted have won the game!");
 				stop();
@@ -453,7 +453,7 @@ public class Game {
 			if (p.getGameMode() == GameMode.CREATIVE) {
 				if (!creative.contains(p.getName())) creative.add(p.getName());
 			}
-			if (settings.flyingSpectators) {
+			if (settings.flyingSpectators()) {
 				p.setGameMode(GameMode.CREATIVE);
 			} else {
 				p.setGameMode(GameMode.SURVIVAL);
@@ -473,14 +473,14 @@ public class Game {
 			creative.remove(p.getName());
 		}
 		if (isHunter(p) || isHunted(p)) {
-			if (gameHasBegun() && settings.offlineTimeout >= 0) {
+			if (gameHasBegun() && settings.offlineTimeout() >= 0) {
 				broadcastAll(getColor(p) + p.getName() + ChatColor.WHITE +
 						" has disconnected.");
-				if (settings.offlineTimeout > 0) {
+				if (settings.offlineTimeout() > 0) {
 					broadcastAll(ChatColor.WHITE + "They will be removed from the game in " + ChatColor.RED +
-							(settings.offlineTimeout) + " MINUTES.");
-					timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout * 72000);
-				} else if (settings.offlineTimeout == 0) {
+							(settings.offlineTimeout()) + " MINUTES.");
+					timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout() * 72000);
+				} else if (settings.offlineTimeout() == 0) {
 					broadcastAll(ChatColor.WHITE + "They are now disqualified from the game.");
 					p.sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
 					onDie(p.getName());
@@ -910,13 +910,13 @@ public class Game {
 		inv.setItem(2, new ItemStack(Material.TORCH, 3));
 		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 3));
 		inv.setItem(4, new ItemStack(Material.ARROW, 64));
-		if (settings.preyFinder) {
+		if (settings.preyFinder()) {
 			inv.setItem(5, new ItemStack(Material.COMPASS, 1));
 		}
 		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
 		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
 		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.woolHats) {
+		if (settings.woolHats()) {
 			inv.setItem(39, (new Wool(DyeColor.RED).toItemStack()));
 		} else {
 			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
@@ -937,7 +937,7 @@ public class Game {
 		//inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
 		//inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
 		//inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.woolHats) {
+		if (settings.woolHats()) {
 			//inv.setItem(39, (new Wool(DyeColor.BLUE).toItemStack()));
 			inv.setItem(39, new ItemStack(Material.LEAVES, 1));
 		} else {

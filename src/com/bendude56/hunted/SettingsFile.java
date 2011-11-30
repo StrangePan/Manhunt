@@ -16,38 +16,35 @@ import org.bukkit.Location;
 public class SettingsFile extends Properties {
 	private static final long serialVersionUID = 0L;
 	
-	public String location;
-	public String directory;
+	private String location;
+	private String directory;
 	
-	public boolean spawnPassive;
-	public boolean spawnHostile;
+	private boolean spawnPassive;
+	private boolean spawnHostile;
 	
-	public boolean envDeath;
-	public boolean envHunterRespawn;
-	public boolean envPreyRespawn;
-	public boolean preyFinder;
+	private boolean envDeath;
+	private boolean envHunterRespawn;
+	private boolean envPreyRespawn;
+	private boolean preyFinder;
 	
-	public boolean friendlyFire;
-	public boolean pvpInstantDeath;
-	public boolean flyingSpectators;
+	private boolean friendlyFire;
+	private boolean pvpInstantDeath;
+	private boolean flyingSpectators;
 	
-	public boolean opPermission;
-	public boolean easyCommands;
-	public boolean allTalk;
-	public boolean autoHunter;
-	public boolean loadouts;
-	public boolean woolHats;
-	public boolean northCompass;
+	private boolean opPermission;
+	private boolean easyCommands;
+	private boolean allTalk;
+	private boolean autoHunter;
+	private boolean loadouts;
+	private boolean woolHats;
+	private boolean northCompass;
 	
-	//public ItemStack[] preyLoadout;
-	//public ItemStack[] hunterLoadout;
+	private int offlineTimeout;
+	private int dayLimit;
 	
-	public int offlineTimeout;
-	public int dayLimit;
-	
-	public int globalBoundry;
-	public int hunterBoundry;
-	public int noBuildRange;
+	private int globalBoundry;
+	private int hunterBoundry;
+	private int noBuildRange;
 	
 	public Location hunterSpawn = new Location(HuntedPlugin.getInstance().getWorld(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
@@ -418,14 +415,44 @@ public class SettingsFile extends Properties {
 			}
 		}*/
 	}
+
 	
-	public void changeSetting(String setting, String value) {
+	public boolean spawnPassive() 	{ return spawnPassive; }
+	public boolean spawnHostile() 	{ return spawnHostile; }
+	
+	public boolean envDeath()		{ return envDeath; }
+	public boolean envHunterRespawn(){ return envHunterRespawn; }
+	public boolean envPreyRespawn()	{ return envPreyRespawn; }
+	public boolean preyFinder()		{ return preyFinder; }
+	
+	public boolean friendlyFire()	{ return friendlyFire; }
+	public boolean pvpInstantDeath(){ return pvpInstantDeath; }
+	public boolean flyingSpectators(){ return flyingSpectators; }
+	
+	public boolean opPermission()	{ return opPermission; }
+	public boolean easyCommands()	{ return easyCommands; }
+	public boolean allTalk()		{ return allTalk; }
+	public boolean autoHunter()		{ return autoHunter; }
+	public boolean loadouts()		{ return loadouts(); }
+	public boolean woolHats()		{ return woolHats; }
+	public boolean northCompass()	{ return northCompass; }
+	
+	public int offlineTimeout()		{  return offlineTimeout; }
+	public int dayLimit()			{ return dayLimit; }
+	
+	public int globalBoundry() 		{ return globalBoundry; }
+	public int hunterBoundry() 		{ return hunterBoundry; }
+	public int noBuildRange() 		{  return noBuildRange; }
+	
+ 	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {
 			put(setting, value);
 			loadValues();
 			saveFile();
 		}
-	} public void changeSetting(String setting, Location loc) {
+	}
+	
+	public void changeSetting(String setting, Location loc) {
 		if (containsKey(setting)) {
 			String value = loc.getBlockX() + ","
 					+ loc.getBlockY() + ","
@@ -435,6 +462,8 @@ public class SettingsFile extends Properties {
 			saveFile();
 		}
 	}
+	
+	
 	/*public void changeSetting(String setting, ItemStack[] inventory) {
 		if (containsKey(setting)) {
 			String value = "";

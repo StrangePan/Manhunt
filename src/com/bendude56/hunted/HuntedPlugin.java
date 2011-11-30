@@ -13,9 +13,9 @@ public class HuntedPlugin extends JavaPlugin {
 	private Logger log = Logger.getLogger("Minecraft");
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
-	public World manhuntWorld;
-	public SettingsFile settings;
-	public Game game;
+	private World manhuntWorld;
+	private SettingsFile settings;
+	private Game game;
 	
 	/*public boolean friendlyFire = false;
 	public boolean pvpOnly = false;
@@ -64,6 +64,14 @@ public class HuntedPlugin extends JavaPlugin {
 	
 	public World getWorld() {
 		return manhuntWorld;
+	}
+	
+	public SettingsFile getSettings() {
+		return settings;
+	}
+	
+	public Game getGame() {
+		return game;
 	}
 
 }

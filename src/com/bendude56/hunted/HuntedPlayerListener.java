@@ -54,10 +54,11 @@ public class HuntedPlayerListener extends PlayerListener {
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 	}
+	
+	Game g = HuntedPlugin.getInstance().getGame();
+	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 
 	public void onPlayerChat(PlayerChatEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
-		SettingsFile settings = HuntedPlugin.getInstance().settings;
 		Player p = e.getPlayer();
 		if (!g.gameHasBegun()) {
 			if (!g.gameHasBegun()) {
@@ -69,7 +70,7 @@ public class HuntedPlayerListener extends PlayerListener {
 				return;
 			}
 		}
-		if (settings.allTalk) {
+		if (settings.allTalk()) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
@@ -108,7 +109,7 @@ public class HuntedPlayerListener extends PlayerListener {
 	}
 
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
+		
 		Player p = e.getPlayer();
 		if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.onLogin(p);
@@ -119,37 +120,35 @@ public class HuntedPlayerListener extends PlayerListener {
 	}
 
 	public void onPlayerKick(PlayerKickEvent e) {
-		HuntedPlugin.getInstance().game.onLogout(e.getPlayer());
+		g.onLogout(e.getPlayer());
 	}
 
 	public void onPlayerQuit(PlayerQuitEvent e) {
-		HuntedPlugin.getInstance().game.onLogout(e.getPlayer());
+		g.onLogout(e.getPlayer());
 	}
 
 	public void onPlayerMove(PlayerMoveEvent e) {
-		if (!HuntedPlugin.getInstance().game.gameHasBegun()) {
+		if (!g.gameHasBegun()) {
 			return;
 		}
 		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			return;
 		}
-		if (!HuntedPlugin.getInstance().game.isHunted(e.getPlayer())
-				&& !HuntedPlugin.getInstance().game.isHunter(e.getPlayer())) {
+		if (!g.isHunted(e.getPlayer())
+				&& !g.isHunter(e.getPlayer())) {
 			return;
 		}
-		Game g = HuntedPlugin.getInstance().game;
-		SettingsFile settings = HuntedPlugin.getInstance().settings;
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun()
 				&& g.isHunter(p)
 				&& g.getDistance(p.getLocation(), HuntedPlugin.getInstance()
-						.getWorld().getSpawnLocation()) > settings.hunterBoundry) {
+						.getWorld().getSpawnLocation()) > settings.hunterBoundry()) {
 			g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld()
 					.getSpawnLocation());
 			p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			return;
-		} else if (g.getDistance(p.getLocation(), settings.preySpawn) > settings.globalBoundry
-				&& g.getDistance(p.getLocation(), settings.hunterSpawn) > settings.globalBoundry) {
+		} else if (g.getDistance(p.getLocation(), settings.preySpawn) > settings.globalBoundry()
+				&& g.getDistance(p.getLocation(), settings.hunterSpawn) > settings.globalBoundry()) {
 			if (g.getDistance(p.getLocation(), settings.preySpawn) < g
 					.getDistance(p.getLocation(), settings.hunterSpawn)) {
 				g.stepPlayer(p, 1.0, settings.preySpawn);
@@ -177,15 +176,15 @@ public class HuntedPlayerListener extends PlayerListener {
 	public void onPlayerItemHeld(PlayerItemHeldEvent e) {
 		Player p = e.getPlayer();
 		if (p.getItemInHand().getType() != Material.COMPASS
-				&& HuntedPlugin.getInstance().game.getLocatorByPlayer(p) != -1) {
+				&& g.getLocatorByPlayer(p) != -1) {
 			p.sendMessage(ChatColor.RED + "Prey locating cancelled.");
-			HuntedPlugin.getInstance().game.stopLocator(p);
+			g.stopLocator(p);
 		}
 	}
 
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
-		Game g = HuntedPlugin.getInstance().game;
+		
 		if (!g.huntHasBegun()
 				|| HuntedPlugin.getInstance().getWorld() != p.getWorld()) {
 			return;
@@ -196,7 +195,7 @@ public class HuntedPlayerListener extends PlayerListener {
 				return;
 			}
 			if (g.isHunter(p) && p.getItemInHand().getType() == Material.COMPASS
-					&& HuntedPlugin.getInstance().settings.preyFinder) {
+					&& settings.preyFinder()) {
 				if (g.getLocatorByPlayer(p) == -1) {
 					g.startLocator(p);
 					p.sendMessage(ChatColor.GOLD
@@ -220,7 +219,7 @@ public class HuntedPlayerListener extends PlayerListener {
 	}
 
 	public void onPlayerChangeWorld(PlayerChangedWorldEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
+		
 		Player p = e.getPlayer();
 		if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.onLogin(p);
@@ -230,26 +229,24 @@ public class HuntedPlayerListener extends PlayerListener {
 	}
 
 	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
+		
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							HuntedPlugin.getInstance().settings.hunterSpawn) <= HuntedPlugin
-							.getInstance().settings.noBuildRange) {
+							settings.hunterSpawn) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							HuntedPlugin.getInstance().settings.preySpawn) <= HuntedPlugin
-							.getInstance().settings.noBuildRange) {
+							settings.preySpawn) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
 	}
 
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
+		
 		Player p = e.getPlayer();
 		if (p.getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			return;
@@ -265,7 +262,7 @@ public class HuntedPlayerListener extends PlayerListener {
 			}
 		}
 		if (g.isSpectating(p)) {
-			if (HuntedPlugin.getInstance().settings.flyingSpectators) {
+			if (settings.flyingSpectators()) {
 				if (e.getNewGameMode() != GameMode.SURVIVAL) {
 					e.setCancelled(true);
 				}
@@ -274,35 +271,33 @@ public class HuntedPlayerListener extends PlayerListener {
 	}
 	
 	public void onBucketFill(PlayerBucketFillEvent e) {
-		Game g = HuntedPlugin.getInstance().game;
+		
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							HuntedPlugin.getInstance().settings.hunterSpawn) <= HuntedPlugin
-							.getInstance().settings.noBuildRange) {
+							settings.hunterSpawn) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							HuntedPlugin.getInstance().settings.preySpawn) <= HuntedPlugin
-							.getInstance().settings.noBuildRange) {
+							settings.preySpawn) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
 	}
 	
 	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
-		if (HuntedPlugin.getInstance().game.gameHasBegun()) {
-			if (HuntedPlugin.getInstance().game.isSpectating(e.getPlayer())) {
+		if (g.gameHasBegun()) {
+			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			}
 		}
 	}
 	
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		if (HuntedPlugin.getInstance().game.gameHasBegun()) {
-			if (HuntedPlugin.getInstance().game.isSpectating(e.getPlayer())) {
+		if (g.gameHasBegun()) {
+			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			}
 		}
