@@ -51,116 +51,8 @@ public class CmdExec implements CommandExecutor {
 		}
 		Player p = (Player) sender;
 		
-		if (cmd.equalsIgnoreCase("help")) {
-			helpCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("setting")
-				|| cmd.equalsIgnoreCase("settings")) {
-			settingsCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("startgame")) {
-			startCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("stopgame")) {
-			startCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("status")) {
-			statusCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("list")) {
-			listCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("join")) {
-			if (args.length == 0) {
-				p.sendMessage(ChatColor.RED + "Proper use is /join <team>");
-				return true;
-			}
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("assign")) {
-			if (args.length == 0) {
-				p.sendMessage(ChatColor.RED + "Proper use is /assign <player> <team>");
-				return true;
-			}
-			if (args.length >= 1) {
-				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunters")
-						|| args[0].equalsIgnoreCase("hunted") || args[0].equalsIgnoreCase("spectator") || args[0].equalsIgnoreCase("spectators") || args[0].equalsIgnoreCase("spectate"))) {
-					if (args.length >= 2) {
-						String a = args[0];
-						args[0] = args[1];
-						args[1] = a;
-					}
-				}
-			}
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("hunter")
-				|| cmd.equalsIgnoreCase("hunters")) {
-			if (args.length >= 1) {
-				args[1] = args[0];
-			}
-			args[0] = "hunters";
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("prey")) {
-			if (args.length >= 1) {
-				args[1] = args[0];
-			}
-			args[0] = "prey";
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("spectate")) {
-			if (args.length >= 1) {
-				args[1] = args[0];
-			}
-			args[0] = "spectators";
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("makeall") || cmd.equalsIgnoreCase("makeeveryone")) {
-			if (args.length == 0) {
-				if (cmd.equalsIgnoreCase("makeall")) p.sendMessage(ChatColor.RED + "Proper use is /makeall <team>");
-				if (cmd.equalsIgnoreCase("makeeveryone")) p.sendMessage(ChatColor.RED + "Proper use is /makeeveryone <team>");
-				return true;
-			}
-			makeallCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("quit")) {
-			quitCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("kick")) {
-			if (args.length == 0) {
-				p.sendMessage(ChatColor.RED + "Proper use is /kick <player>");
-				return true;
-			}
-			kickCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("spectate")) {
-			spectateCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("spawn")) {
-			if (args.length >= 1) {
-				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunters")
-						|| args[0].equalsIgnoreCase("hunted") || args[0].equalsIgnoreCase("pregame") || args[0].equalsIgnoreCase("waiting"))) {
-					if (args.length >= 2) {
-						String a = args[0];
-						args[0] = args[1];
-						args[1] = a;
-					}
-				}
-			}
-			spawnCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("setspawn")) {
-			setspawnCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("weather")) {
-			weatherCommand(args, p);
-			
-		}
 		
-		
-		
-		else if (cmd.equalsIgnoreCase("manhunt") || cmd.equalsIgnoreCase("m")) {
+		if (cmd.equalsIgnoreCase("manhunt") || cmd.equalsIgnoreCase("m")) {
 			if (args[0].equalsIgnoreCase("join")) {
 				args = shiftArgs(args);
 				if (args.length == 0) {
@@ -261,6 +153,118 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.RED
 						+ "Unknown Manhunt command! Type \"/manhunt help\" for help.");
 			}
+			return true;
+		}
+		
+		if (!settings.easyCommands()) {
+			return false;
+		}
+		
+		if (cmd.equalsIgnoreCase("help")) {
+			helpCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("setting")
+				|| cmd.equalsIgnoreCase("settings")) {
+			settingsCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("startgame")) {
+			startCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("stopgame")) {
+			stopCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("status")) {
+			statusCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("list")) {
+			listCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("join")) {
+			if (args.length == 0) {
+				p.sendMessage(ChatColor.RED + "Proper use is /join <team>");
+				return true;
+			}
+			joinCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("assign")) {
+			if (args.length == 0) {
+				p.sendMessage(ChatColor.RED + "Proper use is /assign <player> <team>");
+				return true;
+			}
+			if (args.length >= 1) {
+				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunters")
+						|| args[0].equalsIgnoreCase("hunted") || args[0].equalsIgnoreCase("spectator") || args[0].equalsIgnoreCase("spectators") || args[0].equalsIgnoreCase("spectate"))) {
+					if (args.length >= 2) {
+						String a = args[0];
+						args[0] = args[1];
+						args[1] = a;
+					}
+				}
+			}
+			joinCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("hunter")
+				|| cmd.equalsIgnoreCase("hunters")) {
+			if (args.length >= 1) {
+				args[1] = args[0];
+			}
+			args[0] = "hunters";
+			joinCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("prey")) {
+			if (args.length >= 1) {
+				args[1] = args[0];
+			}
+			args[0] = "prey";
+			joinCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("spectate")) {
+			if (args.length >= 1) {
+				args[1] = args[0];
+			}
+			args[0] = "spectators";
+			joinCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("makeall") || cmd.equalsIgnoreCase("makeeveryone")) {
+			if (args.length == 0) {
+				if (cmd.equalsIgnoreCase("makeall")) p.sendMessage(ChatColor.RED + "Proper use is /makeall <team>");
+				if (cmd.equalsIgnoreCase("makeeveryone")) p.sendMessage(ChatColor.RED + "Proper use is /makeeveryone <team>");
+				return true;
+			}
+			makeallCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("quit")) {
+			quitCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("kick")) {
+			if (args.length == 0) {
+				p.sendMessage(ChatColor.RED + "Proper use is /kick <player>");
+				return true;
+			}
+			kickCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("spectate")) {
+			spectateCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("spawn")) {
+			if (args.length >= 1) {
+				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunters")
+						|| args[0].equalsIgnoreCase("hunted") || args[0].equalsIgnoreCase("pregame") || args[0].equalsIgnoreCase("waiting"))) {
+					if (args.length >= 2) {
+						String a = args[0];
+						args[0] = args[1];
+						args[1] = a;
+					}
+				}
+			}
+			spawnCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("setspawn")) {
+			setspawnCommand(args, p);
+			
+		} else if (cmd.equalsIgnoreCase("weather")) {
+			weatherCommand(args, p);
+			
 		}
 		return true;
 	}
