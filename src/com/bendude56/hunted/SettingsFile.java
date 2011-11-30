@@ -449,6 +449,7 @@ public class SettingsFile extends Properties {
 			put(setting, value);
 			loadValues();
 			saveFile();
+			HuntedPlugin.getInstance().log(Level.INFO, setting + " set to " + value);
 		}
 	}
 	
@@ -460,6 +461,7 @@ public class SettingsFile extends Properties {
 			put(setting, value);
 			loadValues();
 			saveFile();
+			HuntedPlugin.getInstance().log(Level.INFO, setting + " changed to " + value);
 		}
 	}
 	

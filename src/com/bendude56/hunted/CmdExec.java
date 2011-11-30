@@ -1,5 +1,7 @@
 package com.bendude56.hunted;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -311,7 +313,6 @@ public class CmdExec implements CommandExecutor {
 		}
 	}
 	
-	
 	private void startCommand(String[] args, Player p) {
 		if (!p.isOp()) {
 			p.sendMessage(ChatColor.RED
@@ -332,6 +333,7 @@ public class CmdExec implements CommandExecutor {
 		g.start();
 		p.sendMessage(ChatColor.GRAY
 				+ "You have successfully started the manhunt game!");
+		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has started the Manhunt game!");
 		return;
 	}
 	
@@ -344,6 +346,7 @@ public class CmdExec implements CommandExecutor {
 		g.stop();
 		g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE
 				+ " has stopped the game!");
+		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has stopped the Manhunt game!");
 		return;
 	}
 	
@@ -368,6 +371,7 @@ public class CmdExec implements CommandExecutor {
 				g.broadcastAll(ChatColor.RED + p.getName()
 						+ ChatColor.WHITE + " has joined team "
 						+ ChatColor.RED + "Hunters.");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has joined team Hunters.");
 			} else if (args.length > 1 && p.isOp()) {
 				if (Bukkit.getPlayerExact(args[1]) == null) {
 					p.sendMessage(ChatColor.RED + "\""+ args[1] + "\" does not exist!");
@@ -376,6 +380,7 @@ public class CmdExec implements CommandExecutor {
 				g.addHunter(args[1]);
 				g.broadcastAll(ChatColor.RED + args[1] + ChatColor.WHITE
 						+ " has joined team " + ChatColor.RED + "Hunters.");
+				HuntedPlugin.getInstance().log(Level.INFO, args[1] + " has joined team Hunters.");
 			}
 		} else if (args[0].equalsIgnoreCase("hunted")
 				|| args[0].equalsIgnoreCase("prey")) {
@@ -384,6 +389,7 @@ public class CmdExec implements CommandExecutor {
 				g.broadcastAll(ChatColor.BLUE + p.getName()
 						+ ChatColor.WHITE + " has joined team "
 						+ ChatColor.BLUE + "Prey.");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has joined team Prey.");
 			} else if (args.length > 1 && p.isOp()) {
 				if (Bukkit.getPlayerExact(args[1]) == null) {
 					p.sendMessage(ChatColor.RED + "\""+ args[1] + "\" does not exist!");
@@ -392,6 +398,7 @@ public class CmdExec implements CommandExecutor {
 				g.addHunted(args[1]);
 				g.broadcastAll(ChatColor.BLUE + args[1] + ChatColor.WHITE
 						+ " has joined team " + ChatColor.BLUE + "Prey.");
+				HuntedPlugin.getInstance().log(Level.INFO, args[1] + " has joined team Prey.");
 			}
 		} else if (args[0].equalsIgnoreCase("spectators")
 				|| args[0].equalsIgnoreCase("spectator")) {
@@ -400,6 +407,7 @@ public class CmdExec implements CommandExecutor {
 				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a spectator.");
 			} else if (args.length > 1 && p.isOp()) {
 				if (Bukkit.getPlayerExact(args[1]) == null) {
 					p.sendMessage(ChatColor.RED + "\""+ args[1] + "\" does not exist!");
@@ -409,6 +417,7 @@ public class CmdExec implements CommandExecutor {
 				g.broadcastSpectators(ChatColor.YELLOW + args[1]
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
+				HuntedPlugin.getInstance().log(Level.INFO, args[1] + " has become a spectator.");
 			}
 		}
 	}
@@ -423,12 +432,14 @@ public class CmdExec implements CommandExecutor {
 				g.onDie(p);
 				p.sendMessage(ChatColor.YELLOW
 						+ "You have quit the game and are now spectating.");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has quit the game and is now spectating.");
 				return;
 			} else {
 				g.addSpectator(p);
 				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a spectator.");
 				return;
 			}
 		}
@@ -442,7 +453,8 @@ public class CmdExec implements CommandExecutor {
 						|| g.isSpectating(args[0])) {
 					p.sendMessage(g.getColor(args[0]) + args[0]
 							+ ChatColor.WHITE
-							+ " was removed from the Manhunt list!");
+							+ " was removed from the Manhunt lists!");
+					HuntedPlugin.getInstance().log(Level.INFO, args[0] + " was removed from the Manhunt lists by " + p.getName());
 					g.deletePlayer(args[0]);
 				} else {
 					p.sendMessage(ChatColor.RED + "No player named "
@@ -457,6 +469,7 @@ public class CmdExec implements CommandExecutor {
 				g.onDie(p2);
 				p2.sendMessage(ChatColor.RED
 						+ "You have been kicked from the game. You are now spectating.");
+				HuntedPlugin.getInstance().log(Level.INFO, args[0] + " was kicked from the game by " + p.getName());
 				return;
 			}
 		} else {
@@ -479,6 +492,7 @@ public class CmdExec implements CommandExecutor {
 				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a spectator");
 				return;
 			} else if (args.length >= 1 && p.isOp()) {
 				Player p2 = Bukkit.getPlayerExact(args[0]);
@@ -498,6 +512,7 @@ public class CmdExec implements CommandExecutor {
 							+ ChatColor.WHITE + " has become a "
 							+ ChatColor.YELLOW + "Spectator.");
 					g.addSpectator(p2);
+					HuntedPlugin.getInstance().log(Level.INFO, p2.getName() + " has become a spectator");
 					return;
 				}
 			}
@@ -530,7 +545,8 @@ public class CmdExec implements CommandExecutor {
 			}
 			g.broadcastAll(ChatColor.WHITE
 					+ "All players have been moved to team "
-					+ ChatColor.RED + "Hunters.");
+					+ ChatColor.DARK_RED + "Hunters.");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " moved everyone to team Hunters.");
 			return;
 		} else if (args[0].equalsIgnoreCase("hunted")
 				|| args[0].equalsIgnoreCase("prey")) {
@@ -545,6 +561,7 @@ public class CmdExec implements CommandExecutor {
 			g.broadcastAll(ChatColor.WHITE
 					+ "All players have been moved to team "
 					+ ChatColor.BLUE + "Prey.");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " moved everyone to team Prey.");
 			return;
 		} else if (args[0].equalsIgnoreCase("spectator")
 				|| args[0].equalsIgnoreCase("spectators")) {
@@ -557,6 +574,7 @@ public class CmdExec implements CommandExecutor {
 			}
 			g.broadcastAll(ChatColor.WHITE + "All players are now "
 					+ ChatColor.YELLOW + "Spectating.");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " made everyone spectators.");
 			return;
 		} else {
 			p.sendMessage(ChatColor.RED
@@ -761,7 +779,7 @@ public class CmdExec implements CommandExecutor {
 		}
 		if (p.getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			p.sendMessage(ChatColor.RED
-					+ "You must be in the manhunt world to set it's spawn. Use \"/manhunt world\" to teleport to the manhunt world.");
+					+ "You must be in the manhunt world to set it's spawn. Use \"/manhunt spawn\" to teleport to the manhunt world.");
 			return;
 		}
 		if (args.length == 0) {
@@ -780,13 +798,15 @@ public class CmdExec implements CommandExecutor {
 							p.getLocation().getBlockY(),
 							p.getLocation().getBlockZ());
 			p.sendMessage(ChatColor.GREEN + "World spawn set!");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Manhunt world spawn.");
 			return;
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("hunter")
 					|| args[0].equalsIgnoreCase("hunters")) {
 				settings.changeSetting("hunterSpawn", p.getLocation());
-				p.sendMessage(ChatColor.RED + "Hunter" + ChatColor.GREEN
+				p.sendMessage(ChatColor.DARK_RED + "Hunter" + ChatColor.GREEN
 						+ " spawn set!");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Hunter spawn.");
 				return;
 			}
 			if (args[0].equalsIgnoreCase("hunted")
@@ -794,6 +814,7 @@ public class CmdExec implements CommandExecutor {
 				settings.changeSetting("preySpawn", p.getLocation());
 				p.sendMessage(ChatColor.BLUE + "Prey" + ChatColor.GREEN
 						+ " spawn set!");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Prey spawn.");
 				return;
 			}
 			if (args[0].equalsIgnoreCase("waiting")
@@ -814,6 +835,7 @@ public class CmdExec implements CommandExecutor {
 								p.getLocation().getBlockZ());
 				p.sendMessage(ChatColor.GREEN + "Pregame" + ChatColor.GREEN
 						+ " spawn set! (AKA World Spawn)");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Manhunt world spawn.");
 				return;
 			}
 		}
@@ -823,6 +845,8 @@ public class CmdExec implements CommandExecutor {
 		if (p.isOp()) {
 			settings.loadDefaults();
 			settings.saveFile();
+			p.sendMessage(ChatColor.GREEN + "Default Manhunt settings loaded!");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " restored the default Manhunt settings!");
 			return;
 		} else {
 			p.sendMessage(ChatColor.RED
@@ -839,6 +863,7 @@ public class CmdExec implements CommandExecutor {
 			}
 			settings.loadFile();
 			p.sendMessage(ChatColor.GREEN + "Settings file reloaded.");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " reloaded the Manhunt settings.");
 			return;
 		} else {
 			p.sendMessage(ChatColor.RED
@@ -859,27 +884,26 @@ public class CmdExec implements CommandExecutor {
 					|| args[0].equalsIgnoreCase("clear")) {
 				HuntedPlugin.getInstance().getWorld().setStorm(false);
 				HuntedPlugin.getInstance().getWorld().setThundering(false);
-				p.sendMessage(ChatColor.GREEN + "Weather set to " + args[0]);
-				return;
+				
 			} else if (args[0].equalsIgnoreCase("rain")
 					|| args[0].equalsIgnoreCase("rainy")) {
 				HuntedPlugin.getInstance().getWorld().setStorm(true);
 				HuntedPlugin.getInstance().getWorld().setThundering(false);
-				p.sendMessage(ChatColor.GREEN + "Weather set to " + args[0]);
-				return;
+				
 			} else if (args[0].equalsIgnoreCase("storm")
 					|| args[0].equalsIgnoreCase("stormy")
 					|| args[0].equalsIgnoreCase("lightning")
 					|| args[0].equalsIgnoreCase("thunder")) {
 				HuntedPlugin.getInstance().getWorld().setStorm(false);
 				HuntedPlugin.getInstance().getWorld().setThundering(false);
-				p.sendMessage(ChatColor.GREEN + "Weather set to " + args[0]);
-				return;
+				
 			} else {
 				p.sendMessage(ChatColor.RED
 						+ "You must choose a weather: sunny, rainy, or stormy.");
 				return;
 			}
+			p.sendMessage(ChatColor.GREEN + "Weather set to " + args[0]);
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " set the Manhunt world weather to " + args[0]);
 		} else {
 			p.sendMessage(ChatColor.RED
 					+ "You don't have permission to do that!");
@@ -1152,6 +1176,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " Players can choose their team and warp to world spawn.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1195,6 +1220,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " You must prefex every command with /manhunt.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1236,6 +1262,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " Hunters, prey, and spectators can't chat with eachother.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1388,6 +1415,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " Hunters are eliminated by enviromental death.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1428,6 +1456,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " The Prey are eliminated by enviromental death.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1468,6 +1497,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " Hunters have to find the Prey the old-fashioned way.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1511,6 +1541,7 @@ public class CmdExec implements CommandExecutor {
 								+ ChatColor.WHITE
 								+ " Hunters' compasses point to the world spawn.");
 					}
+					return;
 				}
 				if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("true")
@@ -1875,6 +1906,7 @@ public class CmdExec implements CommandExecutor {
 							+ "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn players are allowed to venture.");
+					return;
 				}
 			} else if (args[0].equalsIgnoreCase("hunterboundry")) {
 				if (args.length >= 2) {
@@ -1954,8 +1986,14 @@ public class CmdExec implements CommandExecutor {
 							+ " Hunter/Prey spawn points are protected.");
 				}
 			} else {
-				p.sendMessage(ChatColor.RED
-						+ "Invalid setting. Type \"/manhunt settings <pg>\" for a complete list.");
+				if (settings.easyCommands()) {
+					p.sendMessage(ChatColor.RED
+							+ "Invalid setting. Type \"/settings <pg>\" for a complete list.");
+				} else {
+					p.sendMessage(ChatColor.RED
+							+ "Invalid setting. Type \"/manhunt settings <pg>\" for a complete list.");
+				}
+				return;
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet29DestroyEntity;
@@ -56,12 +57,10 @@ public class Game {
 		if (!gameRunning) {
 			HuntedPlugin.getInstance().getWorld().setTime(0);
 			
-			this.broadcastSpectators(ChatColor.YELLOW +
-					"The game has started! The hunt begins at sundown!");
-			this.broadcastHunters(ChatColor.YELLOW +
-					"The game has started! The " + ChatColor.BLUE + "Hunted" + ChatColor.YELLOW + " are preparing for nightfall.");
-			this.broadcastHunted(ChatColor.YELLOW +
-					"The game has started! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.YELLOW + " will be released at sundown!");
+			broadcastAll(ChatColor.GOLD + "-------------------------------------");
+			broadcastAll(ChatColor.GOLD + "The Manhunt game is starting! The hunt begins at sundown!");
+			broadcastHunted(ChatColor.RED + "You have until sunset to prepare! HURRY!");
+			broadcastAll(ChatColor.GOLD + "-------------------------------------");
 			
 			countdown = 0;
 			hunterReleaseTick = HuntedPlugin.getInstance().getWorld().getFullTime() + 12000;
@@ -357,7 +356,7 @@ public class Game {
 					}
 				}
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				broadcastAll(ChatColor.GOLD + "The Manhunt game has begun! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are free!");
+				broadcastAll(ChatColor.GOLD + "The hun begun! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are on the move!");
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				endTick = tick + settings.dayLimit()* 24000;
 			} else if (tick >= endTick) {
@@ -500,6 +499,7 @@ public class Game {
 		broadcastHunters(msg);
 		broadcastHunted(msg);
 		broadcastSpectators(msg);
+		HuntedPlugin.getInstance().log(Level.INFO, msg);
 	}
 	
 	public void broadcastHunters(String msg) {

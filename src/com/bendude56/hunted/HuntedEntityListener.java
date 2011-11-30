@@ -164,7 +164,7 @@ public class HuntedEntityListener extends EntityListener {
 					} else {
 						p.teleport(settings.preySpawn);
 					}
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes, and has respawned!");
+					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!");
 					return;
 				} else {
 					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "Spectating!");
