@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet29DestroyEntity;
 
@@ -59,7 +57,7 @@ public class Game {
 			
 			broadcastAll(ChatColor.GOLD + "-------------------------------------");
 			broadcastAll(ChatColor.GOLD + "The Manhunt game is starting! The hunt begins at sundown!");
-			broadcastHunted(ChatColor.RED + "You have until sunset to prepare! HURRY!");
+			broadcastHunted(ChatColor.GOLD + "You have until sunset to prepare! HURRY!");
 			broadcastAll(ChatColor.GOLD + "-------------------------------------");
 			
 			countdown = 0;
@@ -173,8 +171,8 @@ public class Game {
 	}
 	
 	public void onDie(String s) {
-		if (hunter.contains(s.toLowerCase())) {
-			hunter.remove(s.toLowerCase());
+		if (hunter.contains(s)) {
+			hunter.remove(s);
 			Bukkit.getPlayerExact(s).teleport(settings.hunterSpawn);
 			if (hunter.size() == 0) {
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
@@ -187,13 +185,13 @@ public class Game {
 				if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				spectator.add(s.toLowerCase());
 			}
-		} else if (hunted.contains(s.toLowerCase())) {
+		} else if (hunted.contains(s)) {
 			hunted.remove(s.toLowerCase());
 			if (hunted.size() == 0) {
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
 				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are now dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win!");
 				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				spectator.add(s.toLowerCase());
+				hunted.add(s.toLowerCase());
 				stop();
 			} else {
 				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
@@ -499,7 +497,6 @@ public class Game {
 		broadcastHunters(msg);
 		broadcastHunted(msg);
 		broadcastSpectators(msg);
-		HuntedPlugin.getInstance().log(Level.INFO, msg);
 	}
 	
 	public void broadcastHunters(String msg) {
@@ -763,15 +760,15 @@ public class Game {
 	public void manageLocators() {
 		for (int i = 0 ; i < locator.size() ; i++) {
 			if (getLocatorPlayer(i).getItemInHand().getType() != Material.COMPASS) {
-				getLocatorPlayer(i).sendMessage(ChatColor.RED + "You're not holding the compass! Prey locating cancelled!");
+				getLocatorPlayer(i).sendMessage(ChatColor.RED + "You're not holding a compass! Prey locating cancelled!");
 				stopLocator(i);
 				return;
 			}
-			if (getTick() >= getLocatorTick(i)-3640 && getLocatorStage(i) == 0) {
+			if (getTick() >= getLocatorTick(i)-3040 && getLocatorStage(i) == 0) {
 				getLocatorPlayer(i).sendMessage(ChatColor.GOLD + "Got it!");
 				setLocatorStage(i, 1);
-			} else if (getTick() >= getLocatorTick(i)-3600 && getLocatorStage(i) == 1) {
-				if (getLocatorPlayer(i).getFoodLevel() < 5) {
+			} else if (getTick() >= getLocatorTick(i)-3000 && getLocatorStage(i) == 1) {
+				if (getLocatorPlayer(i).getFoodLevel() < 4) {
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator!");
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must not have at least two food nuggets!");
 					stopLocator(i);
@@ -783,7 +780,7 @@ public class Game {
 					return;
 				}
 				sendNearestPrey(getLocatorPlayer(i));
-				getLocatorPlayer(i).setFoodLevel(getLocatorPlayer(i).getFoodLevel()-5);
+				getLocatorPlayer(i).setFoodLevel(getLocatorPlayer(i).getFoodLevel()-4);
 				setLocatorStage(i, 2);
 			} else if (getTick() >= getLocatorTick(i)) {
 				stopLocator(getLocatorPlayer(i));
@@ -795,7 +792,7 @@ public class Game {
 		stopLocator(p);
 		locator.add(p.getName() + "/" +
 				p.getLocation().getX() + "," + p.getLocation().getY() + "," + p.getLocation().getZ() + "/" +
-				(getTick()+3000) + "/" + "0");
+				(getTick()+3200) + "/" + "0");
 	}
 	
 	public void startLocator(Player p, int i) {
@@ -858,13 +855,12 @@ public class Game {
 		locator.remove(i);
 	}
 	public void sendNearestPrey(Player h) {
-		Player p = null; //Closest Prey
+		Player p = null;
 		
 		for (String prey : getHunted()) {
 			if (Bukkit.getPlayerExact(prey) != null
 					&& Bukkit.getPlayerExact(prey).isOnline()) {
 				Player p2 = Bukkit.getPlayerExact(prey);
-				
 				if (p == null) {
 					p = p2;
 				} else {
@@ -877,7 +873,11 @@ public class Game {
 		String direction = "";
 		
 		double angle = Math.toDegrees(Math.acos((p.getLocation().getZ() - h.getLocation().getZ())/getDistance(h, p)));
-					
+		if (p.getLocation().getX() < h.getLocation().getX() ) {
+			angle = 180-angle+180;
+		}
+			
+		
 		if (angle > 338) direction = "South";
 		else if (angle > 293) direction = "South-West";
 		else if (angle > 248) direction = "West";
@@ -888,7 +888,7 @@ public class Game {
 		else if (angle > 23) direction = "South-East";
 		else direction = "South";
 		
-		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + ChatColor.GOLD +" of you! (Sun rises in the " + ChatColor.BLUE + "East!)");
+		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + " " + angle + ChatColor.GOLD +" of you! (Sun rises in the " + ChatColor.BLUE + "East!)");
 	}
 	
 	public Inventory clearInventory(Inventory inv) {

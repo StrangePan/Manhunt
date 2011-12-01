@@ -51,6 +51,7 @@ public class HuntedPlugin extends JavaPlugin {
 		new HuntedPlayerListener();
 		new HuntedEntityListener();
 		new HuntedBlockListener();
+		//new HuntedInventoryListener();
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 	}
 	

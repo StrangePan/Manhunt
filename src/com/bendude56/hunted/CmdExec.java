@@ -63,13 +63,13 @@ public class CmdExec implements CommandExecutor {
 			
 			} else if (args[0].equalsIgnoreCase("assign")) {
 				args = shiftArgs(args);
-				if (args.length < 3) {
+				if (args.length < 2) {
 					p.sendMessage(ChatColor.RED + "Proper use is /m assign <player> <team>");
 					return true;
 				}
-				String a = args[1];
-				args[1] = args[2];
-				args[2] = a;
+				String a = args[0];
+				args[0] = args[1];
+				args[1] = a;
 				joinCommand(args, p);
 			
 			} else if (args[0].equalsIgnoreCase("quit")) {
@@ -159,6 +159,7 @@ public class CmdExec implements CommandExecutor {
 		if (!settings.easyCommands()) {
 			return false;
 		}
+		
 		
 		if (cmd.equalsIgnoreCase("help")) {
 			helpCommand(args, p);
@@ -323,7 +324,7 @@ public class CmdExec implements CommandExecutor {
 					+ "Only ops can start the manhunt game!");
 			return;
 		}
-		if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
+		/*if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
 			p.sendMessage(ChatColor.RED
 					+ "There must be at least one Hunter and Prey to start the game!");
 			return;
@@ -333,7 +334,7 @@ public class CmdExec implements CommandExecutor {
 						+ "There must be at least 4 hunters per prey!");
 				return;
 			}
-		}
+		}*/
 		g.start();
 		p.sendMessage(ChatColor.GRAY
 				+ "You have successfully started the manhunt game!");
@@ -429,18 +430,16 @@ public class CmdExec implements CommandExecutor {
 	private void quitCommand(String[] args, Player p) {
 		if (g.isHunted(p) || g.isHunter(p)) {
 			if (g.gameHasBegun()) {
-				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
+				g.broadcastAll(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE
 						+ " has quit the game to become a "
 						+ ChatColor.YELLOW + "Spectator.");
 				g.onDie(p);
-				p.sendMessage(ChatColor.YELLOW
-						+ "You have quit the game and are now spectating.");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has quit the game and is now spectating.");
 				return;
 			} else {
 				g.addSpectator(p);
-				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
+				g.broadcastAll(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a spectator.");

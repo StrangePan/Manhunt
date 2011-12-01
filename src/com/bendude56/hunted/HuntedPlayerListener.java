@@ -199,7 +199,7 @@ public class HuntedPlayerListener extends PlayerListener {
 				if (g.getLocatorByPlayer(p) == -1) {
 					g.startLocator(p);
 					p.sendMessage(ChatColor.GOLD
-							+ "Beginning search for nearby Prey... Stand still for 10 seconds.");
+							+ "Search for nearby " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " ... Stand still for 10 seconds.");
 				} else {
 					if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer())) == 2) {
 						p.sendMessage(ChatColor.RED
@@ -217,7 +217,7 @@ public class HuntedPlayerListener extends PlayerListener {
 			}
 		}
 	}
-
+	
 	public void onPlayerChangeWorld(PlayerChangedWorldEvent e) {
 		
 		Player p = e.getPlayer();

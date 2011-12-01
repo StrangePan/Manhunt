@@ -42,7 +42,6 @@ public class HuntedEntityListener extends EntityListener {
 	public void onEntityDamage(EntityDamageEvent e) {
 		Player p;
 		
-		
 		if (e.getEntity() instanceof Player) {
 			if (g.isSpectating((Player) e.getEntity())) {	//SPECTATOR EXCEPTIONS
 				e.setCancelled(true);
@@ -52,9 +51,8 @@ public class HuntedEntityListener extends EntityListener {
 				e.setCancelled(true);
 				return;
 			}
-		} else {
-			return;
 		}
+		
 		if (e instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 			if (event.getDamager() instanceof Player) {
@@ -66,10 +64,10 @@ public class HuntedEntityListener extends EntityListener {
 		}
 		//END SPECTATOR EXCEPTIONS
 		
-		if (!(e.getEntity() instanceof Player)) {
-			return;
-		} else {
+		if (e.getEntity() instanceof Player) {
 			p = (Player) e.getEntity();
+		} else {
+			return;
 		}
 		
 		if (g.isSpectating(p)) {
@@ -106,6 +104,10 @@ public class HuntedEntityListener extends EntityListener {
 			if (g.isSpectating(p2)) {
 				e.setCancelled(true);
 				return;
+			}
+			
+			if (!g.huntHasBegun()) {
+				e.setCancelled(true);
 			}
 				
 			if (!settings.friendlyFire()

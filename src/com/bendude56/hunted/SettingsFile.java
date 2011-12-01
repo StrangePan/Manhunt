@@ -433,7 +433,7 @@ public class SettingsFile extends Properties {
 	public boolean easyCommands()	{ return easyCommands; }
 	public boolean allTalk()		{ return allTalk; }
 	public boolean autoHunter()		{ return autoHunter; }
-	public boolean loadouts()		{ return loadouts(); }
+	public boolean loadouts()		{ return loadouts; }
 	public boolean woolHats()		{ return woolHats; }
 	public boolean northCompass()	{ return northCompass; }
 	
