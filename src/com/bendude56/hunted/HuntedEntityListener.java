@@ -1,5 +1,7 @@
 package com.bendude56.hunted;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
@@ -42,6 +44,10 @@ public class HuntedEntityListener extends EntityListener {
 	public void onEntityDamage(EntityDamageEvent e) {
 		Player p;
 		
+		if (e.getEntity().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+			return;
+		}
+		
 		if (e.getEntity() instanceof Player) {
 			if (g.isSpectating((Player) e.getEntity())) {	//SPECTATOR EXCEPTIONS
 				e.setCancelled(true);
@@ -56,7 +62,8 @@ public class HuntedEntityListener extends EntityListener {
 		if (e instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 			if (event.getDamager() instanceof Player) {
-				if (g.isSpectating((Player) event.getEntity())) {
+				if (g.isSpectating((Player) event.getEntity())
+						&& g.gameHasBegun()) {
 					e.setCancelled(true);
 					return;
 				}
@@ -124,7 +131,7 @@ public class HuntedEntityListener extends EntityListener {
 				return;
 			}
 		} else {
-			if (!settings.envDeath() || !g.huntHasBegun()) {
+			if (!settings.envDeath()) {
 				if (e.getDamage() >= p.getHealth()) {
 					e.setDamage(p.getHealth()-1);
 				}
@@ -144,6 +151,11 @@ public class HuntedEntityListener extends EntityListener {
 		if (e instanceof PlayerDeathEvent) {
 			PlayerDeathEvent event = (PlayerDeathEvent) e;
 			Player p = (Player) event.getEntity();
+			
+			if (!g.isSpectating(p) && !g.isHunted(p) && !g.isHunter(p)) {
+				return;
+			}
+			
 			Player p2;
 			if (!g.isHunted(p) && !g.isHunter(p)) {
 				return;
@@ -163,25 +175,30 @@ public class HuntedEntityListener extends EntityListener {
 					p.setFoodLevel(20);
 					
 					if (g.isHunter(p)) {
+						p.teleport(settings.hunterSpawn());
 					} else {
-						p.teleport(settings.preySpawn);
+						p.teleport(settings.preySpawn());
 					}
 					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!");
+					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " died from natural causes and has respawned!");
 					return;
 				} else {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "Spectating!");
+					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "spectating!");
+					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " died from natural causes and is now spectating!");
 					g.onDie(p);
 					return;
 				}
 				
 				if ((g.isHunter(p) && g.isHunter(p2))
 					|| (g.isHunted(p) && g.isHunted(p2))) {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has been slain by "
+					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has been killed by "
 							+ g.getColor(p2) + "teammate " + p2.getName() + "!");
+					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " was killed by teammate " + p2.getName() + "!");
 					g.onDie(p);
 				} else {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has been slain by "
+					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " was killed by "
 						+ g.getColor(p2) + p2.getName() + "!");
+					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " was killed by " + p2.getName() + "!");
 					g.onDie(p);
 				}
 			} 
@@ -197,7 +214,7 @@ public class HuntedEntityListener extends EntityListener {
 	}
 	
 	public void onCreatureSpawn(CreatureSpawnEvent e) {
-		if (!e.getLocation().getWorld().equals(HuntedPlugin.getInstance().getWorld())) {
+		if (e.getLocation().getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			return;
 		}
 		Entity ent = e.getEntity();

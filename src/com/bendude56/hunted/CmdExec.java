@@ -14,28 +14,6 @@ public class CmdExec implements CommandExecutor {
 	public CmdExec() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 		Bukkit.getPluginCommand("m").setExecutor(this);
-		if (settings.easyCommands()) {
-			Bukkit.getPluginCommand("startgame").setExecutor(this);
-			Bukkit.getPluginCommand("stopgame").setExecutor(this);
-			Bukkit.getPluginCommand("join").setExecutor(this);
-			Bukkit.getPluginCommand("assign").setExecutor(this);
-			Bukkit.getPluginCommand("quit").setExecutor(this);
-			Bukkit.getPluginCommand("kick").setExecutor(this);
-			Bukkit.getPluginCommand("setspawn").setExecutor(this);
-			Bukkit.getPluginCommand("weather").setExecutor(this);
-			Bukkit.getPluginCommand("spawn").setExecutor(this);
-			Bukkit.getPluginCommand("makeall").setExecutor(this);
-			Bukkit.getPluginCommand("makeeveryone").setExecutor(this);
-			Bukkit.getPluginCommand("hunter").setExecutor(this);
-			Bukkit.getPluginCommand("hunters").setExecutor(this);
-			Bukkit.getPluginCommand("prey").setExecutor(this);
-			Bukkit.getPluginCommand("spectate").setExecutor(this);
-			Bukkit.getPluginCommand("setting").setExecutor(this);
-			Bukkit.getPluginCommand("settings").setExecutor(this);
-			Bukkit.getPluginCommand("list").setExecutor(this);
-			Bukkit.getPluginCommand("status").setExecutor(this);
-			Bukkit.getPluginCommand("help").setExecutor(this);
-		}
 	}
 	
 	Game g = HuntedPlugin.getInstance().getGame();
@@ -53,7 +31,12 @@ public class CmdExec implements CommandExecutor {
 		
 		
 		if (cmd.equalsIgnoreCase("manhunt") || cmd.equalsIgnoreCase("m")) {
-			if (args[0].equalsIgnoreCase("join")) {
+			
+			if (args[0].equalsIgnoreCase("help")) {
+				args = shiftArgs(args);
+				helpCommand(args, p);
+				
+			} else if (args[0].equalsIgnoreCase("join")) {
 				args = shiftArgs(args);
 				if (args.length == 0) {
 					p.sendMessage(ChatColor.RED + "Proper use is /m join <team>");
@@ -63,15 +46,23 @@ public class CmdExec implements CommandExecutor {
 			
 			} else if (args[0].equalsIgnoreCase("assign")) {
 				args = shiftArgs(args);
-				if (args.length < 2) {
+				if (args.length < 2 || args.length == 0) {
 					p.sendMessage(ChatColor.RED + "Proper use is /m assign <player> <team>");
 					return true;
 				}
-				String a = args[0];
-				args[0] = args[1];
-				args[1] = a;
+				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("hunters")
+						|| args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunted")
+						|| args[0].equalsIgnoreCase("spectators") || args[0].equalsIgnoreCase("spectator") || args[0].equals("spectate"))) {
+					String a = args[0];
+					args[0] = args[1];
+					args[1] = a;
+				}
 				joinCommand(args, p);
 			
+			} else if (args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("hunters")
+					|| args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunted")) {
+				joinCommand(args, p);
+				
 			} else if (args[0].equalsIgnoreCase("quit")) {
 				args = shiftArgs(args);
 				quitCommand(args, p);
@@ -156,124 +147,13 @@ public class CmdExec implements CommandExecutor {
 			return true;
 		}
 		
-		if (!settings.easyCommands()) {
-			return false;
-		}
-		
-		
-		if (cmd.equalsIgnoreCase("help")) {
-			helpCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("setting")
-				|| cmd.equalsIgnoreCase("settings")) {
-			settingsCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("startgame")) {
-			startCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("stopgame")) {
-			stopCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("status")) {
-			statusCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("list")) {
-			listCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("join")) {
-			if (args.length == 0) {
-				p.sendMessage(ChatColor.RED + "Proper use is /join <team>");
-				return true;
-			}
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("assign")) {
-			if (args.length == 0) {
-				p.sendMessage(ChatColor.RED + "Proper use is /assign <player> <team>");
-				return true;
-			}
-			if (args.length >= 1) {
-				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunters")
-						|| args[0].equalsIgnoreCase("hunted") || args[0].equalsIgnoreCase("spectator") || args[0].equalsIgnoreCase("spectators") || args[0].equalsIgnoreCase("spectate"))) {
-					if (args.length >= 2) {
-						String a = args[0];
-						args[0] = args[1];
-						args[1] = a;
-					}
-				}
-			}
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("hunter")
-				|| cmd.equalsIgnoreCase("hunters")) {
-			if (args.length >= 1) {
-				args[1] = args[0];
-			}
-			args[0] = "hunters";
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("prey")) {
-			if (args.length >= 1) {
-				args[1] = args[0];
-			}
-			args[0] = "prey";
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("spectate")) {
-			if (args.length >= 1) {
-				args[1] = args[0];
-			}
-			args[0] = "spectators";
-			joinCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("makeall") || cmd.equalsIgnoreCase("makeeveryone")) {
-			if (args.length == 0) {
-				if (cmd.equalsIgnoreCase("makeall")) p.sendMessage(ChatColor.RED + "Proper use is /makeall <team>");
-				if (cmd.equalsIgnoreCase("makeeveryone")) p.sendMessage(ChatColor.RED + "Proper use is /makeeveryone <team>");
-				return true;
-			}
-			makeallCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("quit")) {
-			quitCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("kick")) {
-			if (args.length == 0) {
-				p.sendMessage(ChatColor.RED + "Proper use is /kick <player>");
-				return true;
-			}
-			kickCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("spectate")) {
-			spectateCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("spawn")) {
-			if (args.length >= 1) {
-				if (!(args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunters")
-						|| args[0].equalsIgnoreCase("hunted") || args[0].equalsIgnoreCase("pregame") || args[0].equalsIgnoreCase("waiting"))) {
-					if (args.length >= 2) {
-						String a = args[0];
-						args[0] = args[1];
-						args[1] = a;
-					}
-				}
-			}
-			spawnCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("setspawn")) {
-			setspawnCommand(args, p);
-			
-		} else if (cmd.equalsIgnoreCase("weather")) {
-			weatherCommand(args, p);
-			
-		}
 		return true;
 	}
 	
 	private void helpCommand(String[] args, Player p) {
 		if (args.length == 0) args[0] = "1";
 		
-		if (settings.easyCommands()) {
+		/*if (settings.easyCommands()) {
 			if (args[0].equalsIgnoreCase("1")) {
 				p.sendMessage(ChatColor.GOLD + "Manhunt help: (1/2)");
 				p.sendMessage(ChatColor.GREEN + "/startgame" + ChatColor.YELLOW + " Starts the Manhunt game.");
@@ -294,27 +174,26 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.GREEN + "/list" + ChatColor.YELLOW + " Lists the Manhunt players.");
 				p.sendMessage(ChatColor.GREEN + "/status" + ChatColor.YELLOW + " Gives information on the current Manhunt game.");
 			}
-		} else {
-			if (args[0].equalsIgnoreCase("1")) {
-				p.sendMessage(ChatColor.GOLD + "Manhunt help: (1/2)");
-				p.sendMessage(ChatColor.GREEN + "/m startgame" + ChatColor.YELLOW + " Starts the Manhunt game.");
-				p.sendMessage(ChatColor.GREEN + "/m stopgame" + ChatColor.YELLOW + " Stops the Manhunt game.");
-				p.sendMessage(ChatColor.GREEN + "/m hunter" + ChatColor.YELLOW + " Joins team " + ChatColor.RED + "hunter.");
-				p.sendMessage(ChatColor.GREEN + "/m prey" + ChatColor.YELLOW + " Joins team " + ChatColor.DARK_BLUE + "prey.");
-				p.sendMessage(ChatColor.GREEN + "/m spectate" + ChatColor.YELLOW + " Joins team " + ChatColor.YELLOW + "spectator.");
-				p.sendMessage(ChatColor.YELLOW + "You can append a player's name to the above commands to assign them to that team.");
-				p.sendMessage(ChatColor.GREEN + "/m makeall [team]" + ChatColor.YELLOW + " Assigns everyone to a specific team.");
-				p.sendMessage(ChatColor.GREEN + "/m quit" + ChatColor.YELLOW + " Quits the Manhunt game and makes you a spectator.");
-			} else if (args[0].equalsIgnoreCase("2")) {
-				p.sendMessage(ChatColor.GOLD + "Manhunt help: (2/2)");
-				p.sendMessage(ChatColor.GREEN + "/m setting [setting/page] [value]" + ChatColor.YELLOW + " Lists/changes Manhunt settings.");
-				p.sendMessage(ChatColor.GREEN + "/m spawn [team/player] [player]" + ChatColor.YELLOW + " Teleports you/the player to the team/world spawn");
-				p.sendMessage(ChatColor.GREEN + "/m setspawn [team]" + ChatColor.YELLOW + " Sets the world's or a team's spawn.");
-				p.sendMessage(ChatColor.GREEN + "/m makeall [team]" + ChatColor.YELLOW + " Assigns everyone to a specific team.");
-				p.sendMessage(ChatColor.GREEN + "/m kick [player]" + ChatColor.YELLOW + " Makes the palyer a spectator.");
-				p.sendMessage(ChatColor.GREEN + "/m list" + ChatColor.YELLOW + " Lists the Manhunt players.");
-				p.sendMessage(ChatColor.GREEN + "/m status" + ChatColor.YELLOW + " Gives information on the current Manhunt game.");
-			}
+		}*/
+		if (args[0].equalsIgnoreCase("1")) {
+			p.sendMessage(ChatColor.GOLD + "Manhunt help: (1/2)");
+			p.sendMessage(ChatColor.GREEN + "/m startgame" + ChatColor.YELLOW + " Starts the Manhunt game.");
+			p.sendMessage(ChatColor.GREEN + "/m stopgame" + ChatColor.YELLOW + " Stops the Manhunt game.");
+			p.sendMessage(ChatColor.GREEN + "/m hunter" + ChatColor.YELLOW + " Joins team " + ChatColor.RED + "hunter.");
+			p.sendMessage(ChatColor.GREEN + "/m prey" + ChatColor.YELLOW + " Joins team " + ChatColor.DARK_BLUE + "prey.");
+			p.sendMessage(ChatColor.GREEN + "/m spectate" + ChatColor.YELLOW + " Joins team " + ChatColor.YELLOW + "spectator.");
+			p.sendMessage(ChatColor.YELLOW + "You can append a player's name to the above commands to assign them to that team.");
+			p.sendMessage(ChatColor.GREEN + "/m makeall [team]" + ChatColor.YELLOW + " Assigns everyone to a specific team.");
+			p.sendMessage(ChatColor.GREEN + "/m quit" + ChatColor.YELLOW + " Quits the Manhunt game and makes you a spectator.");
+		} else if (args[0].equalsIgnoreCase("2")) {
+			p.sendMessage(ChatColor.GOLD + "Manhunt help: (2/2)");
+			p.sendMessage(ChatColor.GREEN + "/m setting [setting/page] [value]" + ChatColor.YELLOW + " Lists/changes Manhunt settings.");
+			p.sendMessage(ChatColor.GREEN + "/m spawn [team/player] [player]" + ChatColor.YELLOW + " Teleports you/the player to the team/world spawn");
+			p.sendMessage(ChatColor.GREEN + "/m setspawn [team]" + ChatColor.YELLOW + " Sets the world's or a team's spawn.");
+			p.sendMessage(ChatColor.GREEN + "/m makeall [team]" + ChatColor.YELLOW + " Assigns everyone to a specific team.");
+			p.sendMessage(ChatColor.GREEN + "/m kick [player]" + ChatColor.YELLOW + " Makes the palyer a spectator.");
+			p.sendMessage(ChatColor.GREEN + "/m list" + ChatColor.YELLOW + " Lists the Manhunt players.");
+			p.sendMessage(ChatColor.GREEN + "/m status" + ChatColor.YELLOW + " Gives information on the current Manhunt game.");
 		}
 	}
 	
@@ -370,7 +249,8 @@ public class CmdExec implements CommandExecutor {
 					+ "You must choose a team! Hunters or Prey.");
 			return;
 		}
-		if (args[0].equalsIgnoreCase("hunter")) {
+		if (args[0].equalsIgnoreCase("hunter")
+				|| args[0].equalsIgnoreCase("hunters")) {
 			if (args.length == 1) {
 				g.addHunter(p);
 				g.broadcastAll(ChatColor.RED + p.getName()
@@ -382,10 +262,10 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.RED + "\""+ args[1] + "\" does not exist!");
 					return;
 				}
-				g.addHunter(args[1]);
-				g.broadcastAll(ChatColor.RED + args[1] + ChatColor.WHITE
+				g.addHunter(Bukkit.getPlayerExact(args[1]).getName());
+				g.broadcastAll(ChatColor.RED + Bukkit.getPlayerExact(args[1]).getName() + ChatColor.WHITE
 						+ " has joined team " + ChatColor.RED + "Hunters.");
-				HuntedPlugin.getInstance().log(Level.INFO, args[1] + " has joined team Hunters.");
+				HuntedPlugin.getInstance().log(Level.INFO, Bukkit.getPlayerExact(args[1]).getName() + " has joined team Hunters.");
 			}
 		} else if (args[0].equalsIgnoreCase("hunted")
 				|| args[0].equalsIgnoreCase("prey")) {
@@ -400,10 +280,10 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.RED + "\""+ args[1] + "\" does not exist!");
 					return;
 				}
-				g.addHunted(args[1]);
-				g.broadcastAll(ChatColor.BLUE + args[1] + ChatColor.WHITE
+				g.addHunted(Bukkit.getPlayerExact(args[1]).getName());
+				g.broadcastAll(ChatColor.BLUE + Bukkit.getPlayerExact(args[1]).getName() + ChatColor.WHITE
 						+ " has joined team " + ChatColor.BLUE + "Prey.");
-				HuntedPlugin.getInstance().log(Level.INFO, args[1] + " has joined team Prey.");
+				HuntedPlugin.getInstance().log(Level.INFO, Bukkit.getPlayerExact(args[1]).getName() + " has joined team Prey.");
 			}
 		} else if (args[0].equalsIgnoreCase("spectators")
 				|| args[0].equalsIgnoreCase("spectator")) {
@@ -418,12 +298,14 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.RED + "\""+ args[1] + "\" does not exist!");
 					return;
 				}
-				g.addHunted(args[1]);
-				g.broadcastSpectators(ChatColor.YELLOW + args[1]
+				g.addHunted(Bukkit.getPlayerExact(args[1]).getName());
+				g.broadcastAll(ChatColor.YELLOW + Bukkit.getPlayerExact(args[1]).getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
-				HuntedPlugin.getInstance().log(Level.INFO, args[1] + " has become a spectator.");
+				HuntedPlugin.getInstance().log(Level.INFO, Bukkit.getPlayerExact(args[1]).getName() + " has become a spectator.");
 			}
+		} else {
+			p.sendMessage(ChatColor.RED + args[0] + " is not a team! Choose either Hunters, Prey, or Spectators.");
 		}
 	}
 	
@@ -635,32 +517,47 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		p.sendMessage(ChatColor.AQUA + "Status of this Manhunt game");
+		String time = "";
 		if (g.huntHasBegun()) {
-			p.sendMessage(ChatColor.GOLD
-					+ "Time remaining:  "
-					+ (int) Math.floor((g.getEndTick() - g.getTick()) / 72000)
-					+ ":"
-					+ (int) (Math.floor((g.getEndTick() - g.getTick()) / 1200) - Math
-							.floor((g.getEndTick() - g.getTick()) / 72000) * 60)
-					+ ":"
-					+ (int) (Math.floor((g.getEndTick() - g.getTick()) / 20) - (Math
+			
+			time = "Time till game end:  ";
+			time += (int) Math.floor((g.getEndTick() - g.getTick()) / 72000) + ":";
+			if ((int) (Math.floor((g.getEndTick() - g.getTick()) / 1200) - Math
+							.floor((g.getEndTick() - g.getTick()) / 72000) * 60) < 10) {
+				time += "0";
+			}
+			time += (int) (Math.floor((g.getEndTick() - g.getTick()) / 1200) - Math
+					.floor((g.getEndTick() - g.getTick()) / 72000) * 60) + ":";
+			if ((int) (Math.floor((g.getEndTick() - g.getTick()) / 20) - (Math
 							.floor((g.getEndTick() - g.getTick()) / 1200) - Math
-							.floor((g.getEndTick() - g.getTick()) / 72000)) * 60));
+							.floor((g.getEndTick() - g.getTick()) / 72000)) * 60) < 10) {
+				time += "0";
+			}
+			time += (int) (Math.floor((g.getEndTick() - g.getTick()) / 20) - (Math
+					.floor((g.getEndTick() - g.getTick()) / 1200) - Math
+					.floor((g.getEndTick() - g.getTick()) / 72000)) * 60) + "";
+			
 		} else {
-			p.sendMessage(ChatColor.GOLD
-					+ "Time remaining:  "
-					+ (int) Math.floor((g.getHunterReleaseTick() - g
-							.getTick()) / 72000)
-					+ ":"
-					+ (int) (Math.floor((g.getHunterReleaseTick() - g
-							.getTick()) / 1200) - Math.floor((g
-							.getHunterReleaseTick() - g.getTick()) / 72000) * 60)
-					+ ":"
-					+ (int) (Math.floor((g.getHunterReleaseTick() - g
-							.getTick()) / 20) - (Math.floor((g
-							.getHunterReleaseTick() - g.getTick()) / 1200) - Math
-							.floor((g.getHunterReleaseTick() - g.getTick()) / 72000)) * 60));
+			
+			time = "Time till hunt starts:  ";
+			time += (int) Math.floor((g.getHunterReleaseTick() - g.getTick()) / 72000) + ":";
+			if ((int) (Math.floor((g.getHunterReleaseTick() - g.getTick()) / 1200) - Math
+							.floor((g.getHunterReleaseTick() - g.getTick()) / 72000) * 60) < 10) {
+				time += "0";
+			}
+			time += (int) (Math.floor((g.getHunterReleaseTick() - g.getTick()) / 1200) - Math
+					.floor((g.getHunterReleaseTick() - g.getTick()) / 72000) * 60) + ":";
+			if ((int) (Math.floor((g.getHunterReleaseTick() - g.getTick()) / 20) - (Math
+							.floor((g.getHunterReleaseTick() - g.getTick()) / 1200) - Math
+							.floor((g.getHunterReleaseTick() - g.getTick()) / 72000)) * 60) < 10) {
+				time += "0";
+			}
+			time += (int) (Math.floor((g.getHunterReleaseTick() - g.getTick()) / 20) - (Math
+					.floor((g.getHunterReleaseTick() - g.getTick()) / 1200) - Math
+					.floor((g.getHunterReleaseTick() - g.getTick()) / 72000)) * 60) + "";
+			
 		}
+		p.sendMessage(ChatColor.GOLD + time);
 		p.sendMessage(ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount()
 				+ ChatColor.BLUE + "  Prey: " + g.HuntedAmount()
 				+ ChatColor.YELLOW + "  Spectators: "
@@ -691,7 +588,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(settings.preySpawn);
+						p.teleport(settings.preySpawn());
 						p.sendMessage(ChatColor.GREEN
 								+ "Teleported to the " + ChatColor.BLUE
 								+ "Prey" + ChatColor.GREEN + " spawn.");
@@ -704,7 +601,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(settings.preySpawn);
+							p2.teleport(settings.preySpawn());
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
@@ -723,7 +620,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(settings.preySpawn);
+						p.teleport(settings.preySpawn());
 						p.sendMessage(ChatColor.GREEN
 								+ "Teleported to the " + ChatColor.RED
 								+ "Hunter" + ChatColor.GREEN + " spawn.");
@@ -786,11 +683,11 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		if (args.length == 0) {
-			if (settings.hunterSpawn == HuntedPlugin.getInstance()
+			if (settings.hunterSpawn() == HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation()) {
 				settings.changeSetting("hunterSpawn", p.getLocation());
 			}
-			if (settings.preySpawn == HuntedPlugin.getInstance().getWorld()
+			if (settings.preySpawn() == HuntedPlugin.getInstance().getWorld()
 					.getSpawnLocation()) {
 				settings.changeSetting("preySpawn", p.getLocation());
 			}
@@ -822,11 +719,11 @@ public class CmdExec implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("waiting")
 					|| args[0].equalsIgnoreCase("pregame")) {
-				if (settings.hunterSpawn == HuntedPlugin.getInstance()
+				if (settings.hunterSpawn() == HuntedPlugin.getInstance()
 						.getWorld().getSpawnLocation()) {
 					settings.changeSetting("hunterSpawn", p.getLocation());
 				}
-				if (settings.preySpawn == HuntedPlugin.getInstance()
+				if (settings.preySpawn() == HuntedPlugin.getInstance()
 						.getWorld().getSpawnLocation()) {
 					settings.changeSetting("preySpawn", p.getLocation());
 				}
@@ -942,7 +839,7 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.WHITE
 						+ " Players can choose their team and warp to world spawn.");
 			}
-			if (settings.easyCommands()) {
+			/*if (settings.easyCommands()) {
 				p.sendMessage(ChatColor.BLUE
 						+ "easyCommands "
 						+ ChatColor.GREEN
@@ -956,7 +853,7 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]"
 						+ ChatColor.WHITE
 						+ " You must prefex every command with /manhunt.");
-			}
+			}*/
 			if (settings.allTalk()) {
 				p.sendMessage(ChatColor.BLUE + "allTalk " + ChatColor.GREEN
 						+ "[true]" + ChatColor.WHITE
@@ -1158,6 +1055,16 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Huners and Prey can build anywhere.");
 			}
+			if (settings.locatorTimer() > 0) {
+				p.sendMessage(ChatColor.BLUE + "locatorTimer "
+						+ ChatColor.GREEN + "[" + settings.locatorTimer()
+						+ "]" + ChatColor.WHITE
+						+ " Seconds between Prey Finder 9001 uses.");
+			} else {
+				p.sendMessage(ChatColor.BLUE + "locatorTimer "
+						+ ChatColor.RED + "[off]" + ChatColor.WHITE
+						+ " Hunters need not wait to use the Prey Finder 9001.");
+			}
 		}
 
 		else if (args.length >= 1) {
@@ -1206,7 +1113,7 @@ public class CmdExec implements CommandExecutor {
 							+ " Players can choose their team and warp to world spawn.");
 				}
 				
-			} else if (args[0].equalsIgnoreCase("easycommands")) {
+			/*} else if (args[0].equalsIgnoreCase("easycommands")) {
 				if (args.length == 1) {
 					if (settings.easyCommands()) {
 						p.sendMessage(ChatColor.BLUE
@@ -1248,7 +1155,7 @@ public class CmdExec implements CommandExecutor {
 							+ "[false]"
 							+ ChatColor.WHITE
 							+ " You must prefex every command with /manhunt.");
-				}
+				}*/
 
 			} else if (args[0].equalsIgnoreCase("alltalk")) {
 				if (args.length == 1) {
@@ -1988,15 +1895,47 @@ public class CmdExec implements CommandExecutor {
 							+ "]" + ChatColor.WHITE
 							+ " Hunter/Prey spawn points are protected.");
 				}
-			} else {
-				if (settings.easyCommands()) {
-					p.sendMessage(ChatColor.RED
-							+ "Invalid setting. Type \"/settings <pg>\" for a complete list.");
+			} else if (args[0].equalsIgnoreCase("locatortimer")) {
+				if (args.length >= 2) {
+					int value;
+					if (args[1].equalsIgnoreCase("off")
+							|| args[1].equalsIgnoreCase("disable")) {
+						value = 0;
+					} else {
+						try {
+							value = Integer.parseInt(args[1]);
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED
+									+ "Invalid value. You must enter an Integer or \"OFF\"");
+							return;
+						}
+					}
+					if (value <= -1) {
+						settings.changeSetting("locatorTimer", "0");
+						p.sendMessage(ChatColor.BLUE + "locatorTimer "
+								+ ChatColor.RED + "[off]" + ChatColor.WHITE
+								+ " Hunters need not wait to use the Prey Finder 9001.");
+					} else {
+						settings.changeSetting("locatorTimer",
+								Integer.toString(value));
+						p.sendMessage(ChatColor.BLUE
+								+ "locatorTimer "
+								+ ChatColor.GREEN
+								+ "["
+								+ settings.locatorTimer()
+								+ "]"
+								+ ChatColor.WHITE
+								+ " Seconds between Prey Finder 9001 uses.");
+					}
 				} else {
-					p.sendMessage(ChatColor.RED
-							+ "Invalid setting. Type \"/manhunt settings <pg>\" for a complete list.");
+					p.sendMessage(ChatColor.BLUE + "locatorTimer "
+							+ ChatColor.GREEN + "[" + settings.locatorTimer()
+							+ "]" + ChatColor.WHITE
+							+ " Seconds between Prey Finder 9001 uses.");
 				}
-				return;
+			} else {
+				p.sendMessage(ChatColor.RED
+						+ "Invalid setting. Type \"/manhunt settings <pg>\" for a complete list.");
 			}
 		}
 	}

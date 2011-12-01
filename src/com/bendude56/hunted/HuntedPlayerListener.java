@@ -147,14 +147,14 @@ public class HuntedPlayerListener extends PlayerListener {
 					.getSpawnLocation());
 			p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			return;
-		} else if (g.getDistance(p.getLocation(), settings.preySpawn) > settings.globalBoundry()
-				&& g.getDistance(p.getLocation(), settings.hunterSpawn) > settings.globalBoundry()) {
-			if (g.getDistance(p.getLocation(), settings.preySpawn) < g
-					.getDistance(p.getLocation(), settings.hunterSpawn)) {
-				g.stepPlayer(p, 1.0, settings.preySpawn);
+		} else if (g.getDistance(p.getLocation(), settings.preySpawn()) > settings.globalBoundry()
+				&& g.getDistance(p.getLocation(), settings.hunterSpawn()) > settings.globalBoundry()) {
+			if (g.getDistance(p.getLocation(), settings.preySpawn()) < g
+					.getDistance(p.getLocation(), settings.hunterSpawn())) {
+				g.stepPlayer(p, 1.0, settings.preySpawn());
 				p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			} else {
-				g.stepPlayer(p, 1.0, settings.hunterSpawn);
+				g.stepPlayer(p, 1.0, settings.hunterSpawn());
 				p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			}
 		}
@@ -167,7 +167,7 @@ public class HuntedPlayerListener extends PlayerListener {
 					g.getLocatorLocation(g.getLocatorByPlayer(p))) > 1.5
 					|| p.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
 				p.sendMessage(ChatColor.RED
-						+ "You moved before nearest prey could be found!");
+						+ "You moved before nearest Prey could be found!");
 				g.stopLocator(p);
 			}
 		}
@@ -176,8 +176,9 @@ public class HuntedPlayerListener extends PlayerListener {
 	public void onPlayerItemHeld(PlayerItemHeldEvent e) {
 		Player p = e.getPlayer();
 		if (p.getItemInHand().getType() != Material.COMPASS
-				&& g.getLocatorByPlayer(p) != -1) {
-			p.sendMessage(ChatColor.RED + "Prey locating cancelled.");
+				&& g.getLocatorByPlayer(p) != -1
+				&& g.getLocatorStage(g.getLocatorByPlayer(p)) != 2) {
+			p.sendMessage(ChatColor.RED + "Prey Finder 9001 cancelled.");
 			g.stopLocator(p);
 		}
 	}
@@ -199,18 +200,24 @@ public class HuntedPlayerListener extends PlayerListener {
 				if (g.getLocatorByPlayer(p) == -1) {
 					g.startLocator(p);
 					p.sendMessage(ChatColor.GOLD
-							+ "Search for nearby " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " ... Stand still for 10 seconds.");
+							+ "Prey Finder 9001 activated! Stand still for 8 seconds.");
+					
 				} else {
-					if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer())) == 2) {
-						p.sendMessage(ChatColor.RED
-								+ "Prey locator is still charging. Time left: "
-								+ (int) Math.floor((g.getLocatorTick(g
-										.getLocatorByPlayer(p)) - g.getTick()) / 1200)
-								+ ":"
-								+ (int) (Math.floor((g.getLocatorTick(g
+					String time = ((int) Math.floor((g.getLocatorTick(g
+										.getLocatorByPlayer(p)) - g.getTick()) / 1200)) + ":";
+					if ((int) (Math.floor((g.getLocatorTick(g
 										.getLocatorByPlayer(p)) - g.getTick()) / 20) - (int) Math.floor((g
 										.getLocatorTick(g.getLocatorByPlayer(p)) - g
-										.getTick()) / 1200) * 60));
+										.getTick()) / 1200) * 60) < 10) {
+						time += "0";
+					}
+					time += "" + (int) (Math.floor((g.getLocatorTick(g
+							.getLocatorByPlayer(p)) - g.getTick()) / 20) - (int) Math.floor((g
+							.getLocatorTick(g.getLocatorByPlayer(p)) - g
+							.getTick()) / 1200) * 60);
+					if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer())) == 2) {
+						p.sendMessage(ChatColor.RED
+								+ "Prey Finder 9001 is still charging. Time left: " + time);
 					}
 					return;
 				}
@@ -235,11 +242,11 @@ public class HuntedPlayerListener extends PlayerListener {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.hunterSpawn) <= settings.noBuildRange()) {
+							settings.hunterSpawn()) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.preySpawn) <= settings.noBuildRange()) {
+							settings.preySpawn()) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
@@ -277,11 +284,11 @@ public class HuntedPlayerListener extends PlayerListener {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.hunterSpawn) <= settings.noBuildRange()) {
+							settings.hunterSpawn()) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.preySpawn) <= settings.noBuildRange()) {
+							settings.preySpawn()) <= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}

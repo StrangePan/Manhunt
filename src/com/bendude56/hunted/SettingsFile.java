@@ -32,7 +32,7 @@ public class SettingsFile extends Properties {
 	private boolean flyingSpectators;
 	
 	private boolean opPermission;
-	private boolean easyCommands;
+	//private boolean easyCommands;
 	private boolean allTalk;
 	private boolean autoHunter;
 	private boolean loadouts;
@@ -41,16 +41,17 @@ public class SettingsFile extends Properties {
 	
 	private int offlineTimeout;
 	private int dayLimit;
+	private int locatorTimer;
 	
 	private int globalBoundry;
 	private int hunterBoundry;
 	private int noBuildRange;
 	
-	public Location hunterSpawn = new Location(HuntedPlugin.getInstance().getWorld(),
+	private Location hunterSpawn = new Location(HuntedPlugin.getInstance().getWorld(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getY(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
-	public Location preySpawn = new Location(HuntedPlugin.getInstance().getWorld(),
+	private Location preySpawn = new Location(HuntedPlugin.getInstance().getWorld(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getY(),
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
@@ -114,7 +115,7 @@ public class SettingsFile extends Properties {
 	
 	public void loadDefaults() {
 		opPermission = true;
-		easyCommands = true;
+		//easyCommands = true;
 		allTalk = false;
 		spawnPassive = true;
 		spawnHostile = true;
@@ -134,6 +135,7 @@ public class SettingsFile extends Properties {
 		globalBoundry = -1;
 		hunterBoundry = 16;
 		noBuildRange = 8;
+		locatorTimer = 120;
 		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	}
@@ -148,14 +150,14 @@ public class SettingsFile extends Properties {
 		} else opPermission = true;
 		put("opPermission", Boolean.toString(opPermission));
 		
-		if (containsKey("easyCommands")) {
+		/*if (containsKey("easyCommands")) {
 			if (getProperty("easyCommands").length() > 0 && getProperty("easyCommands").equalsIgnoreCase("true")) {
 				easyCommands = true;
 			} else {
 				easyCommands = false;
 			}
 		} else easyCommands = true;
-		put("easyCommands", Boolean.toString(easyCommands));
+		put("easyCommands", Boolean.toString(easyCommands));*/
 		
 		if (containsKey("allTalk")) {
 			if (getProperty("allTalk").length() > 0 && getProperty("allTalk").equalsIgnoreCase("true")) {
@@ -343,6 +345,18 @@ public class SettingsFile extends Properties {
 		} else noBuildRange = 8;
 		put("noBuildRange", Integer.toString(noBuildRange));
 		
+		if (containsKey("locatorTimer")) {
+			if (getProperty("locatorTimer").length() > 0) {
+				try {
+					locatorTimer = Integer.parseInt(getProperty("locatorTimer"));
+					if (locatorTimer < 0) locatorTimer = 0;
+				} catch (NumberFormatException e) {
+					locatorTimer = 120;
+				}
+			} else locatorTimer = 120;
+		} else locatorTimer = 120;
+		put("locatorTimer", Integer.toString(locatorTimer));
+		
 		if (containsKey("hunterSpawn")) {
 			if (getProperty("hunterSpawn").split(",").length == 3) {
 				String[] loc = getProperty("hunterSpawn").split(",");
@@ -430,19 +444,23 @@ public class SettingsFile extends Properties {
 	public boolean flyingSpectators(){ return flyingSpectators; }
 	
 	public boolean opPermission()	{ return opPermission; }
-	public boolean easyCommands()	{ return easyCommands; }
+	//public boolean easyCommands()	{ return easyCommands; }
 	public boolean allTalk()		{ return allTalk; }
 	public boolean autoHunter()		{ return autoHunter; }
 	public boolean loadouts()		{ return loadouts; }
 	public boolean woolHats()		{ return woolHats; }
 	public boolean northCompass()	{ return northCompass; }
 	
-	public int offlineTimeout()		{  return offlineTimeout; }
+	public int offlineTimeout()		{ return offlineTimeout; }
 	public int dayLimit()			{ return dayLimit; }
 	
 	public int globalBoundry() 		{ return globalBoundry; }
 	public int hunterBoundry() 		{ return hunterBoundry; }
-	public int noBuildRange() 		{  return noBuildRange; }
+	public int noBuildRange() 		{ return noBuildRange; }
+	public int locatorTimer()		{ return locatorTimer; }
+	
+	public Location hunterSpawn()	{ return hunterSpawn; }
+	public Location preySpawn()		{ return preySpawn; }
 	
  	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {

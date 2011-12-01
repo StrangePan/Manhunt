@@ -23,13 +23,13 @@ public class HuntedBlockListener extends BlockListener {
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					settings.hunterSpawn)
+					settings.hunterSpawn())
 					<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					settings.preySpawn)
+					settings.preySpawn())
 					<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}
@@ -43,7 +43,7 @@ public class HuntedBlockListener extends BlockListener {
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-							settings.hunterSpawn)
+							settings.hunterSpawn())
 							<= settings.noBuildRange()
 					|| g.getDistance(e.getBlock().getLocation(),
 							HuntedPlugin.getInstance().getWorld().getSpawnLocation())
@@ -52,7 +52,7 @@ public class HuntedBlockListener extends BlockListener {
 			}
 			else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					settings.preySpawn)
+					settings.preySpawn())
 					<= settings.noBuildRange()) {
 				e.setCancelled(true);
 			}

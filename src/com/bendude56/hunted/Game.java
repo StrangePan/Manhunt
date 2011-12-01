@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet29DestroyEntity;
 
@@ -55,10 +57,13 @@ public class Game {
 		if (!gameRunning) {
 			HuntedPlugin.getInstance().getWorld().setTime(0);
 			
-			broadcastAll(ChatColor.GOLD + "-------------------------------------");
+			broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
 			broadcastAll(ChatColor.GOLD + "The Manhunt game is starting! The hunt begins at sundown!");
 			broadcastHunted(ChatColor.GOLD + "You have until sunset to prepare! HURRY!");
-			broadcastAll(ChatColor.GOLD + "-------------------------------------");
+			broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+			HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+			HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game is starting! The hunt begins at sundown!");
+			HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 			
 			countdown = 0;
 			hunterReleaseTick = HuntedPlugin.getInstance().getWorld().getFullTime() + 12000;
@@ -78,7 +83,7 @@ public class Game {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) preyLoadout(p.getInventory());
-				p.teleport(settings.preySpawn);
+				p.teleport(settings.preySpawn());
 			}
 			for (String n : hunter) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -160,6 +165,7 @@ public class Game {
 			for (String s : spectator) {
 				hunter.add(s);
 				broadcastAll(ChatColor.DARK_RED + s + ChatColor.WHITE + " has joined team " + ChatColor.DARK_RED + "Hunters");
+				HuntedPlugin.getInstance().log(Level.INFO, s + " has joined team Hunters");
 			}
 			spectator.clear();
 		}
@@ -173,30 +179,36 @@ public class Game {
 	public void onDie(String s) {
 		if (hunter.contains(s)) {
 			hunter.remove(s);
-			Bukkit.getPlayerExact(s).teleport(settings.hunterSpawn);
+			Bukkit.getPlayerExact(s).teleport(settings.hunterSpawn());
 			if (hunter.size() == 0) {
-				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				broadcastAll(ChatColor.GOLD + "All " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are now dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win!");
-				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				spectator.add(s.toLowerCase());
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are now dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win the game!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "All of the Hunters are now dead! The Prey win the game!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				spectator.add(s);
 				stop();
 			} else {
-				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
+				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now " + ChatColor.YELLOW + "spectating.");
 				if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
-				spectator.add(s.toLowerCase());
+				spectator.add(s);
 			}
 		} else if (hunted.contains(s)) {
-			hunted.remove(s.toLowerCase());
+			hunted.remove(s);
 			if (hunted.size() == 0) {
-				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are now dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win!");
-				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				hunted.add(s.toLowerCase());
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are now dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win the game!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "All of the Prey are now dead! The Hunters win the game!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				spectator.add(s);
 				stop();
 			} else {
-				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now a " + ChatColor.YELLOW + "spectator.");
+				Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now " + ChatColor.YELLOW + "spectating.");
 				if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
-				spectator.add(s.toLowerCase());
+				spectator.add(s);
 			}
 		}
 	}
@@ -224,7 +236,8 @@ public class Game {
 		}
 		if (hunter.contains(p)) {
 			hunter.remove(p);
-			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for not being online/in the manhunt world!");
+			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for being gone more than " + settings.offlineTimeout() + " minutes!");
+			HuntedPlugin.getInstance().log(Level.INFO, p + " was disqualified for being gone more than " + settings.offlineTimeout() + " minutes!");
 			if (Bukkit.getPlayerExact(p) != null) {
 				if (Bukkit.getPlayerExact(p) != null) {
 					Bukkit.getPlayerExact(p).sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
@@ -232,7 +245,8 @@ public class Game {
 			}
 		} else if (hunted.contains(p)) {
 			hunted.remove(p);
-			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for not being online/in the manhunt world!");
+			broadcastAll(getColor(p) + p + ChatColor.WHITE + " was disqualified for being gone more than " + settings.offlineTimeout() + " minutes!");
+			HuntedPlugin.getInstance().log(Level.INFO, p + " was disqualified for being gone more than " + settings.offlineTimeout() + " minutes!");
 			if (Bukkit.getPlayerExact(p) != null) {
 				Bukkit.getPlayerExact(p).sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
 			}
@@ -306,6 +320,7 @@ public class Game {
 				if (tick < hunterReleaseTick) {
 					if (tick >= hunterReleaseTick - 6000 && countdown == 0) {
 						broadcastAll(ChatColor.GOLD + "5 minutes until sundown!");
+						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until sundown!");
 						countdown=1;
 					} else if (tick >= hunterReleaseTick - 4800 && countdown == 1) {
 						broadcastAll(ChatColor.GOLD + "4 minutes until sundown!");
@@ -318,6 +333,7 @@ public class Game {
 						countdown++;
 					} else if (tick >= hunterReleaseTick - 1200 && countdown == 4) {
 						broadcastAll(ChatColor.GOLD + "1 minute until sundown!");
+						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until sundown!");
 						countdown++;
 					} else if (tick >= hunterReleaseTick - 600 && countdown == 5) {
 						broadcastAll(ChatColor.GOLD + "30 seconds until sundown!");
@@ -348,17 +364,25 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.loadouts()) hunterLoadout(p.getInventory());
-						p.teleport(settings.hunterSpawn);
+						p.teleport(settings.hunterSpawn());
 						p.setHealth(20);
 						p.setFoodLevel(20);
 					}
 				}
-				broadcastAll(ChatColor.GOLD + "-------------------------------------");
-				broadcastAll(ChatColor.GOLD + "The hun begun! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are on the move!");
-				broadcastAll(ChatColor.GOLD + "-------------------------------------");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "The hunt has begun! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are on the move!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "The hunt has begun! The Hunters are on the move!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 				endTick = tick + settings.dayLimit()* 24000;
 			} else if (tick >= endTick) {
-				broadcastAll(ChatColor.GREEN + "Time has run out! The hunted have won the game!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "Time has run out! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " have won the game!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "Time has run out! The Prey have won the game!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 				stop();
 			} else {
 				int hour;
@@ -394,12 +418,15 @@ public class Game {
 				if (tick > hunterReleaseTick && tick <= endTick) {
 					if (tick >= endTick - 24000 && countdown == 0) {
 						broadcastAll(ChatColor.GOLD + "1 day until the game is over!");
+						HuntedPlugin.getInstance().log(Level.INFO, "1 day until the game is over!");
 						countdown++;
 					} else if (tick >= endTick - 12000 && countdown == 1) {
-						broadcastAll(ChatColor.GOLD + "Game ends at sundown!");
+						broadcastAll(ChatColor.GOLD + "The Manhunt game ends at sundown!");
+						HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game ends at sundown!");
 						countdown++;
 					} else if (tick >= endTick - 6000 && countdown == 2) {
 						broadcastAll(ChatColor.GOLD + "5 minutes until the game is over!");
+						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until the game is over!");
 						countdown++;
 					} else if (tick >= endTick - 4800 && countdown == 3) {
 						broadcastAll(ChatColor.GOLD + "4 minutes until the game is over!");
@@ -412,6 +439,7 @@ public class Game {
 						countdown++;
 					} else if (tick >= endTick - 1200 && countdown == 6) {
 						broadcastAll(ChatColor.GOLD + "1 minute until the game is over!");
+						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until the game is over!");
 						countdown++;
 					} else if (tick >= endTick - 600 && countdown == 7) {
 						broadcastAll(ChatColor.GOLD + "30 seconds until the game is over!");
@@ -444,7 +472,8 @@ public class Game {
 		if (gameHasBegun() && (isHunter(p) || isHunted(p))) {
 			broadcastAll(getColor(p) + p.getName() +
 					ChatColor.WHITE + " has reconnected and is back in the game!");
-			timeout.remove(p);
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has reconnected and is back in the game!");
+			timeout.remove(p.getName());
 		} else if (gameHasBegun()) {
 			addSpectator(p);
 			if (p.getGameMode() == GameMode.CREATIVE) {
@@ -476,10 +505,12 @@ public class Game {
 				if (settings.offlineTimeout() > 0) {
 					broadcastAll(ChatColor.WHITE + "They will be removed from the game in " + ChatColor.RED +
 							(settings.offlineTimeout()) + " MINUTES.");
+					HuntedPlugin.getInstance().log(Level.INFO, "They will be removed from the game in " + settings.offlineTimeout() + " MINUTES");
 					timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout() * 72000);
 				} else if (settings.offlineTimeout() == 0) {
-					broadcastAll(ChatColor.WHITE + "They are now disqualified from the game.");
+					broadcastAll(ChatColor.WHITE + "They have been disqualified from the game.");
 					p.sendMessage(ChatColor.RED + "You were disqualified from the manhunt game!");
+					HuntedPlugin.getInstance().log(Level.INFO, "They have been disqualified from the game.");
 					onDie(p.getName());
 				}
 			}
@@ -759,18 +790,18 @@ public class Game {
 	
 	public void manageLocators() {
 		for (int i = 0 ; i < locator.size() ; i++) {
-			if (getLocatorPlayer(i).getItemInHand().getType() != Material.COMPASS) {
-				getLocatorPlayer(i).sendMessage(ChatColor.RED + "You're not holding a compass! Prey locating cancelled!");
+			if (getLocatorPlayer(i).getItemInHand().getType() != Material.COMPASS && getLocatorStage(i) != 2) {
+				getLocatorPlayer(i).sendMessage(ChatColor.RED + "You're not holding a compass! Prey Locator 9001 cancelled!");
 				stopLocator(i);
 				return;
 			}
-			if (getTick() >= getLocatorTick(i)-3040 && getLocatorStage(i) == 0) {
+			if (getTick() >= getLocatorTick(i)-(settings.locatorTimer()+25) && getLocatorStage(i) == 0) {
 				getLocatorPlayer(i).sendMessage(ChatColor.GOLD + "Got it!");
 				setLocatorStage(i, 1);
-			} else if (getTick() >= getLocatorTick(i)-3000 && getLocatorStage(i) == 1) {
+			} else if (getTick() >= getLocatorTick(i)-settings.locatorTimer() && getLocatorStage(i) == 1) {
 				if (getLocatorPlayer(i).getFoodLevel() < 4) {
-					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator!");
-					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must not have at least two food nuggets!");
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator 9001!");
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must have at least two food nuggets!");
 					stopLocator(i);
 					return;
 				}
@@ -781,7 +812,9 @@ public class Game {
 				}
 				sendNearestPrey(getLocatorPlayer(i));
 				getLocatorPlayer(i).setFoodLevel(getLocatorPlayer(i).getFoodLevel()-4);
+				getLocatorPlayer(i).sendMessage(ChatColor.YELLOW + "You have lost " + ChatColor.RED + "2 food.");
 				setLocatorStage(i, 2);
+				HuntedPlugin.getInstance().log(Level.INFO, getLocatorPlayer(i).getName() + " used the Prey Locator 9001");
 			} else if (getTick() >= getLocatorTick(i)) {
 				stopLocator(getLocatorPlayer(i));
 			}
@@ -792,14 +825,7 @@ public class Game {
 		stopLocator(p);
 		locator.add(p.getName() + "/" +
 				p.getLocation().getX() + "," + p.getLocation().getY() + "," + p.getLocation().getZ() + "/" +
-				(getTick()+3200) + "/" + "0");
-	}
-	
-	public void startLocator(Player p, int i) {
-		stopLocator(p);
-		locator.add(p.getName() + "/" +
-				p.getLocation().getX() + "," + p.getLocation().getY() + "," + p.getLocation().getZ() + "/" +
-				getTick() + "/" + i);
+				(getTick()+160+(settings.locatorTimer()*20)) + "/" + "0");
 	}
 	public long getLocatorTick(int i) {
 		try {
@@ -871,6 +897,7 @@ public class Game {
 			}
 		}
 		String direction = "";
+		String relative = "";
 		
 		double angle = Math.toDegrees(Math.acos((p.getLocation().getZ() - h.getLocation().getZ())/getDistance(h, p)));
 		if (p.getLocation().getX() < h.getLocation().getX() ) {
@@ -888,7 +915,16 @@ public class Game {
 		else if (angle > 23) direction = "South-East";
 		else direction = "South";
 		
-		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + " " + angle + ChatColor.GOLD +" of you! (Sun rises in the " + ChatColor.BLUE + "East!)");
+		angle = h.getLocation().getYaw() - angle;
+		if (angle < 0) {
+			angle += 360;
+		}
+		if (angle > 315) relative = "ahead of you";
+		else if (angle > 225) relative = "to your right";
+		else if (angle > 135) relative = "behind you";
+		else if (angle > 45) relative = "to your left";
+		
+		h.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + direction + " " + angle + ChatColor.GOLD +" of you! (Somehere " + ChatColor.BLUE + relative + ChatColor.GOLD + ".)");
 	}
 	
 	public Inventory clearInventory(Inventory inv) {
