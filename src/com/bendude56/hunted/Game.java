@@ -795,10 +795,10 @@ public class Game {
 				stopLocator(i);
 				return;
 			}
-			if (getTick() >= getLocatorTick(i)-(settings.locatorTimer()+25) && getLocatorStage(i) == 0) {
+			if (getTick() >= getLocatorTick(i)-(settings.locatorTimer()*20+25) && getLocatorStage(i) == 0) {
 				getLocatorPlayer(i).sendMessage(ChatColor.GOLD + "Got it!");
 				setLocatorStage(i, 1);
-			} else if (getTick() >= getLocatorTick(i)-settings.locatorTimer() && getLocatorStage(i) == 1) {
+			} else if (getTick() >= getLocatorTick(i)-settings.locatorTimer()*20 && getLocatorStage(i) == 1) {
 				if (getLocatorPlayer(i).getFoodLevel() < 4) {
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "Not enough food to fuel the Prey Locator 9001!");
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You must have at least two food nuggets!");
@@ -807,6 +807,11 @@ public class Game {
 				}
 				if (getDistance(getLocatorPlayer(i).getLocation(), getLocatorLocation(i)) > 1.5) {
 					getLocatorPlayer(i).sendMessage(ChatColor.RED + "You've moved too far. Could not get direction!");
+					stopLocator(i);
+					return;
+				}
+				if (HuntedAmount() == 0) {
+					getLocatorPlayer(i).sendMessage(ChatColor.RED + "There are no Prey online!");
 					stopLocator(i);
 					return;
 				}

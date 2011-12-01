@@ -203,7 +203,7 @@ public class CmdExec implements CommandExecutor {
 					+ "Only ops can start the manhunt game!");
 			return;
 		}
-		/*if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
+		if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
 			p.sendMessage(ChatColor.RED
 					+ "There must be at least one Hunter and Prey to start the game!");
 			return;
@@ -213,7 +213,7 @@ public class CmdExec implements CommandExecutor {
 						+ "There must be at least 4 hunters per prey!");
 				return;
 			}
-		}*/
+		}
 		g.start();
 		p.sendMessage(ChatColor.GRAY
 				+ "You have successfully started the manhunt game!");
@@ -228,9 +228,13 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		g.stop();
-		g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE
-				+ " has stopped the game!");
+		g.broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+		g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.GOLD
+				+ " has stopped the Manhunt game!");
+		g.broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+		HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has stopped the Manhunt game!");
+		HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 		return;
 	}
 	

@@ -198,6 +198,10 @@ public class HuntedPlayerListener extends PlayerListener {
 			if (g.isHunter(p) && p.getItemInHand().getType() == Material.COMPASS
 					&& settings.preyFinder()) {
 				if (g.getLocatorByPlayer(p) == -1) {
+					if (g.HuntedAmount() == 0) {
+						p.sendMessage(ChatColor.RED + "There are no Prey online!");
+						return;
+					}
 					g.startLocator(p);
 					p.sendMessage(ChatColor.GOLD
 							+ "Prey Finder 9001 activated! Stand still for 8 seconds.");
