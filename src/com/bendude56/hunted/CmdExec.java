@@ -32,6 +32,16 @@ public class CmdExec implements CommandExecutor {
 		
 		if (cmd.equalsIgnoreCase("manhunt") || cmd.equalsIgnoreCase("m")) {
 			
+			if (args[0].equalsIgnoreCase("yaw")) {
+				p.sendMessage("YAW: " + p.getLocation().getYaw());
+				return true;
+			}
+			
+			if (args[0].equalsIgnoreCase("walrus")) {
+				p.sendMessage(ChatColor.AQUA + "THE WARLUS LIVES IN ALL OF US! (:3=");
+				return true;
+			}
+			
 			if (args[0].equalsIgnoreCase("help")) {
 				args = shiftArgs(args);
 				helpCommand(args, p);
@@ -151,7 +161,16 @@ public class CmdExec implements CommandExecutor {
 	}
 	
 	private void helpCommand(String[] args, Player p) {
-		if (args.length == 0) args[0] = "1";
+		String page = "1";
+		
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("1")) {
+				page = "1";
+			}
+			if (args[0].equalsIgnoreCase("2")) {
+				page = "2";
+			}
+		}
 		
 		/*if (settings.easyCommands()) {
 			if (args[0].equalsIgnoreCase("1")) {
@@ -175,17 +194,17 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.GREEN + "/status" + ChatColor.YELLOW + " Gives information on the current Manhunt game.");
 			}
 		}*/
-		if (args[0].equalsIgnoreCase("1")) {
+		if (page.equalsIgnoreCase("1")) {
 			p.sendMessage(ChatColor.GOLD + "Manhunt help: (1/2)");
 			p.sendMessage(ChatColor.GREEN + "/m startgame" + ChatColor.YELLOW + " Starts the Manhunt game.");
 			p.sendMessage(ChatColor.GREEN + "/m stopgame" + ChatColor.YELLOW + " Stops the Manhunt game.");
-			p.sendMessage(ChatColor.GREEN + "/m hunter" + ChatColor.YELLOW + " Joins team " + ChatColor.RED + "hunter.");
-			p.sendMessage(ChatColor.GREEN + "/m prey" + ChatColor.YELLOW + " Joins team " + ChatColor.DARK_BLUE + "prey.");
+			p.sendMessage(ChatColor.GREEN + "/m hunter" + ChatColor.YELLOW + " Joins team " + ChatColor.DARK_RED + "hunter.");
+			p.sendMessage(ChatColor.GREEN + "/m prey" + ChatColor.YELLOW + " Joins team " + ChatColor.BLUE + "prey.");
 			p.sendMessage(ChatColor.GREEN + "/m spectate" + ChatColor.YELLOW + " Joins team " + ChatColor.YELLOW + "spectator.");
 			p.sendMessage(ChatColor.YELLOW + "You can append a player's name to the above commands to assign them to that team.");
 			p.sendMessage(ChatColor.GREEN + "/m makeall [team]" + ChatColor.YELLOW + " Assigns everyone to a specific team.");
 			p.sendMessage(ChatColor.GREEN + "/m quit" + ChatColor.YELLOW + " Quits the Manhunt game and makes you a spectator.");
-		} else if (args[0].equalsIgnoreCase("2")) {
+		} else if (page.equalsIgnoreCase("2")) {
 			p.sendMessage(ChatColor.GOLD + "Manhunt help: (2/2)");
 			p.sendMessage(ChatColor.GREEN + "/m setting [setting/page] [value]" + ChatColor.YELLOW + " Lists/changes Manhunt settings.");
 			p.sendMessage(ChatColor.GREEN + "/m spawn [team/player] [player]" + ChatColor.YELLOW + " Teleports you/the player to the team/world spawn");
@@ -203,21 +222,21 @@ public class CmdExec implements CommandExecutor {
 					+ "Only ops can start the manhunt game!");
 			return;
 		}
-		if (g.HuntersAmount() == 0 || g.HuntedAmount() == 0) {
+		if (g.HuntersAmount(true) == 0 || g.HuntedAmount(true) == 0) {
 			p.sendMessage(ChatColor.RED
 					+ "There must be at least one Hunter and Prey to start the game!");
 			return;
 		} else {
-			if (g.HuntersAmount() < (g.HuntedAmount()-1)*4) {
+			if (g.HuntersAmount(true) < (g.HuntedAmount(true)-1)*4) {
 				p.sendMessage(ChatColor.RED
 						+ "There must be at least 4 hunters per prey!");
 				return;
 			}
 		}
-		g.start();
 		p.sendMessage(ChatColor.GRAY
 				+ "You have successfully started the manhunt game!");
 		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has started the Manhunt game!");
+		g.start();
 		return;
 	}
 	
@@ -229,11 +248,11 @@ public class CmdExec implements CommandExecutor {
 		}
 		g.stop();
 		g.broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-		g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.GOLD
+		g.broadcastAll(ChatColor.GOLD + "" + g.getColor(p) + p.getName() + ChatColor.GOLD
 				+ " has stopped the Manhunt game!");
 		g.broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
 		HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
-		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has stopped the Manhunt game!");
+		HuntedPlugin.getInstance().log(Level.INFO, "" + p.getName() + " has stopped the Manhunt game!");
 		HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 		return;
 	}
@@ -257,9 +276,9 @@ public class CmdExec implements CommandExecutor {
 				|| args[0].equalsIgnoreCase("hunters")) {
 			if (args.length == 1) {
 				g.addHunter(p);
-				g.broadcastAll(ChatColor.RED + p.getName()
+				g.broadcastAll(g.getColor(p) + p.getName()
 						+ ChatColor.WHITE + " has joined team "
-						+ ChatColor.RED + "Hunters.");
+						+ ChatColor.DARK_RED + "Hunters.");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has joined team Hunters.");
 			} else if (args.length > 1 && p.isOp()) {
 				if (Bukkit.getPlayerExact(args[1]) == null) {
@@ -267,8 +286,8 @@ public class CmdExec implements CommandExecutor {
 					return;
 				}
 				g.addHunter(Bukkit.getPlayerExact(args[1]).getName());
-				g.broadcastAll(ChatColor.RED + Bukkit.getPlayerExact(args[1]).getName() + ChatColor.WHITE
-						+ " has joined team " + ChatColor.RED + "Hunters.");
+				g.broadcastAll(ChatColor.DARK_RED + Bukkit.getPlayerExact(args[1]).getName() + ChatColor.WHITE
+						+ " has joined team " + ChatColor.DARK_RED + "Hunters.");
 				HuntedPlugin.getInstance().log(Level.INFO, Bukkit.getPlayerExact(args[1]).getName() + " has joined team Hunters.");
 			}
 		} else if (args[0].equalsIgnoreCase("hunted")
@@ -318,7 +337,7 @@ public class CmdExec implements CommandExecutor {
 			if (g.gameHasBegun()) {
 				g.broadcastAll(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE
-						+ " has quit the game to become a "
+						+ " has quit the game and become a "
 						+ ChatColor.YELLOW + "Spectator.");
 				g.onDie(p);
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has quit the game and is now spectating.");
@@ -479,8 +498,8 @@ public class CmdExec implements CommandExecutor {
 			return;
 		} else if (args.length == 0
 				|| (args.length >= 1 && args[0].equalsIgnoreCase("all"))) {
-			p.sendMessage(ChatColor.GREEN + "Manhunt players: ("+ (g.HuntedAmount() + g.HuntersAmount() + g.SpectatorsAmount()) + ")  "
-				+ ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount() + ChatColor.BLUE + "  Prey: " + g.HuntedAmount() + ChatColor.YELLOW + "  Spectators: " + g.SpectatorsAmount());
+			p.sendMessage(ChatColor.GREEN + "Manhunt players: ("+ (g.HuntedAmount(false) + g.HuntersAmount(false) + g.SpectatorsAmount(false)) + ")  "
+				+ ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount(false) + ChatColor.BLUE + "  Prey: " + g.HuntedAmount(false) + ChatColor.YELLOW + "  Spectators: " + g.SpectatorsAmount(false));
 			for (String s : g.getHunters()) {
 				p.sendMessage(ChatColor.DARK_RED + "  " + s);
 			}
@@ -492,20 +511,20 @@ public class CmdExec implements CommandExecutor {
 			}
 		} else if (args.length >= 1 && args[0].equalsIgnoreCase("hunters")) {
 			p.sendMessage(ChatColor.GREEN + "Team HUNTERS: ("
-					+ g.HuntersAmount() + ")");
+					+ g.HuntersAmount(false) + ")");
 			for (String s : g.getHunters()) {
 				p.sendMessage(ChatColor.DARK_RED + "  " + s);
 			}
 		} else if (args.length >= 1 && args[0].equalsIgnoreCase("prey")) {
 			p.sendMessage(ChatColor.GREEN + "Team HUNTED: ("
-					+ g.HuntedAmount() + ")");
+					+ g.HuntedAmount(false) + ")");
 			for (String s : g.getHunted()) {
 				p.sendMessage(ChatColor.BLUE + "  " + s);
 			}
 		} else if (args.length >= 2
 				&& args[0].equalsIgnoreCase("spectators")) {
 			p.sendMessage(ChatColor.GREEN + "Manhunt SPECTATORS: ("
-					+ g.SpectatorsAmount() + ")");
+					+ g.SpectatorsAmount(false) + ")");
 			for (String s : g.getSpectators()) {
 				p.sendMessage(ChatColor.YELLOW + "  " + s);
 			}
@@ -562,10 +581,10 @@ public class CmdExec implements CommandExecutor {
 			
 		}
 		p.sendMessage(ChatColor.GOLD + time);
-		p.sendMessage(ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount()
-				+ ChatColor.BLUE + "  Prey: " + g.HuntedAmount()
+		p.sendMessage(ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount(false)
+				+ ChatColor.BLUE + "  Prey: " + g.HuntedAmount(false)
 				+ ChatColor.YELLOW + "  Spectators: "
-				+ g.SpectatorsAmount());
+				+ g.SpectatorsAmount(false));
 	}
 	
 	private void spawnCommand(String[] args, Player p) {
@@ -586,7 +605,7 @@ public class CmdExec implements CommandExecutor {
 					return;
 				}
 				if (args[0].equalsIgnoreCase("prey")) {
-					if (g.gameHasBegun()) {
+					if (g.gameHasBegun() && !g.isSpectating(p)) {
 						p.sendMessage(ChatColor.RED
 								+ "You can't teleport there while the game is running!");
 						return;
@@ -618,7 +637,7 @@ public class CmdExec implements CommandExecutor {
 						}
 					}
 				} else if (args[0].equalsIgnoreCase("hunter")) {
-					if (g.gameHasBegun()) {
+					if (g.gameHasBegun() && !g.isSpectating(p)) {
 						p.sendMessage(ChatColor.RED
 								+ "You can't teleport there while the game is running!");
 						return;
@@ -626,7 +645,7 @@ public class CmdExec implements CommandExecutor {
 					if (args.length == 1) {
 						p.teleport(settings.preySpawn());
 						p.sendMessage(ChatColor.GREEN
-								+ "Teleported to the " + ChatColor.RED
+								+ "Teleported to the " + ChatColor.DARK_RED
 								+ "Hunter" + ChatColor.GREEN + " spawn.");
 						return;
 					} else if (args.length > 1) {
@@ -641,11 +660,11 @@ public class CmdExec implements CommandExecutor {
 									.getWorld().getSpawnLocation());
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
-									+ ChatColor.RED + "Hunter"
+									+ ChatColor.DARK_RED + "Hunter"
 									+ ChatColor.YELLOW + " spawn.");
 							p.sendMessage(ChatColor.YELLOW + args[0]
 									+ " has been teleported to the "
-									+ ChatColor.RED + "Hunter"
+									+ ChatColor.DARK_RED + "Hunter"
 									+ ChatColor.YELLOW + " spawn.");
 							return;
 						}

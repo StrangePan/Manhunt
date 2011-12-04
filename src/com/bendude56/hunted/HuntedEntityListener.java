@@ -58,17 +58,17 @@ public class HuntedEntityListener extends EntityListener {
 				return;
 			}
 		}
-		
 		if (e instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 			if (event.getDamager() instanceof Player) {
-				if (g.isSpectating((Player) event.getEntity())
+				if (g.isSpectating((Player) event.getDamager())
 						&& g.gameHasBegun()) {
 					e.setCancelled(true);
 					return;
 				}
 			}
 		}
+		
 		//END SPECTATOR EXCEPTIONS
 		
 		if (e.getEntity() instanceof Player) {
@@ -179,26 +179,30 @@ public class HuntedEntityListener extends EntityListener {
 					} else {
 						p.teleport(settings.preySpawn());
 					}
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!");
-					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " died from natural causes and has respawned!");
+					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");
+					((PlayerDeathEvent) e).setDeathMessage(null);
 					return;
 				} else {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "spectating!");
-					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " died from natural causes and is now spectating!");
+					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "Spectating!" + ChatColor.GOLD + " ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and is now spectating! ]---");
+					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 					return;
 				}
 				
 				if ((g.isHunter(p) && g.isHunter(p2))
 					|| (g.isHunted(p) && g.isHunted(p2))) {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " has been killed by "
-							+ g.getColor(p2) + "teammate " + p2.getName() + "!");
-					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " was killed by teammate " + p2.getName() + "!");
+					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " has been "
+							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE + " by " + g.getColor(p2) + "teammate " + p2.getName() + "!" + ChatColor.GOLD + " ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " has been/t ELIMINATED by teammate " + p2.getName() + "! ]---");
+					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				} else {
-					g.broadcastAll(g.getColor(p) + p.getName() + ChatColor.WHITE + " was killed by "
-						+ g.getColor(p2) + p2.getName() + "!");
-					HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " was killed by " + p2.getName() + "!");
+					g.broadcastAll(ChatColor.GOLD + "---[   " + g.getColor(p) + p.getName() + ChatColor.WHITE + " has been "
+							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE + " by " + g.getColor(p2) + p2.getName() + "!" + ChatColor.GOLD + " ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " has been ELIMINATED + by " + p2.getName() + "! ]---");
+					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				}
 			} 

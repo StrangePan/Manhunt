@@ -4,7 +4,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+//import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
+//import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -41,8 +41,8 @@ public class HuntedPlayerListener extends PlayerListener {
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_GAME_MODE_CHANGE, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
+		//Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_GAME_MODE_CHANGE, this,
+		//		Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_CHANGED_WORLD, this,
 				Event.Priority.Normal, HuntedPlugin.getInstance());
 		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_BUCKET_FILL, this,
@@ -64,10 +64,6 @@ public class HuntedPlayerListener extends PlayerListener {
 			if (!g.gameHasBegun()) {
 				g.broadcastAll(ChatColor.WHITE + "<" + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-				e.setCancelled(true);
-				HuntedPlugin.getInstance().log(Level.INFO,
-						"<" + p.getName() + "> " + e.getMessage());
-				return;
 			}
 		}
 		if (settings.allTalk()) {
@@ -75,31 +71,25 @@ public class HuntedPlayerListener extends PlayerListener {
 				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			}
-			e.setCancelled(true);
-			HuntedPlugin.getInstance().log(Level.INFO,
-					"<" + p.getName() + "> " + e.getMessage());
-			return;
 		}
 		if (g.isHunter(p)) {
-			g.broadcastHunters(ChatColor.WHITE + "<" + ChatColor.RED
+			g.broadcastHunters(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			HuntedPlugin.getInstance().log(Level.INFO,
-					"<" + p.getName() + "> " + e.getMessage());
 			e.setCancelled(true);
 		} else if (g.isHunted(p)) {
-			g.broadcastHunted(ChatColor.WHITE + "<" + ChatColor.BLUE
+			g.broadcastHunted(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
 		} else if (g.isSpectating(p)) {
-			g.broadcastSpectators(ChatColor.WHITE + "<" + ChatColor.YELLOW
+			g.broadcastSpectators(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
 		} else
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (!g.isHunted(player) && !g.isHunter(player)
 						&& !g.isSpectating(player)) {
-					player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
-							+ p.getName() + ChatColor.WHITE + "> "
+					player.sendMessage(ChatColor.WHITE + "<"
+							+ p.getName() + "> "
 							+ e.getMessage());
 				}
 			}
@@ -112,21 +102,34 @@ public class HuntedPlayerListener extends PlayerListener {
 		
 		Player p = e.getPlayer();
 		if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
+			if (g.gameHasBegun() && g.isPlaying(p)) {
+				e.setJoinMessage(null);
+			}
 			g.onLogin(p);
-		} else if (g.isHunted(p) || g.isHunter(p)) {
+		} else if (g.isPlaying(p)) {
 			p.sendMessage(ChatColor.RED
 					+ "To rejoin the manhunt game, type /manhunt join");
 		}
 	}
 
 	public void onPlayerKick(PlayerKickEvent e) {
+		if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()
+				&& g.gameHasBegun()
+				&& g.isPlaying(e.getPlayer())) {
+			e.setLeaveMessage(null);
+		}
 		g.onLogout(e.getPlayer());
 	}
 
 	public void onPlayerQuit(PlayerQuitEvent e) {
+		if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()
+				&& g.gameHasBegun()
+				&& g.isPlaying(e.getPlayer())) {
+			e.setQuitMessage(null);
+		}
 		g.onLogout(e.getPlayer());
 	}
-
+	
 	public void onPlayerMove(PlayerMoveEvent e) {
 		if (!g.gameHasBegun()) {
 			return;
@@ -186,19 +189,19 @@ public class HuntedPlayerListener extends PlayerListener {
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		
-		if (!g.huntHasBegun()
-				|| HuntedPlugin.getInstance().getWorld() != p.getWorld()) {
+		if (HuntedPlugin.getInstance().getWorld() != p.getWorld()) {
 			return;
 		}
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
-			if (g.isSpectating(p)) {
+			if (g.gameHasBegun() && g.isSpectating(p)) {
 				e.setCancelled(true);
 				return;
 			}
 			if (g.isHunter(p) && p.getItemInHand().getType() == Material.COMPASS
-					&& settings.preyFinder()) {
+					&& settings.preyFinder()
+					&& g.huntHasBegun()) {
 				if (g.getLocatorByPlayer(p) == -1) {
-					if (g.HuntedAmount() == 0) {
+					if (g.HuntedAmount(true) == 0) {
 						p.sendMessage(ChatColor.RED + "There are no Prey online!");
 						return;
 					}
@@ -255,7 +258,7 @@ public class HuntedPlayerListener extends PlayerListener {
 			}
 		}
 	}
-
+	/*
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
 		
 		Player p = e.getPlayer();
@@ -274,13 +277,17 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 		if (g.isSpectating(p)) {
 			if (settings.flyingSpectators()) {
+				if (e.getNewGameMode() != GameMode.CREATIVE) {
+					e.setCancelled(true);
+				}
+			} else {
 				if (e.getNewGameMode() != GameMode.SURVIVAL) {
 					e.setCancelled(true);
 				}
 			}
 		}
 	}
-	
+	*/
 	public void onBucketFill(PlayerBucketFillEvent e) {
 		
 		if (g.gameHasBegun()) {
