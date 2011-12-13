@@ -1,6 +1,7 @@
 package com.bendude56.hunted;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,7 +15,16 @@ import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.CaveSpider;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Silverfish;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Spider;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
@@ -54,20 +64,35 @@ public class Game {
 	
 	public void start() {
 		if (!gameRunning) {
-			HuntedPlugin.getInstance().getWorld().setTime(0);
 			
-			broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-			broadcastAll(ChatColor.GOLD + "The Manhunt game is starting! The hunt begins at sundown!");
-			broadcastHunted(ChatColor.GOLD + "You have until sunset to prepare! HURRY!");
-			broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-			HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
-			HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game is starting! The hunt begins at sundown!");
-			HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+			if (settings.prepTime() > 0) {
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "The Manhunt game is starting! The hunt begins at sundown!");
+				broadcastHunted(ChatColor.GOLD + "You have until sunset to prepare! HURRY!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game is starting! The hunt begins at sundown!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+			}
 			
 			countdown = 0;
-			hunterReleaseTick = HuntedPlugin.getInstance().getWorld().getFullTime() + 12000;
+			HuntedPlugin.getInstance().getWorld().setTime(12000-settings.prepTime()*1200);
+			hunterReleaseTick = HuntedPlugin.getInstance().getWorld().getFullTime() + settings.prepTime()*1200;
 			endTick = hunterReleaseTick + settings.dayLimit() * 24000;
 			gameRunning = true;
+			
+			for (Entity entity : HuntedPlugin.getInstance().getWorld().getEntities()) {
+				if (entity instanceof Creeper
+					|| entity instanceof Zombie
+					|| entity instanceof Skeleton
+					|| entity instanceof Enderman
+					|| entity instanceof Spider
+					|| entity instanceof CaveSpider
+					|| entity instanceof Silverfish
+					|| entity instanceof Item) {
+					entity.remove();
+				}
+			}
 			
 			for (String n : hunted) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -138,11 +163,11 @@ public class Game {
 		endTick = 0;
 		countdown = 0;
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			clearInventory(p.getInventory());
 			if (isSpectating(p)) {
 				for (String n : hunter) {
 					Player p2 = Bukkit.getServer().getPlayerExact(n);
 					if (p2 != null) {
-						clearInventory(Bukkit.getPlayerExact(n).getInventory());
 						((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(((CraftPlayer) p).getHandle()));
 					}
 				}
@@ -166,16 +191,25 @@ public class Game {
 		if (settings.autoHunter()) {
 			for (String s : spectator) {
 				if (Bukkit.getPlayerExact(s) != null) {
-					hunter.add(s);
+					if (!hunter.contains(s)) hunter.add(s);
+					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GOLD + "---[   "
+							+ ChatColor.GRAY + "You have been moved to team " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + "   ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, s + " has been moved to team Hunters");
+				}
+			}
+			for (String s : hunted) {
+				if (Bukkit.getPlayerExact(s) != null) {
+					if (!hunter.contains(s)) hunter.add(s);
 					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GOLD + "---[   "
 							+ ChatColor.GRAY + "You have been moved to team " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + "   ]---");
 					HuntedPlugin.getInstance().log(Level.INFO, s + " has been moved to team Hunters");
 				}
 			}
 			spectator.clear();
-			broadcastAll(ChatColor.GOLD + "---[   All " + ChatColor.YELLOW + "Spectators"
-					+ ChatColor.GOLD + " have been moved to team " + ChatColor.DARK_RED + "Hunted"
-					+ ChatColor.GOLD + "   ]---");
+			hunted.clear();
+			//broadcastAll(ChatColor.GOLD + "---[   All " + ChatColor.YELLOW + "Spectators"
+			//		+ ChatColor.GOLD + " have been moved to team " + ChatColor.DARK_RED + "Hunters"
+			//		+ ChatColor.GOLD + "   ]---");
 		}
 		locator.clear();
 	}
@@ -185,19 +219,18 @@ public class Game {
 	}
 	
 	public void onDie(String s) {
-		Player p = Bukkit.getServer().getPlayerExact(s);
+		/*Player p = Bukkit.getServer().getPlayerExact(s);
 		if (p != null) {
 			for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
 				if (isHunter(p2) || isHunted(p2)) { //Makes spectator invisible!
 					((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(new Packet29DestroyEntity(p.getEntityId()));
 				}
 			}
-		}
+		}*/
 		
 		if (hunter.contains(s)) {
 			hunter.remove(s);
 			if (HuntersAmount(false) == 0) {
-				spectator.add(s);
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
 				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win the game!");
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
@@ -205,19 +238,23 @@ public class Game {
 				HuntedPlugin.getInstance().log(Level.INFO, "All of the Hunters are now dead! The Prey win the game!");
 				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 				stop();
+				if (settings.autoHunter()) {
+					hunter.add(s);
+				} else {
+					spectator.add(s);
+				}
 			} else {
-				spectator.add(s);
 				broadcastAll(ChatColor.BLUE + "Remaining Prey: " + HuntedAmount(false)
 						+ ChatColor.DARK_RED + "   Remaining Hunters: " + HuntersAmount(false));
 				if (Bukkit.getPlayerExact(s) != null) {
 					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GOLD + "---[   " + ChatColor.GRAY + "You are now " + ChatColor.YELLOW + "SPECTATING." + ChatColor.GOLD + "   ]---");
 					if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				}
+				spectator.add(s);
 			}
 		} else if (hunted.contains(s)) {
 			hunted.remove(s);
 			if (HuntedAmount(false) == 0) {
-				spectator.add(s);
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
 				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win the game!");
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
@@ -225,14 +262,19 @@ public class Game {
 				HuntedPlugin.getInstance().log(Level.INFO, "All of the Prey are now dead! The Hunters win the game!");
 				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 				stop();
+				if (settings.autoHunter()) {
+					hunter.add(s);
+				} else {
+					spectator.add(s);
+				}
 			} else {
-				spectator.add(s);
 				broadcastAll(ChatColor.BLUE + "Remaining Prey: " + HuntedAmount(false)
 						+ ChatColor.DARK_RED + "   Remaining Hunters: " + HuntersAmount(false));
 				if (Bukkit.getPlayerExact(s) != null) {
 					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now " + ChatColor.YELLOW + "spectating.");
 					if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				}
+				spectator.add(s);
 			}
 		}
 	}
@@ -269,7 +311,7 @@ public class Game {
 	
 	private void onTick() {
 		for (String p : timeout.keySet()) {
-			if (getTick() >= timeout.get(p)) {
+			if (new Date().getTime() >= timeout.get(p)) {
 				timeout(p);
 			}
 		}
@@ -289,18 +331,24 @@ public class Game {
 									p.getLocation().getX(),
 									p.getLocation().getY(),
 									p.getLocation().getZ()-1000));
+						} else {
+							p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 						}
 						if (p.getGameMode() != GameMode.SURVIVAL) {
 							p.setGameMode(GameMode.SURVIVAL);
 						}
 					} else if (isSpectating(p)) {
+						
 						if (settings.northCompass()) {
 							p.setCompassTarget(new Location(
 									p.getWorld(),
 									p.getLocation().getX(),
 									p.getLocation().getY(),
 									p.getLocation().getZ()-1000));
+						} else {
+							p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 						}
+						p.setFoodLevel(20);
 						if (p.getGameMode() != GameMode.CREATIVE && settings.flyingSpectators()) {
 							p.setGameMode(GameMode.CREATIVE);
 						}
@@ -348,44 +396,44 @@ public class Game {
 					}
 				}
 				if (tick < hunterReleaseTick) {
-					if (tick >= hunterReleaseTick - 6000 && countdown == 0) {
+					if (tick >= hunterReleaseTick - 20 && countdown <= 11) {
+						broadcastAll(ChatColor.GOLD + "1...");
+						countdown=12;
+					} else if (tick >= hunterReleaseTick - 40 && countdown <= 10) {
+						broadcastAll(ChatColor.GOLD + "2...");
+						countdown=11;
+					} else if (tick >= hunterReleaseTick - 60 && countdown <= 9) {
+						broadcastAll(ChatColor.GOLD + "3...");
+						countdown=10;
+					} else if (tick >= hunterReleaseTick - 80 && countdown <= 8) {
+						broadcastAll(ChatColor.GOLD + "4...");
+						countdown=9;
+					} else if (tick >= hunterReleaseTick - 100 && countdown <= 7) {
+						broadcastAll(ChatColor.GOLD + "5...");
+						countdown=8;
+					} else if (tick >= hunterReleaseTick - 200 && countdown <= 6) {
+						broadcastAll(ChatColor.GOLD + "10 seconds until sundown!");
+						countdown=7;
+					} else if (tick >= hunterReleaseTick - 600 && countdown <= 5) {
+						broadcastAll(ChatColor.GOLD + "30 seconds until sundown!");
+						countdown=6;
+					} else if (tick >= hunterReleaseTick - 1200 && countdown <= 4) {
+						broadcastAll(ChatColor.GOLD + "1 minute until sundown!");
+						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until sundown!");
+						countdown=5;
+					} else if (tick >= hunterReleaseTick - 2400 && countdown <= 3) {
+						broadcastAll(ChatColor.GOLD + "2 minutes until sundown!");
+						countdown=4;
+					} else if (tick >= hunterReleaseTick - 3600 && countdown <= 2) {
+						broadcastAll(ChatColor.GOLD + "3 minutes until sundown!");
+						countdown=3;
+					} else if (tick >= hunterReleaseTick - 4800 && countdown <= 1) {
+						broadcastAll(ChatColor.GOLD + "4 minutes until sundown!");
+						countdown=2;
+					} else if (tick >= hunterReleaseTick - 6000 && countdown <= 0) {
 						broadcastAll(ChatColor.GOLD + "5 minutes until sundown!");
 						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until sundown!");
 						countdown=1;
-					} else if (tick >= hunterReleaseTick - 4800 && countdown == 1) {
-						broadcastAll(ChatColor.GOLD + "4 minutes until sundown!");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 3600 && countdown == 2) {
-						broadcastAll(ChatColor.GOLD + "3 minutes until sundown!");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 2400 && countdown == 3) {
-						broadcastAll(ChatColor.GOLD + "2 minutes until sundown!");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 1200 && countdown == 4) {
-						broadcastAll(ChatColor.GOLD + "1 minute until sundown!");
-						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until sundown!");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 600 && countdown == 5) {
-						broadcastAll(ChatColor.GOLD + "30 seconds until sundown!");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 200 && countdown == 6) {
-						broadcastAll(ChatColor.GOLD + "10 seconds until sundown!");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 100 && countdown == 7) {
-						broadcastAll(ChatColor.GOLD + "5...");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 80 && countdown == 8) {
-						broadcastAll(ChatColor.GOLD + "4...");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 60 && countdown == 9) {
-						broadcastAll(ChatColor.GOLD + "3...");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 40 && countdown == 10) {
-						broadcastAll(ChatColor.GOLD + "2...");
-						countdown++;
-					} else if (tick >= hunterReleaseTick - 20 && countdown == 11) {
-						broadcastAll(ChatColor.GOLD + "1...");
-						countdown++;
 					}
 				}
 			} else if (tick >= hunterReleaseTick && hunterReleaseTick != 0) {
@@ -446,52 +494,52 @@ public class Game {
 					}
 				}
 				if (tick > hunterReleaseTick && tick <= endTick) {
-					if (tick >= endTick - 24000 && countdown == 0) {
-						broadcastAll(ChatColor.GOLD + "1 day until the game is over!");
-						HuntedPlugin.getInstance().log(Level.INFO, "1 day until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 12000 && countdown == 1) {
-						broadcastAll(ChatColor.GOLD + "The Manhunt game ends at sundown!");
-						HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game ends at sundown!");
-						countdown++;
-					} else if (tick >= endTick - 6000 && countdown == 2) {
-						broadcastAll(ChatColor.GOLD + "5 minutes until the game is over!");
-						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 4800 && countdown == 3) {
-						broadcastAll(ChatColor.GOLD + "4 minutes until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 3600 && countdown == 4) {
-						broadcastAll(ChatColor.GOLD + "3 minutes until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 2400 && countdown == 5) {
-						broadcastAll(ChatColor.GOLD + "2 minutes until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 1200 && countdown == 6) {
+					if (tick >= endTick - 20 && countdown <= 13) {
+						broadcastAll(ChatColor.GOLD + "1...");
+						countdown=14;
+					} else if (tick >= endTick - 40 && countdown <= 12) {
+						broadcastAll(ChatColor.GOLD + "2...");
+						countdown=13;
+					} else if (tick >= endTick - 60 && countdown <= 11) {
+						broadcastAll(ChatColor.GOLD + "3...");
+						countdown=12;
+					} else if (tick >= endTick - 80 && countdown <= 10) {
+						broadcastAll(ChatColor.GOLD + "4...");
+						countdown=11;
+					} else if (tick >= endTick - 100 && countdown <= 9) {
+						broadcastAll(ChatColor.GOLD + "5...");
+						countdown=10;
+					} else if (tick >= endTick - 200 && countdown <= 8) {
+						broadcastAll(ChatColor.GOLD + "10 seconds until the game is over!");
+						countdown=9;
+					} else if (tick >= endTick - 600 && countdown <= 7) {
+						broadcastAll(ChatColor.GOLD + "30 seconds until the game is over!");
+						countdown=8;
+					} else if (tick >= endTick - 1200 && countdown <= 6) {
 						broadcastAll(ChatColor.GOLD + "1 minute until the game is over!");
 						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 600 && countdown == 7) {
-						broadcastAll(ChatColor.GOLD + "30 seconds until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 200 && countdown == 8) {
-						broadcastAll(ChatColor.GOLD + "10 seconds until the game is over!");
-						countdown++;
-					} else if (tick >= endTick - 100 && countdown == 9) {
-						broadcastAll(ChatColor.GOLD + "5...");
-						countdown++;
-					} else if (tick >= endTick - 80 && countdown == 10) {
-						broadcastAll(ChatColor.GOLD + "4...");
-						countdown++;
-					} else if (tick >= endTick - 60 && countdown == 11) {
-						broadcastAll(ChatColor.GOLD + "3...");
-						countdown++;
-					} else if (tick >= endTick - 40 && countdown == 12) {
-						broadcastAll(ChatColor.GOLD + "2...");
-						countdown++;
-					} else if (tick >= endTick - 20 && countdown == 13) {
-						broadcastAll(ChatColor.GOLD + "1...");
-						countdown++;
+						countdown=7;
+					} else if (tick >= endTick - 2400 && countdown <= 5) {
+						broadcastAll(ChatColor.GOLD + "2 minutes until the game is over!");
+						countdown=6;
+					} else if (tick >= endTick - 3600 && countdown <= 4) {
+						broadcastAll(ChatColor.GOLD + "3 minutes until the game is over!");
+						countdown=5;
+					} else if (tick >= endTick - 4800 && countdown <= 3) {
+						broadcastAll(ChatColor.GOLD + "4 minutes until the game is over!");
+						countdown=4;
+					} else if (tick >= endTick - 6000 && countdown <= 2) {
+						broadcastAll(ChatColor.GOLD + "5 minutes until the game is over!");
+						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until the game is over!");
+						countdown=3;
+					} else if (tick >= endTick - 12000 && countdown <= 1) {
+						broadcastAll(ChatColor.GOLD + "The Manhunt game ends at sundown!");
+						HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game ends at sundown!");
+						countdown=2;
+					} else if (tick >= endTick - 24000 && countdown <= 0) {
+						broadcastAll(ChatColor.GOLD + "1 day until the game is over!");
+						HuntedPlugin.getInstance().log(Level.INFO, "1 day until the game is over!");
+						countdown=1;
 					}
 				}
 			}
@@ -500,8 +548,8 @@ public class Game {
 	
 	public void onLogin(Player p) {
 		if (gameHasBegun() && (isHunter(p) || isHunted(p))) {
-			broadcastAll(getColor(p) + p.getName() +
-					ChatColor.WHITE + " has reconnected and is back in the game!");
+			broadcastAll(ChatColor.GOLD + "---[ " + getColor(p) + p.getName() +
+					ChatColor.WHITE + " has reconnected! " + ChatColor.GOLD + "]---");
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has reconnected and is back in the game!");
 			timeout.remove(p.getName());
 		} else if (gameHasBegun()) {
@@ -522,12 +570,14 @@ public class Game {
 	}
 	
 	public void onLogout(Player p) {
-		if (creative.contains(p.getName())) {
-			p.setGameMode(GameMode.CREATIVE);
-			creative.remove(p.getName());
-		} else {
-			p.setGameMode(GameMode.SURVIVAL);
-			creative.remove(p.getName());
+		if (gameHasBegun()) {
+			if (creative.contains(p.getName())) {
+				p.setGameMode(GameMode.CREATIVE);
+				creative.remove(p.getName());
+			} else {
+				p.setGameMode(GameMode.SURVIVAL);
+				creative.remove(p.getName());
+			}
 		}
 		
 		if (isPlaying(p)) {
@@ -539,7 +589,7 @@ public class Game {
 								+ ChatColor.GOLD + "  (" + settings.offlineTimeout() + " min.)   ]---");
 						p.sendMessage(ChatColor.GOLD + "---[   "
 								+ ChatColor.RED + "You have " + settings.offlineTimeout() + " minutes till you are disqualified!");
-						timeout.put(p.getName(), getTick() + (settings.offlineTimeout()*1200));
+						timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout() * 72000);
 					} else {
 						broadcastAll(ChatColor.GOLD + "---[   "
 								+ getColor(p) + p.getName() + ChatColor.WHITE + " has left the game!"
@@ -1063,7 +1113,7 @@ public class Game {
 		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
 		if (settings.woolHats()) {
 			inv.setItem(39, new Wool(DyeColor.RED).toItemStack());
-			inv.setItem(39, new ItemStack(Material.JACK_O_LANTERN, 1));
+			//inv.setItem(39, new ItemStack(Material.JACK_O_LANTERN, 1));
 		} else {
 			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
 		}

@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
+//import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -60,31 +60,38 @@ public class HuntedPlayerListener extends PlayerListener {
 
 	public void onPlayerChat(PlayerChatEvent e) {
 		Player p = e.getPlayer();
+		HuntedPlugin.getInstance().log(Level.INFO,
+				"<" + p.getName() + "> " + e.getMessage());
 		if (!g.gameHasBegun()) {
-			if (!g.gameHasBegun()) {
-				g.broadcastAll(ChatColor.WHITE + "<" + g.getColor(p)
-						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			}
+			g.broadcastAll(ChatColor.WHITE + "<" + g.getColor(p)
+					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
+			e.setCancelled(true);
+			return;
 		}
 		if (settings.allTalk()) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			}
+			e.setCancelled(true);
+			return;
 		}
 		if (g.isHunter(p)) {
 			g.broadcastHunters(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
+			return;
 		} else if (g.isHunted(p)) {
 			g.broadcastHunted(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
+			return;
 		} else if (g.isSpectating(p)) {
 			g.broadcastSpectators(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
-		} else
+			return;
+		} else {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (!g.isHunted(player) && !g.isHunter(player)
 						&& !g.isSpectating(player)) {
@@ -93,9 +100,7 @@ public class HuntedPlayerListener extends PlayerListener {
 							+ e.getMessage());
 				}
 			}
-		e.setCancelled(true);
-		HuntedPlugin.getInstance().log(Level.INFO,
-				"<" + p.getName() + "> " + e.getMessage());
+		}
 	}
 
 	public void onPlayerJoin(PlayerJoinEvent e) {
@@ -112,6 +117,7 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 	}
 
+	/*
 	public void onPlayerKick(PlayerKickEvent e) {
 		if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()
 				&& g.gameHasBegun()
@@ -120,6 +126,7 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 		g.onLogout(e.getPlayer());
 	}
+	*/
 
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()
@@ -132,6 +139,9 @@ public class HuntedPlayerListener extends PlayerListener {
 	
 	public void onPlayerMove(PlayerMoveEvent e) {
 		if (!g.gameHasBegun()) {
+			if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()) {
+				e.getPlayer().setFoodLevel(20);
+			}
 			return;
 		}
 		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {

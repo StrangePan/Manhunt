@@ -131,7 +131,7 @@ public class HuntedEntityListener extends EntityListener {
 				return;
 			}
 		} else {
-			if (!settings.envDeath()) {
+			if (!settings.envDeath() || !g.huntHasBegun()) {
 				if (e.getDamage() >= p.getHealth()) {
 					e.setDamage(p.getHealth()-1);
 				}
@@ -182,6 +182,8 @@ public class HuntedEntityListener extends EntityListener {
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
 					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
+					if (g.isHunter(p)) g.hunterLoadout(p.getInventory());
+					if (g.isHunted(p)) g.preyLoadout(p.getInventory());
 					return;
 				} else {
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "Spectating!" + ChatColor.GOLD + " ]---");
@@ -205,7 +207,29 @@ public class HuntedEntityListener extends EntityListener {
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				}
-			} 
+			} else if ((settings.envHunterRespawn() && g.isHunter(p))
+					|| (settings.envPreyRespawn() && g.isHunted(p))) {
+				p.setHealth(20);
+				p.setFoodLevel(20);
+				
+				if (g.isHunter(p)) {
+					p.teleport(settings.hunterSpawn());
+				} else {
+					p.teleport(settings.preySpawn());
+				}
+				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
+				HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");
+				((PlayerDeathEvent) e).setDeathMessage(null);
+				if (g.isHunter(p)) g.hunterLoadout(p.getInventory());
+				if (g.isHunted(p)) g.preyLoadout(p.getInventory());
+				return;
+			} else {
+				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and is now " + ChatColor.YELLOW + "Spectating!" + ChatColor.GOLD + " ]---");
+				HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and is now spectating! ]---");
+				((PlayerDeathEvent) e).setDeathMessage(null);
+				g.onDie(p);
+				return;
+			}
 		}
 	}
 	

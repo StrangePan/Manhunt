@@ -32,6 +32,10 @@ public class CmdExec implements CommandExecutor {
 		
 		if (cmd.equalsIgnoreCase("manhunt") || cmd.equalsIgnoreCase("m")) {
 			
+			if (args.length == 0) {
+				helpCommand(args, p);
+				return true;
+			}
 			if (args[0].equalsIgnoreCase("yaw")) {
 				p.sendMessage("YAW: " + p.getLocation().getYaw());
 				return true;
@@ -39,6 +43,11 @@ public class CmdExec implements CommandExecutor {
 			
 			if (args[0].equalsIgnoreCase("walrus")) {
 				p.sendMessage(ChatColor.AQUA + "THE WARLUS LIVES IN ALL OF US! (:3=");
+				return true;
+			}
+			
+			if (args[0].equalsIgnoreCase("seal")) {
+				p.sendMessage(ChatColor.AQUA + "HOW DARE YOU UTTER THAT WORD! >:3=");
 				return true;
 			}
 			
@@ -312,7 +321,7 @@ public class CmdExec implements CommandExecutor {
 				|| args[0].equalsIgnoreCase("spectator")) {
 			if (args.length == 1) {
 				g.addSpectator(p);
-				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
+				g.broadcastAll(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a spectator.");
@@ -354,14 +363,12 @@ public class CmdExec implements CommandExecutor {
 	}
 	
 	private void kickCommand(String[] args, Player p) {
-		if (args.length >= 2) {
+		if (args.length >= 1) {
 			Player p2 = Bukkit.getPlayerExact(args[0]);
 			if (p2 == null) {
 				if (g.isHunted(args[0]) || g.isHunter(args[0])
 						|| g.isSpectating(args[0])) {
-					p.sendMessage(g.getColor(args[0]) + args[0]
-							+ ChatColor.WHITE
-							+ " was removed from the Manhunt lists!");
+					g.onDie(p2);
 					HuntedPlugin.getInstance().log(Level.INFO, args[0] + " was removed from the Manhunt lists by " + p.getName());
 					g.deletePlayer(args[0]);
 				} else {
@@ -397,10 +404,10 @@ public class CmdExec implements CommandExecutor {
 		} else if (p.isOp() || !settings.opPermission()) {
 			if (args.length == 0) {
 				g.addSpectator(p);
-				g.broadcastSpectators(ChatColor.YELLOW + p.getName()
+				g.broadcastAll(ChatColor.YELLOW + p.getName()
 						+ ChatColor.WHITE + " has become a "
 						+ ChatColor.YELLOW + "Spectator.");
-				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a spectator");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a Spectator");
 				return;
 			} else if (args.length >= 1 && p.isOp()) {
 				Player p2 = Bukkit.getPlayerExact(args[0]);
@@ -420,7 +427,7 @@ public class CmdExec implements CommandExecutor {
 							+ ChatColor.WHITE + " has become a "
 							+ ChatColor.YELLOW + "Spectator.");
 					g.addSpectator(p2);
-					HuntedPlugin.getInstance().log(Level.INFO, p2.getName() + " has become a spectator");
+					HuntedPlugin.getInstance().log(Level.INFO, p2.getName() + " has become a Spectator");
 					return;
 				}
 			}
@@ -501,9 +508,15 @@ public class CmdExec implements CommandExecutor {
 			p.sendMessage(ChatColor.GREEN + "Manhunt players: ("+ (g.HuntedAmount(false) + g.HuntersAmount(false) + g.SpectatorsAmount(false)) + ")  "
 				+ ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount(false) + ChatColor.BLUE + "  Prey: " + g.HuntedAmount(false) + ChatColor.YELLOW + "  Spectators: " + g.SpectatorsAmount(false));
 			for (String s : g.getHunters()) {
+				if (Bukkit.getPlayerExact(s) == null) {
+					s += " " + ChatColor.GRAY + "(Offline)";
+				}
 				p.sendMessage(ChatColor.DARK_RED + "  " + s);
 			}
 			for (String s : g.getHunted()) {
+				if (Bukkit.getPlayerExact(s) == null) {
+					s += " " + ChatColor.GRAY + "(Offline)";
+				}
 				p.sendMessage(ChatColor.BLUE + "  " + s);
 			}
 			for (String s : g.getSpectators()) {
@@ -1043,6 +1056,20 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.BLUE + "offlineTimeout "
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Players won't be kicked when logging off.");
+			}
+			if (settings.prepTime() > 0) {
+				p.sendMessage(ChatColor.BLUE
+						+ "prepTime "
+						+ ChatColor.GREEN
+						+ "["
+						+ settings.prepTime()
+						+ "]"
+						+ ChatColor.WHITE
+						+ " How long the Prey have to prepare.");
+			} else {
+				p.sendMessage(ChatColor.BLUE + "prepTime "
+						+ ChatColor.RED + "[off]" + ChatColor.WHITE
+						+ " No preparation time before the hunt.");
 			}
 			if (settings.globalBoundry() >= 0) {
 				p.sendMessage(ChatColor.BLUE
@@ -1755,7 +1782,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 					}
-					if (value <= -0) {
+					if (value <= -1) {
 						settings.changeSetting("offlineTimeout", "-1");
 						p.sendMessage(ChatColor.BLUE
 								+ "offlineTimeout "
@@ -1786,6 +1813,52 @@ public class CmdExec implements CommandExecutor {
 							+ " How long absent players have till they're disqualified.");
 				}
 
+			}  else if (args[0].equalsIgnoreCase("prepTime")) {
+				if (args.length >= 2) {
+					int value;
+					if (args[1].equalsIgnoreCase("off")
+							|| args[1].equalsIgnoreCase("disable")) {
+						value = 0;
+					} else {
+						try {
+							value = Integer.parseInt(args[1]);
+						} catch (NumberFormatException e) {
+							p.sendMessage(ChatColor.RED
+									+ "Invalid value. You must enter an Integer or \"OFF\"");
+							return;
+						}
+					}
+					if (value <= 0) {
+						settings.changeSetting("prepTime", "0");
+						p.sendMessage(ChatColor.BLUE
+								+ "prepTime "
+								+ ChatColor.RED
+								+ "[off]"
+								+ ChatColor.WHITE
+								+ " No preparation time before the hunt.");
+					} else {
+						settings.changeSetting("prepTime",
+								Integer.toString(value));
+						p.sendMessage(ChatColor.BLUE
+								+ "prepTime "
+								+ ChatColor.GREEN
+								+ "["
+								+ settings.prepTime()
+								+ "]"
+								+ ChatColor.WHITE
+								+ " How long the prey have to prepare.");
+					}
+				} else {
+					p.sendMessage(ChatColor.BLUE
+							+ "prepTime "
+							+ ChatColor.GREEN
+							+ "["
+							+ settings.prepTime()
+							+ "]"
+							+ ChatColor.WHITE
+							+ " How long the prey have to prepare.");
+				}
+
 			} else if (args[0].equalsIgnoreCase("globalboundry")) {
 				if (args.length >= 2) {
 					int value;
@@ -1806,10 +1879,10 @@ public class CmdExec implements CommandExecutor {
 						p.sendMessage(ChatColor.BLUE + "globalBoundry "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ "Players can venture out indefinately.");
-					} else if (value < 256) {
-						settings.changeSetting("globalBoundry", "256");
+					} else if (value < 64) {
+						settings.changeSetting("globalBoundry", "64");
 						p.sendMessage(ChatColor.RED
-								+ "256 blocks is the minimum setting for this!");
+								+ "64 blocks is the minimum setting for this!");
 						p.sendMessage(ChatColor.BLUE
 								+ "globalBoundry "
 								+ ChatColor.GREEN

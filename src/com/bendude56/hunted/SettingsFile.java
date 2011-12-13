@@ -42,6 +42,7 @@ public class SettingsFile extends Properties {
 	private int offlineTimeout;
 	private int dayLimit;
 	private int locatorTimer;
+	private int prepTime;
 	
 	private int globalBoundry;
 	private int hunterBoundry;
@@ -136,6 +137,7 @@ public class SettingsFile extends Properties {
 		hunterBoundry = 16;
 		noBuildRange = 8;
 		locatorTimer = 120;
+		prepTime = 10;
 		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	}
@@ -309,11 +311,23 @@ public class SettingsFile extends Properties {
 		} else offlineTimeout = 5;
 		put("offlineTimeout", Integer.toString(offlineTimeout));
 		
+		if (containsKey("prepTime")) {
+			if (getProperty("prepTime").length() > 0) {
+				try {
+					prepTime = Integer.parseInt(getProperty("prepTime"));
+					if (prepTime <= 0) prepTime = 0;
+				} catch (NumberFormatException e) {
+					prepTime = 10;
+				}
+			} else prepTime = 10;
+		} else prepTime = 10;
+		put("prepTime", Integer.toString(prepTime));
+		
 		if (containsKey("globalBoundry")) {
 			if (getProperty("globalBoundry").length() > 0) {
 				try {
 					globalBoundry = Integer.parseInt(getProperty("globalBoundry"));
-					if (globalBoundry < 256 && globalBoundry > -1) globalBoundry = 256;
+					if (globalBoundry < 64 && globalBoundry > -1) globalBoundry = 64;
 				} catch (NumberFormatException e) {
 					globalBoundry = -1;
 				}
@@ -458,6 +472,7 @@ public class SettingsFile extends Properties {
 	public int hunterBoundry() 		{ return hunterBoundry; }
 	public int noBuildRange() 		{ return noBuildRange; }
 	public int locatorTimer()		{ return locatorTimer; }
+	public int prepTime()			{ return prepTime; }
 	
 	public Location hunterSpawn()	{ return hunterSpawn; }
 	public Location preySpawn()		{ return preySpawn; }
