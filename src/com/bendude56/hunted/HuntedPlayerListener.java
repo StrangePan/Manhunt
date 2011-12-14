@@ -207,6 +207,8 @@ public class HuntedPlayerListener extends PlayerListener {
 				e.setCancelled(true);
 				return;
 			}
+		}
+		if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR) {
 			if (g.isHunter(p) && p.getItemInHand().getType() == Material.COMPASS
 					&& settings.preyFinder()
 					&& g.huntHasBegun()) {

@@ -15,6 +15,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
@@ -88,8 +89,10 @@ public class Game {
 					|| entity instanceof Enderman
 					|| entity instanceof Spider
 					|| entity instanceof CaveSpider
-					|| entity instanceof Silverfish
-					|| entity instanceof Item) {
+					|| entity instanceof Silverfish) {
+					entity.remove();
+				} else if (entity instanceof Item
+						|| entity instanceof Arrow) {
 					entity.remove();
 				}
 			}
@@ -231,18 +234,18 @@ public class Game {
 		if (hunter.contains(s)) {
 			hunter.remove(s);
 			if (HuntersAmount(false) == 0) {
-				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win the game!");
-				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
-				HuntedPlugin.getInstance().log(Level.INFO, "All of the Hunters are now dead! The Prey win the game!");
-				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 				stop();
 				if (settings.autoHunter()) {
 					hunter.add(s);
 				} else {
 					spectator.add(s);
 				}
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win the game!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "All of the Hunters are now dead! The Prey win the game!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 			} else {
 				broadcastAll(ChatColor.BLUE + "Remaining Prey: " + HuntedAmount(false)
 						+ ChatColor.DARK_RED + "   Remaining Hunters: " + HuntersAmount(false));
@@ -255,18 +258,18 @@ public class Game {
 		} else if (hunted.contains(s)) {
 			hunted.remove(s);
 			if (HuntedAmount(false) == 0) {
-				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win the game!");
-				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
-				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
-				HuntedPlugin.getInstance().log(Level.INFO, "All of the Prey are now dead! The Hunters win the game!");
-				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 				stop();
 				if (settings.autoHunter()) {
 					hunter.add(s);
 				} else {
 					spectator.add(s);
 				}
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win the game!");
+				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
+				HuntedPlugin.getInstance().log(Level.INFO, "All of the Prey are now dead! The Hunters win the game!");
+				HuntedPlugin.getInstance().log(Level.INFO, "-------------------------------------");
 			} else {
 				broadcastAll(ChatColor.BLUE + "Remaining Prey: " + HuntedAmount(false)
 						+ ChatColor.DARK_RED + "   Remaining Hunters: " + HuntersAmount(false));
@@ -549,8 +552,8 @@ public class Game {
 	public void onLogin(Player p) {
 		if (gameHasBegun() && (isHunter(p) || isHunted(p))) {
 			broadcastAll(ChatColor.GOLD + "---[ " + getColor(p) + p.getName() +
-					ChatColor.WHITE + " has reconnected! " + ChatColor.GOLD + "]---");
-			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has reconnected and is back in the game!");
+					ChatColor.WHITE + " is back in the hunt! " + ChatColor.GOLD + "]---");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " is back in the hunt!");
 			timeout.remove(p.getName());
 		} else if (gameHasBegun()) {
 			addSpectator(p);
@@ -563,6 +566,7 @@ public class Game {
 				p.setGameMode(GameMode.SURVIVAL);
 			}
 			broadcastAll(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + " has become a " + ChatColor.YELLOW + "Spectator.");
+			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a Spectator.");
 		} else if (!gameHasBegun()) {
 			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
 			addHunter(p);
@@ -585,10 +589,11 @@ public class Game {
 				if (settings.offlineTimeout() >= 0) {
 					if (settings.offlineTimeout() > 0) {
 						broadcastAll(ChatColor.GOLD + "---[   "
-								+ getColor(p) + p.getName() + ChatColor.WHITE + " has disconnected!"
+								+ getColor(p) + p.getName() + ChatColor.WHITE + " has left the game!"
 								+ ChatColor.GOLD + "  (" + settings.offlineTimeout() + " min.)   ]---");
 						p.sendMessage(ChatColor.GOLD + "---[   "
 								+ ChatColor.RED + "You have " + settings.offlineTimeout() + " minutes till you are disqualified!");
+						HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has left the game!");
 						timeout.put(p.getName(), new Date().getTime() + settings.offlineTimeout() * 72000);
 					} else {
 						broadcastAll(ChatColor.GOLD + "---[   "
@@ -596,6 +601,7 @@ public class Game {
 								+ ChatColor.GOLD + "   ]---");
 						p.sendMessage(ChatColor.GOLD + "---[   "
 								+ ChatColor.RED + "You have left the Manhunt game!");
+						HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has left the game!");
 						onDie(p);
 					}
 				}
@@ -1111,7 +1117,7 @@ public class Game {
 		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
 		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
 		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.woolHats()) {
+		if (settings.teamHats()) {
 			inv.setItem(39, new Wool(DyeColor.RED).toItemStack());
 			//inv.setItem(39, new ItemStack(Material.JACK_O_LANTERN, 1));
 		} else {
@@ -1133,7 +1139,7 @@ public class Game {
 		//inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
 		//inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
 		//inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.woolHats()) {
+		if (settings.teamHats()) {
 			//inv.setItem(39, (new Wool(DyeColor.BLUE).toItemStack()));
 			inv.setItem(39, new ItemStack(Material.LEAVES));
 		} else {

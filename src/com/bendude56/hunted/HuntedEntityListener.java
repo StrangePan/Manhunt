@@ -115,6 +115,7 @@ public class HuntedEntityListener extends EntityListener {
 			
 			if (!g.huntHasBegun()) {
 				e.setCancelled(true);
+				return;
 			}
 				
 			if (!settings.friendlyFire()

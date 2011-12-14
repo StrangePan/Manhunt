@@ -4,8 +4,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HuntedPlugin extends JavaPlugin {
@@ -16,13 +18,6 @@ public class HuntedPlugin extends JavaPlugin {
 	private World manhuntWorld;
 	private SettingsFile settings;
 	private Game game;
-	
-	/*public boolean friendlyFire = false;
-	public boolean pvpOnly = false;
-	public boolean hostileMobs = true;
-	public boolean passiveMobs = true;
-	public int offlineTimeout = 1;
-	public boolean allowSpectators;*/
 
 	@Override
 	public void onDisable() {
@@ -30,6 +25,9 @@ public class HuntedPlugin extends JavaPlugin {
 			if (Bukkit.getPlayerExact(s) != null) {
 				Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 			}
+		}
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			p.sendMessage(ChatColor.DARK_RED + "Manhunt" + ChatColor.RED + " plugin has been disabled!");
 		}
 		log(Level.INFO, "Unloaded from memory...");
 	}
@@ -53,6 +51,16 @@ public class HuntedPlugin extends JavaPlugin {
 		new HuntedBlockListener();
 		//new HuntedInventoryListener();
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (p.getWorld() == getWorld()) {
+				if (getSettings().autoHunter()) {
+					getGame().addHunter(p);
+				} else {
+					getGame().addSpectator(p);
+				}
+			}
+			p.sendMessage(ChatColor.DARK_RED + "Manhunt v" + getDescription().getVersion() + ChatColor.YELLOW + " is up running!");
+		}
 	}
 	
 	public void log(Level level, String message) {

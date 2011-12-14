@@ -36,7 +36,7 @@ public class SettingsFile extends Properties {
 	private boolean allTalk;
 	private boolean autoHunter;
 	private boolean loadouts;
-	private boolean woolHats;
+	private boolean teamHats;
 	private boolean northCompass;
 	
 	private int offlineTimeout;
@@ -115,9 +115,9 @@ public class SettingsFile extends Properties {
 	}
 	
 	public void loadDefaults() {
-		opPermission = true;
+		opPermission = false;
 		//easyCommands = true;
-		allTalk = false;
+		allTalk = true;
 		spawnPassive = true;
 		spawnHostile = true;
 		envDeath = false;
@@ -128,13 +128,13 @@ public class SettingsFile extends Properties {
 		pvpInstantDeath = false;
 		flyingSpectators = true;
 		autoHunter = true;
-		loadouts = false;
-		woolHats = true;
+		loadouts = true;
+		teamHats = true;
 		northCompass = true;
 		dayLimit = 3;
-		offlineTimeout = 5;
+		offlineTimeout = 2;
 		globalBoundry = -1;
-		hunterBoundry = 16;
+		hunterBoundry = 8;
 		noBuildRange = 8;
 		locatorTimer = 120;
 		prepTime = 10;
@@ -149,7 +149,7 @@ public class SettingsFile extends Properties {
 			} else {
 				opPermission = false;
 			}
-		} else opPermission = true;
+		} else opPermission = false;
 		put("opPermission", Boolean.toString(opPermission));
 		
 		/*if (containsKey("easyCommands")) {
@@ -167,7 +167,7 @@ public class SettingsFile extends Properties {
 			} else {
 				allTalk = false;
 			}
-		} else allTalk = false;
+		} else allTalk = true;
 		put("allTalk", Boolean.toString(allTalk));
 		
 		if (containsKey("spawnPassive")) {
@@ -248,7 +248,7 @@ public class SettingsFile extends Properties {
 			} else {
 				flyingSpectators = false;
 			}
-		} else flyingSpectators = false;
+		} else flyingSpectators = true;
 		put("flyingSpectators", Boolean.toString(flyingSpectators));
 		
 		if (containsKey("loadouts")) {
@@ -257,17 +257,17 @@ public class SettingsFile extends Properties {
 			} else {
 				loadouts = false;
 			}
-		} else loadouts = false;
+		} else loadouts = true;
 		put("loadouts", Boolean.toString(loadouts));
 		
-		if (containsKey("woolHats")) {
-			if (getProperty("woolHats").length() > 0 && getProperty("woolHats").equalsIgnoreCase("true")) {
-				woolHats = true;
+		if (containsKey("teamHats")) {
+			if (getProperty("teamHats").length() > 0 && getProperty("teamHats").equalsIgnoreCase("true")) {
+				teamHats = true;
 			} else {
-				woolHats = false;
+				teamHats = false;
 			}
-		} else woolHats = false;
-		put("woolHats", Boolean.toString(woolHats));
+		} else teamHats = true;
+		put("teamHats", Boolean.toString(teamHats));
 		
 		if (containsKey("northCompass")) {
 			if (getProperty("northCompass").length() > 0 && getProperty("northCompass").equalsIgnoreCase("true")) {
@@ -275,7 +275,7 @@ public class SettingsFile extends Properties {
 			} else {
 				northCompass = false;
 			}
-		} else northCompass = false;
+		} else northCompass = true;
 		put("northCompass", Boolean.toString(northCompass));
 		
 		if (containsKey("autoHunter")) {
@@ -305,10 +305,10 @@ public class SettingsFile extends Properties {
 					offlineTimeout = Integer.parseInt(getProperty("offlineTimeout"));
 					if (offlineTimeout < -1) offlineTimeout = -1;
 				} catch (NumberFormatException e) {
-					offlineTimeout = 5;
+					offlineTimeout = 2;
 				}
-			} else offlineTimeout = 5;
-		} else offlineTimeout = 5;
+			} else offlineTimeout = 2;
+		} else offlineTimeout = 2;
 		put("offlineTimeout", Integer.toString(offlineTimeout));
 		
 		if (containsKey("prepTime")) {
@@ -316,6 +316,7 @@ public class SettingsFile extends Properties {
 				try {
 					prepTime = Integer.parseInt(getProperty("prepTime"));
 					if (prepTime <= 0) prepTime = 0;
+					if (prepTime > 10) prepTime = 10;
 				} catch (NumberFormatException e) {
 					prepTime = 10;
 				}
@@ -328,11 +329,12 @@ public class SettingsFile extends Properties {
 				try {
 					globalBoundry = Integer.parseInt(getProperty("globalBoundry"));
 					if (globalBoundry < 64 && globalBoundry > -1) globalBoundry = 64;
+					if (globalBoundry <= -1) globalBoundry = -1;
 				} catch (NumberFormatException e) {
-					globalBoundry = -1;
+					globalBoundry = 128;
 				}
-			} else globalBoundry = -1;
-		} else globalBoundry = -1;
+			} else globalBoundry = 128;
+		} else globalBoundry = 128;
 		put("globalBoundry", Integer.toString(globalBoundry));
 		
 		if (containsKey("hunterBoundry")) {
@@ -341,10 +343,10 @@ public class SettingsFile extends Properties {
 					hunterBoundry = Integer.parseInt(getProperty("hunterBoundry"));
 					if (hunterBoundry < -1) hunterBoundry = -1;
 				} catch (NumberFormatException e) {
-					hunterBoundry = 16;
+					hunterBoundry = 8;
 				}
-			} else hunterBoundry = 16;
-		} else hunterBoundry = 16;
+			} else hunterBoundry = 8;
+		} else hunterBoundry = 8;
 		put("hunterBoundry", Integer.toString(hunterBoundry));
 		
 		if (containsKey("noBuildRange")) {
@@ -462,7 +464,7 @@ public class SettingsFile extends Properties {
 	public boolean allTalk()		{ return allTalk; }
 	public boolean autoHunter()		{ return autoHunter; }
 	public boolean loadouts()		{ return loadouts; }
-	public boolean woolHats()		{ return woolHats; }
+	public boolean teamHats()		{ return teamHats; }
 	public boolean northCompass()	{ return northCompass; }
 	
 	public int offlineTimeout()		{ return offlineTimeout; }
