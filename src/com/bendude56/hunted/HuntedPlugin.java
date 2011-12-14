@@ -21,13 +21,13 @@ public class HuntedPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		for (String s : game.getCreative()) {
+		for (String s : getGame().getCreative()) {
 			if (Bukkit.getPlayerExact(s) != null) {
 				Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 			}
 		}
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.sendMessage(ChatColor.DARK_RED + "Manhunt" + ChatColor.RED + " plugin has been disabled!");
+			p.sendMessage(ChatColor.DARK_RED + getDescription().getName() + ChatColor.RED + " plugin has been disabled!");
 		}
 		log(Level.INFO, "Unloaded from memory...");
 	}
@@ -59,7 +59,7 @@ public class HuntedPlugin extends JavaPlugin {
 					getGame().addSpectator(p);
 				}
 			}
-			p.sendMessage(ChatColor.DARK_RED + "Manhunt v" + getDescription().getVersion() + ChatColor.YELLOW + " is up running!");
+			p.sendMessage(ChatColor.DARK_RED + getDescription().getName() + " v" + getDescription().getVersion() + ChatColor.YELLOW + " is up running!");
 		}
 	}
 	
@@ -68,7 +68,7 @@ public class HuntedPlugin extends JavaPlugin {
 	}
 	
 	public static HuntedPlugin getInstance() {
-		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Hunted");
+		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Manhunt");
 	}
 	
 	public World getWorld() {

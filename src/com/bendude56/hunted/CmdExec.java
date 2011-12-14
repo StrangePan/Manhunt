@@ -268,7 +268,7 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(pre() + "You cannot die by the environment.");
 			}
 			if (settings.preyFinder()) {
-				p.sendMessage(pre() + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + "'s compasses can be used as Prey Finders .");
+				p.sendMessage(pre() + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + "'s compasses can be used as Prey Finders.");
 				p.sendMessage(pre() + ChatColor.GRAY + " (right-click while holding compass)");
 			}
 			if (settings.spawnHostile()) {

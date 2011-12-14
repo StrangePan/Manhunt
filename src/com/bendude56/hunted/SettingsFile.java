@@ -58,8 +58,8 @@ public class SettingsFile extends Properties {
 									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
 	
 	public SettingsFile() {
-		directory = "plugins/Hunted/";
-		location = directory + "config.db";
+		directory = "plugins/Manhunt/";
+		location = directory + "Manhunt.properties";
 		loadFile();
 	}
 	
