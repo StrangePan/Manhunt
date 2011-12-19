@@ -196,15 +196,15 @@ public class HuntedEntityListener extends EntityListener {
 				
 				if ((g.isHunter(p) && g.isHunter(p2))
 					|| (g.isHunted(p) && g.isHunted(p2))) {
-					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " has been "
+					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " was "
 							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE + " by " + g.getColor(p2) + "teammate " + p2.getName() + "!" + ChatColor.GOLD + " ]---");
-					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " has been/t ELIMINATED by teammate " + p2.getName() + "! ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " was ELIMINATED by teammate " + p2.getName() + "! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				} else {
-					g.broadcastAll(ChatColor.GOLD + "---[   " + g.getColor(p) + p.getName() + ChatColor.WHITE + " has been "
+					g.broadcastAll(ChatColor.GOLD + "---[   " + g.getColor(p) + p.getName() + ChatColor.WHITE + " was "
 							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE + " by " + g.getColor(p2) + p2.getName() + "!" + ChatColor.GOLD + " ]---");
-					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " has been ELIMINATED + by " + p2.getName() + "! ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " was ELIMINATED + by " + p2.getName() + "! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				}

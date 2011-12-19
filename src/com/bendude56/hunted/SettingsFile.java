@@ -48,14 +48,9 @@ public class SettingsFile extends Properties {
 	private int hunterBoundry;
 	private int noBuildRange;
 	
-	private Location hunterSpawn = new Location(HuntedPlugin.getInstance().getWorld(),
-									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
-									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getY(),
-									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
-	private Location preySpawn = new Location(HuntedPlugin.getInstance().getWorld(),
-									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getX(),
-									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getY(),
-									HuntedPlugin.getInstance().getWorld().getSpawnLocation().getZ());
+	private Location hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+	private Location preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+	private Location prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	
 	public SettingsFile() {
 		directory = "plugins/Manhunt/";
@@ -140,6 +135,7 @@ public class SettingsFile extends Properties {
 		prepTime = 10;
 		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+		prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	}
 	
 	public void loadValues() {
@@ -380,6 +376,8 @@ public class SettingsFile extends Properties {
 					hunterSpawn.setX(Double.parseDouble(loc[0]));
 					hunterSpawn.setY(Double.parseDouble(loc[1]));
 					hunterSpawn.setZ(Double.parseDouble(loc[2]));
+					hunterSpawn.setPitch(Float.parseFloat(loc[3]));
+					hunterSpawn.setYaw(Float.parseFloat(loc[4]));
 				} catch (NumberFormatException e) {
 					hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 				}
@@ -392,12 +390,14 @@ public class SettingsFile extends Properties {
 		put("hunterSpawn", hunterSpawn.getBlockX() + "," + hunterSpawn.getBlockY() + "," + hunterSpawn.getBlockZ());
 		
 		if (containsKey("preySpawn")) {
-			if (getProperty("preySpawn").split(",").length == 3) {
+			if (getProperty("preySpawn").split(",").length == 5) {
 				String[] loc = getProperty("preySpawn").split(",");
 				try {
 					preySpawn.setX(Double.parseDouble(loc[0]));
 					preySpawn.setY(Double.parseDouble(loc[1]));
 					preySpawn.setZ(Double.parseDouble(loc[2]));
+					preySpawn.setPitch(Float.parseFloat(loc[3]));
+					preySpawn.setYaw(Float.parseFloat(loc[4]));
 				} catch (NumberFormatException e) {
 					preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 				}
@@ -407,7 +407,27 @@ public class SettingsFile extends Properties {
 		} else {
 			preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
-		put("reySpawn", preySpawn.getBlockX() + "," + preySpawn.getBlockY() + "," + preySpawn.getBlockZ());
+		put("preySpawn", preySpawn.getBlockX() + "," + preySpawn.getBlockY() + "," + preySpawn.getBlockZ());
+		
+		if (containsKey("prepSpawn")) {
+			if (getProperty("prepSpawn").split(",").length == 5) {
+				String[] loc = getProperty("prepSpawn").split(",");
+				try {
+					prepSpawn.setX(Double.parseDouble(loc[0]));
+					prepSpawn.setY(Double.parseDouble(loc[1]));
+					prepSpawn.setZ(Double.parseDouble(loc[2]));
+					prepSpawn.setPitch(Float.parseFloat(loc[3]));
+					prepSpawn.setYaw(Float.parseFloat(loc[4]));
+				} catch (NumberFormatException e) {
+					prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+				}
+			} else {
+				prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+			}
+		} else {
+			prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+		}
+		put("prepSpawn", prepSpawn.getBlockX() + "," + prepSpawn.getBlockY() + "," + prepSpawn.getBlockZ());
 		
 		/*if (containsKey("hunterLoadout")) {
 			hunterLoadout = new ItemStack[41];
@@ -478,6 +498,7 @@ public class SettingsFile extends Properties {
 	
 	public Location hunterSpawn()	{ return hunterSpawn; }
 	public Location preySpawn()		{ return preySpawn; }
+	public Location prepSpawn()		{ return prepSpawn; }
 	
  	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {
@@ -492,7 +513,9 @@ public class SettingsFile extends Properties {
 		if (containsKey(setting)) {
 			String value = loc.getBlockX() + ","
 					+ loc.getBlockY() + ","
-					+ loc.getBlockZ();
+					+ loc.getBlockZ() + ","
+					+ loc.getPitch() + ","
+					+ loc.getYaw();
 			put(setting, value);
 			loadValues();
 			saveFile();

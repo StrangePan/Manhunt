@@ -110,7 +110,7 @@ public class Game {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) preyLoadout(p.getInventory());
-				p.teleport(settings.preySpawn());
+				p.teleport(randomLocation(settings.preySpawn(),2));
 			}
 			for (String n : hunter) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -122,7 +122,7 @@ public class Game {
 				}
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setFireTicks(0);
-				p.teleport(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
+				p.teleport(randomLocation(settings.hunterSpawn(),2));
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) {
@@ -445,7 +445,7 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.loadouts()) hunterLoadout(p.getInventory());
-						p.teleport(settings.hunterSpawn());
+						p.teleport(randomLocation(settings.hunterSpawn(), 2));
 						p.setHealth(20);
 						p.setFoodLevel(20);
 					}
@@ -551,8 +551,8 @@ public class Game {
 	
 	public void onLogin(Player p) {
 		if (gameHasBegun() && (isHunter(p) || isHunted(p))) {
-			broadcastAll(ChatColor.GOLD + "---[ " + getColor(p) + p.getName() +
-					ChatColor.WHITE + " is back in the hunt! " + ChatColor.GOLD + "]---");
+			broadcastAll(ChatColor.GOLD + "---[   " + getColor(p) + p.getName() +
+					ChatColor.WHITE + " is back in the hunt!" + ChatColor.GOLD + "   ]---");
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " is back in the hunt!");
 			timeout.remove(p.getName());
 		} else if (gameHasBegun()) {
@@ -1099,6 +1099,27 @@ public class Game {
 		inv.clear(38);
 		inv.clear(39);
 		return inv;
+	}
+	
+	public Location randomLocation(Location origin, int radius) {
+		int sign = (int) Math.floor(Math.random()*2);
+		if (sign == 0) sign = -1; else sign = 1;
+		origin.setX(origin.getX() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
+		sign = (int) Math.floor(Math.random()*2);
+		if (sign == 0) sign = -1; else sign = 1;
+		origin.setZ(origin.getZ() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
+		return origin;
+	}
+	
+	public boolean areNearby(Location loc1, Location loc2, double tolerance) {
+		if (loc2.getX() >= loc1.getX()-tolerance
+				&& loc2.getX() <= loc1.getX()+tolerance
+				&& loc2.getZ() >= loc1.getZ()-tolerance
+				&& loc2.getZ() <= loc1.getZ()+tolerance) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public Inventory hunterLoadout(Inventory inv) {

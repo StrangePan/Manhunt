@@ -677,18 +677,15 @@ public class CmdExec implements CommandExecutor {
 				if (g.isSpectating(p) || !g.gameHasBegun()) {
 					p.teleport(HuntedPlugin.getInstance().getWorld()
 							.getSpawnLocation());
+					p.sendMessage(ChatColor.GREEN + "You have teleported to the " + ChatColor.GOLD + "Manhunt" + ChatColor.GREEN + " world spawn.");
 					return;
 				} else {
 					p.sendMessage(ChatColor.RED
-							+ "You can't warp to the manhunt spawn once the game has started!");
+							+ "You can't warp to the Manhunt spawn once the game has started!");
 					return;
 				}
 			} else if (args.length >= 1) {
-				if (!p.isOp()) {
-					p.sendMessage(ChatColor.RED + "You don't have permission to teleport other players!");
-					return;
-				}
-				if (args[0].equalsIgnoreCase("prey")) {
+				if (args[0].equalsIgnoreCase("prey") || args[0].equalsIgnoreCase("hunted")) {
 					if (g.gameHasBegun() && !g.isSpectating(p)) {
 						p.sendMessage(ChatColor.RED
 								+ "You can't teleport there while the game is running!");
@@ -697,10 +694,14 @@ public class CmdExec implements CommandExecutor {
 					if (args.length == 1) {
 						p.teleport(settings.preySpawn());
 						p.sendMessage(ChatColor.GREEN
-								+ "Teleported to the " + ChatColor.BLUE
+								+ "You have teleported to the " + ChatColor.BLUE
 								+ "Prey" + ChatColor.GREEN + " spawn.");
 						return;
-					} else if (args.length > 2) {
+					} else if (args.length > 1) {
+						if (!p.isOp()) {
+							p.sendMessage(ChatColor.RED + "You don't have permission to teleport other players!");
+							return;
+						}
 						Player p2 = Bukkit.getPlayerExact(args[1]);
 						if (p2 == null) {
 							p.sendMessage(ChatColor.RED + "Player "
@@ -713,26 +714,30 @@ public class CmdExec implements CommandExecutor {
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
 									+ ChatColor.YELLOW + " spawn.");
-							p.sendMessage(ChatColor.YELLOW + args[0]
+							p.sendMessage(g.getColor(p2) + p2.getName() + ChatColor.YELLOW
 									+ " has been teleported to the "
 									+ ChatColor.BLUE + "Prey"
 									+ ChatColor.YELLOW + " spawn.");
 							return;
 						}
 					}
-				} else if (args[0].equalsIgnoreCase("hunter")) {
+				} else if (args[0].equalsIgnoreCase("hunter") || args[0].equalsIgnoreCase("hunters")) {
 					if (g.gameHasBegun() && !g.isSpectating(p)) {
 						p.sendMessage(ChatColor.RED
 								+ "You can't teleport there while the game is running!");
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(settings.preySpawn());
+						p.teleport(settings.hunterSpawn());
 						p.sendMessage(ChatColor.GREEN
-								+ "Teleported to the " + ChatColor.DARK_RED
+								+ "You have teleported to the " + ChatColor.DARK_RED
 								+ "Hunter" + ChatColor.GREEN + " spawn.");
 						return;
 					} else if (args.length > 1) {
+						if (!p.isOp()) {
+							p.sendMessage(ChatColor.RED + "You don't have permission to teleport other players!");
+							return;
+						}
 						Player p2 = Bukkit.getPlayerExact(args[1]);
 						if (p2 == null) {
 							p.sendMessage(ChatColor.RED + "Player "
@@ -740,15 +745,50 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(HuntedPlugin.getInstance()
-									.getWorld().getSpawnLocation());
+							p2.teleport(settings.hunterSpawn());
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
 									+ ChatColor.YELLOW + " spawn.");
-							p.sendMessage(ChatColor.YELLOW + args[0]
+							p.sendMessage(g.getColor(p2) + p2.getName() + ChatColor.YELLOW
 									+ " has been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
+									+ ChatColor.YELLOW + " spawn.");
+							return;
+						}
+					}
+				} else if (args[0].equalsIgnoreCase("pregame") || args[0].equalsIgnoreCase("preparation") || args[0].equalsIgnoreCase("waiting")) {
+					if (g.gameHasBegun() && !g.isSpectating(p)) {
+						p.sendMessage(ChatColor.RED
+								+ "You can't teleport there while the game is running!");
+						return;
+					}
+					if (args.length == 1) {
+						p.teleport(settings.prepSpawn());
+						p.sendMessage(ChatColor.GREEN
+								+ "You have teleported to the " + ChatColor.GOLD
+								+ "Pregame" + ChatColor.GREEN + " spawn.");
+						return;
+					} else if (args.length > 1) {
+						if (!p.isOp()) {
+							p.sendMessage(ChatColor.RED + "You don't have permission to teleport other players!");
+							return;
+						}
+						Player p2 = Bukkit.getPlayerExact(args[1]);
+						if (p2 == null) {
+							p.sendMessage(ChatColor.RED + "Player "
+									+ args[0] + " does not exist!");
+							return;
+						}
+						if (g.isSpectating(p2) || !g.gameHasBegun()) {
+							p2.teleport(settings.prepSpawn());
+							p2.sendMessage(ChatColor.YELLOW
+									+ "You have been teleported to the "
+									+ ChatColor.GOLD + "Pregame"
+									+ ChatColor.YELLOW + " spawn.");
+							p.sendMessage(g.getColor(p2) + p2.getName() + ChatColor.YELLOW
+									+ " has been teleported to the "
+									+ ChatColor.GOLD + "Pregame"
 									+ ChatColor.YELLOW + " spawn.");
 							return;
 						}
@@ -764,10 +804,9 @@ public class CmdExec implements CommandExecutor {
 						p2.teleport(HuntedPlugin.getInstance().getWorld()
 								.getSpawnLocation());
 						p2.sendMessage(ChatColor.YELLOW
-								+ "You have been teleported to the manhunt world spawn.");
-						p.sendMessage(ChatColor.YELLOW
-								+ args[0]
-								+ " has been teleported to the manhunt world spawn.");
+								+ "You have been teleported to the Manhunt world spawn.");
+						p.sendMessage(g.getColor(p2) + p2.getName()
+								+ " has been teleported to the Manhunt world spawn.");
 						return;
 					}
 				}
@@ -790,13 +829,14 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		if (args.length == 0) {
-			if (settings.hunterSpawn() == HuntedPlugin.getInstance()
-					.getWorld().getSpawnLocation()) {
+			if (g.areNearby(settings.hunterSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
 				settings.changeSetting("hunterSpawn", p.getLocation());
 			}
-			if (settings.preySpawn() == HuntedPlugin.getInstance().getWorld()
-					.getSpawnLocation()) {
+			if (g.areNearby(settings.preySpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1)) {
 				settings.changeSetting("preySpawn", p.getLocation());
+			}
+			if (g.areNearby(settings.prepSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1)) {
+				settings.changeSetting("prepSpawn", p.getLocation());
 			}
 			HuntedPlugin
 					.getInstance()
@@ -824,25 +864,13 @@ public class CmdExec implements CommandExecutor {
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Prey spawn.");
 				return;
 			}
-			if (args[0].equalsIgnoreCase("waiting")
-					|| args[0].equalsIgnoreCase("pregame")) {
-				if (settings.hunterSpawn() == HuntedPlugin.getInstance()
-						.getWorld().getSpawnLocation()) {
-					settings.changeSetting("hunterSpawn", p.getLocation());
-				}
-				if (settings.preySpawn() == HuntedPlugin.getInstance()
-						.getWorld().getSpawnLocation()) {
-					settings.changeSetting("preySpawn", p.getLocation());
-				}
-				HuntedPlugin
-						.getInstance()
-						.getWorld()
-						.setSpawnLocation(p.getLocation().getBlockX(),
-								p.getLocation().getBlockY(),
-								p.getLocation().getBlockZ());
-				p.sendMessage(ChatColor.GREEN + "Pregame" + ChatColor.GREEN
-						+ " spawn set! (AKA World Spawn)");
-				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Manhunt world spawn.");
+			if (args[0].equalsIgnoreCase("pregame")
+					|| args[0].equalsIgnoreCase("waiting")
+					|| args[0].equalsIgnoreCase("preparation")) {
+				settings.changeSetting("prepSpawn", p.getLocation());
+				p.sendMessage(ChatColor.GOLD + "Pregame" + ChatColor.GREEN
+						+ " spawn set!");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Pregame spawn.");
 				return;
 			}
 		}
@@ -2106,7 +2134,6 @@ public class CmdExec implements CommandExecutor {
 			}
 		}
 	}
-	
 	
 	private String[] shiftArgs(String[] args) {
 		String[] a = new String[args.length-1];
