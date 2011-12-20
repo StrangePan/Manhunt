@@ -17,6 +17,7 @@ public class HuntedPlugin extends JavaPlugin {
 	public SpConnect spoutConnect;
 	private World manhuntWorld;
 	private SettingsFile settings;
+	private WorldDataFile worlddata;
 	private Game game;
 
 	@Override
@@ -44,6 +45,7 @@ public class HuntedPlugin extends JavaPlugin {
 		
 		manhuntWorld = Bukkit.getWorlds().get(0);
 		settings = new SettingsFile();
+		worlddata = new WorldDataFile();
 		game = new Game();
 		new CmdExec();
 		new HuntedPlayerListener();
@@ -77,6 +79,10 @@ public class HuntedPlugin extends JavaPlugin {
 	
 	public SettingsFile getSettings() {
 		return settings;
+	}
+	
+	public WorldDataFile getWorldData() {
+		return worlddata;
 	}
 	
 	public Game getGame() {

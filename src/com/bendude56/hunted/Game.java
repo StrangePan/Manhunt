@@ -33,6 +33,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class Game {
 	private SettingsFile settings;
+	private WorldDataFile worlddata;
 	
 	private HashMap<String, Long> timeout;
 	
@@ -61,6 +62,7 @@ public class Game {
 		hunterReleaseTick = 0;
 		endTick = 0;
 		settings = HuntedPlugin.getInstance().getSettings();
+		worlddata = HuntedPlugin.getInstance().getWorldData();
 	}
 	
 	public void start() {
@@ -110,7 +112,7 @@ public class Game {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) preyLoadout(p.getInventory());
-				p.teleport(randomLocation(settings.preySpawn(),2));
+				p.teleport(randomLocation(worlddata.preySpawn(),2));
 			}
 			for (String n : hunter) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -122,7 +124,7 @@ public class Game {
 				}
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setFireTicks(0);
-				p.teleport(randomLocation(settings.hunterSpawn(),2));
+				p.teleport(randomLocation(worlddata.hunterSpawn(),2));
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) {
@@ -445,7 +447,7 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.loadouts()) hunterLoadout(p.getInventory());
-						p.teleport(randomLocation(settings.hunterSpawn(), 2));
+						p.teleport(randomLocation(worlddata.hunterSpawn(), 2));
 						p.setHealth(20);
 						p.setFoodLevel(20);
 					}

@@ -57,6 +57,7 @@ public class HuntedPlayerListener extends PlayerListener {
 	
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 
 	public void onPlayerChat(PlayerChatEvent e) {
 		Player p = e.getPlayer();
@@ -154,12 +155,12 @@ public class HuntedPlayerListener extends PlayerListener {
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun()
 				&& g.isHunter(p)
-				&& g.getDistance(settings.prepSpawn(), p.getLocation()) > settings.hunterBoundry()) {
-			g.stepPlayer(p, 1.0, settings.prepSpawn());
+				&& g.getDistance(worlddata.prepSpawn(), p.getLocation()) > worlddata.hunterBoundry()) {
+			g.stepPlayer(p, 1.0, worlddata.prepSpawn());
 			p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			return;
-		} else if (g.getDistance(g.getNearestLocation(p.getLocation(), settings.preySpawn(), settings.hunterSpawn()), p.getLocation()) > settings.globalBoundry()) {
-			g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), settings.preySpawn(), settings.hunterSpawn()));
+		} else if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.globalBoundry()) {
+			g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()));
 			p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			return;
 		}
@@ -253,11 +254,11 @@ public class HuntedPlayerListener extends PlayerListener {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.hunterSpawn()) <= settings.noBuildRange()) {
+							worlddata.hunterSpawn()) <= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.preySpawn()) <= settings.noBuildRange()) {
+							worlddata.preySpawn()) <= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
@@ -299,11 +300,11 @@ public class HuntedPlayerListener extends PlayerListener {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.hunterSpawn()) <= settings.noBuildRange()) {
+							worlddata.hunterSpawn()) <= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							settings.preySpawn()) <= settings.noBuildRange()) {
+							worlddata.preySpawn()) <= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}

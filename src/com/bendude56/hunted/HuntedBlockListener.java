@@ -14,7 +14,7 @@ public class HuntedBlockListener extends BlockListener {
 	}
 
 	private Game g = HuntedPlugin.getInstance().getGame();
-	private SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 	
 	public void onBlockPlace(BlockPlaceEvent e) {
 		if (g.gameHasBegun()) {
@@ -23,14 +23,14 @@ public class HuntedBlockListener extends BlockListener {
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					settings.hunterSpawn())
-					<= settings.noBuildRange()) {
+					worlddata.hunterSpawn())
+					<= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					settings.preySpawn())
-					<= settings.noBuildRange()) {
+					worlddata.preySpawn())
+					<= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
@@ -43,17 +43,17 @@ public class HuntedBlockListener extends BlockListener {
 			}
 			else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-							settings.hunterSpawn())
-							<= settings.noBuildRange()
+							worlddata.hunterSpawn())
+							<= worlddata.noBuildRange()
 					|| g.getDistance(e.getBlock().getLocation(),
 							HuntedPlugin.getInstance().getWorld().getSpawnLocation())
-							<= settings.noBuildRange()) {
+							<= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 			else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlock().getLocation(),
-					settings.preySpawn())
-					<= settings.noBuildRange()) {
+					worlddata.preySpawn())
+					<= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}

@@ -40,6 +40,7 @@ public class HuntedEntityListener extends EntityListener {
 	}
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 	
 	public void onEntityDamage(EntityDamageEvent e) {
 		Player p;
@@ -176,9 +177,9 @@ public class HuntedEntityListener extends EntityListener {
 					p.setFoodLevel(20);
 					
 					if (g.isHunter(p)) {
-						p.teleport(settings.hunterSpawn());
+						p.teleport(worlddata.hunterSpawn());
 					} else {
-						p.teleport(settings.preySpawn());
+						p.teleport(worlddata.preySpawn());
 					}
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
 					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");
@@ -214,9 +215,9 @@ public class HuntedEntityListener extends EntityListener {
 				p.setFoodLevel(20);
 				
 				if (g.isHunter(p)) {
-					p.teleport(settings.hunterSpawn());
+					p.teleport(worlddata.hunterSpawn());
 				} else {
-					p.teleport(settings.preySpawn());
+					p.teleport(worlddata.preySpawn());
 				}
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
 				HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");

@@ -18,6 +18,7 @@ public class CmdExec implements CommandExecutor {
 	
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command c, String cmd,
@@ -283,7 +284,7 @@ public class CmdExec implements CommandExecutor {
 			}
 		} else if (args[0].equalsIgnoreCase("3")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt Miscellaneous Rules (3/3) ---");
-			p.sendMessage(pre() + "Players may not build " + settings.noBuildRange() + " blocks from the spawn.");
+			p.sendMessage(pre() + "Players may not build " + worlddata.noBuildRange() + " blocks from the spawn.");
 			p.sendMessage(pre() + "Players have " + settings.offlineTimeout() + " minutes to return to the game.");
 			if (settings.flyingSpectators()) {
 				p.sendMessage(pre() + "Spectators are invisible, and can fly freely.");
@@ -692,7 +693,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(settings.preySpawn());
+						p.teleport(worlddata.preySpawn());
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the " + ChatColor.BLUE
 								+ "Prey" + ChatColor.GREEN + " spawn.");
@@ -709,7 +710,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(settings.preySpawn());
+							p2.teleport(worlddata.preySpawn());
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
@@ -728,7 +729,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(settings.hunterSpawn());
+						p.teleport(worlddata.hunterSpawn());
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the " + ChatColor.DARK_RED
 								+ "Hunter" + ChatColor.GREEN + " spawn.");
@@ -745,7 +746,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(settings.hunterSpawn());
+							p2.teleport(worlddata.hunterSpawn());
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
@@ -764,7 +765,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(settings.prepSpawn());
+						p.teleport(worlddata.prepSpawn());
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the " + ChatColor.GOLD
 								+ "Pregame" + ChatColor.GREEN + " spawn.");
@@ -781,7 +782,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(settings.prepSpawn());
+							p2.teleport(worlddata.prepSpawn());
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.GOLD + "Pregame"
@@ -829,14 +830,14 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		if (args.length == 0) {
-			if (g.areNearby(settings.hunterSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
-				settings.changeSetting("hunterSpawn", p.getLocation());
+			if (g.areNearby(worlddata.hunterSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
+				worlddata.changeSetting("hunterSpawn", p.getLocation());
 			}
-			if (g.areNearby(settings.preySpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
-				settings.changeSetting("preySpawn", p.getLocation());
+			if (g.areNearby(worlddata.preySpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
+				worlddata.changeSetting("preySpawn", p.getLocation());
 			}
-			if (g.areNearby(settings.prepSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
-				settings.changeSetting("prepSpawn", p.getLocation());
+			if (g.areNearby(worlddata.prepSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
+				worlddata.changeSetting("prepSpawn", p.getLocation());
 			}
 			HuntedPlugin.getInstance().getWorld().setSpawnLocation(
 					p.getLocation().getBlockX(),
@@ -848,7 +849,7 @@ public class CmdExec implements CommandExecutor {
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("hunter")
 					|| args[0].equalsIgnoreCase("hunters")) {
-				settings.changeSetting("hunterSpawn", p.getLocation());
+				worlddata.changeSetting("hunterSpawn", p.getLocation());
 				p.sendMessage(ChatColor.DARK_RED + "Hunter" + ChatColor.GREEN
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Hunter spawn.");
@@ -856,7 +857,7 @@ public class CmdExec implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("hunted")
 					|| args[0].equalsIgnoreCase("prey")) {
-				settings.changeSetting("preySpawn", p.getLocation());
+				worlddata.changeSetting("preySpawn", p.getLocation());
 				p.sendMessage(ChatColor.BLUE + "Prey" + ChatColor.GREEN
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Prey spawn.");
@@ -865,7 +866,7 @@ public class CmdExec implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("pregame")
 					|| args[0].equalsIgnoreCase("waiting")
 					|| args[0].equalsIgnoreCase("preparation")) {
-				settings.changeSetting("prepSpawn", p.getLocation());
+				worlddata.changeSetting("prepSpawn", p.getLocation());
 				p.sendMessage(ChatColor.GOLD + "Pregame" + ChatColor.GREEN
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Pregame spawn.");
@@ -876,9 +877,9 @@ public class CmdExec implements CommandExecutor {
 						p.getLocation().getBlockX(),
 						p.getLocation().getBlockY(),
 						p.getLocation().getBlockZ());
-				settings.changeSetting("hunterSpawn", p.getLocation());
-				settings.changeSetting("preySpawn", p.getLocation());
-				settings.changeSetting("prepSpawn", p.getLocation());
+				worlddata.changeSetting("hunterSpawn", p.getLocation());
+				worlddata.changeSetting("preySpawn", p.getLocation());
+				worlddata.changeSetting("prepSpawn", p.getLocation());
 				p.sendMessage(ChatColor.GREEN + "All spawn points set!");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed all spawn points.");
 			}
@@ -888,7 +889,9 @@ public class CmdExec implements CommandExecutor {
 	private void defaultsCommand(String[] args, Player p) {
 		if (p.isOp()) {
 			settings.loadDefaults();
+			worlddata.loadDefaults();
 			settings.saveFile();
+			worlddata.saveWorldFile();
 			p.sendMessage(ChatColor.GREEN + "Default Manhunt settings loaded!");
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " restored the default Manhunt settings!");
 			return;
@@ -906,6 +909,7 @@ public class CmdExec implements CommandExecutor {
 				return;
 			}
 			settings.loadFile();
+			worlddata.loadWorldFile();
 			p.sendMessage(ChatColor.GREEN + "Settings file reloaded.");
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " reloaded the Manhunt settings.");
 			return;
@@ -1170,12 +1174,12 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Pre-game preparation is disabled.");
 			}
-			if (settings.globalBoundry() >= 0) {
+			if (worlddata.globalBoundry() >= 0) {
 				p.sendMessage(ChatColor.BLUE
 						+ "globalBoundry "
 						+ ChatColor.GREEN
 						+ "["
-						+ settings.globalBoundry()
+						+ worlddata.globalBoundry()
 						+ "]"
 						+ ChatColor.WHITE
 						+ " Blocks from spawn players are allowed to venture.");
@@ -1184,9 +1188,9 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Players can venture out indefinately.");
 			}
-			if (settings.hunterBoundry() >= 0) {
+			if (worlddata.hunterBoundry() >= 0) {
 				p.sendMessage(ChatColor.BLUE + "hunterBoundry "
-						+ ChatColor.GREEN + "[" + settings.hunterBoundry()
+						+ ChatColor.GREEN + "[" + worlddata.hunterBoundry()
 						+ "]" + ChatColor.WHITE
 						+ " Blocks from spawn hunters are confined to.");
 			} else {
@@ -1194,9 +1198,9 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Hunters are not confined to spawn.");
 			}
-			if (settings.noBuildRange() >= 0) {
+			if (worlddata.noBuildRange() >= 0) {
 				p.sendMessage(ChatColor.BLUE + "noBuildRange "
-						+ ChatColor.GREEN + "[" + settings.noBuildRange()
+						+ ChatColor.GREEN + "[" + worlddata.noBuildRange()
 						+ "]" + ChatColor.WHITE
 						+ " Hunter/Prey spawn points are protected.");
 			} else {
@@ -1983,30 +1987,30 @@ public class CmdExec implements CommandExecutor {
 						}
 					}
 					if (value <= -1) {
-						settings.changeSetting("globalBoundry", "-1");
+						worlddata.changeSetting("globalBoundry", "-1");
 						p.sendMessage(ChatColor.BLUE + "globalBoundry "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ "Players can venture out indefinately.");
 					} else if (value < 64) {
-						settings.changeSetting("globalBoundry", "64");
+						worlddata.changeSetting("globalBoundry", "64");
 						p.sendMessage(ChatColor.RED
 								+ "64 blocks is the minimum setting for this!");
 						p.sendMessage(ChatColor.BLUE
 								+ "globalBoundry "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.globalBoundry()
+								+ worlddata.globalBoundry()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn players are allowed to venture.");
 					} else {
-						settings.changeSetting("globalBoundry",
+						worlddata.changeSetting("globalBoundry",
 								Integer.toString(value));
 						p.sendMessage(ChatColor.BLUE
 								+ "globalBoundry "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.globalBoundry()
+								+ worlddata.globalBoundry()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn players are allowed to venture.");
@@ -2016,7 +2020,7 @@ public class CmdExec implements CommandExecutor {
 							+ "globalBoundry "
 							+ ChatColor.GREEN
 							+ "["
-							+ settings.globalBoundry()
+							+ worlddata.globalBoundry()
 							+ "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn players are allowed to venture.");
@@ -2038,18 +2042,18 @@ public class CmdExec implements CommandExecutor {
 						}
 					}
 					if (value <= -1) {
-						settings.changeSetting("hunterBoundry", "-1");
+						worlddata.changeSetting("hunterBoundry", "-1");
 						p.sendMessage(ChatColor.BLUE + "hunterBoundry "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ "Hunters are not confined to spawn.");
 					} else {
-						settings.changeSetting("hunterBoundry",
+						worlddata.changeSetting("hunterBoundry",
 								Integer.toString(value));
 						p.sendMessage(ChatColor.BLUE
 								+ "hunterBoundry "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.hunterBoundry()
+								+ worlddata.hunterBoundry()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn hunters are confined to.");
@@ -2057,7 +2061,7 @@ public class CmdExec implements CommandExecutor {
 				} else {
 					p.sendMessage(ChatColor.BLUE + "hunterBoundry "
 							+ ChatColor.GREEN + "["
-							+ settings.hunterBoundry() + "]"
+							+ worlddata.hunterBoundry() + "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn hunters are confined to.");
 				}
@@ -2077,25 +2081,25 @@ public class CmdExec implements CommandExecutor {
 						}
 					}
 					if (value <= -1) {
-						settings.changeSetting("nobuildrange", "-1");
+						worlddata.changeSetting("nobuildrange", "-1");
 						p.sendMessage(ChatColor.BLUE + "noBuildRange "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ " Huners and Prey can build anywhere.");
 					} else {
-						settings.changeSetting("nobuildrange",
+						worlddata.changeSetting("nobuildrange",
 								Integer.toString(value));
 						p.sendMessage(ChatColor.BLUE
 								+ "noBuildRange "
 								+ ChatColor.GREEN
 								+ "["
-								+ settings.noBuildRange()
+								+ worlddata.noBuildRange()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Hunter/Prey spawn points are protected.");
 					}
 				} else {
 					p.sendMessage(ChatColor.BLUE + "noBuildRange "
-							+ ChatColor.GREEN + "[" + settings.noBuildRange()
+							+ ChatColor.GREEN + "[" + worlddata.noBuildRange()
 							+ "]" + ChatColor.WHITE
 							+ " Hunter/Prey spawn points are protected.");
 				}

@@ -7,12 +7,6 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import org.bukkit.Location;
-//import org.bukkit.Material;
-//import org.bukkit.inventory.ItemStack;
-//import org.bukkit.material.MaterialData;
-//import org.bukkit.material.TexturedMaterial;
-
 public class SettingsFile extends Properties {
 	private static final long serialVersionUID = 0L;
 	
@@ -44,14 +38,6 @@ public class SettingsFile extends Properties {
 	private int locatorTimer;
 	private int prepTime;
 	
-	private int globalBoundry;
-	private int hunterBoundry;
-	private int noBuildRange;
-	
-	private Location hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-	private Location preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-	private Location prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-	
 	public SettingsFile() {
 		directory = "plugins/Manhunt/";
 		location = directory + "Manhunt.properties";
@@ -68,7 +54,7 @@ public class SettingsFile extends Properties {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+				HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Manhunt config file!");
 				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
@@ -76,7 +62,7 @@ public class SettingsFile extends Properties {
 		try {
 			load(new FileInputStream(file));
 		} catch (IOException e) {
-			HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
+			HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Manhunt config file!");
 			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 			return;
 		}
@@ -84,7 +70,7 @@ public class SettingsFile extends Properties {
 		loadValues();
 		saveFile();
 	}
-	
+
 	public void saveFile() {
 		File file = new File(location);
 		File dir = new File(directory);
@@ -101,7 +87,7 @@ public class SettingsFile extends Properties {
 			}
 		}
 		try {
-			store(new FileOutputStream(file), "-Manhunt Settings-");
+			store(new FileOutputStream(file), "- Manhunt Configurations and Settings -");
 		} catch (IOException e) {
 			HuntedPlugin.getInstance().log(Level.SEVERE, "Problem loading the Hunted config file!");
 			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
@@ -128,14 +114,8 @@ public class SettingsFile extends Properties {
 		northCompass = true;
 		dayLimit = 3;
 		offlineTimeout = 2;
-		globalBoundry = -1;
-		hunterBoundry = 8;
-		noBuildRange = 8;
 		locatorTimer = 120;
 		prepTime = 10;
-		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-		preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-		prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	}
 	
 	public void loadValues() {
@@ -320,43 +300,6 @@ public class SettingsFile extends Properties {
 		} else prepTime = 10;
 		put("prepTime", Integer.toString(prepTime));
 		
-		if (containsKey("globalBoundry")) {
-			if (getProperty("globalBoundry").length() > 0) {
-				try {
-					globalBoundry = Integer.parseInt(getProperty("globalBoundry"));
-					if (globalBoundry < 64 && globalBoundry > -1) globalBoundry = 64;
-					if (globalBoundry <= -1) globalBoundry = -1;
-				} catch (NumberFormatException e) {
-					globalBoundry = 128;
-				}
-			} else globalBoundry = 128;
-		} else globalBoundry = 128;
-		put("globalBoundry", Integer.toString(globalBoundry));
-		
-		if (containsKey("hunterBoundry")) {
-			if (getProperty("hunterBoundry").length() > 0) {
-				try {
-					hunterBoundry = Integer.parseInt(getProperty("hunterBoundry"));
-					if (hunterBoundry < -1) hunterBoundry = -1;
-				} catch (NumberFormatException e) {
-					hunterBoundry = 8;
-				}
-			} else hunterBoundry = 8;
-		} else hunterBoundry = 8;
-		put("hunterBoundry", Integer.toString(hunterBoundry));
-		
-		if (containsKey("noBuildRange")) {
-			if (getProperty("noBuildRange").length() > 0) {
-				try {
-					noBuildRange = Integer.parseInt(getProperty("noBuildRange"));
-					if (noBuildRange < 0) noBuildRange = -1;
-				} catch (NumberFormatException e) {
-					noBuildRange = 8;
-				}
-			} else noBuildRange = 8;
-		} else noBuildRange = 8;
-		put("noBuildRange", Integer.toString(noBuildRange));
-		
 		if (containsKey("locatorTimer")) {
 			if (getProperty("locatorTimer").length() > 0) {
 				try {
@@ -368,102 +311,6 @@ public class SettingsFile extends Properties {
 			} else locatorTimer = 120;
 		} else locatorTimer = 120;
 		put("locatorTimer", Integer.toString(locatorTimer));
-		
-		if (containsKey("hunterSpawn")) {
-			if (getProperty("hunterSpawn").split(",").length == 5) {
-				String[] loc = getProperty("hunterSpawn").split(",");
-				try {
-					hunterSpawn.setX(Double.parseDouble(loc[0]));
-					hunterSpawn.setY(Double.parseDouble(loc[1]));
-					hunterSpawn.setZ(Double.parseDouble(loc[2]));
-					hunterSpawn.setPitch(Float.parseFloat(loc[3]));
-					hunterSpawn.setYaw(Float.parseFloat(loc[4]));
-				} catch (NumberFormatException e) {
-					hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-				}
-			} else {
-				hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-			}
-		} else {
-			hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-		}
-		put("hunterSpawn", hunterSpawn.getX() + "," + hunterSpawn.getY() + "," + hunterSpawn.getZ() + "," + hunterSpawn.getPitch() + "," + hunterSpawn.getYaw());
-		
-		if (containsKey("preySpawn")) {
-			if (getProperty("preySpawn").split(",").length == 5) {
-				String[] loc = getProperty("preySpawn").split(",");
-				try {
-					preySpawn.setX(Double.parseDouble(loc[0]));
-					preySpawn.setY(Double.parseDouble(loc[1]));
-					preySpawn.setZ(Double.parseDouble(loc[2]));
-					preySpawn.setPitch(Float.parseFloat(loc[3]));
-					preySpawn.setYaw(Float.parseFloat(loc[4]));
-				} catch (NumberFormatException e) {
-					preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-				}
-			} else {
-				preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-			}
-		} else {
-			preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-		}
-		put("preySpawn", preySpawn.getX() + "," + preySpawn.getY() + "," + preySpawn.getZ() + "," + preySpawn.getPitch() + "," + preySpawn.getYaw());
-		
-		if (containsKey("prepSpawn")) {
-			if (getProperty("prepSpawn").split(",").length == 5) {
-				String[] loc = getProperty("prepSpawn").split(",");
-				try {
-					prepSpawn.setX(Double.parseDouble(loc[0]));
-					prepSpawn.setY(Double.parseDouble(loc[1]));
-					prepSpawn.setZ(Double.parseDouble(loc[2]));
-					prepSpawn.setPitch(Float.parseFloat(loc[3]));
-					prepSpawn.setYaw(Float.parseFloat(loc[4]));
-				} catch (NumberFormatException e) {
-					prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-				}
-			} else {
-				prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-			}
-		} else {
-			prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-		}
-		put("prepSpawn", prepSpawn.getX() + "," + prepSpawn.getY() + "," + prepSpawn.getZ() + "," + prepSpawn.getPitch() + "," + prepSpawn.getYaw());
-		
-		/*if (containsKey("hunterLoadout")) {
-			hunterLoadout = new ItemStack[41];
-			String[] stack = getProperty("hunterLoadout").split("/");
-			for (int i = 0 ; (i < stack.length && i < 41) ; i++) {
-				if (stack[i].split(",").length == 3) {
-					try {
-						hunterLoadout[i] = new ItemStack(Material.matchMaterial(stack[i].split(",")[0]),
-								Integer.parseInt(stack[i].split(",")[1]),
-								Short.parseShort(stack[i].split(",")[2]));
-					} catch (Exception e) {
-						hunterLoadout[i] = new ItemStack(Material.AIR, 0);
-					}
-				} else {
-					hunterLoadout[i] = new ItemStack(Material.AIR, 0);
-				}
-			}
-		}
-		
-		if (containsKey("preyLoadout")) {
-			preyLoadout = new ItemStack[41];
-			String[] stack = getProperty("preyLoadout").split("/");
-			for (int i = 0 ; (i < stack.length && i < 41) ; i++) {
-				if (stack[i].split(",").length == 3) {
-					try {
-						preyLoadout[i] = new ItemStack(Material.matchMaterial(stack[i].split(",")[0]),
-								Integer.parseInt(stack[i].split(",")[1]),
-								Short.parseShort(stack[i].split(",")[2]));
-					} catch (Exception e) {
-						preyLoadout[i] = new ItemStack(Material.AIR, 0);
-					}
-				} else {
-					preyLoadout[i] = new ItemStack(Material.AIR, 0);
-				}
-			}
-		}*/
 	}
 
 	
@@ -490,15 +337,8 @@ public class SettingsFile extends Properties {
 	public int offlineTimeout()		{ return offlineTimeout; }
 	public int dayLimit()			{ return dayLimit; }
 	
-	public int globalBoundry() 		{ return globalBoundry; }
-	public int hunterBoundry() 		{ return hunterBoundry; }
-	public int noBuildRange() 		{ return noBuildRange; }
 	public int locatorTimer()		{ return locatorTimer; }
 	public int prepTime()			{ return prepTime; }
-	
-	public Location hunterSpawn()	{ return hunterSpawn; }
-	public Location preySpawn()		{ return preySpawn; }
-	public Location prepSpawn()		{ return prepSpawn; }
 	
  	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {
@@ -508,20 +348,7 @@ public class SettingsFile extends Properties {
 			HuntedPlugin.getInstance().log(Level.INFO, setting + " set to " + value);
 		}
 	}
-	
-	public void changeSetting(String setting, Location loc) {
-		if (containsKey(setting)) {
-			String value = loc.getX() + ","
-					+ loc.getY() + ","
-					+ loc.getZ() + ","
-					+ loc.getPitch() + ","
-					+ loc.getYaw();
-			put(setting, value);
-			loadValues();
-			saveFile();
-			HuntedPlugin.getInstance().log(Level.INFO, setting + " changed to " + value);
-		}
-	}
+
 	
 	
 	/*public void changeSetting(String setting, ItemStack[] inventory) {
