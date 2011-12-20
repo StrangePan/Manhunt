@@ -1130,6 +1130,15 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]" + ChatColor.WHITE
 						+ " Hunters' compasses point to the world spawn.");
 			}
+			if (worlddata.boxedBoundry()) {
+				p.sendMessage(ChatColor.BLUE + "boxedBoundry "
+						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
+						+ " The world boundry is box-shaped");
+			} else {
+				p.sendMessage(ChatColor.BLUE + "boxedBoundry " + ChatColor.RED
+						+ "[false]" + ChatColor.WHITE
+						+ " The world boundry is eliptical.");
+			}
 
 		} else if (args.length == 1 && args[0].equalsIgnoreCase("3")) {
 			p.sendMessage(ChatColor.GOLD
@@ -1846,6 +1855,31 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.BLUE + "teamHats "
 							+ ChatColor.RED + "[false]" + ChatColor.WHITE
 							+ " No identifying wool hats for you!");
+				}
+				
+			if (args.length == 2 &&
+						(args[1].equalsIgnoreCase("true")
+						|| args[1].equalsIgnoreCase("1")
+						|| args[1].equalsIgnoreCase("on"))) {
+					worlddata.changeSetting("boxedBoundry", "true");
+					p.sendMessage(ChatColor.BLUE
+							+ "boxedBoundry "
+							+ ChatColor.GREEN
+							+ "[true]"
+							+ ChatColor.WHITE
+							+ " The world boundry is box-shaped");
+
+				} else if (args.length == 2 &&
+						(args[1].equalsIgnoreCase("false")
+						|| args[1].equalsIgnoreCase("1")
+						|| args[1].equalsIgnoreCase("off"))) {
+					worlddata.changeSetting("boxedBoundry", "false");
+					p.sendMessage(ChatColor.BLUE
+							+ "boxedBoundry "
+							+ ChatColor.RED
+							+ "[false]"
+							+ ChatColor.WHITE
+							+ " The world boundry is eliptical.");
 				}
 
 			} else if (args[0].equalsIgnoreCase("daylimit")) {

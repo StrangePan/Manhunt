@@ -931,6 +931,64 @@ public class Game {
 		
 	}
 	
+	public boolean outsideBoxedArea(Location loc, boolean pregame) {
+		if (pregame) {
+			if (loc.getX() < worlddata.prepSpawn().getX() - worlddata.hunterBoundry()) return true;
+			if (loc.getX() > worlddata.prepSpawn().getX() + worlddata.hunterBoundry()) return true;
+			if (loc.getZ() < worlddata.prepSpawn().getZ() - worlddata.hunterBoundry()) return true;
+			if (loc.getZ() > worlddata.prepSpawn().getZ() + worlddata.hunterBoundry()) return true;
+			return false;
+		} else {
+			if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.globalBoundry()
+					&& loc.getX() < worlddata.preySpawn().getX() - worlddata.globalBoundry()) return true;
+			if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.hunterBoundry()
+					&& loc.getX() > worlddata.preySpawn().getX() + worlddata.globalBoundry()) return true;
+			if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.hunterBoundry()
+					&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.globalBoundry()) return true;
+			if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.hunterBoundry()
+					&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.hunterBoundry()) return true;
+			return false;
+		}
+	}
+	
+	public Location teleportPregameBoxedLocation(Location loc) {
+		Location newLoc = loc;
+		if (loc.getX() < worlddata.prepSpawn().getX() - worlddata.hunterBoundry()) {
+			newLoc.setX(newLoc.getX() + 1);
+		}
+		if (loc.getX() > worlddata.prepSpawn().getX() + worlddata.hunterBoundry()) {
+			newLoc.setX(newLoc.getX() - 1);
+		}
+		if (loc.getZ() < worlddata.prepSpawn().getZ() - worlddata.hunterBoundry()) {
+			newLoc.setY(newLoc.getZ() + 1);
+		}
+		if (loc.getZ() > worlddata.prepSpawn().getZ() + worlddata.hunterBoundry()) {
+			newLoc.setZ(newLoc.getZ() - 1);
+		}
+		return newLoc;
+	}
+	
+	public Location teleportBoxedLocation(Location loc) {
+		Location newLoc = loc;
+		if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.globalBoundry()
+				&& loc.getX() < worlddata.preySpawn().getX() - worlddata.globalBoundry()) {
+			newLoc.setX(newLoc.getX() + 1);
+		}
+		if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.globalBoundry()
+				&& loc.getX() > worlddata.preySpawn().getX() + worlddata.globalBoundry()) {
+			newLoc.setX(newLoc.getX() - 1);
+		}
+		if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.globalBoundry()
+				&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.globalBoundry()) {
+			newLoc.setY(newLoc.getZ() + 1);
+		}
+		if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.globalBoundry()
+				&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.globalBoundry()) {
+			newLoc.setZ(newLoc.getZ() - 1);
+		}
+		return newLoc;
+	}
+	
 	public void stepPlayer(Player p, Double d, Location l) {
 		double x1 = p.getLocation().getX();
 		double z1 = p.getLocation().getZ();

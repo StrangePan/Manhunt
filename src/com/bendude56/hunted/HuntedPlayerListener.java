@@ -154,15 +154,29 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun()
-				&& g.isHunter(p)
-				&& g.getDistance(worlddata.prepSpawn(), p.getLocation()) > worlddata.hunterBoundry()) {
-			g.stepPlayer(p, 1.0, worlddata.prepSpawn());
-			p.sendMessage(ChatColor.RED + "You've ventured too far!");
-			return;
-		} else if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.globalBoundry()) {
-			g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()));
-			p.sendMessage(ChatColor.RED + "You've ventured too far!");
-			return;
+				&& g.isHunter(p)) {
+			if (worlddata.boxedBoundry()) {
+				if (g.outsideBoxedArea(p.getLocation(), true)) {
+					p.teleport(g.teleportPregameBoxedLocation(p.getLocation()));
+				}
+			} else {
+				if (g.getDistance(worlddata.prepSpawn(), p.getLocation()) > worlddata.hunterBoundry()) {
+					g.stepPlayer(p, 1.0, worlddata.prepSpawn());
+					p.sendMessage(ChatColor.RED + "You've ventured too far!");
+					return;
+				}
+			}
+		} else {
+			if (worlddata.boxedBoundry()) {
+				if (g.outsideBoxedArea(p.getLocation(), false)) {
+					p.teleport(g.teleportBoxedLocation(p.getLocation()));
+				}
+			}
+			if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.globalBoundry()) {
+				g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()));
+				p.sendMessage(ChatColor.RED + "You've ventured too far!");
+				return;
+			}
 		}
 		if (g.getLocatorByPlayer(p) != -1
 				&& g.getLocatorStage(g.getLocatorByPlayer(p)) != 2) {	// PLAYER

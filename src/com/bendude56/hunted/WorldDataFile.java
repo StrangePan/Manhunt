@@ -21,6 +21,7 @@ public class WorldDataFile extends Properties {
 	private int globalBoundry;
 	private int hunterBoundry;
 	private int noBuildRange;
+	private boolean boxedBoundry;
 
 	private Location hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	private Location preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
@@ -75,6 +76,7 @@ public class WorldDataFile extends Properties {
 	}
 	
 	public void loadDefaults() {
+		boxedBoundry = false;
 		
 		globalBoundry = 128;
 		hunterBoundry = 8;
@@ -86,6 +88,15 @@ public class WorldDataFile extends Properties {
 	}
 	
 	public void loadWorldValues() {
+		
+		if (containsKey("boxedBoundry")) {
+			if (getProperty("boxedBoundry").length() > 0 && getProperty("boxedBoundry").equalsIgnoreCase("true")) {
+				boxedBoundry = true;
+			} else {
+				boxedBoundry = false;
+			}
+		} else boxedBoundry = true;
+		put("boxedBoundry", Boolean.toString(boxedBoundry));
 		
 		if (containsKey("globalBoundry")) {
 			if (getProperty("globalBoundry").length() > 0) {
@@ -185,6 +196,7 @@ public class WorldDataFile extends Properties {
 		put("prepSpawn", prepSpawn.getX() + "," + prepSpawn.getY() + "," + prepSpawn.getZ() + "," + prepSpawn.getPitch() + "," + prepSpawn.getYaw());
 	}
 
+	public boolean boxedBoundry()	{ return boxedBoundry; }
 
 	public int globalBoundry() 		{ return globalBoundry; }
 	public int hunterBoundry() 		{ return hunterBoundry; }
