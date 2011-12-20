@@ -304,7 +304,7 @@ public class CmdExec implements CommandExecutor {
 					+ "Only ops can start the manhunt game!");
 			return;
 		}
-		if (g.HuntersAmount(true) == 0 || g.HuntedAmount(true) == 0) {
+		/*if (g.HuntersAmount(true) == 0 || g.HuntedAmount(true) == 0) {
 			p.sendMessage(ChatColor.RED
 					+ "There must be at least one Hunter and Prey to start the game!");
 			return;
@@ -314,7 +314,7 @@ public class CmdExec implements CommandExecutor {
 						+ "There must be at least 4 hunters per prey!");
 				return;
 			}
-		}
+		}*/
 		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has started the Manhunt game!");
 		g.start();
 		return;
@@ -832,18 +832,16 @@ public class CmdExec implements CommandExecutor {
 			if (g.areNearby(settings.hunterSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
 				settings.changeSetting("hunterSpawn", p.getLocation());
 			}
-			if (g.areNearby(settings.preySpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1)) {
+			if (g.areNearby(settings.preySpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
 				settings.changeSetting("preySpawn", p.getLocation());
 			}
-			if (g.areNearby(settings.prepSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1)) {
+			if (g.areNearby(settings.prepSpawn(),HuntedPlugin.getInstance().getWorld().getSpawnLocation(),1.0)) {
 				settings.changeSetting("prepSpawn", p.getLocation());
 			}
-			HuntedPlugin
-					.getInstance()
-					.getWorld()
-					.setSpawnLocation(p.getLocation().getBlockX(),
-							p.getLocation().getBlockY(),
-							p.getLocation().getBlockZ());
+			HuntedPlugin.getInstance().getWorld().setSpawnLocation(
+					p.getLocation().getBlockX(),
+					p.getLocation().getBlockY(),
+					p.getLocation().getBlockZ());
 			p.sendMessage(ChatColor.GREEN + "World spawn set!");
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Manhunt world spawn.");
 			return;
@@ -872,6 +870,17 @@ public class CmdExec implements CommandExecutor {
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Pregame spawn.");
 				return;
+			}
+			if (args[0].equalsIgnoreCase("all")) {
+				HuntedPlugin.getInstance().getWorld().setSpawnLocation(
+						p.getLocation().getBlockX(),
+						p.getLocation().getBlockY(),
+						p.getLocation().getBlockZ());
+				settings.changeSetting("hunterSpawn", p.getLocation());
+				settings.changeSetting("preySpawn", p.getLocation());
+				settings.changeSetting("prepSpawn", p.getLocation());
+				p.sendMessage(ChatColor.GREEN + "All spawn points set!");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed all spawn points.");
 			}
 		}
 	}

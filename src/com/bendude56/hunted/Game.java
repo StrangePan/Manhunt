@@ -901,6 +901,34 @@ public class Game {
 		return getDistance(p1.getLocation(), p2.getLocation());
 	}
 	
+	public Location getNearestLocation(Location location, Location preySpawn, Location hunterSpawn) {
+		double scalar =
+				(
+					(((hunterSpawn.getX() - preySpawn.getX()) * (location.getX() - preySpawn.getX())) +
+					((hunterSpawn.getY() - preySpawn.getY()) * (location.getY() - preySpawn.getY())) +
+					((hunterSpawn.getZ() - preySpawn.getZ()) * (location.getZ() - preySpawn.getZ())))
+					/
+					(((hunterSpawn.getX() - preySpawn.getX()) * (hunterSpawn.getX() - preySpawn.getX())) +
+					((hunterSpawn.getY() - preySpawn.getY()) * (hunterSpawn.getY() - preySpawn.getY())) +
+					((hunterSpawn.getZ() - preySpawn.getZ()) * (hunterSpawn.getZ() - preySpawn.getZ())))
+				);
+		Location projectedLocation = new Location(
+				HuntedPlugin.getInstance().getWorld(),
+				(preySpawn.getX() + scalar * (hunterSpawn.getX() - preySpawn.getX())),
+				(preySpawn.getY() + scalar * (hunterSpawn.getY() - preySpawn.getY())),
+				(preySpawn.getZ() + scalar * (hunterSpawn.getZ() - preySpawn.getZ())));
+		if (scalar > 1 || scalar < 0) {
+			if (getDistance(preySpawn, location) < getDistance(hunterSpawn, location)) {
+				return preySpawn;
+			} else {
+				return hunterSpawn;
+			}
+		} else {
+			return projectedLocation;
+		}
+		
+	}
+	
 	public void stepPlayer(Player p, Double d, Location l) {
 		double x1 = p.getLocation().getX();
 		double z1 = p.getLocation().getZ();

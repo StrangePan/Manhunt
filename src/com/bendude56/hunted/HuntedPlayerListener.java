@@ -154,25 +154,17 @@ public class HuntedPlayerListener extends PlayerListener {
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun()
 				&& g.isHunter(p)
-				&& g.getDistance(p.getLocation(), HuntedPlugin.getInstance()
-						.getWorld().getSpawnLocation()) > settings.hunterBoundry()) {
-			g.stepPlayer(p, 1.0, HuntedPlugin.getInstance().getWorld()
-					.getSpawnLocation());
+				&& g.getDistance(settings.prepSpawn(), p.getLocation()) > settings.hunterBoundry()) {
+			g.stepPlayer(p, 1.0, settings.prepSpawn());
 			p.sendMessage(ChatColor.RED + "You've ventured too far!");
 			return;
-		} else if (g.getDistance(p.getLocation(), settings.preySpawn()) > settings.globalBoundry()
-				&& g.getDistance(p.getLocation(), settings.hunterSpawn()) > settings.globalBoundry()) {
-			if (g.getDistance(p.getLocation(), settings.preySpawn()) < g
-					.getDistance(p.getLocation(), settings.hunterSpawn())) {
-				g.stepPlayer(p, 1.0, settings.preySpawn());
-				p.sendMessage(ChatColor.RED + "You've ventured too far!");
-			} else {
-				g.stepPlayer(p, 1.0, settings.hunterSpawn());
-				p.sendMessage(ChatColor.RED + "You've ventured too far!");
-			}
+		} else if (g.getDistance(g.getNearestLocation(p.getLocation(), settings.preySpawn(), settings.hunterSpawn()), p.getLocation()) > settings.globalBoundry()) {
+			g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), settings.preySpawn(), settings.hunterSpawn()));
+			p.sendMessage(ChatColor.RED + "You've ventured too far!");
+			return;
 		}
 		if (g.getLocatorByPlayer(p) != -1
-				&& g.getLocatorStage(g.getLocatorByPlayer(p)) != 2) { // PLAYER
+				&& g.getLocatorStage(g.getLocatorByPlayer(p)) != 2) {	// PLAYER
 																		// IS IN
 																		// LOCATOR
 																		// LIST

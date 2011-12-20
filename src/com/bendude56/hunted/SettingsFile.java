@@ -370,7 +370,7 @@ public class SettingsFile extends Properties {
 		put("locatorTimer", Integer.toString(locatorTimer));
 		
 		if (containsKey("hunterSpawn")) {
-			if (getProperty("hunterSpawn").split(",").length == 3) {
+			if (getProperty("hunterSpawn").split(",").length == 5) {
 				String[] loc = getProperty("hunterSpawn").split(",");
 				try {
 					hunterSpawn.setX(Double.parseDouble(loc[0]));
@@ -387,7 +387,7 @@ public class SettingsFile extends Properties {
 		} else {
 			hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
-		put("hunterSpawn", hunterSpawn.getBlockX() + "," + hunterSpawn.getBlockY() + "," + hunterSpawn.getBlockZ());
+		put("hunterSpawn", hunterSpawn.getX() + "," + hunterSpawn.getY() + "," + hunterSpawn.getZ() + "," + hunterSpawn.getPitch() + "," + hunterSpawn.getYaw());
 		
 		if (containsKey("preySpawn")) {
 			if (getProperty("preySpawn").split(",").length == 5) {
@@ -407,7 +407,7 @@ public class SettingsFile extends Properties {
 		} else {
 			preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
-		put("preySpawn", preySpawn.getBlockX() + "," + preySpawn.getBlockY() + "," + preySpawn.getBlockZ());
+		put("preySpawn", preySpawn.getX() + "," + preySpawn.getY() + "," + preySpawn.getZ() + "," + preySpawn.getPitch() + "," + preySpawn.getYaw());
 		
 		if (containsKey("prepSpawn")) {
 			if (getProperty("prepSpawn").split(",").length == 5) {
@@ -427,7 +427,7 @@ public class SettingsFile extends Properties {
 		} else {
 			prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
-		put("prepSpawn", prepSpawn.getBlockX() + "," + prepSpawn.getBlockY() + "," + prepSpawn.getBlockZ());
+		put("prepSpawn", prepSpawn.getX() + "," + prepSpawn.getY() + "," + prepSpawn.getZ() + "," + prepSpawn.getPitch() + "," + prepSpawn.getYaw());
 		
 		/*if (containsKey("hunterLoadout")) {
 			hunterLoadout = new ItemStack[41];
@@ -511,9 +511,9 @@ public class SettingsFile extends Properties {
 	
 	public void changeSetting(String setting, Location loc) {
 		if (containsKey(setting)) {
-			String value = loc.getBlockX() + ","
-					+ loc.getBlockY() + ","
-					+ loc.getBlockZ() + ","
+			String value = loc.getX() + ","
+					+ loc.getY() + ","
+					+ loc.getZ() + ","
 					+ loc.getPitch() + ","
 					+ loc.getYaw();
 			put(setting, value);
