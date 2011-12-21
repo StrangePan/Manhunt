@@ -156,7 +156,7 @@ public class HuntedPlayerListener extends PlayerListener {
 		if (!g.huntHasBegun()
 				&& g.isHunter(p)
 				&& worlddata.pregameBoundry() > -1) {
-			if (worlddata.boxedBoundry()) {
+			if (worlddata.boxBoundry()) {
 				if (g.outsideBoxedArea(p.getLocation(), true)) {
 					p.teleport(g.teleportPregameBoxedLocation(p.getLocation()));
 					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
@@ -170,7 +170,7 @@ public class HuntedPlayerListener extends PlayerListener {
 				}
 			}
 		} else {
-			if (worlddata.boxedBoundry()) {
+			if (worlddata.boxBoundry()) {
 				if (g.outsideBoxedArea(p.getLocation(), false)) {
 					p.teleport(g.teleportBoxedLocation(p.getLocation()));
 					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");

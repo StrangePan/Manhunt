@@ -217,7 +217,7 @@ public class CmdExec implements CommandExecutor {
 		if (args.length == 0 || args[0].equalsIgnoreCase("1")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt General Rules (1/3) ----");
 			p.sendMessage(pre() + "Manhunt is an exciting game where two teams go");
-			p.sendMessage(pre() + "head-to-head: the " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " and the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ",");
+			p.sendMessage(pre() + "head-to-head: the " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " and the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
 			if (settings.prepTime() != 0) {
 				p.sendMessage(pre() + "The " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + " have " + settings.prepTime() + " minutes to prepare before the hunt.");
 			} else {
@@ -254,8 +254,8 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(pre() + "You cannot die by the environment.");
 			}
 			if (settings.preyFinder()) {
-				p.sendMessage(pre() + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + "'s compasses can be used as Prey Finders.");
-				p.sendMessage(pre() + ChatColor.GRAY + " (right-click while holding compass)");
+				p.sendMessage(pre() + ChatColor.DARK_RED + "Hunter" + ChatColor.WHITE + " compasses can be used as Prey Finders.");
+				p.sendMessage(pre() + ChatColor.GRAY + " (Requires at least " + g.locatorFood()/2 + " food! Click while holding compass)");
 			}
 			if (settings.spawnHostile()) {
 				p.sendMessage(pre() + "Hostiles mobs are turned ON.");
@@ -263,9 +263,9 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(pre() + "Hostiles mobs are turned OFF.");
 			}
 			if (settings.allTalk()) {
-				p.sendMessage(pre() + "All talk is on, so all players can chat.");
+				p.sendMessage(pre() + "All talk is on, so all players can chat together.");
 			} else {
-				p.sendMessage(pre() + "All talk is off, so only teammates can chat.");
+				p.sendMessage(pre() + "All talk is off, so only teammates can chat with eachother.");
 			}
 		} else if (args[0].equalsIgnoreCase("3")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt Miscellaneous Rules (3/3) ---");
@@ -1115,12 +1115,12 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]" + ChatColor.WHITE
 						+ " Hunters' compasses point to the world spawn.");
 			}
-			if (worlddata.boxedBoundry()) {
-				p.sendMessage(ChatColor.BLUE + "boxedBoundry "
+			if (worlddata.boxBoundry()) {
+				p.sendMessage(ChatColor.BLUE + "boxBoundry "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 						+ " The world boundry is box-shaped");
 			} else {
-				p.sendMessage(ChatColor.BLUE + "boxedBoundry " + ChatColor.RED
+				p.sendMessage(ChatColor.BLUE + "boxBoundry " + ChatColor.RED
 						+ "[false]" + ChatColor.WHITE
 						+ " The world boundry is eliptical.");
 			}
@@ -1842,16 +1842,16 @@ public class CmdExec implements CommandExecutor {
 							+ " No identifying wool hats for you!");
 				}
 				
-			} else if (args[0].equalsIgnoreCase("boxedboundry")) {
+			} else if (args[0].equalsIgnoreCase("boxboundry")) {
 				if (args.length == 1) {
-					if (worlddata.boxedBoundry()) {
+					if (worlddata.boxBoundry()) {
 						p.sendMessage(ChatColor.BLUE
-								+ "boxedBoundry " + ChatColor.GREEN
+								+ "boxBoundry " + ChatColor.GREEN
 								+ "[true]" + ChatColor.WHITE
 								+ " The world boundry is box-shaped");
 					} else {
 						p.sendMessage(ChatColor.BLUE
-								+ "boxedBoundry " + ChatColor.RED
+								+ "boxBoundry " + ChatColor.RED
 								+ "[false]" + ChatColor.WHITE
 								+ " The world boundry is eliptical.");
 					}
@@ -1861,9 +1861,9 @@ public class CmdExec implements CommandExecutor {
 						(args[1].equalsIgnoreCase("true")
 						|| args[1].equalsIgnoreCase("1")
 						|| args[1].equalsIgnoreCase("on"))) {
-					worlddata.changeSetting("boxedBoundry", "true");
+					worlddata.changeSetting("boxBoundry", "true");
 					p.sendMessage(ChatColor.BLUE
-							+ "boxedBoundry "
+							+ "boxBoundry "
 							+ ChatColor.GREEN
 							+ "[true]"
 							+ ChatColor.WHITE
@@ -1873,9 +1873,9 @@ public class CmdExec implements CommandExecutor {
 						(args[1].equalsIgnoreCase("false")
 						|| args[1].equalsIgnoreCase("1")
 						|| args[1].equalsIgnoreCase("off"))) {
-					worlddata.changeSetting("boxedBoundry", "false");
+					worlddata.changeSetting("boxBoundry", "false");
 					p.sendMessage(ChatColor.BLUE
-							+ "boxedBoundry "
+							+ "boxBoundry "
 							+ ChatColor.RED
 							+ "[false]"
 							+ ChatColor.WHITE

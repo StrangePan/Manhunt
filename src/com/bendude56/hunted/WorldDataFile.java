@@ -21,7 +21,7 @@ public class WorldDataFile extends Properties {
 	private int mapBoundry;
 	private int pregameBoundry;
 	private int noBuildRange;
-	private boolean boxedBoundry;
+	private boolean boxBoundry;
 
 	private Location hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	private Location preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
@@ -76,7 +76,7 @@ public class WorldDataFile extends Properties {
 	}
 	
 	public void loadDefaults() {
-		boxedBoundry = false;
+		boxBoundry = false;
 		
 		mapBoundry = 128;
 		pregameBoundry = 8;
@@ -89,14 +89,14 @@ public class WorldDataFile extends Properties {
 	
 	public void loadWorldValues() {
 		
-		if (containsKey("boxedBoundry")) {
-			if (getProperty("boxedBoundry").length() > 0 && getProperty("boxedBoundry").equalsIgnoreCase("true")) {
-				boxedBoundry = true;
+		if (containsKey("boxBoundry")) {
+			if (getProperty("boxBoundry").length() > 0 && getProperty("boxBoundry").equalsIgnoreCase("true")) {
+				boxBoundry = true;
 			} else {
-				boxedBoundry = false;
+				boxBoundry = false;
 			}
-		} else boxedBoundry = true;
-		put("boxedBoundry", Boolean.toString(boxedBoundry));
+		} else boxBoundry = false;
+		put("boxBoundry", Boolean.toString(boxBoundry));
 		
 		if (containsKey("mapBoundry")) {
 			if (getProperty("mapBoundry").length() > 0) {
@@ -197,7 +197,7 @@ public class WorldDataFile extends Properties {
 		put("pregameSpawn", pregameSpawn.getX() + "," + pregameSpawn.getY() + "," + pregameSpawn.getZ() + "," + pregameSpawn.getPitch() + "," + pregameSpawn.getYaw());
 	}
 
-	public boolean boxedBoundry()	{ return boxedBoundry; }
+	public boolean boxBoundry()		{ return boxBoundry; }
 
 	public int mapBoundry() 		{ return mapBoundry; }
 	public int pregameBoundry() 	{ return pregameBoundry; }
@@ -205,7 +205,7 @@ public class WorldDataFile extends Properties {
 	
 	public Location hunterSpawn()	{ return hunterSpawn; }
 	public Location preySpawn()		{ return preySpawn; }
-	public Location pregameSpawn()		{ return pregameSpawn; }
+	public Location pregameSpawn()	{ return pregameSpawn; }
 	
 	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {
