@@ -18,14 +18,14 @@ public class WorldDataFile extends Properties {
 	
 	private String location;
 	
-	private int globalBoundry;
-	private int hunterBoundry;
+	private int mapBoundry;
+	private int pregameBoundry;
 	private int noBuildRange;
 	private boolean boxedBoundry;
 
 	private Location hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	private Location preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-	private Location prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+	private Location pregameSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	
 	public WorldDataFile() {
 		location = "Manhunt.properties";
@@ -78,13 +78,13 @@ public class WorldDataFile extends Properties {
 	public void loadDefaults() {
 		boxedBoundry = false;
 		
-		globalBoundry = 128;
-		hunterBoundry = 8;
+		mapBoundry = 128;
+		pregameBoundry = 8;
 		noBuildRange = 8;
 		
 		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
-		prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+		pregameSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	}
 	
 	public void loadWorldValues() {
@@ -98,30 +98,31 @@ public class WorldDataFile extends Properties {
 		} else boxedBoundry = true;
 		put("boxedBoundry", Boolean.toString(boxedBoundry));
 		
-		if (containsKey("globalBoundry")) {
-			if (getProperty("globalBoundry").length() > 0) {
+		if (containsKey("mapBoundry")) {
+			if (getProperty("mapBoundry").length() > 0) {
 				try {
-					globalBoundry = Integer.parseInt(getProperty("globalBoundry"));
-					if (globalBoundry < 64 && globalBoundry > -1) globalBoundry = 64;
-					if (globalBoundry <= -1) globalBoundry = -1;
+					mapBoundry = Integer.parseInt(getProperty("mapBoundry"));
+					if (mapBoundry < 64 && mapBoundry > -1) mapBoundry = 64;
+					if (mapBoundry <= -1) mapBoundry = -1;
 				} catch (NumberFormatException e) {
-					globalBoundry = 128;
+					mapBoundry = 128;
 				}
-			} else globalBoundry = 128;
-		} else globalBoundry = 128;
-		put("globalBoundry", Integer.toString(globalBoundry));
+			} else mapBoundry = 128;
+		} else mapBoundry = 128;
+		put("mapBoundry", Integer.toString(mapBoundry));
 		
-		if (containsKey("hunterBoundry")) {
-			if (getProperty("hunterBoundry").length() > 0) {
+		if (containsKey("pregameBoundry")) {
+			if (getProperty("pregameBoundry").length() > 0) {
 				try {
-					hunterBoundry = Integer.parseInt(getProperty("hunterBoundry"));
-					if (hunterBoundry < -1) hunterBoundry = -1;
+					pregameBoundry = Integer.parseInt(getProperty("pregameBoundry"));
+					if (pregameBoundry < -1) pregameBoundry = -1;
+					if (pregameBoundry > 64) pregameBoundry = 64;
 				} catch (NumberFormatException e) {
-					hunterBoundry = 8;
+					pregameBoundry = 8;
 				}
-			} else hunterBoundry = 8;
-		} else hunterBoundry = 8;
-		put("hunterBoundry", Integer.toString(hunterBoundry));
+			} else pregameBoundry = 8;
+		} else pregameBoundry = 8;
+		put("pregameBoundry", Integer.toString(pregameBoundry));
 		
 		if (containsKey("noBuildRange")) {
 			if (getProperty("noBuildRange").length() > 0) {
@@ -175,36 +176,36 @@ public class WorldDataFile extends Properties {
 		}
 		put("preySpawn", preySpawn.getX() + "," + preySpawn.getY() + "," + preySpawn.getZ() + "," + preySpawn.getPitch() + "," + preySpawn.getYaw());
 		
-		if (containsKey("prepSpawn")) {
-			if (getProperty("prepSpawn").split(",").length == 5) {
-				String[] loc = getProperty("prepSpawn").split(",");
+		if (containsKey("pregameSpawn")) {
+			if (getProperty("pregameSpawn").split(",").length == 5) {
+				String[] loc = getProperty("pregameSpawn").split(",");
 				try {
-					prepSpawn.setX(Double.parseDouble(loc[0]));
-					prepSpawn.setY(Double.parseDouble(loc[1]));
-					prepSpawn.setZ(Double.parseDouble(loc[2]));
-					prepSpawn.setPitch(Float.parseFloat(loc[3]));
-					prepSpawn.setYaw(Float.parseFloat(loc[4]));
+					pregameSpawn.setX(Double.parseDouble(loc[0]));
+					pregameSpawn.setY(Double.parseDouble(loc[1]));
+					pregameSpawn.setZ(Double.parseDouble(loc[2]));
+					pregameSpawn.setPitch(Float.parseFloat(loc[3]));
+					pregameSpawn.setYaw(Float.parseFloat(loc[4]));
 				} catch (NumberFormatException e) {
-					prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+					pregameSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 				}
 			} else {
-				prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+				pregameSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 			}
 		} else {
-			prepSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
+			pregameSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 		}
-		put("prepSpawn", prepSpawn.getX() + "," + prepSpawn.getY() + "," + prepSpawn.getZ() + "," + prepSpawn.getPitch() + "," + prepSpawn.getYaw());
+		put("pregameSpawn", pregameSpawn.getX() + "," + pregameSpawn.getY() + "," + pregameSpawn.getZ() + "," + pregameSpawn.getPitch() + "," + pregameSpawn.getYaw());
 	}
 
 	public boolean boxedBoundry()	{ return boxedBoundry; }
 
-	public int globalBoundry() 		{ return globalBoundry; }
-	public int hunterBoundry() 		{ return hunterBoundry; }
+	public int mapBoundry() 		{ return mapBoundry; }
+	public int pregameBoundry() 	{ return pregameBoundry; }
 	public int noBuildRange() 		{ return noBuildRange; }
 	
 	public Location hunterSpawn()	{ return hunterSpawn; }
 	public Location preySpawn()		{ return preySpawn; }
-	public Location prepSpawn()		{ return prepSpawn; }
+	public Location pregameSpawn()		{ return pregameSpawn; }
 	
 	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {

@@ -154,15 +154,18 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun()
-				&& g.isHunter(p)) {
+				&& g.isHunter(p)
+				&& worlddata.pregameBoundry() > -1) {
 			if (worlddata.boxedBoundry()) {
 				if (g.outsideBoxedArea(p.getLocation(), true)) {
 					p.teleport(g.teleportPregameBoxedLocation(p.getLocation()));
+					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
+					return;
 				}
 			} else {
-				if (g.getDistance(worlddata.prepSpawn(), p.getLocation()) > worlddata.hunterBoundry()) {
-					g.stepPlayer(p, 1.0, worlddata.prepSpawn());
-					p.sendMessage(ChatColor.RED + "You've ventured too far!");
+				if (g.getDistance(worlddata.pregameSpawn(), p.getLocation()) > worlddata.pregameBoundry()) {
+					g.stepPlayer(p, 1.0, worlddata.pregameSpawn());
+					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			}
@@ -170,12 +173,15 @@ public class HuntedPlayerListener extends PlayerListener {
 			if (worlddata.boxedBoundry()) {
 				if (g.outsideBoxedArea(p.getLocation(), false)) {
 					p.teleport(g.teleportBoxedLocation(p.getLocation()));
+					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
+					return;
 				}
-			}
-			if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.globalBoundry()) {
-				g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()));
-				p.sendMessage(ChatColor.RED + "You've ventured too far!");
-				return;
+			} else {
+				if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.mapBoundry()) {
+					g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()));
+					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
+					return;
+				}
 			}
 		}
 		if (g.getLocatorByPlayer(p) != -1
@@ -209,13 +215,15 @@ public class HuntedPlayerListener extends PlayerListener {
 		if (HuntedPlugin.getInstance().getWorld() != p.getWorld()) {
 			return;
 		}
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
+		
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR
+				|| e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR) {
+			
 			if (g.gameHasBegun() && g.isSpectating(p)) {
 				e.setCancelled(true);
 				return;
 			}
-		}
-		if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_AIR) {
+			
 			if (g.isHunter(p) && p.getItemInHand().getType() == Material.COMPASS
 					&& settings.preyFinder()
 					&& g.huntHasBegun()) {

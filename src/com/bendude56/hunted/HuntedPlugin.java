@@ -55,11 +55,7 @@ public class HuntedPlugin extends JavaPlugin {
 		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.getWorld() == getWorld()) {
-				if (getSettings().autoHunter()) {
-					getGame().addHunter(p);
-				} else {
-					getGame().addSpectator(p);
-				}
+				game.onLogin(p);
 			}
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName() + " v" + getDescription().getVersion() + ChatColor.YELLOW + " is up running!");
 		}

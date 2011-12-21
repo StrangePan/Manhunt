@@ -25,7 +25,7 @@ public class SettingsFile extends Properties {
 	private boolean pvpInstantDeath;
 	private boolean flyingSpectators;
 	
-	private boolean opPermission;
+	private boolean mustBeOp;
 	//private boolean easyCommands;
 	private boolean allTalk;
 	private boolean autoHunter;
@@ -96,7 +96,7 @@ public class SettingsFile extends Properties {
 	}
 	
 	public void loadDefaults() {
-		opPermission = false;
+		mustBeOp = false;
 		//easyCommands = true;
 		allTalk = true;
 		spawnPassive = true;
@@ -119,14 +119,14 @@ public class SettingsFile extends Properties {
 	}
 	
 	public void loadValues() {
-		if (containsKey("opPermission")) {
-			if (getProperty("opPermission").length() > 0 && getProperty("opPermission").equalsIgnoreCase("true")) {
-				opPermission = true;
+		if (containsKey("mustBeOp")) {
+			if (getProperty("mustBeOp").length() > 0 && getProperty("mustBeOp").equalsIgnoreCase("true")) {
+				mustBeOp = true;
 			} else {
-				opPermission = false;
+				mustBeOp = false;
 			}
-		} else opPermission = false;
-		put("opPermission", Boolean.toString(opPermission));
+		} else mustBeOp = false;
+		put("mustBeOp", Boolean.toString(mustBeOp));
 		
 		/*if (containsKey("easyCommands")) {
 			if (getProperty("easyCommands").length() > 0 && getProperty("easyCommands").equalsIgnoreCase("true")) {
@@ -326,7 +326,7 @@ public class SettingsFile extends Properties {
 	public boolean pvpInstantDeath(){ return pvpInstantDeath; }
 	public boolean flyingSpectators(){ return flyingSpectators; }
 	
-	public boolean opPermission()	{ return opPermission; }
+	public boolean mustBeOp()	{ return mustBeOp; }
 	//public boolean easyCommands()	{ return easyCommands; }
 	public boolean allTalk()		{ return allTalk; }
 	public boolean autoHunter()		{ return autoHunter; }

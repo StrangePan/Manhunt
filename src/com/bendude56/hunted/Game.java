@@ -79,7 +79,7 @@ public class Game {
 			}
 			
 			countdown = 0;
-			HuntedPlugin.getInstance().getWorld().setTime(12000-settings.prepTime()*1200);
+			HuntedPlugin.getInstance().getWorld().setTime(13000-settings.prepTime()*1200);
 			hunterReleaseTick = HuntedPlugin.getInstance().getWorld().getFullTime() + settings.prepTime()*1200;
 			endTick = hunterReleaseTick + settings.dayLimit() * 24000;
 			gameRunning = true;
@@ -124,7 +124,11 @@ public class Game {
 				}
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setFireTicks(0);
-				p.teleport(randomLocation(worlddata.hunterSpawn(),2));
+				if (settings.prepTime() > 0) {
+					p.teleport(randomLocation(worlddata.pregameSpawn(),2));
+				} else {
+					p.teleport(randomLocation(worlddata.hunterSpawn(),2));
+				}
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) {
@@ -417,27 +421,27 @@ public class Game {
 						broadcastAll(ChatColor.GOLD + "5...");
 						countdown=8;
 					} else if (tick >= hunterReleaseTick - 200 && countdown <= 6) {
-						broadcastAll(ChatColor.GOLD + "10 seconds until sundown!");
+						broadcastAll(ChatColor.GOLD + "10 seconds until the hunt begins!");
 						countdown=7;
 					} else if (tick >= hunterReleaseTick - 600 && countdown <= 5) {
-						broadcastAll(ChatColor.GOLD + "30 seconds until sundown!");
+						broadcastAll(ChatColor.GOLD + "30 seconds until the hunt begins!");
 						countdown=6;
 					} else if (tick >= hunterReleaseTick - 1200 && countdown <= 4) {
-						broadcastAll(ChatColor.GOLD + "1 minute until sundown!");
-						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until sundown!");
+						broadcastAll(ChatColor.GOLD + "1 minute until the hunt begins!");
+						HuntedPlugin.getInstance().log(Level.INFO, "1 minute until the hunt begins!");
 						countdown=5;
 					} else if (tick >= hunterReleaseTick - 2400 && countdown <= 3) {
-						broadcastAll(ChatColor.GOLD + "2 minutes until sundown!");
+						broadcastAll(ChatColor.GOLD + "2 minutes until the hunt begins!");
 						countdown=4;
 					} else if (tick >= hunterReleaseTick - 3600 && countdown <= 2) {
-						broadcastAll(ChatColor.GOLD + "3 minutes until sundown!");
+						broadcastAll(ChatColor.GOLD + "3 minutes until the hunt begins!");
 						countdown=3;
 					} else if (tick >= hunterReleaseTick - 4800 && countdown <= 1) {
-						broadcastAll(ChatColor.GOLD + "4 minutes until sundown!");
+						broadcastAll(ChatColor.GOLD + "4 minutes until the hunt begins!");
 						countdown=2;
 					} else if (tick >= hunterReleaseTick - 6000 && countdown <= 0) {
-						broadcastAll(ChatColor.GOLD + "5 minutes until sundown!");
-						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until sundown!");
+						broadcastAll(ChatColor.GOLD + "5 minutes until the hunt begins!");
+						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until the hunt begins!");
 						countdown=1;
 					}
 				}
@@ -447,7 +451,9 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.loadouts()) hunterLoadout(p.getInventory());
-						p.teleport(randomLocation(worlddata.hunterSpawn(), 2));
+						if (!this.areNearby(worlddata.hunterSpawn(), worlddata.preySpawn(), worlddata.pregameBoundry())) {
+							p.teleport(randomLocation(worlddata.hunterSpawn(), 2));
+						}
 						p.setHealth(20);
 						p.setFoodLevel(20);
 					}
@@ -538,8 +544,8 @@ public class Game {
 						HuntedPlugin.getInstance().log(Level.INFO, "5 minutes until the game is over!");
 						countdown=3;
 					} else if (tick >= endTick - 12000 && countdown <= 1) {
-						broadcastAll(ChatColor.GOLD + "The Manhunt game ends at sundown!");
-						HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game ends at sundown!");
+						broadcastAll(ChatColor.GOLD + "The Manhunt game ends at the hunt begins!");
+						HuntedPlugin.getInstance().log(Level.INFO, "The Manhunt game ends at the hunt begins!");
 						countdown=2;
 					} else if (tick >= endTick - 24000 && countdown <= 0) {
 						broadcastAll(ChatColor.GOLD + "1 day until the game is over!");
@@ -571,7 +577,13 @@ public class Game {
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has become a Spectator.");
 		} else if (!gameHasBegun()) {
 			p.setCompassTarget(HuntedPlugin.getInstance().getWorld().getSpawnLocation());
-			addHunter(p);
+			if (settings.autoHunter()) {
+				addHunter(p);
+			} else {
+				addSpectator(p);
+			}
+			p.sendMessage(ChatColor.GOLD + "---[ " + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m rules" + ChatColor.DARK_GREEN + "\" anytime to view the Manhunt rules!\"" + ChatColor.GOLD + " ]---");
+			p.sendMessage(ChatColor.GOLD + "---[   " + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m help" + ChatColor.DARK_GREEN + "\" anytime to view the Manhunt help!\"" + ChatColor.GOLD + "  ]---");
 		}
 	}
 	
@@ -933,36 +945,36 @@ public class Game {
 	
 	public boolean outsideBoxedArea(Location loc, boolean pregame) {
 		if (pregame) {
-			if (loc.getX() < worlddata.prepSpawn().getX() - worlddata.hunterBoundry()) return true;
-			if (loc.getX() > worlddata.prepSpawn().getX() + worlddata.hunterBoundry()) return true;
-			if (loc.getZ() < worlddata.prepSpawn().getZ() - worlddata.hunterBoundry()) return true;
-			if (loc.getZ() > worlddata.prepSpawn().getZ() + worlddata.hunterBoundry()) return true;
+			if (loc.getX() < worlddata.pregameSpawn().getX() - worlddata.pregameBoundry()) return true;
+			if (loc.getX() > worlddata.pregameSpawn().getX() + worlddata.pregameBoundry()) return true;
+			if (loc.getZ() < worlddata.pregameSpawn().getZ() - worlddata.pregameBoundry()) return true;
+			if (loc.getZ() > worlddata.pregameSpawn().getZ() + worlddata.pregameBoundry()) return true;
 			return false;
 		} else {
-			if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.globalBoundry()
-					&& loc.getX() < worlddata.preySpawn().getX() - worlddata.globalBoundry()) return true;
-			if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.hunterBoundry()
-					&& loc.getX() > worlddata.preySpawn().getX() + worlddata.globalBoundry()) return true;
-			if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.hunterBoundry()
-					&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.globalBoundry()) return true;
-			if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.hunterBoundry()
-					&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.hunterBoundry()) return true;
+			if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.mapBoundry()
+					&& loc.getX() < worlddata.preySpawn().getX() - worlddata.mapBoundry()) return true;
+			if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.mapBoundry()
+					&& loc.getX() > worlddata.preySpawn().getX() + worlddata.mapBoundry()) return true;
+			if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.mapBoundry()
+					&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.mapBoundry()) return true;
+			if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.mapBoundry()
+					&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.mapBoundry()) return true;
 			return false;
 		}
 	}
 	
 	public Location teleportPregameBoxedLocation(Location loc) {
 		Location newLoc = loc;
-		if (loc.getX() < worlddata.prepSpawn().getX() - worlddata.hunterBoundry()) {
+		if (loc.getX() < worlddata.pregameSpawn().getX() - worlddata.pregameBoundry()) {
 			newLoc.setX(newLoc.getX() + 1);
 		}
-		if (loc.getX() > worlddata.prepSpawn().getX() + worlddata.hunterBoundry()) {
+		if (loc.getX() > worlddata.pregameSpawn().getX() + worlddata.pregameBoundry()) {
 			newLoc.setX(newLoc.getX() - 1);
 		}
-		if (loc.getZ() < worlddata.prepSpawn().getZ() - worlddata.hunterBoundry()) {
-			newLoc.setY(newLoc.getZ() + 1);
+		if (loc.getZ() < worlddata.pregameSpawn().getZ() - worlddata.pregameBoundry()) {
+			newLoc.setZ(newLoc.getZ() + 1);
 		}
-		if (loc.getZ() > worlddata.prepSpawn().getZ() + worlddata.hunterBoundry()) {
+		if (loc.getZ() > worlddata.pregameSpawn().getZ() + worlddata.pregameBoundry()) {
 			newLoc.setZ(newLoc.getZ() - 1);
 		}
 		return newLoc;
@@ -970,21 +982,21 @@ public class Game {
 	
 	public Location teleportBoxedLocation(Location loc) {
 		Location newLoc = loc;
-		if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.globalBoundry()
-				&& loc.getX() < worlddata.preySpawn().getX() - worlddata.globalBoundry()) {
-			newLoc.setX(newLoc.getX() + 1);
+		if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.mapBoundry()
+				&& loc.getX() < worlddata.preySpawn().getX() - worlddata.mapBoundry()) {
+			newLoc.setX(loc.getX() + 1);
 		}
-		if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.globalBoundry()
-				&& loc.getX() > worlddata.preySpawn().getX() + worlddata.globalBoundry()) {
-			newLoc.setX(newLoc.getX() - 1);
+		if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.mapBoundry()
+				&& loc.getX() > worlddata.preySpawn().getX() + worlddata.mapBoundry()) {
+			newLoc.setX(loc.getX() - 1);
 		}
-		if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.globalBoundry()
-				&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.globalBoundry()) {
-			newLoc.setY(newLoc.getZ() + 1);
+		if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.mapBoundry()
+				&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.mapBoundry()) {
+			newLoc.setZ(loc.getZ() + 1);
 		}
-		if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.globalBoundry()
-				&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.globalBoundry()) {
-			newLoc.setZ(newLoc.getZ() - 1);
+		if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.mapBoundry()
+				&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.mapBoundry()) {
+			newLoc.setZ(loc.getZ() - 1);
 		}
 		return newLoc;
 	}
@@ -1189,7 +1201,7 @@ public class Game {
 		return inv;
 	}
 	
-	public Location randomLocation(Location origin, int radius) {
+	public Location randomLocation(Location origin, double radius) {
 		int sign = (int) Math.floor(Math.random()*2);
 		if (sign == 0) sign = -1; else sign = 1;
 		origin.setX(origin.getX() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
