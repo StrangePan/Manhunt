@@ -196,7 +196,6 @@ public class CmdExec implements CommandExecutor {
 			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m prey" + ChatColor.WHITE + " Joins team " + ChatColor.BLUE + "prey.");
 			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m spectate" + ChatColor.WHITE + " Joins team " + ChatColor.WHITE + "spectator.");
 			p.sendMessage(pre() + ChatColor.WHITE + "Add a player's name to assign them to that team.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m makeall [team]" + ChatColor.WHITE + " Assigns everyone to a specific team.");
 			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m quit" + ChatColor.WHITE + " Quits the Manhunt game and makes you a spectator.");
 			if (args.length == 0) p.sendMessage(pre() + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m help 2" + ChatColor.DARK_GREEN + "\" to view page 2!");
 		} else if (page.equalsIgnoreCase("2")) {
@@ -295,9 +294,9 @@ public class CmdExec implements CommandExecutor {
 					+ "There must be at least one Hunter and Prey to start the game!");
 			return;
 		} else {
-			if (g.HuntersAmount(true) < (g.HuntedAmount(true)-1)*4) {
+			if (g.HuntersAmount(true) < (g.HuntedAmount(true)-1)*3) {
 				p.sendMessage(ChatColor.RED
-						+ "There must be at least 4 hunters per prey!");
+						+ "There must be at least 3 hunters per prey!");
 				return;
 			}
 		}
@@ -447,6 +446,12 @@ public class CmdExec implements CommandExecutor {
 						+ "You have been kicked from the game. You are now spectating.");
 				HuntedPlugin.getInstance().log(Level.INFO, args[0] + " was kicked from the game by " + p.getName());
 				return;
+			} else if (!p.isOp()) {
+				p.sendMessage(ChatColor.RED + "Only ops can do that!");
+			} else if (p2.isOp()) {
+				p.sendMessage(ChatColor.RED + "You cannot kick a fellow op!");
+			} else if (p == p2) {
+				p.sendMessage(ChatColor.RED + "You're trying to kick yourself? Use \"/m quit\" instead!");
 			}
 		} else {
 			p.sendMessage(ChatColor.RED + "Who did you want to kick?");

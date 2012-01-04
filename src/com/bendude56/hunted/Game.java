@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import net.minecraft.server.Packet20NamedEntitySpawn;
@@ -290,7 +291,7 @@ public class Game {
 	
 	private void timeout(String p) {
 		if (Bukkit.getPlayerExact(p) != null) {
-			if (Bukkit.getPlayerExact(p).getWorld() == HuntedPlugin.getInstance().getWorld()) {
+			if (Bukkit.getPlayerExact(p).getWorld() != HuntedPlugin.getInstance().getWorld()) {
 				if (timeout.containsKey(p)) {
 					timeout.remove(p);
 				}
@@ -319,7 +320,8 @@ public class Game {
 	}
 	
 	private void onTick() {
-		for (String p : timeout.keySet()) {
+		Set<String> set = timeout.keySet();
+		for (String p : set) {
 			if (new Date().getTime() >= timeout.get(p)) {
 				timeout(p);
 			}
