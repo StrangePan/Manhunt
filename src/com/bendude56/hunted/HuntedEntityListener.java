@@ -177,9 +177,9 @@ public class HuntedEntityListener extends EntityListener {
 					p.setFoodLevel(20);
 					
 					if (g.isHunter(p)) {
-						p.teleport(worlddata.hunterSpawn());
+						p.teleport(g.safeTeleport(worlddata.hunterSpawn()));
 					} else {
-						p.teleport(worlddata.preySpawn());
+						p.teleport(g.safeTeleport(worlddata.preySpawn()));
 					}
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
 					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");
@@ -205,7 +205,7 @@ public class HuntedEntityListener extends EntityListener {
 				} else {
 					g.broadcastAll(ChatColor.GOLD + "---[   " + g.getColor(p) + p.getName() + ChatColor.WHITE + " was "
 							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE + " by " + g.getColor(p2) + p2.getName() + "!" + ChatColor.GOLD + " ]---");
-					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " was ELIMINATED + by " + p2.getName() + "! ]---");
+					HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " was ELIMINATED by " + p2.getName() + "! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				}
@@ -215,9 +215,9 @@ public class HuntedEntityListener extends EntityListener {
 				p.setFoodLevel(20);
 				
 				if (g.isHunter(p)) {
-					p.teleport(worlddata.hunterSpawn());
+					p.teleport(g.safeTeleport(worlddata.hunterSpawn()));
 				} else {
-					p.teleport(worlddata.preySpawn());
+					p.teleport(g.safeTeleport(worlddata.preySpawn()));
 				}
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p) + p.getName() + ChatColor.WHITE + " died from natural causes and has respawned!" + ChatColor.GOLD + " ]---");
 				HuntedPlugin.getInstance().log(Level.INFO, "---[ " + p.getName() + " died from natural causes and has respawned! ]---");

@@ -16,6 +16,8 @@ import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Creeper;
@@ -113,7 +115,7 @@ public class Game {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 				if (settings.loadouts()) preyLoadout(p.getInventory());
-				p.teleport(randomLocation(worlddata.preySpawn(),2));
+				p.teleport(safeTeleport(randomLocation(worlddata.preySpawn(),2)));
 			}
 			for (String n : hunter) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
@@ -126,9 +128,9 @@ public class Game {
 				p.setGameMode(GameMode.SURVIVAL);
 				p.setFireTicks(0);
 				if (settings.prepTime() > 0) {
-					p.teleport(randomLocation(worlddata.pregameSpawn(),2));
+					p.teleport(safeTeleport(randomLocation(worlddata.pregameSpawn(),2)));
 				} else {
-					p.teleport(randomLocation(worlddata.hunterSpawn(),2));
+					p.teleport(safeTeleport(randomLocation(worlddata.hunterSpawn(),2)));
 				}
 				p.setHealth(20);
 				p.setFoodLevel(20);
@@ -295,7 +297,6 @@ public class Game {
 				if (timeout.containsKey(p)) {
 					timeout.remove(p);
 				}
-				return;
 			}
 		}
 		if (hunter.contains(p)) {
@@ -320,7 +321,8 @@ public class Game {
 	}
 	
 	private void onTick() {
-		Set<String> set = timeout.keySet();
+		@SuppressWarnings("unchecked")
+		Set<String> set = ((HashMap<String, Long>) timeout.clone()).keySet();
 		for (String p : set) {
 			if (new Date().getTime() >= timeout.get(p)) {
 				timeout(p);
@@ -454,7 +456,7 @@ public class Game {
 					if (p != null) {
 						if (settings.loadouts()) hunterLoadout(p.getInventory());
 						if (!this.areNearby(worlddata.hunterSpawn(), worlddata.preySpawn(), worlddata.pregameBoundry())) {
-							p.teleport(randomLocation(worlddata.hunterSpawn(), 2));
+							p.teleport(safeTeleport(randomLocation(worlddata.hunterSpawn(), 2)));
 						}
 						p.setHealth(20);
 						p.setFoodLevel(20);
@@ -1003,6 +1005,60 @@ public class Game {
 		return newLoc;
 	}
 	
+	public Location safeTeleport(Location loc) {
+		int y = loc.getBlockY();
+		World world = HuntedPlugin.getInstance().getWorld();
+		
+		for (y--; y < HuntedPlugin.getInstance().getWorld().getMaxHeight()+2; y++) {
+			loc.setY(y);
+			if (isTransparent(world.getBlockAt(loc))) {
+				loc.setY(y+1);
+				if (isTransparent(world.getBlockAt(loc))) {
+					loc.setY(y);
+					return loc;
+				}
+			}
+		} return loc;
+	}
+	
+	public boolean isTransparent(Block block) {
+		if (	   block.getType() == Material.AIR
+				|| block.getType() == Material.BREWING_STAND
+				|| block.getType() == Material.BROWN_MUSHROOM
+				|| block.getType() == Material.CAKE
+				|| block.getType() == Material.CROPS
+				|| block.getType() == Material.DETECTOR_RAIL
+				|| block.getType() == Material.DIODE_BLOCK_ON
+				|| block.getType() == Material.DIODE_BLOCK_OFF
+				|| block.getType() == Material.DRAGON_EGG
+				|| block.getType() == Material.LEVER
+				|| block.getType() == Material.LONG_GRASS
+				|| block.getType() == Material.MELON_STEM
+				|| block.getType() == Material.NETHER_STALK
+				|| block.getType() == Material.PAINTING
+				|| block.getType() == Material.PORTAL
+				|| block.getType() == Material.POWERED_RAIL
+				|| block.getType() == Material.PUMPKIN_STEM
+				|| block.getType() == Material.RAILS
+				|| block.getType() == Material.RED_MUSHROOM
+				|| block.getType() == Material.RED_ROSE
+				|| block.getType() == Material.REDSTONE_TORCH_ON
+				|| block.getType() == Material.REDSTONE_TORCH_OFF
+				|| block.getType() == Material.REDSTONE_WIRE
+				|| block.getType() == Material.SAPLING
+				|| block.getType() == Material.SIGN_POST
+				|| block.getType() == Material.SNOW
+				|| block.getType() == Material.SUGAR_CANE_BLOCK
+				|| block.getType() == Material.TORCH
+				|| block.getType() == Material.VINE
+				|| block.getType() == Material.WALL_SIGN
+				|| block.getType() == Material.YELLOW_FLOWER) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public void stepPlayer(Player p, Double d, Location l) {
 		double x1 = p.getLocation().getX();
 		double z1 = p.getLocation().getZ();
@@ -1013,7 +1069,7 @@ public class Game {
 		destination.setX(x1+d*(x2-x1)/getDistance(x1, 0, z1, x2, 0, z2));
 		destination.setZ(z1+d*(z2-z1)/getDistance(z1, 0, z1, z2, 0, z2));
 		
-		p.teleport(destination);
+		p.teleport(safeTeleport(destination));
 	}
 	
 	public void manageLocators() {
