@@ -28,7 +28,7 @@ public class WorldDataFile extends Properties {
 	private Location pregameSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	
 	public WorldDataFile() {
-		location = "Manhunt.properties";
+		location = "Manhunt_world.properties";
 		loadWorldFile();
 	}
 	

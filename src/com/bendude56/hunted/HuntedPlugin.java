@@ -45,6 +45,9 @@ public class HuntedPlugin extends JavaPlugin {
 		
 		manhuntWorld = Bukkit.getWorlds().get(0);
 		settings = new SettingsFile();
+		if (settings.defaultWorld() != manhuntWorld.getName() && Bukkit.getWorld(settings.defaultWorld()) != null) {
+			manhuntWorld = Bukkit.getWorld(settings.defaultWorld());
+		}
 		worlddata = new WorldDataFile();
 		game = new Game();
 		new CmdExec();
@@ -84,5 +87,25 @@ public class HuntedPlugin extends JavaPlugin {
 	public Game getGame() {
 		return game;
 	}
-
+	
+	public void setWorld(World newWorld) {
+		if (newWorld != null && newWorld != manhuntWorld) {
+			worlddata.saveWorldFile();
+			game.broadcastAll(ChatColor.RED + "The Manhunt world has been moved to \"" + newWorld.getName() + "\"");
+			game.broadcastAll(ChatColor.RED + "Type \"/m spawn\" to warp there now!");
+			
+			manhuntWorld = newWorld;
+			
+			settings.changeSetting("defaultWorld", manhuntWorld.getName());
+			worlddata.loadWorldFile();
+			game.reloadPlayers();
+			game.broadcastAll(ChatColor.GREEN + "This world is the new Manhunt world!");
+			game.broadcastHunters(ChatColor.WHITE + "You have joined team "
+					+ ChatColor.DARK_RED + "Hunters.");
+			game.broadcastHunted(ChatColor.WHITE + "You have joined team "
+					+ ChatColor.BLUE + "Prey.");
+			game.broadcastSpectators(ChatColor.WHITE + "You have become a "
+					+ ChatColor.YELLOW + "Spectator.");
+		}
+	}
 }

@@ -38,6 +38,8 @@ public class SettingsFile extends Properties {
 	private int locatorTimer;
 	private int prepTime;
 	
+	private String defaultWorld;
+	
 	public SettingsFile() {
 		directory = "plugins/Manhunt/";
 		location = directory + "Manhunt.properties";
@@ -116,9 +118,19 @@ public class SettingsFile extends Properties {
 		offlineTimeout = 2;
 		locatorTimer = 120;
 		prepTime = 10;
+		defaultWorld = HuntedPlugin.getInstance().getWorld().getName();
 	}
 	
 	public void loadValues() {
+		if (containsKey("defaultWorld")) {
+			if (getProperty("defaultWorld").length() > 0 && !getProperty("defaultWorld").equalsIgnoreCase("")) {
+				defaultWorld = getProperty("defaultWorld");
+			} else {
+				defaultWorld = HuntedPlugin.getInstance().getWorld().getName();
+			}
+		} else defaultWorld = HuntedPlugin.getInstance().getWorld().getName();
+		put("defaultWorld", defaultWorld);
+		
 		if (containsKey("mustBeOp")) {
 			if (getProperty("mustBeOp").length() > 0 && getProperty("mustBeOp").equalsIgnoreCase("true")) {
 				mustBeOp = true;
@@ -127,15 +139,6 @@ public class SettingsFile extends Properties {
 			}
 		} else mustBeOp = false;
 		put("mustBeOp", Boolean.toString(mustBeOp));
-		
-		/*if (containsKey("easyCommands")) {
-			if (getProperty("easyCommands").length() > 0 && getProperty("easyCommands").equalsIgnoreCase("true")) {
-				easyCommands = true;
-			} else {
-				easyCommands = false;
-			}
-		} else easyCommands = true;
-		put("easyCommands", Boolean.toString(easyCommands));*/
 		
 		if (containsKey("allTalk")) {
 			if (getProperty("allTalk").length() > 0 && getProperty("allTalk").equalsIgnoreCase("true")) {
@@ -339,6 +342,8 @@ public class SettingsFile extends Properties {
 	
 	public int locatorTimer()		{ return locatorTimer; }
 	public int prepTime()			{ return prepTime; }
+	
+	public String defaultWorld()	{ return defaultWorld; }
 	
  	public void changeSetting(String setting, String value) {
 		if (containsKey(setting)) {

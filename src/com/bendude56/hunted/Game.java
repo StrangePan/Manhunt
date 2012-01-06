@@ -827,6 +827,25 @@ public class Game {
 		}
 	}
 	
+	public void reloadPlayers() {
+		if (this.gameRunning) return;
+		hunter.clear();
+		hunted.clear();
+		spectator.clear();
+		timeout.clear();
+		locator.clear();
+		creative.clear();
+		
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
+				if (settings.autoHunter()) {
+				} else {
+					addSpectator(p);
+				}
+			}
+		}
+	}
+	
 	public void quit(Player p) {
 		if (isHunter(p) || isHunted(p)) {
 			onDie(p);

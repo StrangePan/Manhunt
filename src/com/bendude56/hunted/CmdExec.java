@@ -38,16 +38,6 @@ public class CmdExec implements CommandExecutor {
 				return true;
 			}
 			
-			if (args[0].equalsIgnoreCase("walrus")) {
-				p.sendMessage(ChatColor.AQUA + "THE WARLUS LIVES IN ALL OF US! (:3=");
-				return true;
-			}
-			
-			if (args[0].equalsIgnoreCase("seal")) {
-				p.sendMessage(ChatColor.AQUA + "HOW DARE YOU UTTER THAT WORD! >:3=");
-				return true;
-			}
-			
 			if (args[0].equalsIgnoreCase("help")) {
 				args = shiftArgs(args);
 				helpCommand(args, p);
@@ -132,6 +122,10 @@ public class CmdExec implements CommandExecutor {
 				args = shiftArgs(args);
 				setspawnCommand(args, p);
 				
+			} else if (args[0].equalsIgnoreCase("setworld")) {
+				args = shiftArgs(args);
+				setworldCommand(args, p);
+				
 			} else if (args[0].equalsIgnoreCase("startgame")) {
 				args = shiftArgs(args);
 				startCommand(args, p);
@@ -190,95 +184,96 @@ public class CmdExec implements CommandExecutor {
 		
 		if (page.equalsIgnoreCase("1")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt help: (1/2) ----");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m startgame" + ChatColor.WHITE + " Starts the Manhunt game.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m stopgame" + ChatColor.WHITE + " Stops the Manhunt game.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m hunter" + ChatColor.WHITE + " Joins team " + ChatColor.DARK_RED + "hunter.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m prey" + ChatColor.WHITE + " Joins team " + ChatColor.BLUE + "prey.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m spectate" + ChatColor.WHITE + " Joins team " + ChatColor.WHITE + "spectator.");
-			p.sendMessage(pre() + ChatColor.WHITE + "Add a player's name to assign them to that team.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m quit" + ChatColor.WHITE + " Quits the Manhunt game and makes you a spectator.");
-			if (args.length == 0) p.sendMessage(pre() + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m help 2" + ChatColor.DARK_GREEN + "\" to view page 2!");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m startgame" + ChatColor.WHITE + " Starts the Manhunt game.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m stopgame" + ChatColor.WHITE + " Stops the Manhunt game.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m hunter" + ChatColor.WHITE + " Joins team " + ChatColor.DARK_RED + "hunter.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m prey" + ChatColor.WHITE + " Joins team " + ChatColor.BLUE + "prey.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m spectate" + ChatColor.WHITE + " Joins team " + ChatColor.WHITE + "spectator.");
+			p.sendMessage(pre + ChatColor.WHITE + "Add a player's name to assign them to that team.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m list" + ChatColor.WHITE + " Lists the Manhunt players.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m status" + ChatColor.WHITE + " Gives information on the current Manhunt game.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m quit" + ChatColor.WHITE + " Quits the Manhunt game and makes you a spectator.");
+			if (args.length == 0) p.sendMessage(pre + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m help 2" + ChatColor.DARK_GREEN + "\" to view page 2!");
 		} else if (page.equalsIgnoreCase("2")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt help: (2/2) ----");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m setting [page]" + ChatColor.WHITE + " Lists current Manhunt settings.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m setting [setting] [value]" + ChatColor.WHITE + " Changes a Manhunt setting.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m spawn [team]" + ChatColor.WHITE + " Teleports you to the world/team spawn");
-			p.sendMessage(pre() + ChatColor.WHITE + "Include a player's name to teleport them instead.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m setspawn [team]" + ChatColor.WHITE + " Sets the world's or a team's spawn.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m makeall [team]" + ChatColor.WHITE + " Assigns everyone to a specific team.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m kick [player]" + ChatColor.WHITE + " Makes the palyer a spectator.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m list" + ChatColor.WHITE + " Lists the Manhunt players.");
-			p.sendMessage(pre() + ChatColor.DARK_GREEN + "/m status" + ChatColor.WHITE + " Gives information on the current Manhunt game.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m setting [page]" + ChatColor.WHITE + " Lists current Manhunt settings.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m setting [setting] [value]" + ChatColor.WHITE + " Changes a Manhunt setting.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m spawn [team]" + ChatColor.WHITE + " Teleports you to the world/team spawn");
+			p.sendMessage(pre + ChatColor.WHITE + "Include a player's name to teleport them instead.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m setspawn [team]" + ChatColor.WHITE + " Sets the world's or a team's spawn.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m setworld" + ChatColor.WHITE + " Sets the Manhunt world to the one you are in.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m makeall [team]" + ChatColor.WHITE + " Assigns everyone to a specific team.");
+			p.sendMessage(pre + ChatColor.DARK_GREEN + "/m kick [player]" + ChatColor.WHITE + " Makes the palyer a spectator.");
 		}
 	}
 	
 	private void rulesCommand(String[] args, Player p) {
 		if (args.length == 0 || args[0].equalsIgnoreCase("1")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt General Rules (1/3) ----");
-			p.sendMessage(pre() + "Manhunt is an exciting game where two teams go");
-			p.sendMessage(pre() + "head-to-head: the " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " and the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
+			p.sendMessage(pre + "Manhunt is an exciting game where two teams go");
+			p.sendMessage(pre + "head-to-head: the " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " and the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
 			if (settings.prepTime() != 0) {
-				p.sendMessage(pre() + "The " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + " have " + settings.prepTime() + " minutes to prepare before the hunt.");
+				p.sendMessage(pre + "The " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + " have " + settings.prepTime() + " minutes to prepare before the hunt.");
 			} else {
-				p.sendMessage(pre() + "The hunt starts immediately with no preparation time.");
+				p.sendMessage(pre + "The hunt starts immediately with no preparation time.");
 			}
-			p.sendMessage(pre() + "When the game starts (at sundown), the " + ChatColor.DARK_RED + "Hunters");
-			p.sendMessage(pre() + "are released to hunt and kill the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
-			p.sendMessage(pre() + "The " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " have " + settings.dayLimit() + " days to kill all the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
-			p.sendMessage(pre() + "The first team to wipe out the other " + ChatColor.GOLD + "wins the game!");
-			p.sendMessage(pre() + "But if time runs out, the "  +ChatColor.BLUE + "Prey" + ChatColor.WHITE + " will win.");
-			if (args.length == 0) p.sendMessage(pre() + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m rules 2" + ChatColor.DARK_GREEN + "\" to view page 2!");
+			p.sendMessage(pre + "When the game starts (at sundown), the " + ChatColor.DARK_RED + "Hunters");
+			p.sendMessage(pre + "are released to hunt and kill the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
+			p.sendMessage(pre + "The " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " have " + settings.dayLimit() + " days to kill all the " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + ".");
+			p.sendMessage(pre + "The first team to wipe out the other " + ChatColor.GOLD + "wins the game!");
+			p.sendMessage(pre + "But if time runs out, the "  +ChatColor.BLUE + "Prey" + ChatColor.WHITE + " will win.");
+			if (args.length == 0) p.sendMessage(pre + ChatColor.DARK_GREEN + "Type \"" + ChatColor.RED + "/m rules 2" + ChatColor.DARK_GREEN + "\" to view page 2!");
 			
 		} else if (args[0].equalsIgnoreCase("2")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt Detailed Rules (2/3) ----");
 			if (settings.loadouts()) {
-				p.sendMessage(pre() + "Every player will get their own loadouts to start with.");
+				p.sendMessage(pre + "Every player will get their own loadouts to start with.");
 				if (settings.teamHats()) {
-					p.sendMessage(pre() + "And each team gets identifying hats.");
+					p.sendMessage(pre + "And each team gets identifying hats.");
 				}
 			}
-			p.sendMessage(pre() + "All players must remain above ground, and no spawn camping!");
-			if (settings.pvpInstantDeath()) p.sendMessage(pre() + "Insta-kill is ON, so everyone is a one-hit kill.");
+			p.sendMessage(pre + "All players must remain above ground, and no spawn camping!");
+			if (settings.pvpInstantDeath()) p.sendMessage(pre + "Insta-kill is ON, so everyone is a one-hit kill.");
 			if (settings.envDeath()) {
 				if (settings.envHunterRespawn() && settings.envPreyRespawn()) {
-					p.sendMessage(pre() + "If someone dies from the environment, they will respawn.");
+					p.sendMessage(pre + "If someone dies from the environment, they will respawn.");
 				} else if (settings.envHunterRespawn() && !settings.envPreyRespawn()) {
-					p.sendMessage(pre() + "Only " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " will respawn from environmental death.");
+					p.sendMessage(pre + "Only " + ChatColor.DARK_RED + "Hunters" + ChatColor.WHITE + " will respawn from environmental death.");
 				} else if (!settings.envHunterRespawn() && settings.envPreyRespawn()) {
-					p.sendMessage(pre() + "Only " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + " will respawn from environmental death.");
+					p.sendMessage(pre + "Only " + ChatColor.BLUE + "Prey" + ChatColor.WHITE + " will respawn from environmental death.");
 				} else if (!settings.envHunterRespawn() && !settings.envPreyRespawn()) {
-					p.sendMessage(pre() + "Players are elminiated when killed by the environment");
+					p.sendMessage(pre + "Players are elminiated when killed by the environment");
 				}
 			} else {
-				p.sendMessage(pre() + "You cannot die by the environment.");
+				p.sendMessage(pre + "You cannot die by the environment.");
 			}
 			if (settings.preyFinder()) {
-				p.sendMessage(pre() + ChatColor.DARK_RED + "Hunter" + ChatColor.WHITE + " compasses can be used as Prey Finders.");
-				p.sendMessage(pre() + ChatColor.GRAY + " (Requires at least " + g.locatorFood()/2 + " food! Click while holding compass)");
+				p.sendMessage(pre + ChatColor.DARK_RED + "Hunter" + ChatColor.WHITE + " compasses can be used as Prey Finders.");
+				p.sendMessage(pre + ChatColor.GRAY + " (Requires at least " + g.locatorFood()/2 + " food! Click while holding compass)");
 			}
 			if (settings.spawnHostile()) {
-				p.sendMessage(pre() + "Hostiles mobs are turned ON.");
+				p.sendMessage(pre + "Hostiles mobs are turned ON.");
 			} else {
-				p.sendMessage(pre() + "Hostiles mobs are turned OFF.");
+				p.sendMessage(pre + "Hostiles mobs are turned OFF.");
 			}
 			if (settings.allTalk()) {
-				p.sendMessage(pre() + "All talk is on, so all players can chat together.");
+				p.sendMessage(pre + "All talk is on, so all players can chat together.");
 			} else {
-				p.sendMessage(pre() + "All talk is off, so only teammates can chat with eachother.");
+				p.sendMessage(pre + "All talk is off, so only teammates can chat with eachother.");
 			}
 		} else if (args[0].equalsIgnoreCase("3")) {
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt Miscellaneous Rules (3/3) ---");
-			p.sendMessage(pre() + "Players may not build " + worlddata.noBuildRange() + " blocks from the spawn.");
-			p.sendMessage(pre() + "Players have " + settings.offlineTimeout() + " minutes to return to the game.");
+			p.sendMessage(pre + "Players may not build " + worlddata.noBuildRange() + " blocks from the spawn.");
+			p.sendMessage(pre + "Players have " + settings.offlineTimeout() + " minutes to return to the game.");
 			if (settings.flyingSpectators()) {
-				p.sendMessage(pre() + "Spectators are invisible, and can fly freely.");
+				p.sendMessage(pre + "Spectators are invisible, and can fly freely.");
 			} else {
-				p.sendMessage(pre() + "Spectators are invisible to other players");
+				p.sendMessage(pre + "Spectators are invisible to other players");
 			}
 			if (settings.friendlyFire()) {
-				p.sendMessage(pre() + "Friendly fire is ON, so be careful.");
+				p.sendMessage(pre + "Friendly fire is ON, so be careful.");
 			} else {
-				p.sendMessage(pre() + "Friendly fire is turned OFF.");
+				p.sendMessage(pre + "Friendly fire is turned OFF.");
 			}
 		}
 	}
@@ -873,6 +868,23 @@ public class CmdExec implements CommandExecutor {
 				p.sendMessage(ChatColor.GREEN + "All spawn points set!");
 				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed all spawn points.");
 			}
+		}
+	}
+	
+	private void setworldCommand(String[] args, Player p) {
+		if (!p.isOp()) {
+			p.sendMessage(ChatColor.RED + "Only ops can change the Manhunt world!");
+		}
+		if (g.gameHasBegun()) {
+			if (p.getWorld() != HuntedPlugin.getInstance().getWorld()) {
+				HuntedPlugin.getInstance().setWorld(p.getWorld());
+				p.sendMessage(ChatColor.GREEN + "Manhunt world has been set to \"" + p.getWorld().getName() + "\"");
+				HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " changed the Manhunt world to " + p.getWorld().getName());
+			} else {
+				p.sendMessage(ChatColor.RED + "You are already in the Manhunt world!");
+			}
+		} else {
+			p.sendMessage(ChatColor.RED + "You cannot change the Manhunt world while a game is running!");
 		}
 	}
 	
@@ -2199,8 +2211,6 @@ public class CmdExec implements CommandExecutor {
 		return a;
 	}
 	
-	private String pre() {
-		return (ChatColor.YELLOW + "|" + ChatColor.WHITE + " ");
-	}
+	private static String pre = (ChatColor.YELLOW + "|" + ChatColor.WHITE + " ");
 	
 }
