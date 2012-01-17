@@ -17,7 +17,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Creeper;
@@ -209,16 +208,7 @@ public class Game {
 					HuntedPlugin.getInstance().log(Level.INFO, s + " has been moved to team Hunters");
 				}
 			}
-			for (String s : hunted) {
-				if (Bukkit.getPlayerExact(s) != null) {
-					if (!hunter.contains(s)) hunter.add(s);
-					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GOLD + "---[   "
-							+ ChatColor.GRAY + "You have been moved to team " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + "   ]---");
-					HuntedPlugin.getInstance().log(Level.INFO, s + " has been moved to team Hunters");
-				}
-			}
 			spectator.clear();
-			hunted.clear();
 			//broadcastAll(ChatColor.GOLD + "---[   All " + ChatColor.YELLOW + "Spectators"
 			//		+ ChatColor.GOLD + " have been moved to team " + ChatColor.DARK_RED + "Hunters"
 			//		+ ChatColor.GOLD + "   ]---");
@@ -239,16 +229,11 @@ public class Game {
 				}
 			}
 		}*/
-		
 		if (hunter.contains(s)) {
 			hunter.remove(s);
+			spectator.add(s);
 			if (HuntersAmount(false) == 0) {
 				stop();
-				if (settings.autoHunter()) {
-					hunter.add(s);
-				} else {
-					spectator.add(s);
-				}
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
 				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD + " are dead! The " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " win the game!");
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
@@ -262,17 +247,13 @@ public class Game {
 					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GOLD + "---[   " + ChatColor.GRAY + "You are now " + ChatColor.YELLOW + "SPECTATING." + ChatColor.GOLD + "   ]---");
 					if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				}
-				spectator.add(s);
 			}
 		} else if (hunted.contains(s)) {
 			hunted.remove(s);
+			spectator.add(s);
 			if (HuntedAmount(false) == 0) {
 				stop();
-				if (settings.autoHunter()) {
-					hunter.add(s);
-				} else {
-					spectator.add(s);
-				}
+				
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
 				broadcastAll(ChatColor.GOLD + "All of the " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " are dead! The " + ChatColor.DARK_RED + "Hunters" + ChatColor.GOLD +" win the game!");
 				broadcastAll(ChatColor.GOLD + "-----------------------------------------------------");
@@ -286,7 +267,6 @@ public class Game {
 					Bukkit.getPlayerExact(s).sendMessage(ChatColor.GRAY + "You are now " + ChatColor.YELLOW + "spectating.");
 					if (settings.flyingSpectators()) Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				}
-				spectator.add(s);
 			}
 		}
 	}
@@ -455,7 +435,7 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.loadouts()) hunterLoadout(p.getInventory());
-						if (!this.areNearby(worlddata.hunterSpawn(), worlddata.preySpawn(), worlddata.pregameBoundry())) {
+						if (!areNearby(worlddata.hunterSpawn(), worlddata.preySpawn(), worlddata.pregameBoundary())) {
 							p.teleport(safeTeleport(randomLocation(worlddata.hunterSpawn(), 2)));
 						}
 						p.setHealth(20);
@@ -805,25 +785,20 @@ public class Game {
 	}
 	
 	public void deletePlayer(String p) {
-		for (int i=0 ; i<hunter.size() ; i++) {
-			if (p.equalsIgnoreCase(hunter.get(i))) {
-				hunter.remove(i);
-			}
+		if (isHunter(p)) {
+			hunter.remove(p);
 		}
-		for (int i=0 ; i<hunted.size() ; i++) {
-			if (p.equalsIgnoreCase(hunted.get(i))) {
-				hunted.remove(i);
-			}
+		if (isHunted(p)) {
+			hunted.remove(p);
 		}
-		for (int i=0 ; i<spectator.size() ; i++) {
-			if (p.equalsIgnoreCase(spectator.get(i))) {
-				spectator.remove(i);
-			}
+		if (isSpectating(p)) {
+			spectator.remove(p);
 		}
-		for (String i : timeout.keySet()) {
-			if (i.equalsIgnoreCase(p)) {
-				timeout.remove(i);
-			}
+		if (timeout.containsKey(p)) {
+			timeout.remove(p);
+		}
+		if (locator.contains(p)) {
+			locator.remove(p);
 		}
 	}
 	
@@ -839,6 +814,7 @@ public class Game {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 				if (settings.autoHunter()) {
+					addHunter(p);
 				} else {
 					addSpectator(p);
 				}
@@ -861,7 +837,11 @@ public class Game {
 			return ChatColor.DARK_RED;
 		} else if (isHunted(p)) {
 			return ChatColor.BLUE;
-		} else return ChatColor.YELLOW;
+		} else if (isSpectating(p)) {
+			return ChatColor.YELLOW;
+		} else {
+			return ChatColor.WHITE;
+		}
 	}
 	
 	public ChatColor getColor(String p) {
@@ -968,36 +948,36 @@ public class Game {
 	
 	public boolean outsideBoxedArea(Location loc, boolean pregame) {
 		if (pregame) {
-			if (loc.getX() < worlddata.pregameSpawn().getX() - worlddata.pregameBoundry()) return true;
-			if (loc.getX() > worlddata.pregameSpawn().getX() + worlddata.pregameBoundry()) return true;
-			if (loc.getZ() < worlddata.pregameSpawn().getZ() - worlddata.pregameBoundry()) return true;
-			if (loc.getZ() > worlddata.pregameSpawn().getZ() + worlddata.pregameBoundry()) return true;
+			if (loc.getX() < worlddata.pregameSpawn().getX() - worlddata.pregameBoundary()) return true;
+			if (loc.getX() > worlddata.pregameSpawn().getX() + worlddata.pregameBoundary()) return true;
+			if (loc.getZ() < worlddata.pregameSpawn().getZ() - worlddata.pregameBoundary()) return true;
+			if (loc.getZ() > worlddata.pregameSpawn().getZ() + worlddata.pregameBoundary()) return true;
 			return false;
 		} else {
-			if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.mapBoundry()
-					&& loc.getX() < worlddata.preySpawn().getX() - worlddata.mapBoundry()) return true;
-			if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.mapBoundry()
-					&& loc.getX() > worlddata.preySpawn().getX() + worlddata.mapBoundry()) return true;
-			if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.mapBoundry()
-					&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.mapBoundry()) return true;
-			if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.mapBoundry()
-					&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.mapBoundry()) return true;
+			if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.mapBoundary()
+					&& loc.getX() < worlddata.preySpawn().getX() - worlddata.mapBoundary()) return true;
+			if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.mapBoundary()
+					&& loc.getX() > worlddata.preySpawn().getX() + worlddata.mapBoundary()) return true;
+			if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.mapBoundary()
+					&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.mapBoundary()) return true;
+			if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.mapBoundary()
+					&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.mapBoundary()) return true;
 			return false;
 		}
 	}
 	
 	public Location teleportPregameBoxedLocation(Location loc) {
 		Location newLoc = loc;
-		if (loc.getX() < worlddata.pregameSpawn().getX() - worlddata.pregameBoundry()) {
+		if (loc.getX() < worlddata.pregameSpawn().getX() - worlddata.pregameBoundary()) {
 			newLoc.setX(newLoc.getX() + 1);
 		}
-		if (loc.getX() > worlddata.pregameSpawn().getX() + worlddata.pregameBoundry()) {
+		if (loc.getX() > worlddata.pregameSpawn().getX() + worlddata.pregameBoundary()) {
 			newLoc.setX(newLoc.getX() - 1);
 		}
-		if (loc.getZ() < worlddata.pregameSpawn().getZ() - worlddata.pregameBoundry()) {
+		if (loc.getZ() < worlddata.pregameSpawn().getZ() - worlddata.pregameBoundary()) {
 			newLoc.setZ(newLoc.getZ() + 1);
 		}
-		if (loc.getZ() > worlddata.pregameSpawn().getZ() + worlddata.pregameBoundry()) {
+		if (loc.getZ() > worlddata.pregameSpawn().getZ() + worlddata.pregameBoundary()) {
 			newLoc.setZ(newLoc.getZ() - 1);
 		}
 		return newLoc;
@@ -1005,39 +985,35 @@ public class Game {
 	
 	public Location teleportBoxedLocation(Location loc) {
 		Location newLoc = loc;
-		if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.mapBoundry()
-				&& loc.getX() < worlddata.preySpawn().getX() - worlddata.mapBoundry()) {
+		if (loc.getX() < worlddata.hunterSpawn().getX() - worlddata.mapBoundary()
+				&& loc.getX() < worlddata.preySpawn().getX() - worlddata.mapBoundary()) {
 			newLoc.setX(loc.getX() + 1);
 		}
-		if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.mapBoundry()
-				&& loc.getX() > worlddata.preySpawn().getX() + worlddata.mapBoundry()) {
+		if (loc.getX() > worlddata.hunterSpawn().getX() + worlddata.mapBoundary()
+				&& loc.getX() > worlddata.preySpawn().getX() + worlddata.mapBoundary()) {
 			newLoc.setX(loc.getX() - 1);
 		}
-		if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.mapBoundry()
-				&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.mapBoundry()) {
+		if (loc.getZ() < worlddata.hunterSpawn().getZ() - worlddata.mapBoundary()
+				&& loc.getZ() < worlddata.preySpawn().getZ() - worlddata.mapBoundary()) {
 			newLoc.setZ(loc.getZ() + 1);
 		}
-		if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.mapBoundry()
-				&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.mapBoundry()) {
+		if (loc.getZ() > worlddata.hunterSpawn().getZ() + worlddata.mapBoundary()
+				&& loc.getZ() > worlddata.preySpawn().getZ() + worlddata.mapBoundary()) {
 			newLoc.setZ(loc.getZ() - 1);
 		}
 		return newLoc;
 	}
 	
 	public Location safeTeleport(Location loc) {
-		int y = loc.getBlockY();
-		World world = HuntedPlugin.getInstance().getWorld();
+		loc.setY(loc.getY()-1);
+		Location loc2 = loc;
+		loc2.setY(loc2.getY()-1);
 		
-		for (y--; y < HuntedPlugin.getInstance().getWorld().getMaxHeight()+2; y++) {
-			loc.setY(y);
-			if (isTransparent(world.getBlockAt(loc))) {
-				loc.setY(y+1);
-				if (isTransparent(world.getBlockAt(loc))) {
-					loc.setY(y);
-					return loc;
-				}
-			}
-		} return loc;
+		while (!isTransparent(loc.getBlock()) && !isTransparent(loc2.getBlock())) {
+			loc.setY(loc.getY()+1);
+			loc2.setY(loc2.getY()+1);
+		}
+		return loc;
 	}
 	
 	public boolean isTransparent(Block block) {
@@ -1260,6 +1236,7 @@ public class Game {
 		else msg2 = "ahead of you";
 		
 		p.sendMessage(ChatColor.GOLD + "The nearest Prey is " + ChatColor.BLUE + msg1 + ChatColor.GOLD +" of you! (Somehere " + ChatColor.BLUE + msg2 + ChatColor.GOLD + ".)");
+		p2.sendMessage(ChatColor.GOLD + "--[   " + ChatColor.RED + "A " + ChatColor.DARK_RED + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatColor.GOLD + "   ]---");
 	}
 	public int locatorFood() {
 		int food = HuntersAmount(false);
@@ -1279,13 +1256,14 @@ public class Game {
 	}
 	
 	public Location randomLocation(Location origin, double radius) {
+		Location randomLocation = origin.clone();
 		int sign = (int) Math.floor(Math.random()*2);
 		if (sign == 0) sign = -1; else sign = 1;
-		origin.setX(origin.getX() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
+		randomLocation.setX(randomLocation.getX() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
 		sign = (int) Math.floor(Math.random()*2);
 		if (sign == 0) sign = -1; else sign = 1;
-		origin.setZ(origin.getZ() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
-		return origin;
+		randomLocation.setZ(randomLocation.getZ() + (sign)*(Math.random()*radius)*(Math.cos(Math.toRadians(Math.random()*180))));
+		return randomLocation;
 	}
 	
 	public boolean areNearby(Location loc1, Location loc2, double tolerance) {

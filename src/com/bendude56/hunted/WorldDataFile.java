@@ -18,10 +18,11 @@ public class WorldDataFile extends Properties {
 	
 	private String location;
 	
-	private int mapBoundry;
-	private int pregameBoundry;
+	private int mapBoundary;
+	private int pregameBoundary;
 	private int noBuildRange;
-	private boolean boxBoundry;
+	private boolean boxBoundary;
+	private boolean noBuild;
 
 	private Location hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
 	private Location preySpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
@@ -76,10 +77,10 @@ public class WorldDataFile extends Properties {
 	}
 	
 	public void loadDefaults() {
-		boxBoundry = false;
+		boxBoundary = false;
 		
-		mapBoundry = 128;
-		pregameBoundry = 8;
+		mapBoundary = 128;
+		pregameBoundary = 8;
 		noBuildRange = 8;
 		
 		hunterSpawn = HuntedPlugin.getInstance().getWorld().getSpawnLocation();
@@ -89,40 +90,49 @@ public class WorldDataFile extends Properties {
 	
 	public void loadWorldValues() {
 		
-		if (containsKey("boxBoundry")) {
-			if (getProperty("boxBoundry").length() > 0 && getProperty("boxBoundry").equalsIgnoreCase("true")) {
-				boxBoundry = true;
+		if (containsKey("boxBoundary")) {
+			if (getProperty("boxBoundary").length() > 0 && getProperty("boxBoundary").equalsIgnoreCase("true")) {
+				boxBoundary = true;
 			} else {
-				boxBoundry = false;
+				boxBoundary = false;
 			}
-		} else boxBoundry = false;
-		put("boxBoundry", Boolean.toString(boxBoundry));
+		} else boxBoundary = false;
+		put("boxBoundary", Boolean.toString(boxBoundary));
 		
-		if (containsKey("mapBoundry")) {
-			if (getProperty("mapBoundry").length() > 0) {
-				try {
-					mapBoundry = Integer.parseInt(getProperty("mapBoundry"));
-					if (mapBoundry < 64 && mapBoundry > -1) mapBoundry = 64;
-					if (mapBoundry <= -1) mapBoundry = -1;
-				} catch (NumberFormatException e) {
-					mapBoundry = 128;
-				}
-			} else mapBoundry = 128;
-		} else mapBoundry = 128;
-		put("mapBoundry", Integer.toString(mapBoundry));
+		if (containsKey("noBuild")) {
+			if (getProperty("noBuild").length() > 0 && getProperty("noBuild").equalsIgnoreCase("true")) {
+				noBuild = true;
+			} else {
+				noBuild = false;
+			}
+		} else noBuild = false;
+		put("noBuild", Boolean.toString(noBuild));
 		
-		if (containsKey("pregameBoundry")) {
-			if (getProperty("pregameBoundry").length() > 0) {
+		if (containsKey("mapBoundary")) {
+			if (getProperty("mapBoundary").length() > 0) {
 				try {
-					pregameBoundry = Integer.parseInt(getProperty("pregameBoundry"));
-					if (pregameBoundry < -1) pregameBoundry = -1;
-					if (pregameBoundry > 64) pregameBoundry = 64;
+					mapBoundary = Integer.parseInt(getProperty("mapBoundary"));
+					if (mapBoundary < 64 && mapBoundary > -1) mapBoundary = 64;
+					if (mapBoundary <= -1) mapBoundary = -1;
 				} catch (NumberFormatException e) {
-					pregameBoundry = 8;
+					mapBoundary = 128;
 				}
-			} else pregameBoundry = 8;
-		} else pregameBoundry = 8;
-		put("pregameBoundry", Integer.toString(pregameBoundry));
+			} else mapBoundary = 128;
+		} else mapBoundary = 128;
+		put("mapBoundary", Integer.toString(mapBoundary));
+		
+		if (containsKey("pregameBoundary")) {
+			if (getProperty("pregameBoundary").length() > 0) {
+				try {
+					pregameBoundary = Integer.parseInt(getProperty("pregameBoundary"));
+					if (pregameBoundary < -1) pregameBoundary = -1;
+					if (pregameBoundary > 64) pregameBoundary = 64;
+				} catch (NumberFormatException e) {
+					pregameBoundary = 8;
+				}
+			} else pregameBoundary = 8;
+		} else pregameBoundary = 8;
+		put("pregameBoundary", Integer.toString(pregameBoundary));
 		
 		if (containsKey("noBuildRange")) {
 			if (getProperty("noBuildRange").length() > 0) {
@@ -197,10 +207,11 @@ public class WorldDataFile extends Properties {
 		put("pregameSpawn", pregameSpawn.getX() + "," + pregameSpawn.getY() + "," + pregameSpawn.getZ() + "," + pregameSpawn.getPitch() + "," + pregameSpawn.getYaw());
 	}
 
-	public boolean boxBoundry()		{ return boxBoundry; }
+	public boolean boxBoundary()	{ return boxBoundary; }
+	public boolean noBuild()		{ return noBuild; }
 
-	public int mapBoundry() 		{ return mapBoundry; }
-	public int pregameBoundry() 	{ return pregameBoundry; }
+	public int mapBoundary() 		{ return mapBoundary; }
+	public int pregameBoundary() 	{ return pregameBoundary; }
 	public int noBuildRange() 		{ return noBuildRange; }
 	
 	public Location hunterSpawn()	{ return hunterSpawn; }

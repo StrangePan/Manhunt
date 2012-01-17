@@ -289,11 +289,11 @@ public class CmdExec implements CommandExecutor {
 					+ "There must be at least one Hunter and Prey to start the game!");
 			return;
 		} else {
-			if (g.HuntersAmount(true) < (g.HuntedAmount(true)-1)*3) {
-				p.sendMessage(ChatColor.RED
-						+ "There must be at least 3 hunters per prey!");
-				return;
-			}
+			//if (g.HuntersAmount(true) < (g.HuntedAmount(true)-1)*3) {
+			//	p.sendMessage(ChatColor.RED
+			//			+ "There must be at least 3 hunters per prey!");
+			//	return;
+			//}
 		}
 		HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " has started the Manhunt game!");
 		g.start();
@@ -513,7 +513,7 @@ public class CmdExec implements CommandExecutor {
 				|| args[0].equalsIgnoreCase("hunters")) {
 			for (Player s : Bukkit.getOnlinePlayers()) {
 				if (g.isHunted(s) || g.isSpectating(s)) {
-					g.addHunted(s);
+					g.addHunter(s);
 					s.sendMessage(ChatColor.WHITE
 							+ "You have been moved to team "
 							+ ChatColor.RED + "Hunters.");
@@ -562,22 +562,70 @@ public class CmdExec implements CommandExecutor {
 	private void listCommand(String[] args, Player p) {
 		if (args.length == 0
 				|| (args.length >= 1 && args[0].equalsIgnoreCase("all"))) {
+			
 			p.sendMessage(ChatColor.GREEN + "Manhunt players: ("+ (g.HuntedAmount(false) + g.HuntersAmount(false) + g.SpectatorsAmount(false)) + ")  "
-				+ ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount(false) + ChatColor.BLUE + "  Prey: " + g.HuntedAmount(false) + ChatColor.YELLOW + "  Spectators: " + g.SpectatorsAmount(false));
+					+ ChatColor.DARK_RED + "Hunters: " + g.HuntersAmount(false) + ChatColor.BLUE + "  Prey: " + g.HuntedAmount(false) + ChatColor.YELLOW + "  Spectators: " + g.SpectatorsAmount(false));
+			
+			int counter = 0;
+			String stringList = "";
 			for (String s : g.getHunters()) {
 				if (Bukkit.getPlayerExact(s) == null) {
-					s += " " + ChatColor.GRAY + "(Offline)";
+					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.DARK_RED + s + " " + ChatColor.GRAY + "(Offline)";
+					counter += 2;
+				} else {
+					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.DARK_RED + s;
+					counter ++;
 				}
-				p.sendMessage(ChatColor.DARK_RED + "  " + s);
+				if (counter >= 3) {
+					counter = 0;
+					p.sendMessage(stringList);
+					stringList = "";
+				} else {
+					s += "    ";
+				}
+			}
+			if (!stringList.equalsIgnoreCase("")) {
+				p.sendMessage(stringList);
+				stringList = "";
 			}
 			for (String s : g.getHunted()) {
 				if (Bukkit.getPlayerExact(s) == null) {
-					s += " " + ChatColor.GRAY + "(Offline)";
+					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.BLUE + s + " " + ChatColor.GRAY + "(Offline)";
+					counter += 2;
+				} else {
+					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.BLUE + s;
+					counter ++;
 				}
-				p.sendMessage(ChatColor.BLUE + "  " + s);
+				if (counter >= 3) {
+					counter = 0;
+					p.sendMessage(stringList);
+					stringList = "";
+				} else {
+					s += "    ";
+				}
+			}
+			if (!stringList.equalsIgnoreCase("")) {
+				p.sendMessage(stringList);
+				stringList = "";
 			}
 			for (String s : g.getSpectators()) {
-				p.sendMessage(ChatColor.YELLOW + "  " + s);
+				if (counter != 0) stringList += "    ";
+				stringList += ChatColor.YELLOW + s;
+				counter ++;
+				if (counter >= 3) {
+					counter = 0;
+					p.sendMessage(stringList);
+				} else {
+					s += "    ";
+				}
+			}
+			if (!stringList.equalsIgnoreCase("")) {
+				p.sendMessage(stringList);
+				stringList = "";
 			}
 		} else if (args.length >= 1 && args[0].equalsIgnoreCase("hunters")) {
 			p.sendMessage(ChatColor.GREEN + "Team HUNTERS: ("
@@ -875,7 +923,7 @@ public class CmdExec implements CommandExecutor {
 		if (!p.isOp()) {
 			p.sendMessage(ChatColor.RED + "Only ops can change the Manhunt world!");
 		}
-		if (g.gameHasBegun()) {
+		if (!g.gameHasBegun()) {
 			if (p.getWorld() != HuntedPlugin.getInstance().getWorld()) {
 				HuntedPlugin.getInstance().setWorld(p.getWorld());
 				p.sendMessage(ChatColor.GREEN + "Manhunt world has been set to \"" + p.getWorld().getName() + "\"");
@@ -891,9 +939,7 @@ public class CmdExec implements CommandExecutor {
 	private void defaultsCommand(String[] args, Player p) {
 		if (p.isOp()) {
 			settings.loadDefaults();
-			worlddata.loadDefaults();
 			settings.saveFile();
-			worlddata.saveWorldFile();
 			p.sendMessage(ChatColor.GREEN + "Default Manhunt settings loaded!");
 			HuntedPlugin.getInstance().log(Level.INFO, p.getName() + " restored the default Manhunt settings!");
 			return;
@@ -1006,6 +1052,18 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]"
 						+ ChatColor.WHITE
 						+ " Hunters, prey, and spectators can't chat with eachother.");
+			}
+			if (worlddata.noBuild()) {
+				p.sendMessage(ChatColor.BLUE + "noBuild " + ChatColor.GREEN
+						+ "[true]" + ChatColor.WHITE
+						+ " Only ops may build when the game ISN'T running.");
+			} else {
+				p.sendMessage(ChatColor.BLUE
+						+ "noBuild "
+						+ ChatColor.RED
+						+ "[false]"
+						+ ChatColor.WHITE
+						+ " Anyone may build while the game ISN'T running.");
 			}
 			if (settings.spawnPassive()) {
 				p.sendMessage(ChatColor.BLUE + "spawnPassive "
@@ -1132,14 +1190,14 @@ public class CmdExec implements CommandExecutor {
 						+ "[false]" + ChatColor.WHITE
 						+ " Hunters' compasses point to the world spawn.");
 			}
-			if (worlddata.boxBoundry()) {
-				p.sendMessage(ChatColor.BLUE + "boxBoundry "
+			if (worlddata.boxBoundary()) {
+				p.sendMessage(ChatColor.BLUE + "boxBoundary "
 						+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
-						+ " The world boundry is box-shaped");
+						+ " The world boundary is box-shaped");
 			} else {
-				p.sendMessage(ChatColor.BLUE + "boxBoundry " + ChatColor.RED
+				p.sendMessage(ChatColor.BLUE + "boxBoundary " + ChatColor.RED
 						+ "[false]" + ChatColor.WHITE
-						+ " The world boundry is eliptical.");
+						+ " The world boundary is eliptical.");
 			}
 
 		} else if (args.length == 1 && args[0].equalsIgnoreCase("3")) {
@@ -1185,27 +1243,27 @@ public class CmdExec implements CommandExecutor {
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Pre-game preparation is disabled.");
 			}
-			if (worlddata.mapBoundry() >= 0) {
+			if (worlddata.mapBoundary() >= 0) {
 				p.sendMessage(ChatColor.BLUE
-						+ "mapBoundry "
+						+ "mapBoundary "
 						+ ChatColor.GREEN
 						+ "["
-						+ worlddata.mapBoundry()
+						+ worlddata.mapBoundary()
 						+ "]"
 						+ ChatColor.WHITE
 						+ " Blocks from spawn players are allowed to venture.");
 			} else {
-				p.sendMessage(ChatColor.BLUE + "mapBoundry "
+				p.sendMessage(ChatColor.BLUE + "mapBoundary "
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Players can venture out indefinately.");
 			}
-			if (worlddata.pregameBoundry() >= 0) {
-				p.sendMessage(ChatColor.BLUE + "pregameBoundry "
-						+ ChatColor.GREEN + "[" + worlddata.pregameBoundry()
+			if (worlddata.pregameBoundary() >= 0) {
+				p.sendMessage(ChatColor.BLUE + "pregameBoundary "
+						+ ChatColor.GREEN + "[" + worlddata.pregameBoundary()
 						+ "]" + ChatColor.WHITE
 						+ " Blocks from spawn hunters are confined to.");
 			} else {
-				p.sendMessage(ChatColor.BLUE + "pregameBoundry "
+				p.sendMessage(ChatColor.BLUE + "pregameBoundary "
 						+ ChatColor.RED + "[off]" + ChatColor.WHITE
 						+ " Hunters are not confined to spawn.");
 			}
@@ -1366,6 +1424,45 @@ public class CmdExec implements CommandExecutor {
 							+ "[false]"
 							+ ChatColor.WHITE
 							+ " Hunters, prey, and spectators can't chat with eachother.");
+				}
+
+			} else if (args[0].equalsIgnoreCase("nobuild")) {
+				if (args.length == 1) {
+					if (worlddata.noBuild()) {
+						p.sendMessage(ChatColor.BLUE + "noBuild "
+								+ ChatColor.GREEN + "[true]"
+								+ ChatColor.WHITE
+								+ " Only ops may build when the game ISN'T running.");
+					} else {
+						p.sendMessage(ChatColor.BLUE
+								+ "noBuild "
+								+ ChatColor.RED
+								+ "[false]"
+								+ ChatColor.WHITE
+								+ " Anyone may build while the game ISN'T running.");
+					}
+					return;
+				}
+				if (args.length == 2 &&
+						(args[1].equalsIgnoreCase("true")
+						|| args[1].equalsIgnoreCase("1")
+						|| args[1].equalsIgnoreCase("on"))) {
+					settings.changeSetting("noBuild", "true");
+					p.sendMessage(ChatColor.BLUE + "noBuild"
+							+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
+							+ " Only ops may build when the game ISN'T running.");
+
+				} else if (args.length == 2 &&
+						(args[1].equalsIgnoreCase("false")
+						|| args[1].equalsIgnoreCase("1")
+						|| args[1].equalsIgnoreCase("off"))) {
+					settings.changeSetting("noBuild", "false");
+					p.sendMessage(ChatColor.BLUE
+							+ "noBuild "
+							+ ChatColor.RED
+							+ "[false]"
+							+ ChatColor.WHITE
+							+ " Anyone may build while the game ISN'T running.");
 				}
 
 			} else if (args[0].equalsIgnoreCase("spawnpassive")) {
@@ -1859,18 +1956,18 @@ public class CmdExec implements CommandExecutor {
 							+ " No identifying wool hats for you!");
 				}
 				
-			} else if (args[0].equalsIgnoreCase("boxboundry")) {
+			} else if (args[0].equalsIgnoreCase("boxboundary")) {
 				if (args.length == 1) {
-					if (worlddata.boxBoundry()) {
+					if (worlddata.boxBoundary()) {
 						p.sendMessage(ChatColor.BLUE
-								+ "boxBoundry " + ChatColor.GREEN
+								+ "boxBoundary " + ChatColor.GREEN
 								+ "[true]" + ChatColor.WHITE
-								+ " The world boundry is box-shaped");
+								+ " The world boundary is box-shaped");
 					} else {
 						p.sendMessage(ChatColor.BLUE
-								+ "boxBoundry " + ChatColor.RED
+								+ "boxBoundary " + ChatColor.RED
 								+ "[false]" + ChatColor.WHITE
-								+ " The world boundry is eliptical.");
+								+ " The world boundary is eliptical.");
 					}
 					return;
 				}
@@ -1878,25 +1975,25 @@ public class CmdExec implements CommandExecutor {
 						(args[1].equalsIgnoreCase("true")
 						|| args[1].equalsIgnoreCase("1")
 						|| args[1].equalsIgnoreCase("on"))) {
-					worlddata.changeSetting("boxBoundry", "true");
+					worlddata.changeSetting("boxBoundary", "true");
 					p.sendMessage(ChatColor.BLUE
-							+ "boxBoundry "
+							+ "boxBoundary "
 							+ ChatColor.GREEN
 							+ "[true]"
 							+ ChatColor.WHITE
-							+ " The world boundry is box-shaped");
+							+ " The world boundary is box-shaped");
 
 				} else if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("false")
 						|| args[1].equalsIgnoreCase("1")
 						|| args[1].equalsIgnoreCase("off"))) {
-					worlddata.changeSetting("boxBoundry", "false");
+					worlddata.changeSetting("boxBoundary", "false");
 					p.sendMessage(ChatColor.BLUE
-							+ "boxBoundry "
+							+ "boxBoundary "
 							+ ChatColor.RED
 							+ "[false]"
 							+ ChatColor.WHITE
-							+ " The world boundry is eliptical.");
+							+ " The world boundary is eliptical.");
 				}
 			
 			} else if (args[0].equalsIgnoreCase("daylimit")) {
@@ -2022,7 +2119,7 @@ public class CmdExec implements CommandExecutor {
 							+ " Minutes until the Hunters are released.");
 				}
 
-			} else if (args[0].equalsIgnoreCase("mapboundry")) {
+			} else if (args[0].equalsIgnoreCase("mapboundary")) {
 				if (args.length >= 2) {
 					int value;
 					if (args[1].equalsIgnoreCase("off")
@@ -2038,46 +2135,46 @@ public class CmdExec implements CommandExecutor {
 						}
 					}
 					if (value <= -1) {
-						worlddata.changeSetting("mapBoundry", "-1");
-						p.sendMessage(ChatColor.BLUE + "mapBoundry "
+						worlddata.changeSetting("mapBoundary", "-1");
+						p.sendMessage(ChatColor.BLUE + "mapBoundary "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ "Players can venture out indefinately.");
 					} else if (value < 64) {
-						worlddata.changeSetting("mapBoundry", "64");
+						worlddata.changeSetting("mapBoundary", "64");
 						p.sendMessage(ChatColor.RED
 								+ "64 blocks is the minimum setting for this!");
 						p.sendMessage(ChatColor.BLUE
-								+ "mapBoundry "
+								+ "mapBoundary "
 								+ ChatColor.GREEN
 								+ "["
-								+ worlddata.mapBoundry()
+								+ worlddata.mapBoundary()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn players are allowed to venture.");
 					} else {
-						worlddata.changeSetting("mapBoundry",
+						worlddata.changeSetting("mapBoundary",
 								Integer.toString(value));
 						p.sendMessage(ChatColor.BLUE
-								+ "mapBoundry "
+								+ "mapBoundary "
 								+ ChatColor.GREEN
 								+ "["
-								+ worlddata.mapBoundry()
+								+ worlddata.mapBoundary()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn players are allowed to venture.");
 					}
 				} else {
 					p.sendMessage(ChatColor.BLUE
-							+ "mapBoundry "
+							+ "mapBoundary "
 							+ ChatColor.GREEN
 							+ "["
-							+ worlddata.mapBoundry()
+							+ worlddata.mapBoundary()
 							+ "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn players are allowed to venture.");
 					return;
 				}
-			} else if (args[0].equalsIgnoreCase("pregameboundry")) {
+			} else if (args[0].equalsIgnoreCase("pregameboundary")) {
 				if (args.length >= 2) {
 					int value;
 					if (args[1].equalsIgnoreCase("off")
@@ -2094,29 +2191,29 @@ public class CmdExec implements CommandExecutor {
 					}
 					if (value > 64) {
 						value = 64;
-						p.sendMessage(ChatColor.RED + "64 is the maximum setting for pregameBoundry!");
+						p.sendMessage(ChatColor.RED + "64 is the maximum setting for pregameBoundary!");
 					}
 					if (value <= -1) {
-						worlddata.changeSetting("pregameBoundry", "-1");
-						p.sendMessage(ChatColor.BLUE + "pregameBoundry "
+						worlddata.changeSetting("pregameBoundary", "-1");
+						p.sendMessage(ChatColor.BLUE + "pregameBoundary "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ "Hunters are not confined to spawn.");
 					} else {
-						worlddata.changeSetting("pregameBoundry",
+						worlddata.changeSetting("pregameBoundary",
 								Integer.toString(value));
 						p.sendMessage(ChatColor.BLUE
-								+ "pregameBoundry "
+								+ "pregameBoundary "
 								+ ChatColor.GREEN
 								+ "["
-								+ worlddata.pregameBoundry()
+								+ worlddata.pregameBoundary()
 								+ "]"
 								+ ChatColor.WHITE
 								+ " Blocks from spawn hunters are confined to.");
 					}
 				} else {
-					p.sendMessage(ChatColor.BLUE + "pregameBoundry "
+					p.sendMessage(ChatColor.BLUE + "pregameBoundary "
 							+ ChatColor.GREEN + "["
-							+ worlddata.pregameBoundry() + "]"
+							+ worlddata.pregameBoundary() + "]"
 							+ ChatColor.WHITE
 							+ " Blocks from spawn hunters are confined to.");
 				}
@@ -2136,12 +2233,12 @@ public class CmdExec implements CommandExecutor {
 						}
 					}
 					if (value <= -1) {
-						worlddata.changeSetting("nobuildrange", "-1");
+						worlddata.changeSetting("noBuildRange", "-1");
 						p.sendMessage(ChatColor.BLUE + "noBuildRange "
 								+ ChatColor.RED + "[off]" + ChatColor.WHITE
 								+ " Huners and Prey can build anywhere.");
 					} else {
-						worlddata.changeSetting("nobuildrange",
+						worlddata.changeSetting("noBuildRange",
 								Integer.toString(value));
 						p.sendMessage(ChatColor.BLUE
 								+ "noBuildRange "

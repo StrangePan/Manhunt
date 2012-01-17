@@ -11,9 +11,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 //import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -64,8 +65,10 @@ public class HuntedPlayerListener extends PlayerListener {
 		HuntedPlugin.getInstance().log(Level.INFO,
 				"<" + p.getName() + "> " + e.getMessage());
 		if (!g.gameHasBegun()) {
-			g.broadcastAll(ChatColor.WHITE + "<" + g.getColor(p)
+			for (Player player :  Bukkit.getOnlinePlayers()) {
+				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
+			}
 			e.setCancelled(true);
 			return;
 		}
@@ -77,25 +80,25 @@ public class HuntedPlayerListener extends PlayerListener {
 			e.setCancelled(true);
 			return;
 		}
-		if (g.isHunter(p)) {
+		if (g.isHunter(p) && p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.broadcastHunters(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
 			return;
-		} else if (g.isHunted(p)) {
+		} else if (g.isHunted(p) && p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.broadcastHunted(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
 			return;
-		} else if (g.isSpectating(p)) {
+		} else if (g.isSpectating(p) && p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.broadcastSpectators(ChatColor.WHITE + "<" + g.getColor(p)
 					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
 			e.setCancelled(true);
 			return;
 		} else {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (!g.isHunted(player) && !g.isHunter(player)
-						&& !g.isSpectating(player)) {
+				if ((!g.isHunted(player) && !g.isHunter(player)
+						&& !g.isSpectating(player)) || player.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 					player.sendMessage(ChatColor.WHITE + "<"
 							+ p.getName() + "> "
 							+ e.getMessage());
@@ -155,29 +158,29 @@ public class HuntedPlayerListener extends PlayerListener {
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun()
 				&& g.isHunter(p)
-				&& worlddata.pregameBoundry() > -1) {
-			if (worlddata.boxBoundry()) {
+				&& worlddata.pregameBoundary() > -1) {
+			if (worlddata.boxBoundary()) {
 				if (g.outsideBoxedArea(p.getLocation(), true)) {
 					p.teleport(g.safeTeleport(g.teleportPregameBoxedLocation(p.getLocation())));
 					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			} else {
-				if (g.getDistance(worlddata.pregameSpawn(), p.getLocation()) > worlddata.pregameBoundry()) {
+				if (g.getDistance(worlddata.pregameSpawn(), p.getLocation()) > worlddata.pregameBoundary()) {
 					g.stepPlayer(p, 1.0, worlddata.pregameSpawn());
 					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			}
 		} else {
-			if (worlddata.boxBoundry()) {
+			if (worlddata.boxBoundary()) {
 				if (g.outsideBoxedArea(p.getLocation(), false)) {
 					p.teleport(g.safeTeleport(g.teleportBoxedLocation(p.getLocation())));
 					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			} else {
-				if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.mapBoundry()) {
+				if (g.getDistance(g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()), p.getLocation()) > worlddata.mapBoundary()) {
 					g.stepPlayer(p, 1.0, g.getNearestLocation(p.getLocation(), worlddata.preySpawn(), worlddata.hunterSpawn()));
 					if (Math.random() > 0.75) p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
@@ -259,10 +262,20 @@ public class HuntedPlayerListener extends PlayerListener {
 		}
 	}
 	
-	public void onPlayerChangeWorld(PlayerChangedWorldEvent e) {
+	public void onPlayerTeleport(PlayerTeleportEvent e) {
 		
 		Player p = e.getPlayer();
-		if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
+		if (e.getTo().getWorld() == HuntedPlugin.getInstance().getWorld()) {
+			g.onLogin(p);
+		} else {
+			g.onLogout(p);
+		}
+	}
+	
+	public void onPlayerPortal(PlayerPortalEvent e) {
+		
+		Player p = e.getPlayer();
+		if (e.getTo().getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.onLogin(p);
 		} else {
 			g.onLogout(p);

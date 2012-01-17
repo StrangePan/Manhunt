@@ -17,19 +17,22 @@ public class HuntedBlockListener extends BlockListener {
 	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 	
 	public void onBlockPlace(BlockPlaceEvent e) {
+		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+			return;
+		}
+		
+		if (worlddata.noBuild() && !e.getPlayer().isOp() && !g.gameHasBegun()) {
+			e.setCancelled(true);
+		}
+		
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			}
-			else if (g.isHunted(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-					worlddata.hunterSpawn())
-					<= worlddata.noBuildRange()) {
-				e.setCancelled(true);
-			}
-			else if (g.isHunter(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-					worlddata.preySpawn())
+			else if (g.getDistance(e.getBlock().getLocation(),
+					worlddata.hunterSpawn()) <= worlddata.noBuildRange() || 
+					g.getDistance(e.getBlock().getLocation(),
+							worlddata.preySpawn())
 					<= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
@@ -37,26 +40,25 @@ public class HuntedBlockListener extends BlockListener {
 	}
 	
 	public void onBlockBreak(BlockBreakEvent e) {
+		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+			return;
+		}
+		
+		if (worlddata.noBuild() && !e.getPlayer().isOp() && !g.gameHasBegun()) {
+			e.setCancelled(true);
+		}
+		
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			}
-			else if (g.isHunted(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-							worlddata.hunterSpawn())
-							<= worlddata.noBuildRange()
-					|| g.getDistance(e.getBlock().getLocation(),
-							HuntedPlugin.getInstance().getWorld().getSpawnLocation())
-							<= worlddata.noBuildRange()) {
-				e.setCancelled(true);
-			}
-			else if (g.isHunter(e.getPlayer())
-					&& g.getDistance(e.getBlock().getLocation(),
-					worlddata.preySpawn())
+			else if (g.getDistance(e.getBlock().getLocation(),
+					worlddata.hunterSpawn()) <= worlddata.noBuildRange() || 
+					g.getDistance(e.getBlock().getLocation(),
+							worlddata.preySpawn())
 					<= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
 	}
-	
 }
