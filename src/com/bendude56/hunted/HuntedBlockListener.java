@@ -32,8 +32,9 @@ public class HuntedBlockListener extends BlockListener {
 			else if (g.getDistance(e.getBlock().getLocation(),
 					worlddata.hunterSpawn()) <= worlddata.noBuildRange() || 
 					g.getDistance(e.getBlock().getLocation(),
-							worlddata.preySpawn())
-					<= worlddata.noBuildRange()) {
+					worlddata.preySpawn()) <= worlddata.noBuildRange() ||
+					g.getDistance(e.getBlock().getLocation(),
+					worlddata.pregameSpawn()) <= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}
@@ -55,8 +56,9 @@ public class HuntedBlockListener extends BlockListener {
 			else if (g.getDistance(e.getBlock().getLocation(),
 					worlddata.hunterSpawn()) <= worlddata.noBuildRange() || 
 					g.getDistance(e.getBlock().getLocation(),
-							worlddata.preySpawn())
-					<= worlddata.noBuildRange()) {
+					worlddata.preySpawn()) <= worlddata.noBuildRange() ||
+					g.getDistance(e.getBlock().getLocation(),
+					worlddata.pregameSpawn()) <= worlddata.noBuildRange()) {
 				e.setCancelled(true);
 			}
 		}

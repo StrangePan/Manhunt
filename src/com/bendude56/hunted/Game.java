@@ -1005,15 +1005,16 @@ public class Game {
 	}
 	
 	public Location safeTeleport(Location loc) {
-		loc.setY(loc.getY()-1);
-		Location loc2 = loc;
-		loc2.setY(loc2.getY()-1);
+		Location location1 = loc.clone();
+		location1.setY(location1.getY()-1);
+		Location location2 = loc.clone();
+		location2.setY(location2.getY()-1);
 		
-		while (!isTransparent(loc.getBlock()) && !isTransparent(loc2.getBlock())) {
-			loc.setY(loc.getY()+1);
-			loc2.setY(loc2.getY()+1);
+		while (!isTransparent(location1.getBlock()) && !isTransparent(location2.getBlock())) {
+			location1.setY(location1.getY()+1);
+			location2.setY(location2.getY()+1);
 		}
-		return loc;
+		return location1;
 	}
 	
 	public boolean isTransparent(Block block) {

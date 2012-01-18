@@ -582,8 +582,6 @@ public class CmdExec implements CommandExecutor {
 					counter = 0;
 					p.sendMessage(stringList);
 					stringList = "";
-				} else {
-					s += "    ";
 				}
 			}
 			if (!stringList.equalsIgnoreCase("")) {
@@ -604,8 +602,6 @@ public class CmdExec implements CommandExecutor {
 					counter = 0;
 					p.sendMessage(stringList);
 					stringList = "";
-				} else {
-					s += "    ";
 				}
 			}
 			if (!stringList.equalsIgnoreCase("")) {
@@ -619,8 +615,7 @@ public class CmdExec implements CommandExecutor {
 				if (counter >= 3) {
 					counter = 0;
 					p.sendMessage(stringList);
-				} else {
-					s += "    ";
+					stringList = "";
 				}
 			}
 			if (!stringList.equalsIgnoreCase("")) {
@@ -1447,7 +1442,7 @@ public class CmdExec implements CommandExecutor {
 						(args[1].equalsIgnoreCase("true")
 						|| args[1].equalsIgnoreCase("1")
 						|| args[1].equalsIgnoreCase("on"))) {
-					settings.changeSetting("noBuild", "true");
+					worlddata.changeSetting("noBuild", "true");
 					p.sendMessage(ChatColor.BLUE + "noBuild"
 							+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
 							+ " Only ops may build when the game ISN'T running.");
@@ -1456,7 +1451,7 @@ public class CmdExec implements CommandExecutor {
 						(args[1].equalsIgnoreCase("false")
 						|| args[1].equalsIgnoreCase("1")
 						|| args[1].equalsIgnoreCase("off"))) {
-					settings.changeSetting("noBuild", "false");
+					worlddata.changeSetting("noBuild", "false");
 					p.sendMessage(ChatColor.BLUE
 							+ "noBuild "
 							+ ChatColor.RED
