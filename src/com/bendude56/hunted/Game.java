@@ -103,45 +103,42 @@ public class Game {
 			
 			for (String n : hunted) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
-				if (p == null) {
-					return;
+				if (p != null) {
+					if (p.getGameMode() == GameMode.CREATIVE) {
+						creative.add(p.getName());
+					}
+					p.setGameMode(GameMode.SURVIVAL);
+					p.setFireTicks(0);
+					p.setHealth(20);
+					p.setFoodLevel(20);
+					if (settings.loadouts()) preyLoadout(p.getInventory());
+					p.teleport(safeTeleport(randomLocation(worlddata.preySpawn(),2)));
 				}
-				if (p.getGameMode() == GameMode.CREATIVE) {
-					creative.add(p.getName());
-				}
-				p.setGameMode(GameMode.SURVIVAL);
-				p.setFireTicks(0);
-				p.setHealth(20);
-				p.setFoodLevel(20);
-				if (settings.loadouts()) preyLoadout(p.getInventory());
-				p.teleport(safeTeleport(randomLocation(worlddata.preySpawn(),2)));
 			}
 			for (String n : hunter) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
-				if (p == null) {
-					return;
-				}
-				if (p.getGameMode() == GameMode.CREATIVE) {
-					creative.add(p.getName());
-				}
-				p.setGameMode(GameMode.SURVIVAL);
-				p.setFireTicks(0);
-				if (settings.prepTime() > 0) {
-					p.teleport(safeTeleport(randomLocation(worlddata.pregameSpawn(),2)));
-				} else {
-					p.teleport(safeTeleport(randomLocation(worlddata.hunterSpawn(),2)));
-				}
-				p.setHealth(20);
-				p.setFoodLevel(20);
-				if (settings.loadouts()) {
-					clearInventory(p.getInventory());
+				if (p != null) {
+					if (p.getGameMode() == GameMode.CREATIVE) {
+						creative.add(p.getName());
+					}
+					p.setGameMode(GameMode.SURVIVAL);
+					p.setFireTicks(0);
+					if (settings.prepTime() > 0) {
+						p.teleport(safeTeleport(randomLocation(worlddata.pregameSpawn(),2)));
+					} else {
+						p.teleport(safeTeleport(randomLocation(worlddata.hunterSpawn(),2)));
+					}
+					p.setHealth(20);
+					p.setFoodLevel(20);
+					if (settings.loadouts()) {
+						clearInventory(p.getInventory());
+					}
 				}
 			}
 			
 			for (String n : spectator) {
 				Player p = Bukkit.getServer().getPlayerExact(n);
 				if (p != null) {
-				
 					if (p.getGameMode() == GameMode.CREATIVE) {
 						creative.add(p.getName());
 					}

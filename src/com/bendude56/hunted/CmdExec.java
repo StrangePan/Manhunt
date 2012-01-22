@@ -570,11 +570,11 @@ public class CmdExec implements CommandExecutor {
 			String stringList = "";
 			for (String s : g.getHunters()) {
 				if (Bukkit.getPlayerExact(s) == null) {
-					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.WHITE + "  -  ";
 					stringList += ChatColor.DARK_RED + s + " " + ChatColor.GRAY + "(Offline)";
 					counter += 2;
 				} else {
-					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.WHITE + "  -  ";
 					stringList += ChatColor.DARK_RED + s;
 					counter ++;
 				}
@@ -590,11 +590,11 @@ public class CmdExec implements CommandExecutor {
 			}
 			for (String s : g.getHunted()) {
 				if (Bukkit.getPlayerExact(s) == null) {
-					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.WHITE + "  -  ";
 					stringList += ChatColor.BLUE + s + " " + ChatColor.GRAY + "(Offline)";
 					counter += 2;
 				} else {
-					if (counter != 0) stringList += "    ";
+					stringList += ChatColor.WHITE + "  -  ";
 					stringList += ChatColor.BLUE + s;
 					counter ++;
 				}
@@ -609,7 +609,7 @@ public class CmdExec implements CommandExecutor {
 				stringList = "";
 			}
 			for (String s : g.getSpectators()) {
-				if (counter != 0) stringList += "    ";
+				stringList += ChatColor.WHITE + "  -  ";
 				stringList += ChatColor.YELLOW + s;
 				counter ++;
 				if (counter >= 3) {
@@ -1039,14 +1039,14 @@ public class CmdExec implements CommandExecutor {
 			if (settings.allTalk()) {
 				p.sendMessage(ChatColor.BLUE + "allTalk " + ChatColor.GREEN
 						+ "[true]" + ChatColor.WHITE
-						+ " Teams can see eachother's chat.");
+						+ " Teams can see each other's chat.");
 			} else {
 				p.sendMessage(ChatColor.BLUE
 						+ "allTalk "
 						+ ChatColor.RED
 						+ "[false]"
 						+ ChatColor.WHITE
-						+ " Hunters, prey, and spectators can't chat with eachother.");
+						+ " Hunters, prey, and spectators can't chat with each other.");
 			}
 			if (worlddata.noBuild()) {
 				p.sendMessage(ChatColor.BLUE + "noBuild " + ChatColor.GREEN
@@ -1388,14 +1388,14 @@ public class CmdExec implements CommandExecutor {
 						p.sendMessage(ChatColor.BLUE + "allTalk "
 								+ ChatColor.GREEN + "[true]"
 								+ ChatColor.WHITE
-								+ " Teams can see eachother's chat.");
+								+ " Teams can see each other's chat.");
 					} else {
 						p.sendMessage(ChatColor.BLUE
 								+ "allTalk "
 								+ ChatColor.RED
 								+ "[false]"
 								+ ChatColor.WHITE
-								+ " Hunters, prey, and spectators can't chat with eachother.");
+								+ " Hunters, prey, and spectators can't chat with each other.");
 					}
 					return;
 				}
@@ -1406,7 +1406,7 @@ public class CmdExec implements CommandExecutor {
 					settings.changeSetting("allTalk", "true");
 					p.sendMessage(ChatColor.BLUE + "allTalk "
 							+ ChatColor.GREEN + "[true]" + ChatColor.WHITE
-							+ " Teams can see eachother's chat.");
+							+ " Teams can see each other's chat.");
 
 				} else if (args.length == 2 &&
 						(args[1].equalsIgnoreCase("false")
@@ -1418,7 +1418,7 @@ public class CmdExec implements CommandExecutor {
 							+ ChatColor.RED
 							+ "[false]"
 							+ ChatColor.WHITE
-							+ " Hunters, prey, and spectators can't chat with eachother.");
+							+ " Hunters, prey, and spectators can't chat with each other.");
 				}
 
 			} else if (args[0].equalsIgnoreCase("nobuild")) {
