@@ -1,16 +1,17 @@
 package com.bendude56.hunted;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.RegisteredListener;
 
-public class HuntedBlockListener extends BlockListener {
+public class HuntedBlockListener {
 	
 	public HuntedBlockListener() {
-		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.BLOCK_PLACE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		BlockBreakEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		BlockPlaceEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
 	}
 
 	private Game g = HuntedPlugin.getInstance().getGame();

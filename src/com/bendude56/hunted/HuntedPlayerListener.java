@@ -4,56 +4,45 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-//import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 //import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-//import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.RegisteredListener;
 
-public class HuntedPlayerListener extends PlayerListener {
+public class HuntedPlayerListener {
 
 	public HuntedPlayerListener() {
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_KICK, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		//Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_GAME_MODE_CHANGE, this,
-		//		Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_CHANGED_WORLD, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_BUCKET_FILL, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_BUCKET_EMPTY, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_PICKUP_ITEM, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this,
-				Event.Priority.Normal, HuntedPlugin.getInstance());
+		PlayerChatEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerJoinEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerQuitEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerKickEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerMoveEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerItemHeldEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerInteractEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		//PlayerGameModeChangeEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerChangedWorldEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerBucketFillEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerBucketEmptyEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerPickupItemEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerDropItemEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
 	}
 	
 	Game g = HuntedPlugin.getInstance().getGame();

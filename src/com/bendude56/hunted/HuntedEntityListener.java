@@ -2,7 +2,6 @@ package com.bendude56.hunted;
 
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
@@ -21,22 +20,24 @@ import org.bukkit.entity.Spider;
 import org.bukkit.entity.Squid;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.RegisteredListener;
 
-public class HuntedEntityListener extends EntityListener {
+public class HuntedEntityListener {
 	
 	public HuntedEntityListener() {
-		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, this, Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.ENTITY_TARGET, this, Event.Priority.Normal, HuntedPlugin.getInstance());
-		Bukkit.getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, HuntedPlugin.getInstance());
+		EntityDeathEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		EntityDamageEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		EntityTargetEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		CreatureSpawnEvent.getHandlerList().register(new RegisteredListener((Listener) this, (EventExecutor) this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
 	}
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
