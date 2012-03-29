@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HuntedPlugin extends JavaPlugin {
-	
+
 	private Logger log = Logger.getLogger("Minecraft");
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
@@ -28,7 +28,8 @@ public class HuntedPlugin extends JavaPlugin {
 			}
 		}
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.sendMessage(ChatColor.DARK_RED + getDescription().getName() + ChatColor.RED + " plugin has been disabled!");
+			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
+					+ ChatColor.RED + " plugin has been disabled!");
 		}
 		log(Level.INFO, "Unloaded from memory...");
 	}
@@ -42,10 +43,11 @@ public class HuntedPlugin extends JavaPlugin {
 			log(Level.WARNING, "Spout installation not detected!");
 			spoutEnabled = false;
 		}
-		
+
 		manhuntWorld = Bukkit.getWorlds().get(0);
 		settings = new SettingsFile();
-		if (settings.defaultWorld() != manhuntWorld.getName() && Bukkit.getWorld(settings.defaultWorld()) != null) {
+		if (settings.defaultWorld() != manhuntWorld.getName()
+				&& Bukkit.getWorld(settings.defaultWorld()) != null) {
 			manhuntWorld = Bukkit.getWorld(settings.defaultWorld());
 		}
 		worlddata = new WorldDataFile();
@@ -54,52 +56,60 @@ public class HuntedPlugin extends JavaPlugin {
 		new HuntedPlayerListener();
 		new HuntedEntityListener();
 		new HuntedBlockListener();
-		//new HuntedInventoryListener();
-		log(Level.INFO, "Version " + getDescription().getVersion() + " loaded into memory...");
+		// new HuntedInventoryListener();
+		log(Level.INFO, "Version " + getDescription().getVersion()
+				+ " loaded into memory...");
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.getWorld() == getWorld()) {
 				game.onLogin(p);
 			}
-			p.sendMessage(ChatColor.DARK_RED + getDescription().getName() + " v" + getDescription().getVersion() + ChatColor.YELLOW + " is up running!");
+			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
+					+ " v" + getDescription().getVersion() + ChatColor.YELLOW
+					+ " is up running!");
 		}
 	}
-	
+
 	public void log(Level level, String message) {
 		log.log(level, "[" + this.getDescription().getName() + "] " + message);
 	}
-	
+
 	public static HuntedPlugin getInstance() {
-		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Manhunt");
+		return (HuntedPlugin) Bukkit.getServer().getPluginManager()
+				.getPlugin("Manhunt");
 	}
-	
+
 	public World getWorld() {
 		return manhuntWorld;
 	}
-	
+
 	public SettingsFile getSettings() {
 		return settings;
 	}
-	
+
 	public WorldDataFile getWorldData() {
 		return worlddata;
 	}
-	
+
 	public Game getGame() {
 		return game;
 	}
-	
+
 	public void setWorld(World newWorld) {
 		if (newWorld != null && newWorld != manhuntWorld) {
 			worlddata.saveWorldFile();
-			game.broadcastAll(ChatColor.RED + "The Manhunt world has been moved to \"" + newWorld.getName() + "\"");
-			game.broadcastAll(ChatColor.RED + "Type \"/m spawn\" to warp there now!");
-			
+			game.broadcastAll(ChatColor.RED
+					+ "The Manhunt world has been moved to \""
+					+ newWorld.getName() + "\"");
+			game.broadcastAll(ChatColor.RED
+					+ "Type \"/m spawn\" to warp there now!");
+
 			manhuntWorld = newWorld;
-			
+
 			settings.changeSetting("defaultWorld", manhuntWorld.getName());
 			worlddata.loadWorldFile();
 			game.reloadPlayers();
-			game.broadcastAll(ChatColor.GREEN + "This world is the new Manhunt world!");
+			game.broadcastAll(ChatColor.GREEN
+					+ "This world is the new Manhunt world!");
 			game.broadcastHunters(ChatColor.WHITE + "You have joined team "
 					+ ChatColor.DARK_RED + "Hunters.");
 			game.broadcastHunted(ChatColor.WHITE + "You have joined team "
