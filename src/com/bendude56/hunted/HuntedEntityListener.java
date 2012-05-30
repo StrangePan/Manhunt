@@ -20,7 +20,7 @@ import org.bukkit.entity.Spider;
 import org.bukkit.entity.Squid;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,38 +28,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.RegisteredListener;
 
-public class HuntedEntityListener {
-
-	public HuntedEntityListener() {
-		EntityDeathEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		EntityDamageEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		EntityTargetEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		CreatureSpawnEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-	}
+public class HuntedEntityListener implements Listener {
 
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 
+	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		Player p;
 
@@ -160,6 +136,7 @@ public class HuntedEntityListener {
 		}
 	}
 
+	@EventHandler
 	public void onEntityDeath(EntityDeathEvent e) {
 
 		if (!e.getEntity().getWorld()
@@ -312,6 +289,7 @@ public class HuntedEntityListener {
 		}
 	}
 
+	@EventHandler
 	public void onEntityTarget(EntityTargetEvent e) {
 		if (e.getTarget() instanceof Player) {
 			if (g.isSpectating((Player) e.getTarget()) && g.gameHasBegun()) {
@@ -320,6 +298,7 @@ public class HuntedEntityListener {
 		}
 	}
 
+	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent e) {
 		if (e.getLocation().getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			return;

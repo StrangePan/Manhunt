@@ -122,6 +122,7 @@ public class Game {
 					p.setFireTicks(0);
 					p.setHealth(20);
 					p.setFoodLevel(20);
+					p.setSaturation(20);
 					if (settings.loadouts())
 						preyLoadout(p.getInventory());
 					p.teleport(safeTeleport(randomLocation(
@@ -145,6 +146,7 @@ public class Game {
 					}
 					p.setHealth(20);
 					p.setFoodLevel(20);
+					p.setSaturation(20);
 					if (settings.loadouts()) {
 						clearInventory(p.getInventory());
 					}
@@ -411,6 +413,7 @@ public class Game {
 									.getWorld().getSpawnLocation());
 						}
 						p.setFoodLevel(20);
+						p.setSaturation(20);
 						if (p.getGameMode() != GameMode.CREATIVE
 								&& settings.flyingSpectators()) {
 							p.setGameMode(GameMode.CREATIVE);
@@ -460,6 +463,7 @@ public class Game {
 							HuntedPlugin.getInstance().spoutConnect.showTime(
 									"Time until sundown", min, sec, p);
 							p.setFoodLevel(20);
+							p.setSaturation(20);
 							p.setHealth(20);
 						}
 					}
@@ -538,6 +542,7 @@ public class Game {
 						}
 						p.setHealth(20);
 						p.setFoodLevel(20);
+						p.setSaturation(20);
 					}
 				}
 				broadcastAll(ChatColor.GOLD

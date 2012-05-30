@@ -36,6 +36,7 @@ public class HuntedPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		
 		if (getServer().getPluginManager().isPluginEnabled("Spout")) {
 			spoutEnabled = true;
 			spoutConnect = new SpConnect();
@@ -53,9 +54,11 @@ public class HuntedPlugin extends JavaPlugin {
 		worlddata = new WorldDataFile();
 		game = new Game();
 		new CmdExec();
-		new HuntedPlayerListener();
-		new HuntedEntityListener();
-		new HuntedBlockListener();
+		//Register Events
+		getServer().getPluginManager().registerEvents(new HuntedPlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new HuntedBlockListener(), this);
+		getServer().getPluginManager().registerEvents(new HuntedEntityListener(), this);
+		
 		// new HuntedInventoryListener();
 		log(Level.INFO, "Version " + getDescription().getVersion()
 				+ " loaded into memory...");

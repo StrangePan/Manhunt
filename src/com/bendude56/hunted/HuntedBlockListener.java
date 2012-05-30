@@ -1,30 +1,16 @@
 package com.bendude56.hunted;
 
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.RegisteredListener;
 
-public class HuntedBlockListener {
-
-	public HuntedBlockListener() {
-		BlockBreakEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		BlockPlaceEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-	}
+public class HuntedBlockListener implements Listener {
 
 	private Game g = HuntedPlugin.getInstance().getGame();
 	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 
+	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
 		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			return;
@@ -49,6 +35,7 @@ public class HuntedBlockListener {
 		}
 	}
 
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
 		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
 			return;

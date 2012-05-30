@@ -6,15 +6,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
+//import org.bukkit.event.Event;
+//import org.bukkit.event.EventException;
+//import org.bukkit.event.EventPriority;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
+//import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerKickEvent;
+//import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 //import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -24,81 +27,67 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.RegisteredListener;
+//import org.bukkit.plugin.EventExecutor;
+//import org.bukkit.plugin.RegisteredListener;
 
-public class HuntedPlayerListener {
-
-	public HuntedPlayerListener() {
-		PlayerChatEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerJoinEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerQuitEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerKickEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerMoveEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerItemHeldEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerInteractEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		// PlayerGameModeChangeEvent.getHandlerList().register(new
-		// RegisteredListener((Listener) this, (EventExecutor) this,
-		// EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerChangedWorldEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerBucketFillEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerBucketEmptyEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerPickupItemEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-		PlayerDropItemEvent.getHandlerList()
-				.register(
-						new RegisteredListener((Listener) this,
-								(EventExecutor) this, EventPriority.NORMAL,
-								HuntedPlugin.getInstance(), false));
-	}
+public class HuntedPlayerListener implements Listener {
+	
+	/*public HuntedPlayerListener() {
+		PlayerChatEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerJoinEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerKickEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerMoveEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerItemHeldEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		// PlayerGameModeChangeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerChangedWorldEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerBucketFillEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerBucketEmptyEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerPickupItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+		PlayerDropItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
+	}*/
 
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 
+	/*@Override
+	public void execute(Listener listener, Event event) throws EventException {
+		if (event instanceof PlayerChatEvent) {
+			PlayerChatEvent e = (PlayerChatEvent) event;
+			onPlayerChat(e);
+		} else if (event instanceof PlayerJoinEvent) {
+			PlayerJoinEvent e = (PlayerJoinEvent) event;
+			onPlayerJoin(e);
+		} else if (event instanceof PlayerQuitEvent) {
+			PlayerQuitEvent e = (PlayerQuitEvent) event;
+			onPlayerQuit(e);
+		} else if (event instanceof PlayerMoveEvent) {
+			PlayerMoveEvent e = (PlayerMoveEvent) event;
+			onPlayerMove(e);
+		} else if (event instanceof PlayerItemHeldEvent) {
+			PlayerItemHeldEvent e = (PlayerItemHeldEvent) event;
+			onPlayerItemHeld(e);
+		} else if (event instanceof PlayerInteractEvent) {
+			PlayerInteractEvent e = (PlayerInteractEvent) event;
+			onPlayerInteract(e);
+		} else if (event instanceof PlayerBucketFillEvent) {
+			PlayerBucketFillEvent e = (PlayerBucketFillEvent) event;
+			onBucketFill(e);
+		} else if (event instanceof PlayerBucketEmptyEvent) {
+			PlayerBucketEmptyEvent e = (PlayerBucketEmptyEvent) event;
+			onBucketEmpty(e);
+		} else if (event instanceof PlayerPickupItemEvent) {
+			PlayerPickupItemEvent e = (PlayerPickupItemEvent) event;
+			onPlayerPickupItem(e);
+		} else if (event instanceof PlayerDropItemEvent) {
+			PlayerDropItemEvent e = (PlayerDropItemEvent) event;
+			onPlayerDropItem(e);
+		}
+	}*/
+	
+	@EventHandler
 	public void onPlayerChat(PlayerChatEvent e) {
 		Player p = e.getPlayer();
 		HuntedPlugin.getInstance().log(Level.INFO,
@@ -150,6 +139,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 
 		Player p = e.getPlayer();
@@ -171,6 +161,7 @@ public class HuntedPlayerListener {
 	 * e.setLeaveMessage(null); } g.onLogout(e.getPlayer()); }
 	 */
 
+	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()
 				&& g.gameHasBegun() && g.isPlaying(e.getPlayer())) {
@@ -179,6 +170,7 @@ public class HuntedPlayerListener {
 		g.onLogout(e.getPlayer());
 	}
 
+	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
 		if (!g.gameHasBegun()) {
 			if (e.getPlayer().getWorld() == HuntedPlugin.getInstance()
@@ -259,6 +251,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerItemHeld(PlayerItemHeldEvent e) {
 		Player p = e.getPlayer();
 		if (p.getItemInHand().getType() != Material.COMPASS
@@ -269,6 +262,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 
@@ -328,6 +322,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
 
 		Player p = e.getPlayer();
@@ -338,6 +333,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerPortal(PlayerPortalEvent e) {
 
 		Player p = e.getPlayer();
@@ -348,6 +344,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
 
 		if (g.gameHasBegun()) {
@@ -380,6 +377,8 @@ public class HuntedPlayerListener {
 	 * else { if (e.getNewGameMode() != GameMode.SURVIVAL) {
 	 * e.setCancelled(true); } } } }
 	 */
+
+	@EventHandler
 	public void onBucketFill(PlayerBucketFillEvent e) {
 
 		if (g.gameHasBegun()) {
@@ -398,6 +397,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
@@ -406,6 +406,7 @@ public class HuntedPlayerListener {
 		}
 	}
 
+	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {

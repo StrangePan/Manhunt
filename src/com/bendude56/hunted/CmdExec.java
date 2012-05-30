@@ -836,8 +836,8 @@ public class CmdExec implements CommandExecutor {
 		if (p.isOp() || !settings.mustBeOp() || g.isSpectating(p)) {
 			if (args.length == 0) {
 				if (g.isSpectating(p) || !g.gameHasBegun()) {
-					p.teleport(HuntedPlugin.getInstance().getWorld()
-							.getSpawnLocation());
+					p.teleport(g.safeTeleport(HuntedPlugin.getInstance().getWorld()
+							.getSpawnLocation()));
 					p.sendMessage(ChatColor.GREEN
 							+ "You have teleported to the " + ChatColor.GOLD
 							+ "Manhunt" + ChatColor.GREEN + " world spawn.");
@@ -856,7 +856,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(worlddata.preySpawn());
+						p.teleport(g.safeTeleport(worlddata.preySpawn()));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.BLUE + "Prey" + ChatColor.GREEN
@@ -875,7 +875,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(worlddata.preySpawn());
+							p2.teleport(g.safeTeleport(worlddata.preySpawn()));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
@@ -896,7 +896,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(worlddata.hunterSpawn());
+						p.teleport(g.safeTeleport(worlddata.hunterSpawn()));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.DARK_RED + "Hunter"
@@ -915,7 +915,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(worlddata.hunterSpawn());
+							p2.teleport(g.safeTeleport(worlddata.hunterSpawn()));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
