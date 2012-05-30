@@ -32,60 +32,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class HuntedPlayerListener implements Listener {
 	
-	/*public HuntedPlayerListener() {
-		PlayerChatEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerJoinEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerQuitEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerKickEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerMoveEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerItemHeldEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerInteractEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		// PlayerGameModeChangeEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerChangedWorldEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerBucketFillEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerBucketEmptyEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerPickupItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-		PlayerDropItemEvent.getHandlerList().register(new RegisteredListener(this, this, EventPriority.NORMAL, HuntedPlugin.getInstance(), false));
-	}*/
-
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
-
-	/*@Override
-	public void execute(Listener listener, Event event) throws EventException {
-		if (event instanceof PlayerChatEvent) {
-			PlayerChatEvent e = (PlayerChatEvent) event;
-			onPlayerChat(e);
-		} else if (event instanceof PlayerJoinEvent) {
-			PlayerJoinEvent e = (PlayerJoinEvent) event;
-			onPlayerJoin(e);
-		} else if (event instanceof PlayerQuitEvent) {
-			PlayerQuitEvent e = (PlayerQuitEvent) event;
-			onPlayerQuit(e);
-		} else if (event instanceof PlayerMoveEvent) {
-			PlayerMoveEvent e = (PlayerMoveEvent) event;
-			onPlayerMove(e);
-		} else if (event instanceof PlayerItemHeldEvent) {
-			PlayerItemHeldEvent e = (PlayerItemHeldEvent) event;
-			onPlayerItemHeld(e);
-		} else if (event instanceof PlayerInteractEvent) {
-			PlayerInteractEvent e = (PlayerInteractEvent) event;
-			onPlayerInteract(e);
-		} else if (event instanceof PlayerBucketFillEvent) {
-			PlayerBucketFillEvent e = (PlayerBucketFillEvent) event;
-			onBucketFill(e);
-		} else if (event instanceof PlayerBucketEmptyEvent) {
-			PlayerBucketEmptyEvent e = (PlayerBucketEmptyEvent) event;
-			onBucketEmpty(e);
-		} else if (event instanceof PlayerPickupItemEvent) {
-			PlayerPickupItemEvent e = (PlayerPickupItemEvent) event;
-			onPlayerPickupItem(e);
-		} else if (event instanceof PlayerDropItemEvent) {
-			PlayerDropItemEvent e = (PlayerDropItemEvent) event;
-			onPlayerDropItem(e);
-		}
-	}*/
 	
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent e) {
@@ -326,6 +275,9 @@ public class HuntedPlayerListener implements Listener {
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
 
 		Player p = e.getPlayer();
+		if (e.getFrom().getWorld() == e.getTo().getWorld()) {
+			return;
+		}
 		if (e.getTo().getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.onLogin(p);
 		} else {
@@ -337,6 +289,9 @@ public class HuntedPlayerListener implements Listener {
 	public void onPlayerPortal(PlayerPortalEvent e) {
 
 		Player p = e.getPlayer();
+		if (e.getFrom().getWorld() == e.getTo().getWorld()) {
+			return;
+		}
 		if (e.getTo().getWorld() == HuntedPlugin.getInstance().getWorld()) {
 			g.onLogin(p);
 		} else {

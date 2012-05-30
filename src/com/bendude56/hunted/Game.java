@@ -886,14 +886,17 @@ public class Game {
 
 	public void addHunter(Player p) {
 		addHunter(p.getName());
+		p.setDisplayName(getColor(p) + p.getName());
 	}
 
 	public void addHunted(Player p) {
 		addHunted(p.getName());
+		p.setDisplayName(getColor(p) + p.getName());
 	}
 
 	public void addSpectator(Player p) {
 		addSpectator(p.getName());
+		p.setDisplayName(getColor(p) + p.getName());
 	}
 
 	public void addHunter(String p) {
