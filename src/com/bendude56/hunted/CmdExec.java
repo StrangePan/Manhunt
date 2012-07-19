@@ -1156,7 +1156,6 @@ public class CmdExec implements CommandExecutor {
 
 	private void settingsCommand(String[] args, Player p) {
 		
-		
 		if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("1")))
 		{
 			listSettings(1, p);
@@ -1203,7 +1202,7 @@ public class CmdExec implements CommandExecutor {
 				if (setting.setValue(args[1]))
 					p.sendMessage(ChatColor.BLUE + setting.label + " " + setting.valueToString() + " " + setting.message());
 				else
-					p.sendMessage(ChatColor.RED + "Invalid setting for \"" + setting.label + "\"");
+					p.sendMessage(ChatColor.RED + args[1] + "is an invalid setting for \"" + setting.label + "\"");
 			}
 		}
 	}

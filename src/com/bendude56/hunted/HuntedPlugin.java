@@ -110,8 +110,7 @@ public class HuntedPlugin extends JavaPlugin {
 
 			manhuntWorld = newWorld;
 
-			settings.WORLD.value = manhuntWorld.getName();
-			settings.WORLD.save();
+			settings.WORLD.setValue(manhuntWorld.getName());
 			worlddata.loadWorldFile();
 			game.reloadPlayers();
 			game.broadcastAll(ChatColor.GREEN

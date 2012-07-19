@@ -26,7 +26,7 @@ public class Setting<Type> {
 		this.offMessage = offMessage;
 		
 		load();
-		save();
+		save(false);
 	}
 
 	public void load()
@@ -42,9 +42,11 @@ public class Setting<Type> {
 			this.reset();
 	}
 	
-	public void save()
+	public void save(boolean write)
 	{
 		file.put(this.label, this.value.toString());
+		if (write)
+			file.saveFile();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,6 +55,7 @@ public class Setting<Type> {
 		try {
 			if (this.value instanceof Boolean)
 			{
+				string = (string.equalsIgnoreCase("on") ? "true" : string);
 				this.value = (Type) Boolean.class.cast(Boolean.parseBoolean(string));
 			}
 			else if (this.value instanceof Integer)
@@ -68,7 +71,7 @@ public class Setting<Type> {
 				HuntedPlugin.getInstance().log(Level.SEVERE, "Unknown value type for setting \"" + label + "\"");
 				return false;
 			}
-			save();
+			save(true);
 			return true;
 		} catch (Exception e) {
 			HuntedPlugin.getInstance().log(Level.SEVERE, "Value Format Exception for setting \"" + label + "\"");
@@ -80,17 +83,17 @@ public class Setting<Type> {
 	public void reset()
 	{
 		this.value = this.defaultValue;
-		save();
+		save(true);
 	}
 
 	public String valueToString()
 	{
 		if (value instanceof Boolean)
-			return (((Boolean)value ? ChatColor.GREEN : ChatColor.RED) + "[" + ((Boolean)value ? "ON" : "OFF") + "]");
+			return (((Boolean)value ? ChatColor.GREEN : ChatColor.RED) + "[" + ((Boolean)value ? "ON" : "OFF") + "]" + ChatColor.WHITE);
 		else if (value instanceof Integer)
-			return (((Integer)value > 0 ? ChatColor.GREEN : ChatColor.RED) + "[" + ((Integer)value > 0 ? value.toString() : "OFF") + "]");
+			return (ChatColor.GREEN + "[" + ChatColor.WHITE + ((Integer)value > 0 ? value.toString() : "OFF") + ChatColor.GREEN + "]" + ChatColor.WHITE);
 		else
-			return (ChatColor.GREEN + "[" + value + "]");
+			return (ChatColor.GREEN + "[" + ChatColor.YELLOW + value+ ChatColor.GREEN + "]" + ChatColor.WHITE);
 	}
 
 	public String message()

@@ -74,6 +74,8 @@ public class SettingsFile extends Properties
 		settings.add(DAY_LIMIT = new Setting<Integer>("dayLimit", 3, this, "How many dats the game will last.", "The manhunt game will never end."));
 		settings.add(FINDER_COOLDOWN = new Setting<Integer>("finderCooldown", 3, this, "The Preyfinder cooldown delay in minutes.", "The PreyFinder has no cooldown delay."));
 		settings.add(SETUP_TIME = new Setting<Integer>("setupTime", 10, this, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
+		
+		saveFile();
 	}
 	
 	public void loadFile() {
