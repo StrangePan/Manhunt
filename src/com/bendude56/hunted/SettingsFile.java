@@ -4,14 +4,81 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
 public class SettingsFile extends Properties {
 	private static final long serialVersionUID = 0L;
 
+	public static final HashMap<String, String> TYPES = new HashMap<String, String>(){
+		private static final long serialVersionUID = 1L;
+		{
+			put("location", "string");
+			put("directory", "string");
+			
+			put("publicMode", "boolean");
+			put("spawnPassive", "boolean");
+			put("spawnHostile", "boolean");
+			put("envDeath", "boolean");
+			put("envHunterRespawn", "boolean");
+			put("envPreyRespawn", "boolean");
+			put("preyFinder", "boolean");
+			put("friendlyFire", "boolean");
+			put("pvpInstantDeath", "boolean");
+			put("flyingSpectators", "boolean");
+			put("mustbeOp", "boolean");
+			put("allTalk", "boolean");
+			put("autoHunter", "boolean");
+			put("loadouts", "boolean");
+			put("teamHats", "boolean");
+			put("northCompass", "boolean");
+			
+			put("offlineTimeout", "int");
+			put("dayLimit", "int");
+			put("locatorTimer", "int");
+			put("prepTime", "int");
+			
+			put("world", "string");
+		}
+	};
+
+	public static final HashMap<String, String> DEFAULTS = new HashMap<String, String>(){
+		private static final long serialVersionUID = 1L;
+		{
+			put("location", "string");
+			put("directory", "string");
+			
+			put("publicMode", "true");
+			put("spawnPassive", "true");
+			put("spawnHostile", "true");
+			put("envDeath", "false");
+			put("envHunterRespawn", "false");
+			put("envPreyRespawn", "false");
+			put("preyFinder", "true");
+			put("friendlyFire", "false");
+			put("pvpInstantDeath", "false");
+			put("flyingSpectators", "true");
+			put("mustbeOp", "true");
+			put("allTalk", "false");
+			put("autoHunter", "true");
+			put("loadouts", "true");
+			put("teamHats", "true");
+			put("northCompass", "true");
+			
+			put("offlineTimeout", "2");
+			put("dayLimit", "3");
+			put("locatorTimer", "10");
+			put("prepTime", "10");
+			
+			put("world", "world");
+		}
+	};
+
 	private String location;
 	private String directory;
+
+	private boolean publicMode;
 
 	private boolean spawnPassive;
 	private boolean spawnHostile;
@@ -104,6 +171,7 @@ public class SettingsFile extends Properties {
 
 	public void loadDefaults() {
 		mustBeOp = false;
+		publicMode = false;
 		// easyCommands = true;
 		allTalk = true;
 		spawnPassive = true;
@@ -137,6 +205,17 @@ public class SettingsFile extends Properties {
 		} else
 			defaultWorld = HuntedPlugin.getInstance().getWorld().getName();
 		put("defaultWorld", defaultWorld);
+
+		if (containsKey("publicMode")) {
+			if (getProperty("publicMode").length() > 0
+					&& getProperty("mustBeOp").equalsIgnoreCase("true")) {
+				publicMode = true;
+			} else {
+				publicMode = false;
+			}
+		} else
+			publicMode = false;
+		put("publicMode", Boolean.toString(publicMode));
 
 		if (containsKey("mustBeOp")) {
 			if (getProperty("mustBeOp").length() > 0
@@ -366,6 +445,50 @@ public class SettingsFile extends Properties {
 		} else
 			locatorTimer = 120;
 		put("locatorTimer", Integer.toString(locatorTimer));
+	}
+
+	public boolean getBoolean(String setting) throws Exception {
+		if (getProperty(setting) == null)
+			if (TYPES.containsKey(setting))
+				put(setting, DEFAULTS.get(setting));
+			else
+				throw new Exception();
+		if (!TYPES.get(setting).equals("boolean"))
+			throw new Exception();
+		if (getProperty(setting).startsWith("t"))
+			return true;
+		else
+			return false;
+	}
+	
+	public String getString(String setting) throws Exception {
+		if (getProperty(setting) == null)
+			if (TYPES.containsKey(setting))
+				put(setting, DEFAULTS.get(setting));
+			else
+				throw new Exception();
+		if (!TYPES.get(setting).equals("string"))
+			throw new Exception();
+		return getProperty(setting);
+	}
+	
+	public int getInteger(String setting) throws Exception {
+		if (getProperty(setting) == null)
+			if (TYPES.containsKey(setting))
+				put(setting, DEFAULTS.get(setting));
+			else
+				throw new Exception();
+		if (!TYPES.get(setting).equals("int"))
+			throw new Exception();
+		try {
+			return Integer.parseInt(getProperty(setting));
+		} catch (Exception e) {
+			throw new Exception();
+		}
+	}
+
+	public boolean publicMode() {
+		return publicMode;
 	}
 
 	public boolean spawnPassive() {

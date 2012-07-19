@@ -33,6 +33,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Wool;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
+import com.bendude56.hunted.config.SettingsFile;
+
 public class Game {
 	private SettingsFile settings;
 	private WorldDataFile worlddata;
@@ -70,7 +72,7 @@ public class Game {
 	public void start() {
 		if (!gameRunning) {
 
-			if (settings.prepTime() > 0) {
+			if (settings.SETUP_TIME.value > 0) {
 				broadcastAll(ChatColor.GOLD
 						+ "-----------------------------------------------------");
 				broadcastAll(ChatColor.GOLD
@@ -91,11 +93,11 @@ public class Game {
 
 			countdown = 0;
 			HuntedPlugin.getInstance().getWorld()
-					.setTime(13000 - settings.prepTime() * 1200);
+					.setTime(13000 - settings.SETUP_TIME.value * 1200);
 			hunterReleaseTick = HuntedPlugin.getInstance().getWorld()
 					.getFullTime()
-					+ settings.prepTime() * 1200;
-			endTick = hunterReleaseTick + settings.dayLimit() * 24000;
+					+ settings.SETUP_TIME.value * 1200;
+			endTick = hunterReleaseTick + settings.SETUP_TIME.value * 24000;
 			gameRunning = true;
 
 			for (Entity entity : HuntedPlugin.getInstance().getWorld()
@@ -123,7 +125,7 @@ public class Game {
 					p.setHealth(20);
 					p.setFoodLevel(20);
 					p.setSaturation(20);
-					if (settings.loadouts())
+					if (settings.LOADOUTS.value)
 						preyLoadout(p.getInventory());
 					p.teleport(safeTeleport(randomLocation(
 							worlddata.preySpawn(), 2)));
@@ -137,7 +139,7 @@ public class Game {
 					}
 					p.setGameMode(GameMode.SURVIVAL);
 					p.setFireTicks(0);
-					if (settings.prepTime() > 0) {
+					if (settings.SETUP_TIME.value > 0) {
 						p.teleport(safeTeleport(randomLocation(
 								worlddata.pregameSpawn(), 2)));
 					} else {
@@ -147,7 +149,7 @@ public class Game {
 					p.setHealth(20);
 					p.setFoodLevel(20);
 					p.setSaturation(20);
-					if (settings.loadouts()) {
+					if (settings.LOADOUTS.value) {
 						clearInventory(p.getInventory());
 					}
 				}
@@ -159,7 +161,7 @@ public class Game {
 					if (p.getGameMode() == GameMode.CREATIVE) {
 						creative.add(p.getName());
 					}
-					if (settings.flyingSpectators()) {
+					if (settings.FLYING_SPECTATORS.value) {
 						p.setGameMode(GameMode.CREATIVE);
 					} else {
 						p.setGameMode(GameMode.SURVIVAL);
@@ -220,7 +222,7 @@ public class Game {
 					.getSpawnLocation());
 		}
 
-		if (settings.autoHunter()) {
+		if (settings.AUTO_JOIN.value) {
 			for (String s : spectator) {
 				if (Bukkit.getPlayerExact(s) != null) {
 					if (!hunter.contains(s))
@@ -287,7 +289,7 @@ public class Game {
 									+ "You are now " + ChatColor.YELLOW
 									+ "SPECTATING." + ChatColor.GOLD
 									+ "   ]---");
-					if (settings.flyingSpectators())
+					if (settings.FLYING_SPECTATORS.value)
 						Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				}
 			}
@@ -321,7 +323,7 @@ public class Game {
 					Bukkit.getPlayerExact(s).sendMessage(
 							ChatColor.GRAY + "You are now " + ChatColor.YELLOW
 									+ "spectating.");
-					if (settings.flyingSpectators())
+					if (settings.FLYING_SPECTATORS.value)
 						Bukkit.getPlayerExact(s).setGameMode(GameMode.CREATIVE);
 				}
 			}
@@ -340,11 +342,11 @@ public class Game {
 		if (hunter.contains(p)) {
 			broadcastAll(getColor(p) + p + ChatColor.WHITE
 					+ " was disqualified for being gone more than "
-					+ settings.offlineTimeout() + " minutes!");
+					+ settings.OFFLINE_TIMEOUT.value + " minutes!");
 			HuntedPlugin.getInstance().log(
 					Level.INFO,
 					p + " was disqualified for being gone more than "
-							+ settings.offlineTimeout() + " minutes!");
+							+ settings.OFFLINE_TIMEOUT.value + " minutes!");
 			if (Bukkit.getPlayerExact(p) != null) {
 				if (Bukkit.getPlayerExact(p) != null) {
 					Bukkit.getPlayerExact(p)
@@ -356,11 +358,11 @@ public class Game {
 		} else if (hunted.contains(p)) {
 			broadcastAll(getColor(p) + p + ChatColor.WHITE
 					+ " was disqualified for being gone more than "
-					+ settings.offlineTimeout() + " minutes!");
+					+ settings.OFFLINE_TIMEOUT.value + " minutes!");
 			HuntedPlugin.getInstance().log(
 					Level.INFO,
 					p + " was disqualified for being gone more than "
-							+ settings.offlineTimeout() + " minutes!");
+							+ settings.OFFLINE_TIMEOUT.value + " minutes!");
 			if (Bukkit.getPlayerExact(p) != null) {
 				Bukkit.getPlayerExact(p)
 						.sendMessage(
@@ -391,7 +393,7 @@ public class Game {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
 					if (isPlaying(p)) {
-						if (settings.northCompass()) {
+						if (settings.NORTH_COMPASS.value) {
 							p.setCompassTarget(new Location(p.getWorld(), p
 									.getLocation().getX(), p.getLocation()
 									.getY(), p.getLocation().getZ() - 1000));
@@ -404,7 +406,7 @@ public class Game {
 						}
 					} else if (isSpectating(p)) {
 
-						if (settings.northCompass()) {
+						if (settings.NORTH_COMPASS.value) {
 							p.setCompassTarget(new Location(p.getWorld(), p
 									.getLocation().getX(), p.getLocation()
 									.getY(), p.getLocation().getZ() - 1000));
@@ -415,7 +417,7 @@ public class Game {
 						p.setFoodLevel(20);
 						p.setSaturation(20);
 						if (p.getGameMode() != GameMode.CREATIVE
-								&& settings.flyingSpectators()) {
+								&& settings.FLYING_SPECTATORS.value) {
 							p.setGameMode(GameMode.CREATIVE);
 						}
 					}
@@ -532,7 +534,7 @@ public class Game {
 				for (String s : hunter) {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
-						if (settings.loadouts())
+						if (settings.LOADOUTS.value)
 							hunterLoadout(p.getInventory());
 						if (!areNearby(worlddata.hunterSpawn(),
 								worlddata.preySpawn(),
@@ -558,7 +560,7 @@ public class Game {
 						"The hunt has begun! The Hunters are on the move!");
 				HuntedPlugin.getInstance().log(Level.INFO,
 						"--------------------------------------");
-				endTick = tick + settings.dayLimit() * 24000;
+				endTick = tick + settings.DAY_LIMIT.value * 24000;
 			} else if (tick >= endTick) {
 				broadcastAll(ChatColor.GOLD
 						+ "-----------------------------------------------------");
@@ -691,7 +693,7 @@ public class Game {
 				if (!creative.contains(p.getName()))
 					creative.add(p.getName());
 			}
-			if (settings.flyingSpectators()) {
+			if (settings.FLYING_SPECTATORS.value) {
 				p.setGameMode(GameMode.CREATIVE);
 			} else {
 				p.setGameMode(GameMode.SURVIVAL);
@@ -703,7 +705,7 @@ public class Game {
 		} else if (!gameHasBegun()) {
 			p.setCompassTarget(HuntedPlugin.getInstance().getWorld()
 					.getSpawnLocation());
-			if (settings.autoHunter()) {
+			if (settings.AUTO_JOIN.value) {
 				addHunter(p);
 			} else {
 				addSpectator(p);
@@ -734,21 +736,21 @@ public class Game {
 
 		if (isPlaying(p)) {
 			if (gameHasBegun()) {
-				if (settings.offlineTimeout() >= 0) {
-					if (settings.offlineTimeout() > 0) {
+				if (settings.OFFLINE_TIMEOUT.value >= 0) {
+					if (settings.OFFLINE_TIMEOUT.value > 0) {
 						broadcastAll(ChatColor.GOLD + "---[   " + getColor(p)
 								+ p.getName() + ChatColor.WHITE
 								+ " has left the game!" + ChatColor.GOLD
-								+ "  (" + settings.offlineTimeout()
+								+ "  (" + settings.OFFLINE_TIMEOUT.value
 								+ " min.)   ]---");
 						p.sendMessage(ChatColor.GOLD + "---[   "
 								+ ChatColor.RED + "You have "
-								+ settings.offlineTimeout()
+								+ settings.OFFLINE_TIMEOUT.value
 								+ " minutes till you are disqualified!");
 						HuntedPlugin.getInstance().log(Level.INFO,
 								p.getName() + " has left the game!");
 						timeout.put(p.getName(), new Date().getTime()
-								+ settings.offlineTimeout() * 72000);
+								+ settings.OFFLINE_TIMEOUT.value * 72000);
 					} else {
 						broadcastAll(ChatColor.GOLD + "---[   " + getColor(p)
 								+ p.getName() + ChatColor.WHITE
@@ -983,7 +985,7 @@ public class Game {
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
-				if (settings.autoHunter()) {
+				if (settings.AUTO_JOIN.value) {
 					addHunter(p);
 				} else {
 					addSpectator(p);
@@ -1292,13 +1294,13 @@ public class Game {
 				return;
 			}
 			if (getTick() >= getLocatorTick(i)
-					- (settings.locatorTimer() * 20 + 25)
+					- (settings.FINDER_COOLDOWN.value * 20 + 25)
 					&& getLocatorStage(i) == 0) {
 				if (getLocatorPlayer(i) != null) {
 					getLocatorPlayer(i).sendMessage(ChatColor.GOLD + "Got it!");
 				}
 				setLocatorStage(i, 1);
-			} else if (getTick() >= getLocatorTick(i) - settings.locatorTimer()
+			} else if (getTick() >= getLocatorTick(i) - settings.FINDER_COOLDOWN.value
 					* 20
 					&& getLocatorStage(i) == 1) {
 				if (getLocatorPlayer(i) == null) {
@@ -1359,7 +1361,7 @@ public class Game {
 		stopLocator(p);
 		locator.add(p.getName() + "/" + p.getLocation().getX() + ","
 				+ p.getLocation().getY() + "," + p.getLocation().getZ() + "/"
-				+ (getTick() + 160 + (settings.locatorTimer() * 20)) + "/"
+				+ (getTick() + 160 + (settings.FINDER_COOLDOWN.value * 20)) + "/"
 				+ "0");
 	}
 
@@ -1572,13 +1574,13 @@ public class Game {
 		inv.setItem(2, new ItemStack(Material.TORCH, 3));
 		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 3));
 		inv.setItem(4, new ItemStack(Material.ARROW, 64));
-		if (settings.preyFinder()) {
+		if (settings.PREY_FINDER.value) {
 			inv.setItem(5, new ItemStack(Material.COMPASS, 1));
 		}
 		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
 		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
 		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.teamHats()) {
+		if (settings.TEAM_HATS.value) {
 			inv.setItem(39, new Wool(DyeColor.RED).toItemStack());
 			// inv.setItem(39, new ItemStack(Material.JACK_O_LANTERN, 1));
 		} else {
@@ -1600,7 +1602,7 @@ public class Game {
 		// inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
 		// inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
 		// inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.teamHats()) {
+		if (settings.TEAM_HATS.value) {
 			// inv.setItem(39, (new Wool(DyeColor.BLUE).toItemStack()));
 			inv.setItem(39, new ItemStack(Material.LEAVES));
 		} else {

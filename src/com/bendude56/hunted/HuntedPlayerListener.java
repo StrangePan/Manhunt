@@ -30,6 +30,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 //import org.bukkit.plugin.EventExecutor;
 //import org.bukkit.plugin.RegisteredListener;
 
+import com.bendude56.hunted.config.SettingsFile;
+
 public class HuntedPlayerListener implements Listener {
 	
 	Game g = HuntedPlugin.getInstance().getGame();
@@ -49,7 +51,7 @@ public class HuntedPlayerListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
-		if (settings.allTalk()) {
+		if (settings.ALL_TALK.value) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
@@ -231,7 +233,7 @@ public class HuntedPlayerListener implements Listener {
 
 			if (g.isHunter(p)
 					&& p.getItemInHand().getType() == Material.COMPASS
-					&& settings.preyFinder() && g.huntHasBegun()) {
+					&& settings.PREY_FINDER.value && g.huntHasBegun()) {
 				if (g.getLocatorByPlayer(p) == -1) {
 					if (g.HuntedAmount(true) == 0) {
 						p.sendMessage(ChatColor.RED

@@ -10,6 +10,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.bendude56.hunted.config.SettingsFile;
+
 public class HuntedPlugin extends JavaPlugin {
 
 	private Logger log = Logger.getLogger("Minecraft");
@@ -47,9 +49,9 @@ public class HuntedPlugin extends JavaPlugin {
 
 		manhuntWorld = Bukkit.getWorlds().get(0);
 		settings = new SettingsFile();
-		if (settings.defaultWorld() != manhuntWorld.getName()
-				&& Bukkit.getWorld(settings.defaultWorld()) != null) {
-			manhuntWorld = Bukkit.getWorld(settings.defaultWorld());
+		if (settings.WORLD.value != manhuntWorld.getName()
+				&& Bukkit.getWorld(settings.WORLD.value) != null) {
+			manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		}
 		worlddata = new WorldDataFile();
 		game = new Game();
@@ -108,7 +110,8 @@ public class HuntedPlugin extends JavaPlugin {
 
 			manhuntWorld = newWorld;
 
-			settings.changeSetting("defaultWorld", manhuntWorld.getName());
+			settings.WORLD.value = manhuntWorld.getName();
+			settings.WORLD.save();
 			worlddata.loadWorldFile();
 			game.reloadPlayers();
 			game.broadcastAll(ChatColor.GREEN

@@ -29,6 +29,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import com.bendude56.hunted.config.SettingsFile;
+
 public class HuntedEntityListener implements Listener {
 
 	Game g = HuntedPlugin.getInstance().getGame();
@@ -86,7 +88,7 @@ public class HuntedEntityListener implements Listener {
 				if (((Arrow) event.getDamager()).getShooter() instanceof Player) {
 					p2 = (Player) ((Arrow) event.getDamager()).getShooter();
 				} else {
-					if (!settings.envDeath()) {
+					if (!settings.ENVIRONMENT_DEATH.value) {
 						if (e.getDamage() >= p.getHealth()) {
 							e.setDamage(p.getHealth() - 1);
 						}
@@ -96,7 +98,7 @@ public class HuntedEntityListener implements Listener {
 			} else if (event.getDamager() instanceof Player) {
 				p2 = (Player) event.getDamager();
 			} else {
-				if (!settings.envDeath()) {
+				if (!settings.ENVIRONMENT_DEATH.value) {
 					if (e.getDamage() >= p.getHealth()) {
 						e.setDamage(p.getHealth() - 1);
 					}
@@ -114,21 +116,21 @@ public class HuntedEntityListener implements Listener {
 				return;
 			}
 
-			if (!settings.friendlyFire()
+			if (!settings.FRIENDLY_FIRE.value
 					&& ((g.isHunted(p) && g.isHunted(p2)) || (g.isHunter(p) && g
 							.isHunter(p2)))) {
 				e.setCancelled(true);
 				return;
 			}
 
-			if (settings.pvpInstantDeath()
+			if (settings.FRIENDLY_FIRE.value
 					&& ((g.isHunter(p) && g.isHunted(p2)) || (g.isHunted(p) && g
 							.isHunter(p2)))) {
 				p.setHealth(0);
 				return;
 			}
 		} else {
-			if (!settings.envDeath() || !g.huntHasBegun()) {
+			if (!settings.ENVIRONMENT_DEATH.value || !g.huntHasBegun()) {
 				if (e.getDamage() >= p.getHealth()) {
 					e.setDamage(p.getHealth() - 1);
 				}
@@ -174,8 +176,7 @@ public class HuntedEntityListener implements Listener {
 						.getDamager() instanceof Player) {
 					p2 = (Player) ((EntityDamageByEntityEvent) p
 							.getLastDamageCause()).getDamager();
-				} else if ((settings.envHunterRespawn() && g.isHunter(p))
-						|| (settings.envPreyRespawn() && g.isHunted(p))) {
+				} else if (settings.ENVIRONMENT_RESPAWN.value) {
 					p.setHealth(20);
 					p.setFoodLevel(20);
 
@@ -244,8 +245,7 @@ public class HuntedEntityListener implements Listener {
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					g.onDie(p);
 				}
-			} else if ((settings.envHunterRespawn() && g.isHunter(p))
-					|| (settings.envPreyRespawn() && g.isHunted(p))) {
+			} else if (settings.ENVIRONMENT_RESPAWN.value) {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 
@@ -309,11 +309,11 @@ public class HuntedEntityListener implements Listener {
 				|| ent instanceof Spider || ent instanceof CaveSpider
 				|| ent instanceof Enderman || ent instanceof Silverfish
 				|| ent instanceof Wolf) {
-			e.setCancelled(e.isCancelled() || !settings.spawnHostile());
+			e.setCancelled(e.isCancelled() || !settings.HOSTILE_MOBS.value);
 		} else if (ent instanceof Chicken || ent instanceof Pig
 				|| ent instanceof Cow || ent instanceof Sheep
 				|| ent instanceof Squid || ent instanceof Wolf) {
-			e.setCancelled(e.isCancelled() || !settings.spawnPassive());
+			e.setCancelled(e.isCancelled() || !settings.PASSIVE_MOBS.value);
 		}
 	}
 }
