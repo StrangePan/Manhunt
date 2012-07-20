@@ -169,7 +169,8 @@ public class CmdExec implements CommandExecutor {
 				}
 				weatherCommand(args, p);
 
-			} else if (args[0].equalsIgnoreCase("setting")
+			} else if (args[0].equalsIgnoreCase("set")
+					|| args[0].equalsIgnoreCase("setting")
 					|| args[0].equalsIgnoreCase("settings")
 					|| args[0].equalsIgnoreCase("preferences")
 					|| args[0].equalsIgnoreCase("properties")) {
@@ -1081,7 +1082,7 @@ public class CmdExec implements CommandExecutor {
 	private void defaultsCommand(String[] args, Player p) {
 		if (p.isOp()) {
 			settings.loadDefaults();
-			settings.saveFile();
+			settings.saveAll();
 			p.sendMessage(ChatColor.GREEN + "Default Manhunt settings loaded!");
 			HuntedPlugin.getInstance().log(Level.INFO,
 					p.getName() + " restored the default Manhunt settings!");
@@ -1100,7 +1101,7 @@ public class CmdExec implements CommandExecutor {
 						+ "You can't do that while the plugin is running!");
 				return;
 			}
-			settings.loadFile();
+			settings.reloadAll();
 			worlddata.loadWorldFile();
 			p.sendMessage(ChatColor.GREEN + "Settings file reloaded.");
 			HuntedPlugin.getInstance().log(Level.INFO,

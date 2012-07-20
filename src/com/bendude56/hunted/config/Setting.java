@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import org.bukkit.ChatColor;
 
 import com.bendude56.hunted.HuntedPlugin;
-import com.bendude56.hunted.config.SettingsFile;
 
 public class Setting<Type> {
 
@@ -13,11 +12,11 @@ public class Setting<Type> {
 	public Type value;
 	public final Type defaultValue;
 	
-	public final SettingsFile file;
+	public final ManhuntFile file;
 	private final String onMessage;
 	private final String offMessage;
 	
-	public Setting(String label, Type defaultValue, SettingsFile file, String onMessage, String offMessage){
+	public Setting(String label, Type defaultValue, ManhuntFile file, String onMessage, String offMessage){
 		this.label = label;
 		this.value = defaultValue;
 		this.defaultValue = defaultValue;
@@ -39,7 +38,7 @@ public class Setting<Type> {
 		}
 		
 		if (!setValue(value))
-			this.reset();
+			this.reset(false);
 	}
 	
 	public void save(boolean write)
@@ -80,10 +79,10 @@ public class Setting<Type> {
 		}
 	}
 
-	public void reset()
+	public void reset(boolean write)
 	{
 		this.value = this.defaultValue;
-		save(true);
+		save(write);
 	}
 
 	public String valueToString()
