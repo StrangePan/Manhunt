@@ -35,7 +35,6 @@ public class HuntedEntityListener implements Listener {
 
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
-	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
@@ -181,9 +180,9 @@ public class HuntedEntityListener implements Listener {
 					p.setFoodLevel(20);
 
 					if (g.isHunter(p)) {
-						p.teleport(g.safeTeleport(worlddata.hunterSpawn()));
+						p.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
 					} else {
-						p.teleport(g.safeTeleport(worlddata.preySpawn()));
+						p.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
 					}
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
 							+ p.getName() + ChatColor.WHITE
@@ -250,9 +249,9 @@ public class HuntedEntityListener implements Listener {
 				p.setFoodLevel(20);
 
 				if (g.isHunter(p)) {
-					p.teleport(g.safeTeleport(worlddata.hunterSpawn()));
+					p.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
 				} else {
-					p.teleport(g.safeTeleport(worlddata.preySpawn()));
+					p.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
 				}
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE

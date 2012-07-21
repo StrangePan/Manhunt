@@ -27,7 +27,7 @@ public class Setting<Type> {
 		load();
 		save(false);
 	}
-
+	
 	public void load()
 	{
 		String value = file.getProperty(label);
@@ -37,8 +37,8 @@ public class Setting<Type> {
 			return;
 		}
 		
-		if (!setValue(value))
-			this.reset(false);
+		if(!parseValue(value))
+			reset(true);
 	}
 	
 	public void save(boolean write)
@@ -47,19 +47,25 @@ public class Setting<Type> {
 		if (write)
 			file.saveFile();
 	}
-
+	
+	public void setValue(Type value)
+	{
+		this.value = value;
+		save(true);
+	}
+	
 	@SuppressWarnings("unchecked")
-	public boolean setValue(String string)
+	public boolean parseValue(String value)
 	{
 		try {
 			if (this.value instanceof Boolean)
 			{
-				string = (string.equalsIgnoreCase("on") ? "true" : string);
-				this.value = (Type) Boolean.class.cast(Boolean.parseBoolean(string));
+				value = (value.equalsIgnoreCase("on") ? "true" : value);
+				this.value = (Type) Boolean.class.cast(Boolean.parseBoolean(value));
 			}
 			else if (this.value instanceof Integer)
 			{
-				this.value = (Type) Integer.class.cast(Integer.parseInt(string));
+				this.value = (Type) Integer.class.cast(Integer.parseInt(value));
 			}
 			else if (this.value instanceof String)
 			{
@@ -73,8 +79,6 @@ public class Setting<Type> {
 			save(true);
 			return true;
 		} catch (Exception e) {
-			HuntedPlugin.getInstance().log(Level.SEVERE, "Value Format Exception for setting \"" + label + "\"");
-			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 			return false;
 		}
 	}

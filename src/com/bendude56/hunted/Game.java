@@ -66,7 +66,6 @@ public class Game {
 		hunterReleaseTick = 0;
 		endTick = 0;
 		settings = HuntedPlugin.getInstance().getSettings();
-		worlddata = HuntedPlugin.getInstance().getWorldData();
 	}
 
 	public void start() {

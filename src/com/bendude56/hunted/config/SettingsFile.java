@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 
 public class SettingsFile
@@ -15,6 +16,7 @@ public class SettingsFile
 	
 	
 	private List<Setting<?>> settings = new ArrayList<Setting<?>>();
+	private List<Setting<?>> secretSettings = new ArrayList<Setting<?>>();
 
 	public final Setting<String> WORLD;
 
@@ -29,6 +31,7 @@ public class SettingsFile
 	public final Setting<Boolean> LOADOUTS;
 	public final Setting<Boolean> NORTH_COMPASS;
 	public final Setting<Boolean> TEAM_HATS;
+	public final Setting<Boolean> NO_BUILD;
 	
 	public final Setting<Boolean> PASSIVE_MOBS;
 	public final Setting<Boolean> HOSTILE_MOBS;
@@ -40,16 +43,22 @@ public class SettingsFile
 	public final Setting<Integer> DAY_LIMIT;
 	public final Setting<Integer> FINDER_COOLDOWN;
 	public final Setting<Integer> SETUP_TIME;
+	
+	public final Setting<Integer> BOUNDARY_WORLD;
+	public final Setting<Integer> BOUNDARY_SETUP;
+	public final Setting<Integer> SPAWN_PROTECTION;
+	public final Setting<Boolean> BOUNDARY_BOXED;
+	
+	public final Setting<Location> SPAWN_HUNTER;
+	public final Setting<Location> SPAWN_PREY;
+	public final Setting<Location> SPAWN_SETUP;
 
 	
 	public SettingsFile()
 	{
 		files.add(FILE_MAIN = new ManhuntFile("Main Config", "plugins/Manhunt", "Manhunt.properties"));
 		
-		settings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
-		
-		files.add(FILE_WORLD = new ManhuntFile("World Config", (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt", "World_Config.properties"));
-
+		secretSettings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
 		settings.add(PUBLIC_MODE = new Setting<Boolean>("publicMode", true, FILE_MAIN, "The game is running in public mode.", "The game is running in private mode."));
 		settings.add(AUTO_JOIN = new Setting<Boolean>("autoJoin", true, FILE_MAIN, "New players automatically join team Hunters.", "New players will remain spectators."));
@@ -61,6 +70,7 @@ public class SettingsFile
 		settings.add(LOADOUTS = new Setting<Boolean>("loadouts", true, FILE_MAIN, "Players will recieve predefined loadouts.", "Players will start with empty inventories."));
 		settings.add(NORTH_COMPASS = new Setting<Boolean>("northCompass", true, FILE_MAIN, "Compasses will always point north.", "Compasses will always point towards spawn."));
 		settings.add(TEAM_HATS = new Setting<Boolean>("teamHats", true, FILE_MAIN, "Players get special, identifying hats.", "Players do not have special hats."));
+		settings.add(NO_BUILD = new Setting<Boolean>("noBuild", true, FILE_MAIN, "Players cannot build unless the game is running.", "Players can edit the world when the game is not running."));
 		
 		settings.add(PASSIVE_MOBS = new Setting<Boolean>("passiveMobs", true, FILE_MAIN, "Passive mobs are enabled.", "Passive mobs are disabled."));
 		settings.add(HOSTILE_MOBS = new Setting<Boolean>("hostileMobs", true, FILE_MAIN, "Hostile mobs are enabled.", "Hostile mobs are disabled."));
@@ -72,6 +82,18 @@ public class SettingsFile
 		settings.add(DAY_LIMIT = new Setting<Integer>("dayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));
 		settings.add(FINDER_COOLDOWN = new Setting<Integer>("finderCooldown", 3, FILE_MAIN, "The Preyfinder cooldown delay in minutes.", "The PreyFinder has no cooldown delay."));
 		settings.add(SETUP_TIME = new Setting<Integer>("setupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
+
+
+		files.add(FILE_WORLD = new ManhuntFile("World Config", (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt", "World_Config.properties"));
+		
+		settings.add(BOUNDARY_WORLD = new Setting<Integer>("worldBoundary", 128, FILE_WORLD, "How far players may roam during the hunt.", "There is no boundary around the world."));
+		settings.add(BOUNDARY_SETUP = new Setting<Integer>("setupBoundary", 16, FILE_WORLD, "The region in which the hunters must wait.", "The hunters are not constrained during setup."));
+		settings.add(SPAWN_PROTECTION = new Setting<Integer>("spawnProtection", 24, FILE_WORLD, "The protected region around the spawn points.", "The spawn points are not protected."));
+		settings.add(BOUNDARY_BOXED = new Setting<Boolean>("boxedBoundary", true, FILE_WORLD, "The world's boundary is rectangular.", "The world's shape is rounded."));
+		
+		secretSettings.add(SPAWN_HUNTER = new Setting<Location>("hunterSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
+		secretSettings.add(SPAWN_PREY = new Setting<Location>("preySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
+		secretSettings.add(SPAWN_SETUP = new Setting<Location>("setupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 	}
 
 	public void saveAll()
@@ -83,6 +105,10 @@ public class SettingsFile
 	public void reloadAll()
 	{
 		for (Setting<?> setting : settings)
+		{
+			setting.load();
+		}
+		for (Setting<?> setting : secretSettings)
 		{
 			setting.load();
 		}
@@ -106,6 +132,10 @@ public class SettingsFile
 	public void loadDefaults()
 	{
 		for (Setting<?> setting : settings)
+		{
+			setting.reset(false);
+		}
+		for (Setting<?> setting : secretSettings)
 		{
 			setting.reset(false);
 		}

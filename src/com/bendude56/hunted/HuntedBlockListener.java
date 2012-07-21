@@ -5,10 +5,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import com.bendude56.hunted.config.SettingsFile;
+
 public class HuntedBlockListener implements Listener {
 
 	private Game g = HuntedPlugin.getInstance().getGame();
-	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
+	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
@@ -16,7 +18,7 @@ public class HuntedBlockListener implements Listener {
 			return;
 		}
 
-		if (worlddata.noBuild() && !e.getPlayer().isOp() && !g.gameHasBegun()) {
+		if (settings.NO_BUILD.value && !e.getPlayer().isOp() && !g.gameHasBegun()) {
 			e.setCancelled(true);
 		}
 
@@ -24,12 +26,11 @@ public class HuntedBlockListener implements Listener {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			} else if (g.getDistance(e.getBlock().getLocation(),
-					worlddata.hunterSpawn()) <= worlddata.noBuildRange()
+					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
 					|| g.getDistance(e.getBlock().getLocation(),
-							worlddata.preySpawn()) <= worlddata.noBuildRange()
+							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
 					|| g.getDistance(e.getBlock().getLocation(),
-							worlddata.pregameSpawn()) <= worlddata
-							.noBuildRange()) {
+							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
 		}
@@ -41,7 +42,7 @@ public class HuntedBlockListener implements Listener {
 			return;
 		}
 
-		if (worlddata.noBuild() && !e.getPlayer().isOp() && !g.gameHasBegun()) {
+		if (settings.NO_BUILD.value && !e.getPlayer().isOp() && !g.gameHasBegun()) {
 			e.setCancelled(true);
 		}
 
@@ -49,12 +50,11 @@ public class HuntedBlockListener implements Listener {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			} else if (g.getDistance(e.getBlock().getLocation(),
-					worlddata.hunterSpawn()) <= worlddata.noBuildRange()
+					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
 					|| g.getDistance(e.getBlock().getLocation(),
-							worlddata.preySpawn()) <= worlddata.noBuildRange()
+							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
 					|| g.getDistance(e.getBlock().getLocation(),
-							worlddata.pregameSpawn()) <= worlddata
-							.noBuildRange()) {
+							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
 		}

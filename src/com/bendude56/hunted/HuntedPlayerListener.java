@@ -27,7 +27,6 @@ public class HuntedPlayerListener implements Listener {
 	
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
-	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 	
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent e) {
@@ -129,8 +128,8 @@ public class HuntedPlayerListener implements Listener {
 		}
 		Player p = e.getPlayer();
 		if (!g.huntHasBegun() && g.isHunter(p)
-				&& worlddata.pregameBoundary() > -1) {
-			if (worlddata.boxBoundary()) {
+				&& settings.BOUNDARY_SETUP.value > -1) {
+			if (settings.BOUNDARY_BOXED.value) {
 				if (g.outsideBoxedArea(p.getLocation(), true)) {
 					p.teleport(g.safeTeleport(g.teleportPregameBoxedLocation(p
 							.getLocation())));
@@ -140,36 +139,31 @@ public class HuntedPlayerListener implements Listener {
 					return;
 				}
 			} else {
-				if (g.getDistance(worlddata.pregameSpawn(), p.getLocation()) > worlddata
-						.pregameBoundary()) {
-					g.stepPlayer(p, 1.0, worlddata.pregameSpawn());
+				if (g.getDistance(settings.SPAWN_SETUP.value, p.getLocation()) > settings.BOUNDARY_SETUP.value) {
+					g.stepPlayer(p, 1.0, settings.SPAWN_SETUP.value);
 					if (Math.random() > 0.75)
-						p.sendMessage(ChatColor.RED
-								+ "You've ventured too far!");
+						p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			}
 		} else {
-			if (worlddata.boxBoundary()) {
+			if (settings.BOUNDARY_BOXED.value) {
 				if (g.outsideBoxedArea(p.getLocation(), false)) {
-					p.teleport(g.safeTeleport(g.teleportBoxedLocation(p
-							.getLocation())));
+					p.teleport(g.safeTeleport(g.teleportBoxedLocation(p.getLocation())));
 					if (Math.random() > 0.75)
-						p.sendMessage(ChatColor.RED
-								+ "You've ventured too far!");
+						p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			} else {
 				if (g.getDistance(
-						g.getNearestLocation(p.getLocation(),
-								worlddata.preySpawn(), worlddata.hunterSpawn()),
-						p.getLocation()) > worlddata.mapBoundary()) {
+						g.getNearestLocation(p.getLocation(), settings.SPAWN_PREY.value, settings.SPAWN_HUNTER.value),
+						p.getLocation()) > settings.BOUNDARY_WORLD.value) {
 					g.stepPlayer(
 							p,
 							1.0,
 							g.getNearestLocation(p.getLocation(),
-									worlddata.preySpawn(),
-									worlddata.hunterSpawn()));
+									settings.SPAWN_PREY.value,
+									settings.SPAWN_HUNTER.value));
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED
 								+ "You've ventured too far!");
@@ -300,12 +294,11 @@ public class HuntedPlayerListener implements Listener {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							worlddata.hunterSpawn()) <= worlddata
-							.noBuildRange()) {
+							settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							worlddata.preySpawn()) <= worlddata.noBuildRange()) {
+							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
 		}
@@ -334,12 +327,11 @@ public class HuntedPlayerListener implements Listener {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							worlddata.hunterSpawn()) <= worlddata
-							.noBuildRange()) {
+							settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
 					&& g.getDistance(e.getBlockClicked().getLocation(),
-							worlddata.preySpawn()) <= worlddata.noBuildRange()) {
+							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
 		}

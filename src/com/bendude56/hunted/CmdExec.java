@@ -24,7 +24,6 @@ public class CmdExec implements CommandExecutor {
 
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
-	WorldDataFile worlddata = HuntedPlugin.getInstance().getWorldData();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command c, String cmd,
@@ -319,7 +318,7 @@ public class CmdExec implements CommandExecutor {
 		} else if (args[0].equalsIgnoreCase("3")) {
 			
 			p.sendMessage(ChatColor.GOLD + "---- Manhunt Miscellaneous Rules (3/3) ---");
-			p.sendMessage(pre + "Players may not build " + worlddata.noBuildRange() + " blocks from the spawn.");
+			p.sendMessage(pre + "Players may not build " + settings.SPAWN_PROTECTION.value + " blocks from the spawn.");
 			p.sendMessage(pre + "Players have " + settings.OFFLINE_TIMEOUT.value + " minutes to return to the game.");
 			
 			if (settings.FLYING_SPECTATORS.value) {
@@ -835,7 +834,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(g.safeTeleport(worlddata.preySpawn()));
+						p.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.BLUE + "Prey" + ChatColor.GREEN
@@ -854,7 +853,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(g.safeTeleport(worlddata.preySpawn()));
+							p2.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
@@ -875,7 +874,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(g.safeTeleport(worlddata.hunterSpawn()));
+						p.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.DARK_RED + "Hunter"
@@ -894,7 +893,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(g.safeTeleport(worlddata.hunterSpawn()));
+							p2.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
@@ -916,7 +915,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(worlddata.pregameSpawn());
+						p.teleport(settings.SPAWN_SETUP.value);
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.GOLD + "Pregame" + ChatColor.GREEN
@@ -935,7 +934,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(worlddata.pregameSpawn());
+							p2.teleport(settings.SPAWN_SETUP.value);
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.GOLD + "Pregame"
@@ -986,17 +985,17 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		if (args.length == 0) {
-			if (g.areNearby(worlddata.hunterSpawn(), HuntedPlugin.getInstance()
+			if (g.areNearby(settings.SPAWN_HUNTER.value, HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation(), 1.0)) {
-				worlddata.changeSetting("hunterSpawn", p.getLocation());
+				settings.SPAWN_HUNTER.setValue(p.getLocation());
 			}
-			if (g.areNearby(worlddata.preySpawn(), HuntedPlugin.getInstance()
+			if (g.areNearby(settings.SPAWN_PREY.value, HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation(), 1.0)) {
-				worlddata.changeSetting("preySpawn", p.getLocation());
+				settings.SPAWN_PREY.setValue(p.getLocation());
 			}
-			if (g.areNearby(worlddata.pregameSpawn(), HuntedPlugin
+			if (g.areNearby(settings.SPAWN_SETUP.value, HuntedPlugin
 					.getInstance().getWorld().getSpawnLocation(), 1.0)) {
-				worlddata.changeSetting("pregameSpawn", p.getLocation());
+				settings.SPAWN_SETUP.setValue(p.getLocation());
 			}
 			HuntedPlugin
 					.getInstance()
@@ -1011,7 +1010,7 @@ public class CmdExec implements CommandExecutor {
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("hunter")
 					|| args[0].equalsIgnoreCase("hunters")) {
-				worlddata.changeSetting("hunterSpawn", p.getLocation());
+				settings.SPAWN_HUNTER.setValue(p.getLocation());
 				p.sendMessage(ChatColor.DARK_RED + "Hunter" + ChatColor.GREEN
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO,
@@ -1020,7 +1019,7 @@ public class CmdExec implements CommandExecutor {
 			}
 			if (args[0].equalsIgnoreCase("hunted")
 					|| args[0].equalsIgnoreCase("prey")) {
-				worlddata.changeSetting("preySpawn", p.getLocation());
+				settings.SPAWN_PREY.setValue(p.getLocation());
 				p.sendMessage(ChatColor.BLUE + "Prey" + ChatColor.GREEN
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO,
@@ -1030,7 +1029,7 @@ public class CmdExec implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("pregame")
 					|| args[0].equalsIgnoreCase("waiting")
 					|| args[0].equalsIgnoreCase("preparation")) {
-				worlddata.changeSetting("pregameSpawn", p.getLocation());
+				settings.SPAWN_SETUP.setValue(p.getLocation());
 				p.sendMessage(ChatColor.GOLD + "Pregame" + ChatColor.GREEN
 						+ " spawn set!");
 				HuntedPlugin.getInstance().log(Level.INFO,
@@ -1044,9 +1043,9 @@ public class CmdExec implements CommandExecutor {
 						.setSpawnLocation(p.getLocation().getBlockX(),
 								p.getLocation().getBlockY(),
 								p.getLocation().getBlockZ());
-				worlddata.changeSetting("hunterSpawn", p.getLocation());
-				worlddata.changeSetting("preySpawn", p.getLocation());
-				worlddata.changeSetting("pregameSpawn", p.getLocation());
+				settings.SPAWN_HUNTER.setValue(p.getLocation());
+				settings.SPAWN_PREY.setValue(p.getLocation());
+				settings.SPAWN_SETUP.setValue(p.getLocation());
 				p.sendMessage(ChatColor.GREEN + "All spawn points set!");
 				HuntedPlugin.getInstance().log(Level.INFO,
 						p.getName() + " changed all spawn points.");
@@ -1061,7 +1060,6 @@ public class CmdExec implements CommandExecutor {
 		}
 		if (!g.gameHasBegun()) {
 			if (p.getWorld() != HuntedPlugin.getInstance().getWorld()) {
-				HuntedPlugin.getInstance().setWorld(p.getWorld());
 				p.sendMessage(ChatColor.GREEN
 						+ "Manhunt world has been set to \""
 						+ p.getWorld().getName() + "\"");
@@ -1102,7 +1100,6 @@ public class CmdExec implements CommandExecutor {
 				return;
 			}
 			settings.reloadAll();
-			worlddata.loadWorldFile();
 			p.sendMessage(ChatColor.GREEN + "Settings file reloaded.");
 			HuntedPlugin.getInstance().log(Level.INFO,
 					p.getName() + " reloaded the Manhunt settings.");
@@ -1200,7 +1197,7 @@ public class CmdExec implements CommandExecutor {
 			}
 			else if (args.length > 1)
 			{
-				if (setting.setValue(args[1]))
+				if (setting.parseValue(args[1]))
 					p.sendMessage(ChatColor.BLUE + setting.label + " " + setting.valueToString() + " " + setting.message());
 				else
 					p.sendMessage(ChatColor.RED + args[1] + "is an invalid setting for \"" + setting.label + "\"");
