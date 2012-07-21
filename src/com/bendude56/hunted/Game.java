@@ -37,7 +37,6 @@ import com.bendude56.hunted.config.SettingsFile;
 
 public class Game {
 	private SettingsFile settings;
-	private WorldDataFile worlddata;
 
 	private HashMap<String, Long> timeout;
 
@@ -127,7 +126,7 @@ public class Game {
 					if (settings.LOADOUTS.value)
 						preyLoadout(p.getInventory());
 					p.teleport(safeTeleport(randomLocation(
-							worlddata.preySpawn(), 2)));
+							settings.SPAWN_SETUP.value, 2)));
 				}
 			}
 			for (String n : hunter) {
@@ -140,10 +139,10 @@ public class Game {
 					p.setFireTicks(0);
 					if (settings.SETUP_TIME.value > 0) {
 						p.teleport(safeTeleport(randomLocation(
-								worlddata.pregameSpawn(), 2)));
+								settings.SPAWN_SETUP.value, 2)));
 					} else {
 						p.teleport(safeTeleport(randomLocation(
-								worlddata.hunterSpawn(), 2)));
+								settings.SPAWN_HUNTER.value, 2)));
 					}
 					p.setHealth(20);
 					p.setFoodLevel(20);
@@ -535,11 +534,11 @@ public class Game {
 					if (p != null) {
 						if (settings.LOADOUTS.value)
 							hunterLoadout(p.getInventory());
-						if (!areNearby(worlddata.hunterSpawn(),
-								worlddata.preySpawn(),
-								worlddata.pregameBoundary())) {
+						if (!areNearby(settings.SPAWN_HUNTER.value,
+								settings.SPAWN_PREY.value,
+								settings.SPAWN_PROTECTION.value)) {
 							p.teleport(safeTeleport(randomLocation(
-									worlddata.hunterSpawn(), 2)));
+									settings.SPAWN_HUNTER.value, 2)));
 						}
 						p.setHealth(20);
 						p.setFoodLevel(20);
@@ -1124,39 +1123,39 @@ public class Game {
 
 	public boolean outsideBoxedArea(Location loc, boolean pregame) {
 		if (pregame) {
-			if (loc.getX() < worlddata.pregameSpawn().getX()
-					- worlddata.pregameBoundary())
+			if (loc.getX() < settings.SPAWN_SETUP.value.getX()
+					- settings.BOUNDARY_SETUP.value)
 				return true;
-			if (loc.getX() > worlddata.pregameSpawn().getX()
-					+ worlddata.pregameBoundary())
+			if (loc.getX() > settings.SPAWN_SETUP.value.getX()
+					+ settings.BOUNDARY_SETUP.value)
 				return true;
-			if (loc.getZ() < worlddata.pregameSpawn().getZ()
-					- worlddata.pregameBoundary())
+			if (loc.getZ() < settings.SPAWN_SETUP.value.getZ()
+					- settings.BOUNDARY_SETUP.value)
 				return true;
-			if (loc.getZ() > worlddata.pregameSpawn().getZ()
-					+ worlddata.pregameBoundary())
+			if (loc.getZ() > settings.SPAWN_SETUP.value.getZ()
+					+ settings.BOUNDARY_SETUP.value)
 				return true;
 			return false;
 		} else {
-			if (loc.getX() < worlddata.hunterSpawn().getX()
-					- worlddata.mapBoundary()
-					&& loc.getX() < worlddata.preySpawn().getX()
-							- worlddata.mapBoundary())
+			if (loc.getX() < settings.SPAWN_HUNTER.value.getX()
+					- settings.BOUNDARY_WORLD.value
+					&& loc.getX() < settings.SPAWN_PREY.value.getX()
+							- settings.BOUNDARY_WORLD.value)
 				return true;
-			if (loc.getX() > worlddata.hunterSpawn().getX()
-					+ worlddata.mapBoundary()
-					&& loc.getX() > worlddata.preySpawn().getX()
-							+ worlddata.mapBoundary())
+			if (loc.getX() > settings.SPAWN_HUNTER.value.getX()
+					+ settings.BOUNDARY_WORLD.value
+					&& loc.getX() > settings.SPAWN_PREY.value.getX()
+							+ settings.BOUNDARY_WORLD.value)
 				return true;
-			if (loc.getZ() < worlddata.hunterSpawn().getZ()
-					- worlddata.mapBoundary()
-					&& loc.getZ() < worlddata.preySpawn().getZ()
-							- worlddata.mapBoundary())
+			if (loc.getZ() < settings.SPAWN_HUNTER.value.getZ()
+					- settings.BOUNDARY_WORLD.value
+					&& loc.getZ() < settings.SPAWN_PREY.value.getZ()
+							- settings.BOUNDARY_WORLD.value)
 				return true;
-			if (loc.getZ() > worlddata.hunterSpawn().getZ()
-					+ worlddata.mapBoundary()
-					&& loc.getZ() > worlddata.preySpawn().getZ()
-							+ worlddata.mapBoundary())
+			if (loc.getZ() > settings.SPAWN_HUNTER.value.getZ()
+					+ settings.BOUNDARY_WORLD.value
+					&& loc.getZ() > settings.SPAWN_PREY.value.getZ()
+							+ settings.BOUNDARY_WORLD.value)
 				return true;
 			return false;
 		}
@@ -1164,20 +1163,20 @@ public class Game {
 
 	public Location teleportPregameBoxedLocation(Location loc) {
 		Location newLoc = loc;
-		if (loc.getX() < worlddata.pregameSpawn().getX()
-				- worlddata.pregameBoundary()) {
+		if (loc.getX() < settings.SPAWN_SETUP.value.getX()
+				- settings.BOUNDARY_SETUP.value) {
 			newLoc.setX(newLoc.getX() + 1);
 		}
-		if (loc.getX() > worlddata.pregameSpawn().getX()
-				+ worlddata.pregameBoundary()) {
+		if (loc.getX() > settings.SPAWN_SETUP.value.getX()
+				+ settings.BOUNDARY_SETUP.value) {
 			newLoc.setX(newLoc.getX() - 1);
 		}
-		if (loc.getZ() < worlddata.pregameSpawn().getZ()
-				- worlddata.pregameBoundary()) {
+		if (loc.getZ() < settings.SPAWN_SETUP.value.getZ()
+				- settings.BOUNDARY_SETUP.value) {
 			newLoc.setZ(newLoc.getZ() + 1);
 		}
-		if (loc.getZ() > worlddata.pregameSpawn().getZ()
-				+ worlddata.pregameBoundary()) {
+		if (loc.getZ() > settings.SPAWN_SETUP.value.getZ()
+				+ settings.BOUNDARY_SETUP.value) {
 			newLoc.setZ(newLoc.getZ() - 1);
 		}
 		return newLoc;
@@ -1185,28 +1184,28 @@ public class Game {
 
 	public Location teleportBoxedLocation(Location loc) {
 		Location newLoc = loc;
-		if (loc.getX() < worlddata.hunterSpawn().getX()
-				- worlddata.mapBoundary()
-				&& loc.getX() < worlddata.preySpawn().getX()
-						- worlddata.mapBoundary()) {
+		if (loc.getX() < settings.SPAWN_HUNTER.value.getX()
+				- settings.BOUNDARY_WORLD.value
+				&& loc.getX() < settings.SPAWN_PREY.value.getX()
+						- settings.BOUNDARY_WORLD.value) {
 			newLoc.setX(loc.getX() + 1);
 		}
-		if (loc.getX() > worlddata.hunterSpawn().getX()
-				+ worlddata.mapBoundary()
-				&& loc.getX() > worlddata.preySpawn().getX()
-						+ worlddata.mapBoundary()) {
+		if (loc.getX() > settings.SPAWN_HUNTER.value.getX()
+				+ settings.BOUNDARY_WORLD.value
+				&& loc.getX() > settings.SPAWN_PREY.value.getX()
+						+ settings.BOUNDARY_WORLD.value) {
 			newLoc.setX(loc.getX() - 1);
 		}
-		if (loc.getZ() < worlddata.hunterSpawn().getZ()
-				- worlddata.mapBoundary()
-				&& loc.getZ() < worlddata.preySpawn().getZ()
-						- worlddata.mapBoundary()) {
+		if (loc.getZ() < settings.SPAWN_HUNTER.value.getZ()
+				- settings.BOUNDARY_WORLD.value
+				&& loc.getZ() < settings.SPAWN_PREY.value.getZ()
+						- settings.BOUNDARY_WORLD.value) {
 			newLoc.setZ(loc.getZ() + 1);
 		}
-		if (loc.getZ() > worlddata.hunterSpawn().getZ()
-				+ worlddata.mapBoundary()
-				&& loc.getZ() > worlddata.preySpawn().getZ()
-						+ worlddata.mapBoundary()) {
+		if (loc.getZ() > settings.SPAWN_HUNTER.value.getZ()
+				+ settings.BOUNDARY_WORLD.value
+				&& loc.getZ() > settings.SPAWN_PREY.value.getZ()
+						+ settings.BOUNDARY_WORLD.value) {
 			newLoc.setZ(loc.getZ() - 1);
 		}
 		return newLoc;
