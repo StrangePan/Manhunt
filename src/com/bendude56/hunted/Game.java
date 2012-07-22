@@ -12,11 +12,9 @@ import net.minecraft.server.Packet29DestroyEntity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Creeper;
@@ -28,9 +26,6 @@ import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Wool;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 import com.bendude56.hunted.config.SettingsFile;
@@ -124,8 +119,8 @@ public class Game {
 					p.setFoodLevel(20);
 					p.setSaturation(20);
 					if (settings.LOADOUTS.value)
-						preyLoadout(p.getInventory());
-					p.teleport(safeTeleport(randomLocation(
+						settings.getPreyLoadout().fillInventory(p.getInventory());
+					p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 							settings.SPAWN_SETUP.value, 2)));
 				}
 			}
@@ -138,17 +133,17 @@ public class Game {
 					p.setGameMode(GameMode.SURVIVAL);
 					p.setFireTicks(0);
 					if (settings.SETUP_TIME.value > 0) {
-						p.teleport(safeTeleport(randomLocation(
+						p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 								settings.SPAWN_SETUP.value, 2)));
 					} else {
-						p.teleport(safeTeleport(randomLocation(
+						p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 								settings.SPAWN_HUNTER.value, 2)));
 					}
 					p.setHealth(20);
 					p.setFoodLevel(20);
 					p.setSaturation(20);
 					if (settings.LOADOUTS.value) {
-						clearInventory(p.getInventory());
+						Utilities.clearInventory(p.getInventory());
 					}
 				}
 			}
@@ -164,7 +159,7 @@ public class Game {
 					} else {
 						p.setGameMode(GameMode.SURVIVAL);
 					}
-					clearInventory(p.getInventory());
+					Utilities.clearInventory(p.getInventory());
 					for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
 						if (isHunter(p2) || isHunted(p2)) {
 							((CraftPlayer) p2).getHandle().netServerHandler
@@ -190,7 +185,7 @@ public class Game {
 		endTick = 0;
 		countdown = 0;
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			clearInventory(p.getInventory());
+			Utilities.clearInventory(p.getInventory());
 			if (isSpectating(p)) {
 				for (String n : hunter) {
 					Player p2 = Bukkit.getServer().getPlayerExact(n);
@@ -533,11 +528,11 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.LOADOUTS.value)
-							hunterLoadout(p.getInventory());
-						if (!areNearby(settings.SPAWN_HUNTER.value,
+							settings.getHunterLoadout().fillInventory(p.getInventory());
+						if (!Utilities.areNearby(settings.SPAWN_HUNTER.value,
 								settings.SPAWN_PREY.value,
 								settings.SPAWN_PROTECTION.value)) {
-							p.teleport(safeTeleport(randomLocation(
+							p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 									settings.SPAWN_HUNTER.value, 2)));
 						}
 						p.setHealth(20);
@@ -1076,20 +1071,6 @@ public class Game {
 		}
 	}
 
-	public double getDistance(double x1, double y1, double z1, double x2,
-			double y2, double z2) {
-		return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((z2 - z1), 2));
-	}
-
-	public double getDistance(Location loc1, Location loc2) {
-		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(),
-				loc2.getZ(), loc2.getZ());
-	}
-
-	public double getDistance(Player p1, Player p2) {
-		return getDistance(p1.getLocation(), p2.getLocation());
-	}
-
 	public Location getNearestLocation(Location location, Location preySpawn,
 			Location hunterSpawn) {
 		double scalar = ((((hunterSpawn.getX() - preySpawn.getX()) * (location
@@ -1109,7 +1090,7 @@ public class Game {
 				(preySpawn.getZ() + scalar
 						* (hunterSpawn.getZ() - preySpawn.getZ())));
 		if (scalar > 1 || scalar < 0) {
-			if (getDistance(preySpawn, location) < getDistance(hunterSpawn,
+			if (Utilities.getDistance(preySpawn, location) < Utilities.getDistance(hunterSpawn,
 					location)) {
 				return preySpawn;
 			} else {
@@ -1211,73 +1192,6 @@ public class Game {
 		return newLoc;
 	}
 
-	public Location safeTeleport(Location loc) {
-		Location location1 = loc.clone();
-		location1.setY(location1.getY() - 1);
-		Location location2 = loc.clone();
-		location2.setY(location2.getY() - 1);
-
-		while (!isTransparent(location1.getBlock())
-				&& !isTransparent(location2.getBlock())) {
-			location1.setY(location1.getY() + 1);
-			location2.setY(location2.getY() + 1);
-		}
-		return location1;
-	}
-
-	public boolean isTransparent(Block block) {
-		if (block.getType() == Material.AIR
-				|| block.getType() == Material.BREWING_STAND
-				|| block.getType() == Material.BROWN_MUSHROOM
-				|| block.getType() == Material.CAKE
-				|| block.getType() == Material.CROPS
-				|| block.getType() == Material.DETECTOR_RAIL
-				|| block.getType() == Material.DIODE_BLOCK_ON
-				|| block.getType() == Material.DIODE_BLOCK_OFF
-				|| block.getType() == Material.DRAGON_EGG
-				|| block.getType() == Material.LEVER
-				|| block.getType() == Material.LONG_GRASS
-				|| block.getType() == Material.MELON_STEM
-				|| block.getType() == Material.NETHER_STALK
-				|| block.getType() == Material.PAINTING
-				|| block.getType() == Material.PORTAL
-				|| block.getType() == Material.POWERED_RAIL
-				|| block.getType() == Material.PUMPKIN_STEM
-				|| block.getType() == Material.RAILS
-				|| block.getType() == Material.RED_MUSHROOM
-				|| block.getType() == Material.RED_ROSE
-				|| block.getType() == Material.REDSTONE_TORCH_ON
-				|| block.getType() == Material.REDSTONE_TORCH_OFF
-				|| block.getType() == Material.REDSTONE_WIRE
-				|| block.getType() == Material.SAPLING
-				|| block.getType() == Material.SIGN_POST
-				|| block.getType() == Material.SNOW
-				|| block.getType() == Material.SUGAR_CANE_BLOCK
-				|| block.getType() == Material.TORCH
-				|| block.getType() == Material.VINE
-				|| block.getType() == Material.WALL_SIGN
-				|| block.getType() == Material.YELLOW_FLOWER) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public void stepPlayer(Player p, Double d, Location l) {
-		double x1 = p.getLocation().getX();
-		double z1 = p.getLocation().getZ();
-		double x2 = l.getX();
-		double z2 = l.getZ();
-		Location destination = p.getLocation();
-
-		destination
-				.setX(x1 + d * (x2 - x1) / getDistance(x1, 0, z1, x2, 0, z2));
-		destination
-				.setZ(z1 + d * (z2 - z1) / getDistance(z1, 0, z1, z2, 0, z2));
-
-		p.teleport(safeTeleport(destination));
-	}
-
 	public void manageLocators() {
 		for (int i = 0; i < locator.size(); i++) {
 			if (getLocatorPlayer(i).getItemInHand().getType() != Material.COMPASS
@@ -1315,7 +1229,7 @@ public class Game {
 					stopLocator(i);
 					return;
 				}
-				if (getDistance(getLocatorPlayer(i).getLocation(),
+				if (Utilities.getDistance(getLocatorPlayer(i).getLocation(),
 						getLocatorLocation(i)) > 1.5) {
 					getLocatorPlayer(i)
 							.sendMessage(
@@ -1436,7 +1350,7 @@ public class Game {
 				if (p2 == null) {
 					p2 = p3;
 				} else {
-					if (p3 != null && getDistance(p, p3) < getDistance(p, p2)) {
+					if (p3 != null && Utilities.getDistance(p, p3) < Utilities.getDistance(p, p2)) {
 						p2 = p3;
 					}
 				}
@@ -1448,7 +1362,7 @@ public class Game {
 			return;
 		}
 
-		if (getDistance(p, p2) < 10) {
+		if (Utilities.getDistance(p, p2) < 10) {
 			p.sendMessage(ChatColor.GOLD + "The nearest prey " + ChatColor.BLUE
 					+ "Prey" + ChatColor.GOLD + " is " + ChatColor.BLUE
 					+ "very close by" + ChatColor.GOLD + "!");
@@ -1460,7 +1374,7 @@ public class Game {
 
 		double direction = Math.toDegrees(Math
 				.acos((p2.getLocation().getZ() - p.getLocation().getZ())
-						/ getDistance(p, p2)));
+						/ Utilities.getDistance(p, p2)));
 		if (p2.getLocation().getX() < p.getLocation().getX()) {
 			direction = 180 - direction + 180;
 		}
@@ -1519,94 +1433,6 @@ public class Game {
 			food = 8;
 
 		return food;
-	}
-
-	public Inventory clearInventory(Inventory inv) {
-		inv.clear();
-		inv.clear(36);
-		inv.clear(37);
-		inv.clear(38);
-		inv.clear(39);
-		return inv;
-	}
-
-	public Location randomLocation(Location origin, double radius) {
-		Location randomLocation = origin.clone();
-		int sign = (int) Math.floor(Math.random() * 2);
-		if (sign == 0)
-			sign = -1;
-		else
-			sign = 1;
-		randomLocation.setX(randomLocation.getX() + (sign)
-				* (Math.random() * radius)
-				* (Math.cos(Math.toRadians(Math.random() * 180))));
-		sign = (int) Math.floor(Math.random() * 2);
-		if (sign == 0)
-			sign = -1;
-		else
-			sign = 1;
-		randomLocation.setZ(randomLocation.getZ() + (sign)
-				* (Math.random() * radius)
-				* (Math.cos(Math.toRadians(Math.random() * 180))));
-		return randomLocation;
-	}
-
-	public boolean areNearby(Location loc1, Location loc2, double tolerance) {
-		if (loc2.getX() >= loc1.getX() - tolerance
-				&& loc2.getX() <= loc1.getX() + tolerance
-				&& loc2.getZ() >= loc1.getZ() - tolerance
-				&& loc2.getZ() <= loc1.getZ() + tolerance) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public Inventory hunterLoadout(Inventory inv) {
-		clearInventory(inv);
-		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
-		inv.setItem(1, new ItemStack(Material.BOW, 1));
-		// inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
-		// inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
-		// inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
-		inv.setItem(2, new ItemStack(Material.TORCH, 3));
-		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 3));
-		inv.setItem(4, new ItemStack(Material.ARROW, 64));
-		if (settings.PREY_FINDER.value) {
-			inv.setItem(5, new ItemStack(Material.COMPASS, 1));
-		}
-		inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.TEAM_HATS.value) {
-			inv.setItem(39, new Wool(DyeColor.RED).toItemStack());
-			// inv.setItem(39, new ItemStack(Material.JACK_O_LANTERN, 1));
-		} else {
-			inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
-		}
-		return inv;
-	}
-
-	public Inventory preyLoadout(Inventory inv) {
-		clearInventory(inv);
-		inv.setItem(0, new ItemStack(Material.STONE_SWORD, 1));
-		inv.setItem(1, new ItemStack(Material.BOW, 1));
-		// inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
-		// inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
-		// inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
-		inv.setItem(2, new ItemStack(Material.TORCH, 3));
-		inv.setItem(3, new ItemStack(Material.COOKED_CHICKEN, 1));
-		inv.setItem(4, new ItemStack(Material.ARROW, 64));
-		// inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		// inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		// inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		if (settings.TEAM_HATS.value) {
-			// inv.setItem(39, (new Wool(DyeColor.BLUE).toItemStack()));
-			inv.setItem(39, new ItemStack(Material.LEAVES));
-		} else {
-			// inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
-		}
-		return inv;
 	}
 
 }

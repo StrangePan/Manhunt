@@ -180,9 +180,9 @@ public class HuntedEntityListener implements Listener {
 					p.setFoodLevel(20);
 
 					if (g.isHunter(p)) {
-						p.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
+						p.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
 					} else {
-						p.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
+						p.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
 					}
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
 							+ p.getName() + ChatColor.WHITE
@@ -196,9 +196,9 @@ public class HuntedEntityListener implements Listener {
 											+ " died from natural causes and has respawned! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					if (g.isHunter(p))
-						g.hunterLoadout(p.getInventory());
+						settings.getHunterLoadout().fillInventory(p.getInventory());
 					if (g.isHunted(p))
-						g.preyLoadout(p.getInventory());
+						settings.getPreyLoadout().fillInventory(p.getInventory());
 					return;
 				} else {
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
@@ -249,9 +249,9 @@ public class HuntedEntityListener implements Listener {
 				p.setFoodLevel(20);
 
 				if (g.isHunter(p)) {
-					p.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
+					p.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
 				} else {
-					p.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
+					p.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
 				}
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE
@@ -265,9 +265,9 @@ public class HuntedEntityListener implements Listener {
 										+ " died from natural causes and has respawned! ]---");
 				((PlayerDeathEvent) e).setDeathMessage(null);
 				if (g.isHunter(p))
-					g.hunterLoadout(p.getInventory());
+					settings.getHunterLoadout().fillInventory(p.getInventory());
 				if (g.isHunted(p))
-					g.preyLoadout(p.getInventory());
+					settings.getPreyLoadout().fillInventory(p.getInventory());
 				return;
 			} else {
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)

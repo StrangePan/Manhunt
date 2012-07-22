@@ -823,7 +823,7 @@ public class CmdExec implements CommandExecutor {
 		if (p.isOp() || !settings.OP_CONTROL.value || g.isSpectating(p)) {
 			if (args.length == 0) {
 				if (g.isSpectating(p) || !g.gameHasBegun()) {
-					p.teleport(g.safeTeleport(HuntedPlugin.getInstance().getWorld()
+					p.teleport(Utilities.safeTeleport(HuntedPlugin.getInstance().getWorld()
 							.getSpawnLocation()));
 					p.sendMessage(ChatColor.GREEN
 							+ "You have teleported to the " + ChatColor.GOLD
@@ -843,7 +843,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
+						p.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.BLUE + "Prey" + ChatColor.GREEN
@@ -862,7 +862,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(g.safeTeleport(settings.SPAWN_PREY.value));
+							p2.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
@@ -883,7 +883,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
+						p.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.DARK_RED + "Hunter"
@@ -902,7 +902,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(g.safeTeleport(settings.SPAWN_HUNTER.value));
+							p2.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
@@ -994,15 +994,15 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		if (args.length == 0) {
-			if (g.areNearby(settings.SPAWN_HUNTER.value, HuntedPlugin.getInstance()
+			if (Utilities.areNearby(settings.SPAWN_HUNTER.value, HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation(), 1.0)) {
 				settings.SPAWN_HUNTER.setValue(p.getLocation());
 			}
-			if (g.areNearby(settings.SPAWN_PREY.value, HuntedPlugin.getInstance()
+			if (Utilities.areNearby(settings.SPAWN_PREY.value, HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation(), 1.0)) {
 				settings.SPAWN_PREY.setValue(p.getLocation());
 			}
-			if (g.areNearby(settings.SPAWN_SETUP.value, HuntedPlugin
+			if (Utilities.areNearby(settings.SPAWN_SETUP.value, HuntedPlugin
 					.getInstance().getWorld().getSpawnLocation(), 1.0)) {
 				settings.SPAWN_SETUP.setValue(p.getLocation());
 			}
@@ -1170,11 +1170,6 @@ public class CmdExec implements CommandExecutor {
 		}
 		if (args.length >= 1)
 		{
-			if (args.length == 1)
-			{
-				p.sendMessage(ChatColor.RED + "Proper syntax is /m loadouts " + args[0].toLowerCase() + " <name>");
-				return;
-			}
 			if (args[0].equalsIgnoreCase("list"))
 			{
 				int page = 1;
@@ -1194,17 +1189,18 @@ public class CmdExec implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("create")
 					|| args[0].equalsIgnoreCase("add")
+					|| args[0].equalsIgnoreCase("new")
 					|| args[0].equalsIgnoreCase("save"))
 			{
 				if (settings.getLoadout(args[1]) == null)
 				{
-					settings.newLoadout(args[1], p.getInventory().getContents());
+					settings.newLoadout(args[1], p.getInventory());
 					p.sendMessage(ChatColor.GREEN + "New loadout created with name " + args[1]);
 					return;
 				}
 				else
 				{
-					settings.getLoadout(args[1]).setLoadout(p.getInventory().getContents());
+					settings.getLoadout(args[1]).setLoadout(p.getInventory());
 					p.sendMessage(ChatColor.GREEN + "The existing loadout " + settings.getLoadout(args[1]).label + " was overwritten.");
 					return;
 				}
@@ -1222,7 +1218,7 @@ public class CmdExec implements CommandExecutor {
 						}
 						else
 						{
-							settings.getLoadout(args[1]).setLoadout(p.getInventory().getContents());
+							settings.getLoadout(args[1]).setLoadout(p.getInventory());
 							p.sendMessage(ChatColor.GREEN + "Hunter loadout set to \"" + settings.getLoadout(args[1]).label + "\".");
 							return;
 						}
@@ -1236,7 +1232,7 @@ public class CmdExec implements CommandExecutor {
 						}
 						else
 						{
-							settings.getLoadout(args[1]).setLoadout(p.getInventory().getContents());
+							settings.getLoadout(args[1]).setLoadout(p.getInventory());
 							p.sendMessage(ChatColor.GREEN + "Prey loadout set to \"" + settings.getLoadout(args[1]).label + "\".");
 							return;
 						}
@@ -1262,13 +1258,13 @@ public class CmdExec implements CommandExecutor {
 			{
 				if (args[1].equalsIgnoreCase("hunter"))
 				{
-					p.getInventory().setContents(settings.getHunterLoadout());
+					settings.getHunterLoadout().fillInventory(p.getInventory());
 					p.sendMessage(ChatColor.GREEN + "Current Hunter loadout has been loaded.");
 					return;
 				}
 				else if (args[1].equalsIgnoreCase("prey"))
 				{
-					p.getInventory().setContents(settings.getPreyLoadout());
+					settings.getPreyLoadout().fillInventory(p.getInventory());
 					p.sendMessage(ChatColor.GREEN + "Current Prey loadout has been loaded.");
 					return;
 				}
@@ -1303,6 +1299,13 @@ public class CmdExec implements CommandExecutor {
 		}
 		
 		pages = (int) Math.ceil(labels.size()/perPage);
+		
+		if (pages == 0)
+		{
+			p.sendMessage(ChatColor.RED + "There are no saved loadouts!");
+			return;
+		}
+		
 		if (page < 1)
 			page = 1;
 		else if (page > pages)

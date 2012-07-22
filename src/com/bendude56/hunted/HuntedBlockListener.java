@@ -25,11 +25,11 @@ public class HuntedBlockListener implements Listener {
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
-			} else if (g.getDistance(e.getBlock().getLocation(),
+			} else if (Utilities.getDistance(e.getBlock().getLocation(),
 					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
-					|| g.getDistance(e.getBlock().getLocation(),
+					|| Utilities.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
-					|| g.getDistance(e.getBlock().getLocation(),
+					|| Utilities.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
@@ -49,11 +49,11 @@ public class HuntedBlockListener implements Listener {
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
-			} else if (g.getDistance(e.getBlock().getLocation(),
+			} else if (Utilities.getDistance(e.getBlock().getLocation(),
 					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
-					|| g.getDistance(e.getBlock().getLocation(),
+					|| Utilities.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
-					|| g.getDistance(e.getBlock().getLocation(),
+					|| Utilities.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}

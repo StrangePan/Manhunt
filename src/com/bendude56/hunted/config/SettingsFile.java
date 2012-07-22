@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Inventory;
+
+import com.bendude56.hunted.Utilities;
 
 
 public class SettingsFile
@@ -110,14 +112,30 @@ public class SettingsFile
 		secretSettings.add(SPAWN_PREY = new Setting<Location>("preySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		secretSettings.add(SPAWN_SETUP = new Setting<Location>("setupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		
-		HUNTER_LOADOUT = new LoadoutFile("hunter_loadout", world_path, new ItemStack[]{});
-		PREY_LOADOUT = new LoadoutFile("prey_loadout", world_path, new ItemStack[]{});
+		File hunterFile = new File(world_path + "/hunter_loadout.inv");
+		if (hunterFile.exists())
+			HUNTER_LOADOUT = new LoadoutFile("hunter_loadout", world_path);
+		else
+		{
+			HUNTER_LOADOUT = new LoadoutFile("hunter_loadout", world_path);
+			HUNTER_LOADOUT.setLoadout(Utilities.defaultHunterLoadout(HUNTER_LOADOUT.getHashmap()));
+		}
+		File preyFile = new File(world_path + "/prey_loadout.inv");
+		if (preyFile.exists())
+			PREY_LOADOUT = new LoadoutFile("prey_loadout", world_path);
+		else
+		{
+			PREY_LOADOUT = new LoadoutFile("prey_loadout", world_path);
+			PREY_LOADOUT.setLoadout(Utilities.defaultHunterLoadout(PREY_LOADOUT.getHashmap()));
+		}
 		
 		File loadout_directory = new File(plugin_loadout_path);
+		if (!loadout_directory.exists())
+			loadout_directory.mkdir();
 		for (File file : loadout_directory.listFiles())
 		{
 			if (file.getName().endsWith(".inv"))
-				loadouts.add(new LoadoutFile(file.getName().substring(0, file.getName().length()-3), plugin_loadout_path, new ItemStack[]{}));
+				loadouts.add(new LoadoutFile(file.getName().substring(0, file.getName().length()-4), plugin_loadout_path));
 		}
 		//START GOING THROUGH AND LOADING ALL CUSTOM LOADOUTS
 	}
@@ -140,6 +158,10 @@ public class SettingsFile
 		{
 			setting.load();
 		}
+		for (LoadoutFile loadout : loadouts)
+		{
+			loadout.load();
+		}
 	}
 
 	public Setting<?> getSetting(String label)
@@ -157,11 +179,11 @@ public class SettingsFile
 		return settings;
 	}
 	
-	public boolean newLoadout(String label, ItemStack[] items)
+	public boolean newLoadout(String label, Inventory inv)
 	{
 		if (getLoadout(label) == null)
 		{
-			loadouts.add(new LoadoutFile(label, plugin_loadout_path, items));
+			loadouts.add(new LoadoutFile(label, plugin_loadout_path, inv));
 			return true;
 		}
 		else
@@ -180,7 +202,7 @@ public class SettingsFile
 		return null;
 	}
 	
-	public ItemStack[] getHunterLoadout()
+	public LoadoutFile getHunterLoadout()
 	{
 		LoadoutFile loadout = getLoadout(HUNTER_LOADOUT_CURRENT.value);
 		if (loadout == null)
@@ -188,10 +210,10 @@ public class SettingsFile
 			HUNTER_LOADOUT_CURRENT.setValue(HUNTER_LOADOUT.label);
 			loadout = HUNTER_LOADOUT;
 		}
-		return loadout.getLoadout();
+		return loadout;
 	}
 
-	public ItemStack[] getPreyLoadout()
+	public LoadoutFile getPreyLoadout()
 	{
 		LoadoutFile loadout = getLoadout(PREY_LOADOUT_CURRENT.value);
 		if (loadout == null)
@@ -199,7 +221,7 @@ public class SettingsFile
 			PREY_LOADOUT_CURRENT.setValue(PREY_LOADOUT.label);
 			loadout = PREY_LOADOUT;
 		}
-		return loadout.getLoadout();
+		return loadout;
 	}
 
 	public List<LoadoutFile> getAllLoadouts()
