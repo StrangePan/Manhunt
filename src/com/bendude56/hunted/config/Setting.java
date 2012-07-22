@@ -2,7 +2,9 @@ package com.bendude56.hunted.config;
 
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 
 import com.bendude56.hunted.HuntedPlugin;
 
@@ -43,11 +45,18 @@ public class Setting<Type> {
 	
 	public void save(boolean write)
 	{
-		file.put(this.label, this.value.toString());
+		file.put(this.label, this.valueToString());
 		if (write)
 			file.saveFile();
 	}
 	
+	private String valueToString() {
+		if (value instanceof Location)
+			return ((Location) value).getWorld().getName() + "," + ((Location) value).getX() + "," + ((Location) value).getY() + "," + ((Location) value).getZ() + "," + ((Location) value).getX() + "," + ((Location) value).getPitch() + "," + ((Location) value).getYaw();
+		else
+			return value.toString();
+	}
+
 	public void setValue(Type value)
 	{
 		this.value = value;
@@ -71,6 +80,11 @@ public class Setting<Type> {
 			{
 				this.value = (Type) value;
 			}
+			else if (this.value instanceof Location)
+			{
+				String[] input = value.split(",");
+				this.value = (Type) Location.class.cast(new Location(Bukkit.getWorld(input[0]), Double.parseDouble(input[1]), Double.parseDouble(input[2]), Double.parseDouble(input[3]), Float.parseFloat(input[4]), Float.parseFloat(input[5])));
+			}
 			else
 			{
 				HuntedPlugin.getInstance().log(Level.SEVERE, "Unknown value type for setting \"" + label + "\"");
@@ -89,7 +103,7 @@ public class Setting<Type> {
 		save(write);
 	}
 
-	public String valueToString()
+	public String formattedValue()
 	{
 		if (value instanceof Boolean)
 			return (((Boolean)value ? ChatColor.GREEN : ChatColor.RED) + "[" + ((Boolean)value ? "ON" : "OFF") + "]" + ChatColor.WHITE);

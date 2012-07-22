@@ -20,7 +20,7 @@ public class ManhuntFile extends Properties{
 	{
 		this.title = title;
 		this.directory = directory;
-		this.filename = filename;
+		this.filename = filename + ".properties";
 	}
 	
 	public void loadFile() {

@@ -1,5 +1,6 @@
 package com.bendude56.hunted;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -10,6 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.config.LoadoutFile;
 import com.bendude56.hunted.config.Setting;
 import com.bendude56.hunted.config.SettingsFile;
 
@@ -167,6 +169,13 @@ public class CmdExec implements CommandExecutor {
 					return true;
 				}
 				weatherCommand(args, p);
+
+			} else if (args[0].equalsIgnoreCase("loadout")
+					|| args[0].equalsIgnoreCase("loadouts")
+					|| args[0].equalsIgnoreCase("inventory")
+					|| args[0].equalsIgnoreCase("inv")) {
+				args = shiftArgs(args);
+				loadoutCommand(args, p);
 
 			} else if (args[0].equalsIgnoreCase("set")
 					|| args[0].equalsIgnoreCase("setting")
@@ -1152,6 +1161,163 @@ public class CmdExec implements CommandExecutor {
 		}
 	}
 
+	private void loadoutCommand(String[] args, Player p)
+	{
+		if (args.length == 0)
+		{
+			listLoadouts(1, p);
+			return;
+		}
+		if (args.length >= 1)
+		{
+			if (args.length == 1)
+			{
+				p.sendMessage(ChatColor.RED + "Proper syntax is /m loadouts " + args[0].toLowerCase() + " <name>");
+				return;
+			}
+			if (args[0].equalsIgnoreCase("list"))
+			{
+				int page = 1;
+				
+				if (args.length >= 2)
+				{
+					try {
+						page = Integer.parseInt(args[1]);
+					}
+					catch (NumberFormatException e)
+					{
+						page = 1;
+					}
+				}
+				listLoadouts(page, p);
+				return;
+			}
+			else if (args[0].equalsIgnoreCase("create")
+					|| args[0].equalsIgnoreCase("add")
+					|| args[0].equalsIgnoreCase("save"))
+			{
+				if (settings.getLoadout(args[1]) == null)
+				{
+					settings.newLoadout(args[1], p.getInventory().getContents());
+					p.sendMessage(ChatColor.GREEN + "New loadout created with name " + args[1]);
+					return;
+				}
+				else
+				{
+					settings.getLoadout(args[1]).setLoadout(p.getInventory().getContents());
+					p.sendMessage(ChatColor.GREEN + "The existing loadout " + settings.getLoadout(args[1]).label + " was overwritten.");
+					return;
+				}
+			}
+			else if (args[0].equalsIgnoreCase("set"))
+			{
+				if (args.length >= 3)
+				{
+					if (args[1].equalsIgnoreCase("hunter"))
+					{
+						if (settings.getLoadout(args[2]) == null)
+						{
+							p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+							return;
+						}
+						else
+						{
+							settings.getLoadout(args[1]).setLoadout(p.getInventory().getContents());
+							p.sendMessage(ChatColor.GREEN + "Hunter loadout set to \"" + settings.getLoadout(args[1]).label + "\".");
+							return;
+						}
+					}
+					else if (args[1].equalsIgnoreCase("prey"))
+					{
+						if (settings.getLoadout(args[2]) == null)
+						{
+							p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+							return;
+						}
+						else
+						{
+							settings.getLoadout(args[1]).setLoadout(p.getInventory().getContents());
+							p.sendMessage(ChatColor.GREEN + "Prey loadout set to \"" + settings.getLoadout(args[1]).label + "\".");
+							return;
+						}
+					}
+				}
+			}
+			else if (args[0].equalsIgnoreCase("reset"))
+			{
+				if (args[1].equalsIgnoreCase("hunter"))
+				{
+					settings.HUNTER_LOADOUT_CURRENT.setValue(settings.HUNTER_LOADOUT.label);
+					p.sendMessage(ChatColor.GREEN + "The Hunter has been reset to default.");
+					return;
+				}
+				else if (args[1].equalsIgnoreCase("prey"))
+				{
+					settings.PREY_LOADOUT_CURRENT.setValue(settings.PREY_LOADOUT.label);
+					p.sendMessage(ChatColor.GREEN + "The Prey has been reset to default.");
+					return;
+				}
+			}
+			else if (args[0].equalsIgnoreCase("load"))
+			{
+				if (args[1].equalsIgnoreCase("hunter"))
+				{
+					p.getInventory().setContents(settings.getHunterLoadout());
+					p.sendMessage(ChatColor.GREEN + "Current Hunter loadout has been loaded.");
+					return;
+				}
+				else if (args[1].equalsIgnoreCase("prey"))
+				{
+					p.getInventory().setContents(settings.getPreyLoadout());
+					p.sendMessage(ChatColor.GREEN + "Current Prey loadout has been loaded.");
+					return;
+				}
+			}
+			else if (args[0].equalsIgnoreCase("delete")
+					|| args[0].equalsIgnoreCase("remove"))
+			{
+				if (settings.getLoadout(args[1]) == null)
+				{
+					p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+					return;
+				}
+				else
+				{
+					settings.getLoadout(args[1]).delete();
+					p.sendMessage(ChatColor.GREEN + "Loadout \"" + settings.getLoadout(args[1]).label + "\" was deleted.");
+					return;
+				}
+			}
+		}
+	}
+
+	private void listLoadouts(int page, Player p)
+	{
+		int perPage = 8;
+		int pages;
+		List<String> labels = new ArrayList<String>();
+		
+		for (LoadoutFile loadout : settings.getAllLoadouts())
+		{
+			labels.add(loadout.label);
+		}
+		
+		pages = (int) Math.ceil(labels.size()/perPage);
+		if (page < 1)
+			page = 1;
+		else if (page > pages)
+			page = pages;
+		
+		p.sendMessage(ChatColor.GOLD + "--------[ " + ChatColor.GREEN + "Saved Loadouts (" + page + "/" + pages + ")" + ChatColor.GOLD + " ]--------");
+		
+		for (int i = perPage*(page-1); (i < perPage*page && i < labels.size()); i++)
+		{
+			p.sendMessage(pre + ChatColor.GREEN + labels.get(i));
+		}
+		
+		return;
+	}
+
 	private void settingsCommand(String[] args, Player p) {
 		
 		if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("1")))
@@ -1193,12 +1359,12 @@ public class CmdExec implements CommandExecutor {
 			
 			if (args.length == 1)
 			{
-				p.sendMessage(ChatColor.BLUE + setting.label + " " + setting.valueToString() + " " + setting.message());
+				p.sendMessage(ChatColor.BLUE + setting.label + " " + setting.formattedValue() + " " + setting.message());
 			}
 			else if (args.length > 1)
 			{
 				if (setting.parseValue(args[1]))
-					p.sendMessage(ChatColor.BLUE + setting.label + " " + setting.valueToString() + " " + setting.message());
+					p.sendMessage(ChatColor.BLUE + setting.label + " " + setting.formattedValue() + " " + setting.message());
 				else
 					p.sendMessage(ChatColor.RED + args[1] + "is an invalid setting for \"" + setting.label + "\"");
 			}
@@ -1221,7 +1387,7 @@ public class CmdExec implements CommandExecutor {
 			Setting<?> setting = list.get(index);
 			
 			p.sendMessage(ChatColor.BLUE + setting.label
-					+ " " + setting.valueToString()
+					+ " " + setting.formattedValue()
 					+ ChatColor.WHITE + ": "
 					+ setting.message());
 			

@@ -1,10 +1,12 @@
 package com.bendude56.hunted.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
 
 public class SettingsFile
@@ -13,12 +15,18 @@ public class SettingsFile
 	
 	public final ManhuntFile FILE_MAIN;
 	public final ManhuntFile FILE_WORLD;
-	
+
+	private String plugin_path = "plugins/Manhunt";
+	private String plugin_loadout_path = plugin_path + "/Loadouts";
+	private String world_path;
 	
 	private List<Setting<?>> settings = new ArrayList<Setting<?>>();
 	private List<Setting<?>> secretSettings = new ArrayList<Setting<?>>();
+	private List<LoadoutFile> loadouts = new ArrayList<LoadoutFile>();
 
 	public final Setting<String> WORLD;
+	public final Setting<String> HUNTER_LOADOUT_CURRENT;
+	public final Setting<String> PREY_LOADOUT_CURRENT;
 
 	public final Setting<Boolean> OP_CONTROL;
 	public final Setting<Boolean> PUBLIC_MODE;
@@ -53,10 +61,13 @@ public class SettingsFile
 	public final Setting<Location> SPAWN_PREY;
 	public final Setting<Location> SPAWN_SETUP;
 
+	public final LoadoutFile HUNTER_LOADOUT;
+	public final LoadoutFile PREY_LOADOUT;
+
 	
 	public SettingsFile()
 	{
-		files.add(FILE_MAIN = new ManhuntFile("Main Config", "plugins/Manhunt", "Manhunt.properties"));
+		files.add(FILE_MAIN = new ManhuntFile("Main Config", plugin_path, "Manhunt.properties"));
 		
 		secretSettings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
@@ -84,22 +95,39 @@ public class SettingsFile
 		settings.add(SETUP_TIME = new Setting<Integer>("setupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
 
 
-		files.add(FILE_WORLD = new ManhuntFile("World Config", (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt", "World_Config.properties"));
+		this.world_path = (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt";
+		files.add(FILE_WORLD = new ManhuntFile("World Config", world_path, "Config"));
 		
 		settings.add(BOUNDARY_WORLD = new Setting<Integer>("worldBoundary", 128, FILE_WORLD, "How far players may roam during the hunt.", "There is no boundary around the world."));
 		settings.add(BOUNDARY_SETUP = new Setting<Integer>("setupBoundary", 16, FILE_WORLD, "The region in which the hunters must wait.", "The hunters are not constrained during setup."));
 		settings.add(SPAWN_PROTECTION = new Setting<Integer>("spawnProtection", 24, FILE_WORLD, "The protected region around the spawn points.", "The spawn points are not protected."));
 		settings.add(BOUNDARY_BOXED = new Setting<Boolean>("boxedBoundary", true, FILE_WORLD, "The world's boundary is rectangular.", "The world's shape is rounded."));
 		
+		secretSettings.add(HUNTER_LOADOUT_CURRENT = new Setting<String>("currentHunterLoadout", "default", FILE_WORLD, "The loadout the hunter get.", ""));
+		secretSettings.add(PREY_LOADOUT_CURRENT = new Setting<String>("currentPreyLoadout", "default", FILE_WORLD, "The loadout the prey get.", ""));
+		
 		secretSettings.add(SPAWN_HUNTER = new Setting<Location>("hunterSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		secretSettings.add(SPAWN_PREY = new Setting<Location>("preySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		secretSettings.add(SPAWN_SETUP = new Setting<Location>("setupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
+		
+		HUNTER_LOADOUT = new LoadoutFile("hunter_loadout", world_path, new ItemStack[]{});
+		PREY_LOADOUT = new LoadoutFile("prey_loadout", world_path, new ItemStack[]{});
+		
+		File loadout_directory = new File(plugin_loadout_path);
+		for (File file : loadout_directory.listFiles())
+		{
+			if (file.getName().endsWith(".inv"))
+				loadouts.add(new LoadoutFile(file.getName().substring(0, file.getName().length()-3), plugin_loadout_path, new ItemStack[]{}));
+		}
+		//START GOING THROUGH AND LOADING ALL CUSTOM LOADOUTS
 	}
 
 	public void saveAll()
 	{
 		for (ManhuntFile file : files)
 			file.saveFile();
+		for (LoadoutFile loadout : loadouts)
+			loadout.save();
 	}
 
 	public void reloadAll()
@@ -127,6 +155,65 @@ public class SettingsFile
 	public List<Setting<?>> getAllSettings()
 	{
 		return settings;
+	}
+	
+	public boolean newLoadout(String label, ItemStack[] items)
+	{
+		if (getLoadout(label) == null)
+		{
+			loadouts.add(new LoadoutFile(label, plugin_loadout_path, items));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public LoadoutFile getLoadout(String label)
+	{
+		for (LoadoutFile loadout : loadouts)
+		{
+			if (loadout.label.equalsIgnoreCase(label))
+				return loadout;
+		}
+		return null;
+	}
+	
+	public ItemStack[] getHunterLoadout()
+	{
+		LoadoutFile loadout = getLoadout(HUNTER_LOADOUT_CURRENT.value);
+		if (loadout == null)
+		{
+			HUNTER_LOADOUT_CURRENT.setValue(HUNTER_LOADOUT.label);
+			loadout = HUNTER_LOADOUT;
+		}
+		return loadout.getLoadout();
+	}
+
+	public ItemStack[] getPreyLoadout()
+	{
+		LoadoutFile loadout = getLoadout(PREY_LOADOUT_CURRENT.value);
+		if (loadout == null)
+		{
+			PREY_LOADOUT_CURRENT.setValue(PREY_LOADOUT.label);
+			loadout = PREY_LOADOUT;
+		}
+		return loadout.getLoadout();
+	}
+
+	public List<LoadoutFile> getAllLoadouts()
+	{
+		return loadouts;
+	}
+	
+	public void deleteLoadout(LoadoutFile loadout)
+	{
+		if (loadouts.contains(loadout))
+		{
+			loadout.delete();
+			loadouts.remove(loadout);
+		}
 	}
 
 	public void loadDefaults()
