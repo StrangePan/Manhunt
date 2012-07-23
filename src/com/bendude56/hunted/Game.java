@@ -29,9 +29,11 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 import com.bendude56.hunted.config.SettingsFile;
+import com.bendude56.hunted.loadout.LoadoutManager;
 
 public class Game {
 	private SettingsFile settings;
+	private LoadoutManager loadouts;
 
 	private HashMap<String, Long> timeout;
 
@@ -60,6 +62,7 @@ public class Game {
 		hunterReleaseTick = 0;
 		endTick = 0;
 		settings = HuntedPlugin.getInstance().getSettings();
+		loadouts = HuntedPlugin.getInstance().getLoadouts();
 	}
 
 	public void start() {
@@ -119,7 +122,7 @@ public class Game {
 					p.setFoodLevel(20);
 					p.setSaturation(20);
 					if (settings.LOADOUTS.value)
-						settings.getPreyLoadout().fillInventory(p.getInventory());
+						p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 					p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 							settings.SPAWN_SETUP.value, 2)));
 				}
@@ -528,7 +531,7 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.LOADOUTS.value)
-							settings.getHunterLoadout().fillInventory(p.getInventory());
+							p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
 						if (!Utilities.areNearby(settings.SPAWN_HUNTER.value,
 								settings.SPAWN_PREY.value,
 								settings.SPAWN_PROTECTION.value)) {

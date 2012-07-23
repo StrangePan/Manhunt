@@ -30,11 +30,13 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.bendude56.hunted.config.SettingsFile;
+import com.bendude56.hunted.loadout.LoadoutManager;
 
 public class HuntedEntityListener implements Listener {
 
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	LoadoutManager loadouts = HuntedPlugin.getInstance().getLoadouts();
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
@@ -196,9 +198,9 @@ public class HuntedEntityListener implements Listener {
 											+ " died from natural causes and has respawned! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
 					if (g.isHunter(p))
-						settings.getHunterLoadout().fillInventory(p.getInventory());
+						p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
 					if (g.isHunted(p))
-						settings.getPreyLoadout().fillInventory(p.getInventory());
+						p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 					return;
 				} else {
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
@@ -265,9 +267,9 @@ public class HuntedEntityListener implements Listener {
 										+ " died from natural causes and has respawned! ]---");
 				((PlayerDeathEvent) e).setDeathMessage(null);
 				if (g.isHunter(p))
-					settings.getHunterLoadout().fillInventory(p.getInventory());
+					p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
 				if (g.isHunted(p))
-					settings.getPreyLoadout().fillInventory(p.getInventory());
+					p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 				return;
 			} else {
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.hunted.config.SettingsFile;
+import com.bendude56.hunted.loadout.LoadoutManager;
 
 public class HuntedPlugin extends JavaPlugin {
 
@@ -19,6 +20,7 @@ public class HuntedPlugin extends JavaPlugin {
 	public SpConnect spoutConnect;
 	private World manhuntWorld;
 	private SettingsFile settings;
+	private LoadoutManager loadouts;
 	private Game game;
 
 	@Override
@@ -52,6 +54,8 @@ public class HuntedPlugin extends JavaPlugin {
 				&& Bukkit.getWorld(settings.WORLD.value) != null) {
 			manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		}
+		loadouts = new LoadoutManager();
+		
 		game = new Game();
 		new CmdExec();
 		//Register Events
@@ -87,6 +91,10 @@ public class HuntedPlugin extends JavaPlugin {
 
 	public SettingsFile getSettings() {
 		return settings;
+	}
+	
+	public LoadoutManager getLoadouts() {
+		return loadouts;
 	}
 
 	public Game getGame() {

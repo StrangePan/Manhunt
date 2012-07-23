@@ -1,14 +1,10 @@
 package com.bendude56.hunted.config;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.inventory.Inventory;
-
-import com.bendude56.hunted.Utilities;
 
 
 public class SettingsFile
@@ -19,12 +15,10 @@ public class SettingsFile
 	public final ManhuntFile FILE_WORLD;
 
 	private String plugin_path = "plugins/Manhunt";
-	private String plugin_loadout_path = plugin_path + "/Loadouts";
 	private String world_path;
 	
 	private List<Setting<?>> settings = new ArrayList<Setting<?>>();
 	private List<Setting<?>> secretSettings = new ArrayList<Setting<?>>();
-	private List<LoadoutFile> loadouts = new ArrayList<LoadoutFile>();
 
 	public final Setting<String> WORLD;
 	public final Setting<String> HUNTER_LOADOUT_CURRENT;
@@ -62,9 +56,6 @@ public class SettingsFile
 	public final Setting<Location> SPAWN_HUNTER;
 	public final Setting<Location> SPAWN_PREY;
 	public final Setting<Location> SPAWN_SETUP;
-
-	public final LoadoutFile HUNTER_LOADOUT;
-	public final LoadoutFile PREY_LOADOUT;
 
 	
 	public SettingsFile()
@@ -112,40 +103,12 @@ public class SettingsFile
 		secretSettings.add(SPAWN_PREY = new Setting<Location>("preySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		secretSettings.add(SPAWN_SETUP = new Setting<Location>("setupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		
-		File hunterFile = new File(world_path + "/hunter_loadout.inv");
-		if (hunterFile.exists())
-			HUNTER_LOADOUT = new LoadoutFile("hunter_loadout", world_path);
-		else
-		{
-			HUNTER_LOADOUT = new LoadoutFile("hunter_loadout", world_path);
-			HUNTER_LOADOUT.setLoadout(Utilities.defaultHunterLoadout(HUNTER_LOADOUT.getHashmap()));
-		}
-		File preyFile = new File(world_path + "/prey_loadout.inv");
-		if (preyFile.exists())
-			PREY_LOADOUT = new LoadoutFile("prey_loadout", world_path);
-		else
-		{
-			PREY_LOADOUT = new LoadoutFile("prey_loadout", world_path);
-			PREY_LOADOUT.setLoadout(Utilities.defaultHunterLoadout(PREY_LOADOUT.getHashmap()));
-		}
-		
-		File loadout_directory = new File(plugin_loadout_path);
-		if (!loadout_directory.exists())
-			loadout_directory.mkdir();
-		for (File file : loadout_directory.listFiles())
-		{
-			if (file.getName().endsWith(".inv"))
-				loadouts.add(new LoadoutFile(file.getName().substring(0, file.getName().length()-4), plugin_loadout_path));
-		}
-		//START GOING THROUGH AND LOADING ALL CUSTOM LOADOUTS
 	}
 
 	public void saveAll()
 	{
 		for (ManhuntFile file : files)
 			file.saveFile();
-		for (LoadoutFile loadout : loadouts)
-			loadout.save();
 	}
 
 	public void reloadAll()
@@ -157,10 +120,6 @@ public class SettingsFile
 		for (Setting<?> setting : secretSettings)
 		{
 			setting.load();
-		}
-		for (LoadoutFile loadout : loadouts)
-		{
-			loadout.load();
 		}
 	}
 
@@ -177,65 +136,6 @@ public class SettingsFile
 	public List<Setting<?>> getAllSettings()
 	{
 		return settings;
-	}
-	
-	public boolean newLoadout(String label, Inventory inv)
-	{
-		if (getLoadout(label) == null)
-		{
-			loadouts.add(new LoadoutFile(label, plugin_loadout_path, inv));
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	public LoadoutFile getLoadout(String label)
-	{
-		for (LoadoutFile loadout : loadouts)
-		{
-			if (loadout.label.equalsIgnoreCase(label))
-				return loadout;
-		}
-		return null;
-	}
-	
-	public LoadoutFile getHunterLoadout()
-	{
-		LoadoutFile loadout = getLoadout(HUNTER_LOADOUT_CURRENT.value);
-		if (loadout == null)
-		{
-			HUNTER_LOADOUT_CURRENT.setValue(HUNTER_LOADOUT.label);
-			loadout = HUNTER_LOADOUT;
-		}
-		return loadout;
-	}
-
-	public LoadoutFile getPreyLoadout()
-	{
-		LoadoutFile loadout = getLoadout(PREY_LOADOUT_CURRENT.value);
-		if (loadout == null)
-		{
-			PREY_LOADOUT_CURRENT.setValue(PREY_LOADOUT.label);
-			loadout = PREY_LOADOUT;
-		}
-		return loadout;
-	}
-
-	public List<LoadoutFile> getAllLoadouts()
-	{
-		return loadouts;
-	}
-	
-	public void deleteLoadout(LoadoutFile loadout)
-	{
-		if (loadouts.contains(loadout))
-		{
-			loadout.delete();
-			loadouts.remove(loadout);
-		}
 	}
 
 	public void loadDefaults()

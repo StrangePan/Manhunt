@@ -11,9 +11,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.config.LoadoutFile;
 import com.bendude56.hunted.config.Setting;
 import com.bendude56.hunted.config.SettingsFile;
+import com.bendude56.hunted.loadout.Loadout;
+import com.bendude56.hunted.loadout.LoadoutManager;
 
 public class CmdExec implements CommandExecutor {
 
@@ -26,6 +27,7 @@ public class CmdExec implements CommandExecutor {
 
 	Game g = HuntedPlugin.getInstance().getGame();
 	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	LoadoutManager loadouts = HuntedPlugin.getInstance().getLoadouts();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command c, String cmd,
@@ -1192,18 +1194,31 @@ public class CmdExec implements CommandExecutor {
 					|| args[0].equalsIgnoreCase("new")
 					|| args[0].equalsIgnoreCase("save"))
 			{
-				if (settings.getLoadout(args[1]) == null)
+				if (args[1].equalsIgnoreCase("hunter")
+						|| args[1].equalsIgnoreCase("prey")
+						|| args[1].equalsIgnoreCase("hunter_loadout")
+						|| args[1].equalsIgnoreCase("prey_loadout"))
 				{
-					settings.newLoadout(args[1], p.getInventory());
+					p.sendMessage(ChatColor.RED + "You may not use that name!");
+					return;
+				}
+				if (loadouts.getLoadout(args[1]) == null)
+				{
+					loadouts.addLoadout(args[1], p.getInventory().getContents());
 					p.sendMessage(ChatColor.GREEN + "New loadout created with name " + args[1]);
 					return;
 				}
 				else
 				{
-					settings.getLoadout(args[1]).setLoadout(p.getInventory());
-					p.sendMessage(ChatColor.GREEN + "The existing loadout " + settings.getLoadout(args[1]).label + " was overwritten.");
+					loadouts.getLoadout(args[1]).setContents(p.getInventory().getContents());
+					p.sendMessage(ChatColor.GREEN + "The existing loadout " + loadouts.getLoadout(args[1]).name + " was overwritten.");
 					return;
 				}
+			}
+			else if (args.length == 1)
+			{
+				p.sendMessage(ChatColor.RED + "Incorrect syntax!");
+				return;
 			}
 			else if (args[0].equalsIgnoreCase("set"))
 			{
@@ -1211,29 +1226,29 @@ public class CmdExec implements CommandExecutor {
 				{
 					if (args[1].equalsIgnoreCase("hunter"))
 					{
-						if (settings.getLoadout(args[2]) == null)
+						if (loadouts.getLoadout(args[2]) == null)
 						{
 							p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
 							return;
 						}
 						else
 						{
-							settings.getLoadout(args[1]).setLoadout(p.getInventory());
-							p.sendMessage(ChatColor.GREEN + "Hunter loadout set to \"" + settings.getLoadout(args[1]).label + "\".");
+							loadouts.getLoadout(args[1]).setContents(p.getInventory().getContents());
+							p.sendMessage(ChatColor.GREEN + "Hunter loadout set to \"" + loadouts.getLoadout(args[1]).name + "\".");
 							return;
 						}
 					}
 					else if (args[1].equalsIgnoreCase("prey"))
 					{
-						if (settings.getLoadout(args[2]) == null)
+						if (loadouts.getLoadout(args[2]) == null)
 						{
 							p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
 							return;
 						}
 						else
 						{
-							settings.getLoadout(args[1]).setLoadout(p.getInventory());
-							p.sendMessage(ChatColor.GREEN + "Prey loadout set to \"" + settings.getLoadout(args[1]).label + "\".");
+							loadouts.getLoadout(args[1]).setContents(p.getInventory().getContents());
+							p.sendMessage(ChatColor.GREEN + "Prey loadout set to \"" + loadouts.getLoadout(args[1]).name + "\".");
 							return;
 						}
 					}
@@ -1243,13 +1258,13 @@ public class CmdExec implements CommandExecutor {
 			{
 				if (args[1].equalsIgnoreCase("hunter"))
 				{
-					settings.HUNTER_LOADOUT_CURRENT.setValue(settings.HUNTER_LOADOUT.label);
+					settings.HUNTER_LOADOUT_CURRENT.setValue(loadouts.getHunterLoadout().name);
 					p.sendMessage(ChatColor.GREEN + "The Hunter has been reset to default.");
 					return;
 				}
 				else if (args[1].equalsIgnoreCase("prey"))
 				{
-					settings.PREY_LOADOUT_CURRENT.setValue(settings.PREY_LOADOUT.label);
+					settings.PREY_LOADOUT_CURRENT.setValue(loadouts.getPreyLoadout().name);
 					p.sendMessage(ChatColor.GREEN + "The Prey has been reset to default.");
 					return;
 				}
@@ -1258,29 +1273,40 @@ public class CmdExec implements CommandExecutor {
 			{
 				if (args[1].equalsIgnoreCase("hunter"))
 				{
-					settings.getHunterLoadout().fillInventory(p.getInventory());
+					p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
 					p.sendMessage(ChatColor.GREEN + "Current Hunter loadout has been loaded.");
 					return;
 				}
 				else if (args[1].equalsIgnoreCase("prey"))
 				{
-					settings.getPreyLoadout().fillInventory(p.getInventory());
+					p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 					p.sendMessage(ChatColor.GREEN + "Current Prey loadout has been loaded.");
+					return;
+				}
+				else if (loadouts.getLoadout(args[1]) != null)
+				{
+					p.getInventory().setContents(loadouts.getLoadout(args[1]).getContents());
+					p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadouts.getLoadout(args[1]).name + "\" has been loaded.");
+					return;
+				}
+				else
+				{
+					p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
 					return;
 				}
 			}
 			else if (args[0].equalsIgnoreCase("delete")
 					|| args[0].equalsIgnoreCase("remove"))
 			{
-				if (settings.getLoadout(args[1]) == null)
+				if (loadouts.getLoadout(args[1]) == null)
 				{
 					p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
 					return;
 				}
 				else
 				{
-					settings.getLoadout(args[1]).delete();
-					p.sendMessage(ChatColor.GREEN + "Loadout \"" + settings.getLoadout(args[1]).label + "\" was deleted.");
+					loadouts.getLoadout(args[1]).delete();
+					p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadouts.getLoadout(args[1]).name + "\" was deleted.");
 					return;
 				}
 			}
@@ -1293,9 +1319,9 @@ public class CmdExec implements CommandExecutor {
 		int pages;
 		List<String> labels = new ArrayList<String>();
 		
-		for (LoadoutFile loadout : settings.getAllLoadouts())
+		for (Loadout loadout : loadouts.getAllLoadouts())
 		{
-			labels.add(loadout.label);
+			labels.add(loadout.name);
 		}
 		
 		pages = (int) Math.ceil(labels.size()/perPage);
