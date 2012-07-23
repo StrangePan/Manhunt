@@ -30,6 +30,10 @@ public class HuntedPlayerListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent e) {
+		if (e.isCancelled() || !settings.CONTROL_CHAT.value)
+		{
+			return;
+		}
 		Player p = e.getPlayer();
 		HuntedPlugin.getInstance().log(Level.INFO,
 				"<" + p.getName() + "> " + e.getMessage());

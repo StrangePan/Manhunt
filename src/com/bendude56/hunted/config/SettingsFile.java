@@ -29,6 +29,7 @@ public class SettingsFile
 	public final Setting<Boolean> AUTO_JOIN;
 
 	public final Setting<Boolean> ALL_TALK;
+	public final Setting<Boolean> CONTROL_CHAT;
 	public final Setting<Boolean> FRIENDLY_FIRE;
 	public final Setting<Boolean> INSTANT_DEATH;
 	public final Setting<Boolean> FLYING_SPECTATORS;
@@ -68,6 +69,7 @@ public class SettingsFile
 		settings.add(AUTO_JOIN = new Setting<Boolean>("autoJoin", true, FILE_MAIN, "New players automatically join team Hunters.", "New players will remain spectators."));
 
 		settings.add(ALL_TALK = new Setting<Boolean>("allTalk", false, FILE_MAIN, "Teams can communicate with each other.", "Teams cannot communicate with each other."));
+		settings.add(CONTROL_CHAT = new Setting<Boolean>("chatControl", true, FILE_MAIN, "The Manhunt plugin will control chat.", "Manhunt will not touch the chat."));
 		settings.add(FRIENDLY_FIRE = new Setting<Boolean>("friendlyFire", false, FILE_MAIN, "Teammates can damage each other.", "Teammates cannot hurt each other."));
 		settings.add(INSTANT_DEATH = new Setting<Boolean>("instantDeath", false, FILE_MAIN, "Players will die in one hit.", "Players take damage like normal."));
 		settings.add(FLYING_SPECTATORS = new Setting<Boolean>("flyingSpectators", true, FILE_MAIN, "Spectators can fly in creative mode.", "Spectators are bound to the ground."));
