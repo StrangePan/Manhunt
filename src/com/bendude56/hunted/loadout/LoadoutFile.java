@@ -33,12 +33,16 @@ public class LoadoutFile extends Properties {
 		loadFile();
 		
 		List<ItemStack> contents = new ArrayList<ItemStack>();
+		List<ItemStack> armour = new ArrayList<ItemStack>();
 		
 		for (Object object : keySet())
 		{
+			String slot = (String) object;
+			
+			Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
+			
 			try
 			{
-				String slot = (String) object;
 				String property = getProperty(slot);
 				
 				String[] parts = property.split(";");
@@ -47,7 +51,6 @@ public class LoadoutFile extends Properties {
 				int type = Integer.parseInt(parts[1]);
 				short durability = Short.parseShort(parts[2]);
 				
-				Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
 				for (String enchantment : parts[3].split(","))
 				{
 					enchantments.put(Enchantment.getById(Integer.parseInt(enchantment.split("=")[0])), Integer.parseInt(enchantment.split("=")[1]));
@@ -57,13 +60,36 @@ public class LoadoutFile extends Properties {
 				item.setAmount(amount);
 				item.setDurability(durability);
 				item.addEnchantments(enchantments);
+				try
+				{
+					if (slot.startsWith("a"))
+					{
+						armour.add(Integer.parseInt(slot.substring(1)), item);
+					}
+					else if (slot.startsWith("c"))
+					{
+						contents.add(Integer.parseInt(slot.substring(1)), item);
+					}
+				}
+				catch (Exception e) {}
 				
-				contents.add(Integer.parseInt(slot), item);
 			}
 			catch (Exception e) {}
+			
 		}
 		
-		this.loadout.setContents((ItemStack[]) contents.toArray());
+		ItemStack[] c = new ItemStack[contents.size()];
+		for (int i = 0; i < c.length ; i++)
+		{
+			c[i] = contents.get(i);
+		}
+		ItemStack[] a = new ItemStack[armour.size()];
+		for (int i = 0; i < a.length ; i++)
+		{
+			a[i] = armour.get(i);
+		}
+		
+		this.loadout.setContents(c, a);
 	}
 	
 	private void loadFile()
@@ -95,27 +121,56 @@ public class LoadoutFile extends Properties {
 	public void save()
 	{
 		ItemStack[] contents = loadout.getContents();
+		ItemStack[] armour = loadout.getArmour();
 		
 		clear();
 		for (Integer slot = 0; slot < contents.length; slot++)
 		{
 			String property = "";
 			
-			property += contents[slot].getAmount();
-			property += ";";
-			property += contents[slot].getTypeId();
-			property += ";";
-			property += contents[slot].getDurability();
-			property += ";";
-			for (Enchantment enchantment : contents[slot].getEnchantments().keySet())
+			try
 			{
-				property += enchantment.getId();
-				property += "=";
-				property += contents[slot].getEnchantments().get(enchantment);
-				property += ",";
+				property += contents[slot].getAmount();
+				property += ";";
+				property += contents[slot].getTypeId();
+				property += ";";
+				property += contents[slot].getDurability();
+				property += ";";
+				for (Enchantment enchantment : contents[slot].getEnchantments().keySet())
+				{
+					property += enchantment.getId();
+					property += "=";
+					property += contents[slot].getEnchantments().get(enchantment);
+					property += ",";
+				}
 			}
+			catch (Exception e) {}
 			
-			put(slot.toString(), property);
+			put("c" + slot.toString(), property);
+		}
+		for (Integer slot = 0; slot < armour.length; slot++)
+		{
+			String property = "";
+			
+			try
+			{
+				property += armour[slot].getAmount();
+				property += ";";
+				property += armour[slot].getTypeId();
+				property += ";";
+				property += armour[slot].getDurability();
+				property += ";";
+				for (Enchantment enchantment : armour[slot].getEnchantments().keySet())
+				{
+					property += enchantment.getId();
+					property += "=";
+					property += armour[slot].getEnchantments().get(enchantment);
+					property += ",";
+				}
+			}
+			catch (Exception e) {}
+			
+			put("a" + slot.toString(), property);
 		}
 		
 		saveFile();

@@ -122,7 +122,10 @@ public class Game {
 					p.setFoodLevel(20);
 					p.setSaturation(20);
 					if (settings.LOADOUTS.value)
+					{
 						p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
+						p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmour());
+					}
 					p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 							settings.SPAWN_SETUP.value, 2)));
 				}
@@ -531,7 +534,10 @@ public class Game {
 					Player p = Bukkit.getPlayerExact(s);
 					if (p != null) {
 						if (settings.LOADOUTS.value)
+						{
 							p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
+							p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmour());
+						}
 						if (!Utilities.areNearby(settings.SPAWN_HUNTER.value,
 								settings.SPAWN_PREY.value,
 								settings.SPAWN_PROTECTION.value)) {
@@ -540,7 +546,7 @@ public class Game {
 						}
 						p.setHealth(20);
 						p.setFoodLevel(20);
-						p.setSaturation(20);
+						p.setSaturation(12);
 					}
 				}
 				broadcastAll(ChatColor.GOLD

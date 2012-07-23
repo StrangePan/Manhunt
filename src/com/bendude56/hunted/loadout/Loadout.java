@@ -3,7 +3,8 @@ package com.bendude56.hunted.loadout;
 import org.bukkit.inventory.ItemStack;
 
 public class Loadout {
-	private ItemStack[] itemstack;
+	private ItemStack[] contents;
+	private ItemStack[] armour;
 
 	public final String name;
 	public final String directory;
@@ -19,15 +20,35 @@ public class Loadout {
 		
 		load();
 	}
-	
-	public void setContents(ItemStack[] itemstack)
+
+	public Loadout(String name, String directory, ItemStack[] contents, ItemStack[] armour)
 	{
-		this.itemstack = itemstack.clone();
+		this.name = name;
+		this.directory = directory;
+		this.filename = name + ".inv";
+		this.fullpath = this.directory + "/" + this.filename;
+		
+		setContents(contents, armour);
+		
+		save();
+	}
+
+	public void setContents(ItemStack[] contents, ItemStack[] armour)
+	{
+		this.contents = contents;
+		this.armour = armour;
+		
+		save();
 	}
 	
 	public ItemStack[] getContents()
 	{
-		return itemstack.clone();
+		return contents.clone();
+	}
+	
+	public ItemStack[] getArmour()
+	{
+		return armour.clone();
 	}
 	
 	public void save()
