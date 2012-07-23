@@ -60,7 +60,7 @@ public class SettingsFile
 	
 	public SettingsFile()
 	{
-		files.add(FILE_MAIN = new ManhuntFile("Main Config", plugin_path, "Manhunt.properties"));
+		files.add(FILE_MAIN = new ManhuntFile("Main Config", plugin_path, "Manhunt"));
 		
 		secretSettings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
@@ -103,6 +103,7 @@ public class SettingsFile
 		secretSettings.add(SPAWN_PREY = new Setting<Location>("preySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		secretSettings.add(SPAWN_SETUP = new Setting<Location>("setupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		
+		saveAll();
 	}
 
 	public void saveAll()

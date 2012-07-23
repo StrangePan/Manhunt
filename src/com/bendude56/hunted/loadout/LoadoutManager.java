@@ -14,7 +14,7 @@ public class LoadoutManager {
 
 	private HashMap<String, Loadout> loadouts = new HashMap<String, Loadout>();
 
-	private final String loadouts_directory = "plugins/Manhunt/Loadouts";
+	private final String loadouts_directory = "plugins/Manhunt";
 	private final String world_loadouts_directory = HuntedPlugin.getInstance().getWorld().getName() + "/Manhunt";
 
 	public final Loadout HUNTER_LOADOUT;
@@ -87,6 +87,21 @@ public class LoadoutManager {
 			
 			PREY_LOADOUT = new Loadout("prey_loadout", world_loadouts_directory, contents, armour);
 		}
+		
+		File loadoutFolder = new File(loadouts_directory);
+		if (loadoutFolder.exists())
+		{
+			File[] invFiles = loadoutFolder.listFiles();
+			for (int i = 0; i < invFiles.length; i++)
+			{
+				if (invFiles[i].getName().endsWith(".inv"))
+				{
+					Loadout load = new Loadout(invFiles[i].getName().substring(0, invFiles[i].getName().length()-4), loadouts_directory);
+					loadouts.put(load.name, load);
+				}
+			}
+		}
+			
 	}
 
 	public Loadout getHunterLoadout()
@@ -126,12 +141,17 @@ public class LoadoutManager {
 		return results;
 	}
 
-	public void deleteLoadout(String name)
+	public boolean deleteLoadout(String name)
 	{
 		if (loadouts.containsKey(name))
 		{
-			getLoadout(name).delete();
+			Loadout loadout = getLoadout(name);
 			loadouts.remove(name);
+			return loadout.delete();
+		}
+		else
+		{
+			return true;
 		}
 	}
 	

@@ -4,7 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class Loadout {
 	private ItemStack[] contents;
-	private ItemStack[] armour;
+	private ItemStack[] armor;
 
 	public final String name;
 	public final String directory;
@@ -21,22 +21,22 @@ public class Loadout {
 		load();
 	}
 
-	public Loadout(String name, String directory, ItemStack[] contents, ItemStack[] armour)
+	public Loadout(String name, String directory, ItemStack[] contents, ItemStack[] armor)
 	{
 		this.name = name;
 		this.directory = directory;
 		this.filename = name + ".inv";
 		this.fullpath = this.directory + "/" + this.filename;
 		
-		setContents(contents, armour);
+		setContents(contents, armor);
 		
 		save();
 	}
 
-	public void setContents(ItemStack[] contents, ItemStack[] armour)
+	public void setContents(ItemStack[] contents, ItemStack[] armor)
 	{
 		this.contents = contents;
-		this.armour = armour;
+		this.armor = armor;
 		
 		save();
 	}
@@ -46,9 +46,9 @@ public class Loadout {
 		return contents.clone();
 	}
 	
-	public ItemStack[] getArmour()
+	public ItemStack[] getArmor()
 	{
-		return armour.clone();
+		return armor.clone();
 	}
 	
 	public void save()

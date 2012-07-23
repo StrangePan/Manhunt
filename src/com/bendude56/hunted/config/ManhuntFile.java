@@ -16,11 +16,11 @@ public class ManhuntFile extends Properties{
 	private final String directory;
 	private final String filename;
 	
-	public ManhuntFile(String title, String directory, String filename)
+	public ManhuntFile(String title, String directory, String name)
 	{
 		this.title = title;
 		this.directory = directory;
-		this.filename = filename + ".properties";
+		this.filename = name + ".properties";
 	}
 	
 	public void loadFile() {

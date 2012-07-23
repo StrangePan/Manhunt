@@ -124,7 +124,7 @@ public class Game {
 					if (settings.LOADOUTS.value)
 					{
 						p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
-						p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmour());
+						p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmor());
 					}
 					p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
 							settings.SPAWN_SETUP.value, 2)));
@@ -536,7 +536,7 @@ public class Game {
 						if (settings.LOADOUTS.value)
 						{
 							p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
-							p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmour());
+							p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmor());
 						}
 						if (!Utilities.areNearby(settings.SPAWN_HUNTER.value,
 								settings.SPAWN_PREY.value,

@@ -1188,16 +1188,17 @@ public class CmdExec implements CommandExecutor {
 				listLoadouts(page, p);
 				return;
 			}
-			else if (args.length == 1)
-			{
-				p.sendMessage(ChatColor.RED + "Incorrect syntax!");
-				return;
-			}
 			else if (args[0].equalsIgnoreCase("create")
 					|| args[0].equalsIgnoreCase("add")
 					|| args[0].equalsIgnoreCase("new")
 					|| args[0].equalsIgnoreCase("save"))
 			{
+				if (args[1].equalsIgnoreCase("hunter")
+						|| args[1].equalsIgnoreCase("prey"))
+				{
+					p.sendMessage(ChatColor.RED + "You may not use that name!");
+					return;
+				}
 				if (loadouts.getLoadout(args[1]) == null)
 				{
 					loadouts.addLoadout(args[1], p.getInventory().getContents(), p.getInventory().getArmorContents());
@@ -1210,6 +1211,11 @@ public class CmdExec implements CommandExecutor {
 					p.sendMessage(ChatColor.GREEN + "The existing loadout " + loadouts.getLoadout(args[1]).name + " was overwritten.");
 					return;
 				}
+			}
+			else if (args.length == 1)
+			{
+				p.sendMessage(ChatColor.RED + "Incorrect syntax!");
+				return;
 			}
 			else if (args[0].equalsIgnoreCase("set"))
 			{
@@ -1264,22 +1270,25 @@ public class CmdExec implements CommandExecutor {
 			{
 				if (args[1].equalsIgnoreCase("hunter"))
 				{
+					Utilities.clearInventory(p.getInventory());
 					p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
-					p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmour());
+					p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmor());
 					p.sendMessage(ChatColor.GREEN + "Current Hunter loadout has been loaded.");
 					return;
 				}
 				else if (args[1].equalsIgnoreCase("prey"))
 				{
+					Utilities.clearInventory(p.getInventory());
 					p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
-					p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmour());
+					p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmor());
 					p.sendMessage(ChatColor.GREEN + "Current Prey loadout has been loaded.");
 					return;
 				}
 				else if (loadouts.getLoadout(args[1]) != null)
 				{
+					Utilities.clearInventory(p.getInventory());
 					p.getInventory().setContents(loadouts.getLoadout(args[1]).getContents());
-					p.getInventory().setArmorContents(loadouts.getLoadout(args[1]).getArmour());
+					p.getInventory().setArmorContents(loadouts.getLoadout(args[1]).getArmor());
 					p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadouts.getLoadout(args[1]).name + "\" has been loaded.");
 					return;
 				}
@@ -1299,8 +1308,11 @@ public class CmdExec implements CommandExecutor {
 				}
 				else
 				{
-					loadouts.getLoadout(args[1]).delete();
-					p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadouts.getLoadout(args[1]).name + "\" was deleted.");
+					Loadout loadout = loadouts.getLoadout(args[1]);
+					if (loadouts.deleteLoadout(args[1]))
+						p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadout.name + "\" was deleted.");
+					else
+						p.sendMessage(ChatColor.RED + "Loadout \"" + loadout.name + "\" was NOT deleted.");
 					return;
 				}
 			}
@@ -1317,9 +1329,9 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		
-		int perPage = 8;
+		int perPage = 6;
 		
-		p.sendMessage(ChatColor.GOLD + "--------[ " + ChatColor.GREEN + "Saved Loadouts (" + page + "/" + loads.size() + ")" + ChatColor.GOLD + " ]--------");
+		p.sendMessage(ChatColor.GOLD + "--------[ " + ChatColor.GREEN + "Saved Loadouts (" + page + "/" + ((int) Math.floor(loads.size()/perPage)+1) + ")" + ChatColor.GOLD + " ]--------");
 		
 		for (int i = (page-1)*perPage; (i < (page*perPage) &&i < loads.size()); i++)
 		{
