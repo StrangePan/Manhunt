@@ -21,12 +21,14 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.bendude56.hunted.config.SettingsFile;
+
+import com.bendude56.hunted.config.SettingsManager;
+import com.bendude56.hunted.utilities.ManhuntUtil;
 
 public class HuntedPlayerListener implements Listener {
 	
 	Game g = HuntedPlugin.getInstance().getGame();
-	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
 	
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent e) {
@@ -135,7 +137,7 @@ public class HuntedPlayerListener implements Listener {
 				&& settings.BOUNDARY_SETUP.value > -1) {
 			if (settings.BOUNDARY_BOXED.value) {
 				if (g.outsideBoxedArea(p.getLocation(), true)) {
-					p.teleport(Utilities.safeTeleport(g.teleportPregameBoxedLocation(p
+					p.teleport(ManhuntUtil.safeTeleport(g.teleportPregameBoxedLocation(p
 							.getLocation())));
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED
@@ -143,8 +145,8 @@ public class HuntedPlayerListener implements Listener {
 					return;
 				}
 			} else {
-				if (Utilities.getDistance(settings.SPAWN_SETUP.value, p.getLocation()) > settings.BOUNDARY_SETUP.value) {
-					Utilities.stepPlayer(p, 1.0, settings.SPAWN_SETUP.value);
+				if (ManhuntUtil.getDistance(settings.SPAWN_SETUP.value, p.getLocation()) > settings.BOUNDARY_SETUP.value) {
+					ManhuntUtil.stepPlayer(p, 1.0, settings.SPAWN_SETUP.value);
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
@@ -153,16 +155,16 @@ public class HuntedPlayerListener implements Listener {
 		} else {
 			if (settings.BOUNDARY_BOXED.value) {
 				if (g.outsideBoxedArea(p.getLocation(), false)) {
-					p.teleport(Utilities.safeTeleport(g.teleportBoxedLocation(p.getLocation())));
+					p.teleport(ManhuntUtil.safeTeleport(g.teleportBoxedLocation(p.getLocation())));
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			} else {
-				if (Utilities.getDistance(
+				if (ManhuntUtil.getDistance(
 						g.getNearestLocation(p.getLocation(), settings.SPAWN_PREY.value, settings.SPAWN_HUNTER.value),
 						p.getLocation()) > settings.BOUNDARY_WORLD.value) {
-					Utilities.stepPlayer(
+					ManhuntUtil.stepPlayer(
 							p,
 							1.0,
 							g.getNearestLocation(p.getLocation(),
@@ -180,7 +182,7 @@ public class HuntedPlayerListener implements Listener {
 																		// IS IN
 																		// LOCATOR
 																		// LIST
-			if (Utilities.getDistance(p.getLocation(),
+			if (ManhuntUtil.getDistance(p.getLocation(),
 					g.getLocatorLocation(g.getLocatorByPlayer(p))) > 1.5
 					|| p.getPlayer().getWorld() != HuntedPlugin.getInstance()
 							.getWorld()) {
@@ -297,11 +299,11 @@ public class HuntedPlayerListener implements Listener {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
-					&& Utilities.getDistance(e.getBlockClicked().getLocation(),
+					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
 							settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
-					&& Utilities.getDistance(e.getBlockClicked().getLocation(),
+					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
 							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
@@ -330,11 +332,11 @@ public class HuntedPlayerListener implements Listener {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
 			} else if (g.isHunted(e.getPlayer())
-					&& Utilities.getDistance(e.getBlockClicked().getLocation(),
+					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
 							settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			} else if (g.isHunter(e.getPlayer())
-					&& Utilities.getDistance(e.getBlockClicked().getLocation(),
+					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
 							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}

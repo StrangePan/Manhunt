@@ -10,7 +10,13 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.bendude56.hunted.config.SettingsFile;
+import preyfinder.IPreyFinderManager;
+import preyfinder.PreyFinderManager;
+
+import teams.ITeamManager;
+import teams.TeamManager;
+
+import com.bendude56.hunted.config.SettingsManager;
 import com.bendude56.hunted.loadout.LoadoutManager;
 
 public class HuntedPlugin extends JavaPlugin {
@@ -19,8 +25,10 @@ public class HuntedPlugin extends JavaPlugin {
 	public boolean spoutEnabled;
 	public SpConnect spoutConnect;
 	private World manhuntWorld;
-	private SettingsFile settings;
+	private SettingsManager settings;
 	private LoadoutManager loadouts;
+	private ITeamManager teams;
+	private IPreyFinderManager finders;
 	private Game game;
 
 	@Override
@@ -49,12 +57,14 @@ public class HuntedPlugin extends JavaPlugin {
 		}
 
 		manhuntWorld = Bukkit.getWorlds().get(0);
-		settings = new SettingsFile();
+		settings = new SettingsManager();
 		if (settings.WORLD.value != manhuntWorld.getName()
 				&& Bukkit.getWorld(settings.WORLD.value) != null) {
 			manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		}
 		loadouts = new LoadoutManager();
+		teams = new TeamManager();
+		finders = new PreyFinderManager();
 		
 		game = new Game();
 		new CmdExec();
@@ -89,12 +99,22 @@ public class HuntedPlugin extends JavaPlugin {
 		return manhuntWorld;
 	}
 
-	public SettingsFile getSettings() {
+	public SettingsManager getSettings() {
 		return settings;
 	}
 	
 	public LoadoutManager getLoadouts() {
 		return loadouts;
+	}
+	
+	public ITeamManager getTeams()
+	{
+		return teams;
+	}
+	
+	public IPreyFinderManager getPreyFinder()
+	{
+		return finders;
 	}
 
 	public Game getGame() {

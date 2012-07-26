@@ -29,13 +29,15 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import com.bendude56.hunted.config.SettingsFile;
+
+import com.bendude56.hunted.config.SettingsManager;
 import com.bendude56.hunted.loadout.LoadoutManager;
+import com.bendude56.hunted.utilities.ManhuntUtil;
 
 public class HuntedEntityListener implements Listener {
 
 	Game g = HuntedPlugin.getInstance().getGame();
-	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
 	LoadoutManager loadouts = HuntedPlugin.getInstance().getLoadouts();
 
 	@EventHandler
@@ -182,9 +184,9 @@ public class HuntedEntityListener implements Listener {
 					p.setFoodLevel(20);
 
 					if (g.isHunter(p)) {
-						p.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
+						p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_HUNTER.value));
 					} else {
-						p.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
+						p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_PREY.value));
 					}
 					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
 							+ p.getName() + ChatColor.WHITE
@@ -251,9 +253,9 @@ public class HuntedEntityListener implements Listener {
 				p.setFoodLevel(20);
 
 				if (g.isHunter(p)) {
-					p.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
+					p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_HUNTER.value));
 				} else {
-					p.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
+					p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_PREY.value));
 				}
 				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
 						+ p.getName() + ChatColor.WHITE

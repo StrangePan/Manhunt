@@ -5,12 +5,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import com.bendude56.hunted.config.SettingsFile;
+
+import com.bendude56.hunted.config.SettingsManager;
+import com.bendude56.hunted.utilities.ManhuntUtil;
 
 public class HuntedBlockListener implements Listener {
 
 	private Game g = HuntedPlugin.getInstance().getGame();
-	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
@@ -25,11 +27,11 @@ public class HuntedBlockListener implements Listener {
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
-			} else if (Utilities.getDistance(e.getBlock().getLocation(),
+			} else if (ManhuntUtil.getDistance(e.getBlock().getLocation(),
 					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
-					|| Utilities.getDistance(e.getBlock().getLocation(),
+					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
-					|| Utilities.getDistance(e.getBlock().getLocation(),
+					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}
@@ -49,11 +51,11 @@ public class HuntedBlockListener implements Listener {
 		if (g.gameHasBegun()) {
 			if (g.isSpectating(e.getPlayer())) {
 				e.setCancelled(true);
-			} else if (Utilities.getDistance(e.getBlock().getLocation(),
+			} else if (ManhuntUtil.getDistance(e.getBlock().getLocation(),
 					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
-					|| Utilities.getDistance(e.getBlock().getLocation(),
+					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
-					|| Utilities.getDistance(e.getBlock().getLocation(),
+					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
 							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
 				e.setCancelled(true);
 			}

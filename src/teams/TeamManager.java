@@ -13,6 +13,8 @@ import com.bendude56.hunted.config.SettingsManager;
 public class TeamManager implements ITeamManager {
 
 	private HashMap<String, Team> players = new HashMap<String, Team>();
+	
+	private List<String> creativePlayers = new ArrayList<String>();
 
 	public boolean addPlayer(Player p, Team t)
 	{
@@ -112,6 +114,59 @@ public class TeamManager implements ITeamManager {
 		
 		return results;
 		
+	}
+
+	//SIMPLE LIST SYSTEM FOR REMEMBERING WHO WAS IN CREATIVE MODE BEFORE THE GAME
+	public void addCreativePlayer(Player p)
+	{
+		String name = p.getName();
+		
+		if (!creativePlayers.contains(name))
+		{
+			creativePlayers.add(name);
+		}
+	}
+
+	public List<Player> getAllCreativePlayers()
+	{
+		List<Player> results = new ArrayList<Player>();
+		
+		for (String name : creativePlayers)
+		{
+			Player player = Bukkit.getPlayer(name);
+			
+			if (player != null && !results.contains(player))
+			{
+				results.add(player);
+			}
+		}
+		
+		return results;
+	}
+
+	public boolean wasCreative(Player p)
+	{
+		return (creativePlayers.contains(p.getName()));
+	}
+	
+	public List<Player> clearCreativePlayers()
+	{
+		List<Player> clone = getAllCreativePlayers();
+		creativePlayers.clear();
+		return clone;
+	}
+	
+	public void removeCreativePlayer(Player p)
+	{
+		removeCreativePlayer(p.getName());
+	}
+	
+	public void removeCreativePlayer(String s)
+	{
+		if (creativePlayers.contains(s))
+		{
+			creativePlayers.remove(s);
+		}
 	}
 
 	public enum Team

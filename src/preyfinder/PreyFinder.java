@@ -25,7 +25,7 @@ public class PreyFinder {
 		this.timeout = time.getTime() + (60000*HuntedPlugin.getInstance().getSettings().OFFLINE_TIMEOUT.value);
 	}
 
-	public boolean isCanceled()
+	public boolean isCancelled()
 	{
 		Player p = Bukkit.getPlayer(player);
 
@@ -33,7 +33,7 @@ public class PreyFinder {
 		{
 			if (p.getItemInHand().getType() == Material.COMPASS)
 			{
-				if (ManhuntUtil.areNearby(p.getLocation(), location, 0.5))
+				if (ManhuntUtil.areEqual(p.getLocation(), location, 0.5, true))
 				{
 					return false;
 				}

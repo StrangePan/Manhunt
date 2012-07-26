@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-
 public class PreyFinderManager implements IPreyFinderManager {
 
 	HashMap<String, PreyFinder> finders = new HashMap<String, PreyFinder>();

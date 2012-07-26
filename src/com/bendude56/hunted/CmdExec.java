@@ -10,10 +10,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+
 import com.bendude56.hunted.config.Setting;
-import com.bendude56.hunted.config.SettingsFile;
+import com.bendude56.hunted.config.SettingsManager;
 import com.bendude56.hunted.loadout.Loadout;
 import com.bendude56.hunted.loadout.LoadoutManager;
+import com.bendude56.hunted.utilities.ManhuntUtil;
 
 public class CmdExec implements CommandExecutor {
 
@@ -25,7 +27,7 @@ public class CmdExec implements CommandExecutor {
 	}
 
 	Game g = HuntedPlugin.getInstance().getGame();
-	SettingsFile settings = HuntedPlugin.getInstance().getSettings();
+	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
 	LoadoutManager loadouts = HuntedPlugin.getInstance().getLoadouts();
 
 	@Override
@@ -824,7 +826,7 @@ public class CmdExec implements CommandExecutor {
 		if (p.isOp() || !settings.OP_CONTROL.value || g.isSpectating(p)) {
 			if (args.length == 0) {
 				if (g.isSpectating(p) || !g.gameHasBegun()) {
-					p.teleport(Utilities.safeTeleport(HuntedPlugin.getInstance().getWorld()
+					p.teleport(ManhuntUtil.safeTeleport(HuntedPlugin.getInstance().getWorld()
 							.getSpawnLocation()));
 					p.sendMessage(ChatColor.GREEN
 							+ "You have teleported to the " + ChatColor.GOLD
@@ -844,7 +846,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
+						p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_PREY.value));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.BLUE + "Prey" + ChatColor.GREEN
@@ -863,7 +865,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(Utilities.safeTeleport(settings.SPAWN_PREY.value));
+							p2.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_PREY.value));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.BLUE + "Prey"
@@ -884,7 +886,7 @@ public class CmdExec implements CommandExecutor {
 						return;
 					}
 					if (args.length == 1) {
-						p.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
+						p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_HUNTER.value));
 						p.sendMessage(ChatColor.GREEN
 								+ "You have teleported to the "
 								+ ChatColor.DARK_RED + "Hunter"
@@ -903,7 +905,7 @@ public class CmdExec implements CommandExecutor {
 							return;
 						}
 						if (g.isSpectating(p2) || !g.gameHasBegun()) {
-							p2.teleport(Utilities.safeTeleport(settings.SPAWN_HUNTER.value));
+							p2.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_HUNTER.value));
 							p2.sendMessage(ChatColor.YELLOW
 									+ "You have been teleported to the "
 									+ ChatColor.DARK_RED + "Hunter"
@@ -995,15 +997,15 @@ public class CmdExec implements CommandExecutor {
 			return;
 		}
 		if (args.length == 0) {
-			if (Utilities.areNearby(settings.SPAWN_HUNTER.value, HuntedPlugin.getInstance()
+			if (ManhuntUtil.areNearby(settings.SPAWN_HUNTER.value, HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation(), 1.0)) {
 				settings.SPAWN_HUNTER.setValue(p.getLocation());
 			}
-			if (Utilities.areNearby(settings.SPAWN_PREY.value, HuntedPlugin.getInstance()
+			if (ManhuntUtil.areNearby(settings.SPAWN_PREY.value, HuntedPlugin.getInstance()
 					.getWorld().getSpawnLocation(), 1.0)) {
 				settings.SPAWN_PREY.setValue(p.getLocation());
 			}
-			if (Utilities.areNearby(settings.SPAWN_SETUP.value, HuntedPlugin
+			if (ManhuntUtil.areNearby(settings.SPAWN_SETUP.value, HuntedPlugin
 					.getInstance().getWorld().getSpawnLocation(), 1.0)) {
 				settings.SPAWN_SETUP.setValue(p.getLocation());
 			}
@@ -1270,7 +1272,7 @@ public class CmdExec implements CommandExecutor {
 			{
 				if (args[1].equalsIgnoreCase("hunter"))
 				{
-					Utilities.clearInventory(p.getInventory());
+					ManhuntUtil.clearInventory(p.getInventory());
 					p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
 					p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmor());
 					p.sendMessage(ChatColor.GREEN + "Current Hunter loadout has been loaded.");
@@ -1278,7 +1280,7 @@ public class CmdExec implements CommandExecutor {
 				}
 				else if (args[1].equalsIgnoreCase("prey"))
 				{
-					Utilities.clearInventory(p.getInventory());
+					ManhuntUtil.clearInventory(p.getInventory());
 					p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 					p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmor());
 					p.sendMessage(ChatColor.GREEN + "Current Prey loadout has been loaded.");
@@ -1286,7 +1288,7 @@ public class CmdExec implements CommandExecutor {
 				}
 				else if (loadouts.getLoadout(args[1]) != null)
 				{
-					Utilities.clearInventory(p.getInventory());
+					ManhuntUtil.clearInventory(p.getInventory());
 					p.getInventory().setContents(loadouts.getLoadout(args[1]).getContents());
 					p.getInventory().setArmorContents(loadouts.getLoadout(args[1]).getArmor());
 					p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadouts.getLoadout(args[1]).name + "\" has been loaded.");

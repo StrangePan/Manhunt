@@ -28,11 +28,13 @@ import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
-import com.bendude56.hunted.config.SettingsFile;
+
+import com.bendude56.hunted.config.SettingsManager;
 import com.bendude56.hunted.loadout.LoadoutManager;
+import com.bendude56.hunted.utilities.ManhuntUtil;
 
 public class Game {
-	private SettingsFile settings;
+	private SettingsManager settings;
 	private LoadoutManager loadouts;
 
 	private HashMap<String, Long> timeout;
@@ -126,7 +128,7 @@ public class Game {
 						p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 						p.getInventory().setArmorContents(loadouts.getPreyLoadout().getArmor());
 					}
-					p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
+					p.teleport(ManhuntUtil.safeTeleport(ManhuntUtil.randomLocation(
 							settings.SPAWN_SETUP.value, 2)));
 				}
 			}
@@ -139,17 +141,17 @@ public class Game {
 					p.setGameMode(GameMode.SURVIVAL);
 					p.setFireTicks(0);
 					if (settings.SETUP_TIME.value > 0) {
-						p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
+						p.teleport(ManhuntUtil.safeTeleport(ManhuntUtil.randomLocation(
 								settings.SPAWN_SETUP.value, 2)));
 					} else {
-						p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
+						p.teleport(ManhuntUtil.safeTeleport(ManhuntUtil.randomLocation(
 								settings.SPAWN_HUNTER.value, 2)));
 					}
 					p.setHealth(20);
 					p.setFoodLevel(20);
 					p.setSaturation(20);
 					if (settings.LOADOUTS.value) {
-						Utilities.clearInventory(p.getInventory());
+						ManhuntUtil.clearInventory(p.getInventory());
 					}
 				}
 			}
@@ -165,7 +167,7 @@ public class Game {
 					} else {
 						p.setGameMode(GameMode.SURVIVAL);
 					}
-					Utilities.clearInventory(p.getInventory());
+					ManhuntUtil.clearInventory(p.getInventory());
 					for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
 						if (isHunter(p2) || isHunted(p2)) {
 							((CraftPlayer) p2).getHandle().netServerHandler
@@ -191,7 +193,7 @@ public class Game {
 		endTick = 0;
 		countdown = 0;
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			Utilities.clearInventory(p.getInventory());
+			ManhuntUtil.clearInventory(p.getInventory());
 			if (isSpectating(p)) {
 				for (String n : hunter) {
 					Player p2 = Bukkit.getServer().getPlayerExact(n);
@@ -538,10 +540,10 @@ public class Game {
 							p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
 							p.getInventory().setArmorContents(loadouts.getHunterLoadout().getArmor());
 						}
-						if (!Utilities.areNearby(settings.SPAWN_HUNTER.value,
+						if (!ManhuntUtil.areNearby(settings.SPAWN_HUNTER.value,
 								settings.SPAWN_PREY.value,
 								settings.SPAWN_PROTECTION.value)) {
-							p.teleport(Utilities.safeTeleport(Utilities.randomLocation(
+							p.teleport(ManhuntUtil.safeTeleport(ManhuntUtil.randomLocation(
 									settings.SPAWN_HUNTER.value, 2)));
 						}
 						p.setHealth(20);
@@ -1099,7 +1101,7 @@ public class Game {
 				(preySpawn.getZ() + scalar
 						* (hunterSpawn.getZ() - preySpawn.getZ())));
 		if (scalar > 1 || scalar < 0) {
-			if (Utilities.getDistance(preySpawn, location) < Utilities.getDistance(hunterSpawn,
+			if (ManhuntUtil.getDistance(preySpawn, location) < ManhuntUtil.getDistance(hunterSpawn,
 					location)) {
 				return preySpawn;
 			} else {
@@ -1238,7 +1240,7 @@ public class Game {
 					stopLocator(i);
 					return;
 				}
-				if (Utilities.getDistance(getLocatorPlayer(i).getLocation(),
+				if (ManhuntUtil.getDistance(getLocatorPlayer(i).getLocation(),
 						getLocatorLocation(i)) > 1.5) {
 					getLocatorPlayer(i)
 							.sendMessage(
@@ -1359,7 +1361,7 @@ public class Game {
 				if (p2 == null) {
 					p2 = p3;
 				} else {
-					if (p3 != null && Utilities.getDistance(p, p3) < Utilities.getDistance(p, p2)) {
+					if (p3 != null && ManhuntUtil.getDistance(p, p3) < ManhuntUtil.getDistance(p, p2)) {
 						p2 = p3;
 					}
 				}
@@ -1371,7 +1373,7 @@ public class Game {
 			return;
 		}
 
-		if (Utilities.getDistance(p, p2) < 10) {
+		if (ManhuntUtil.getDistance(p, p2) < 10) {
 			p.sendMessage(ChatColor.GOLD + "The nearest prey " + ChatColor.BLUE
 					+ "Prey" + ChatColor.GOLD + " is " + ChatColor.BLUE
 					+ "very close by" + ChatColor.GOLD + "!");
@@ -1383,7 +1385,7 @@ public class Game {
 
 		double direction = Math.toDegrees(Math
 				.acos((p2.getLocation().getZ() - p.getLocation().getZ())
-						/ Utilities.getDistance(p, p2)));
+						/ ManhuntUtil.getDistance(p, p2)));
 		if (p2.getLocation().getX() < p.getLocation().getX()) {
 			direction = 180 - direction + 180;
 		}
