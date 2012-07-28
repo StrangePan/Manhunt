@@ -9,7 +9,12 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.bendude56.hunted.commands.Switchboard;
 import com.bendude56.hunted.finder.FinderManager;
+import com.bendude56.hunted.games.ManhuntGame;
+import com.bendude56.hunted.listeners.HuntedBlockListener;
+import com.bendude56.hunted.listeners.HuntedEntityListener;
+import com.bendude56.hunted.listeners.HuntedPlayerListener;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.TeamManager;
@@ -47,8 +52,8 @@ public class HuntedPlugin extends JavaPlugin {
 		loadouts =	new LoadoutManager();
 		teams =		new TeamManager();
 		finders =	new FinderManager();
-		game =		new ManhuntGame();
-		new CmdExec();
+		game =		null;
+		new Switchboard();
 		
 		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		

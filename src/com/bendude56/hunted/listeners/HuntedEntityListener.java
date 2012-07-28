@@ -31,8 +31,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 
 import com.bendude56.hunted.HuntedPlugin;
-import com.bendude56.hunted.ManhuntGame;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 

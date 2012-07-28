@@ -8,7 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.HuntedPlugin;
-import com.bendude56.hunted.utilities.ManhuntUtil;
+import com.bendude56.hunted.ManhuntUtil;
 
 public class Finder {
 

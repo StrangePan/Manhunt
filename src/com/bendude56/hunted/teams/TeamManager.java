@@ -117,6 +117,14 @@ public class TeamManager implements ITeamManager {
 		
 	}
 
+	public void sendMessageToTeam(Team team, String message)
+	{
+		for (Player p : getTeam(team))
+		{
+			p.sendMessage(message);
+		}
+	}
+
 	//SIMPLE LIST SYSTEM FOR REMEMBERING WHO WAS IN CREATIVE MODE BEFORE THE GAME STARTED
 	public void addCreativePlayer(Player p)
 	{
