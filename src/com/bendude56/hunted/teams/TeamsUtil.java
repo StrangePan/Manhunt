@@ -5,12 +5,13 @@ import org.bukkit.entity.Player;
 
 
 import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class TeamsUtil {
 
 	public static void sendMessageJoinTeam(Player p)
 	{
-		ITeamManager teams = HuntedPlugin.getInstance().getTeams();
+		TeamManager teams = HuntedPlugin.getInstance().getTeams();
 		
 		p.sendMessage(ChatColor.YELLOW + "You have joined the " + getTeamColor(teams.getTeamOf(p) + getTeamName(teams.getTeamOf(p), true) + ChatColor.YELLOW + "."));
 	}
