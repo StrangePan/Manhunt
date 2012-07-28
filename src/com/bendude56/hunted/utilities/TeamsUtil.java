@@ -33,6 +33,7 @@ public class TeamsUtil {
 			case HUNTERS:	return ChatColor.DARK_RED;
 			case PREY:		return ChatColor.BLUE;
 			case SPECTATORS:return ChatColor.YELLOW;
+			case NONE:		return ChatColor.WHITE;
 		}
 		return ChatColor.WHITE;
 	}
@@ -40,9 +41,10 @@ public class TeamsUtil {
 	public static String getTeamName(Team team, boolean plural)
 	{
 		switch (team) {
-			case HUNTERS: return (plural ? "Hunters" : "Hunter");
-			case PREY: return (plural ? "Prey" : "Prey");
-			case SPECTATORS: return (plural ? "Spectators" : "Spectator");
+			case HUNTERS:	return (plural ? "Hunters" : "Hunter");
+			case PREY:		return (plural ? "Prey" : "Prey");
+			case SPECTATORS:return (plural ? "Spectators" : "Spectator");
+			case NONE:		return "";
 		}
 		return "";
 	}
