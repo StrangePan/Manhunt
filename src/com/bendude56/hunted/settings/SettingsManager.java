@@ -9,10 +9,10 @@ import org.bukkit.Location;
 
 public class SettingsManager
 {
-	private List<ManhuntFile> files = new ArrayList<ManhuntFile>();
+	private List<SettingsFile> files = new ArrayList<SettingsFile>();
 	
-	public final ManhuntFile FILE_MAIN;
-	public final ManhuntFile FILE_WORLD;
+	public final SettingsFile FILE_MAIN;
+	public final SettingsFile FILE_WORLD;
 
 	private String plugin_path = "plugins/Manhunt";
 	private String world_path;
@@ -61,7 +61,7 @@ public class SettingsManager
 	
 	public SettingsManager()
 	{
-		files.add(FILE_MAIN = new ManhuntFile("Main Config", plugin_path, "Manhunt"));
+		files.add(FILE_MAIN = new SettingsFile("Main Config", plugin_path, "Manhunt"));
 		
 		secretSettings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
@@ -91,7 +91,7 @@ public class SettingsManager
 
 
 		this.world_path = (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt";
-		files.add(FILE_WORLD = new ManhuntFile("World Config", world_path, "Config"));
+		files.add(FILE_WORLD = new SettingsFile("World Config", world_path, "Config"));
 		
 		settings.add(BOUNDARY_WORLD = new Setting<Integer>("worldBoundary", 128, FILE_WORLD, "How far players may roam during the hunt.", "There is no boundary around the world."));
 		settings.add(BOUNDARY_SETUP = new Setting<Integer>("setupBoundary", 16, FILE_WORLD, "The region in which the hunters must wait.", "The hunters are not constrained during setup."));
@@ -110,7 +110,7 @@ public class SettingsManager
 
 	public void saveAll()
 	{
-		for (ManhuntFile file : files)
+		for (SettingsFile file : files)
 			file.saveFile();
 	}
 

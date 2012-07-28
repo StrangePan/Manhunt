@@ -14,11 +14,11 @@ public class Setting<Type> {
 	public Type value;
 	public final Type defaultValue;
 	
-	public final ManhuntFile file;
+	public final SettingsFile file;
 	private final String onMessage;
 	private final String offMessage;
 	
-	public Setting(String label, Type defaultValue, ManhuntFile file, String onMessage, String offMessage){
+	public Setting(String label, Type defaultValue, SettingsFile file, String onMessage, String offMessage){
 		this.label = label;
 		this.value = defaultValue;
 		this.defaultValue = defaultValue;
