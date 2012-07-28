@@ -9,13 +9,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
-
-import com.bendude56.hunted.finder.IFinderManager;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
-import com.bendude56.hunted.teams.ITeamManager;
 import com.bendude56.hunted.teams.TeamManager;
 
 public class HuntedPlugin extends JavaPlugin {
@@ -24,8 +20,8 @@ public class HuntedPlugin extends JavaPlugin {
 	
 	private SettingsManager	settings;
 	private LoadoutManager	loadouts;
-	private ITeamManager	teams;
-	private IFinderManager	finders;
+	private TeamManager		teams;
+	private FinderManager	finders;
 	private ManhuntGame		game;
 	public SpConnect		spoutConnect;
 	
@@ -97,12 +93,12 @@ public class HuntedPlugin extends JavaPlugin {
 		return loadouts;
 	}
 	
-	public ITeamManager getTeams()
+	public TeamManager getTeams()
 	{
 		return teams;
 	}
 	
-	public IFinderManager getFinders()
+	public FinderManager getFinders()
 	{
 		return finders;
 	}
