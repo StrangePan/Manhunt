@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.HuntedPlugin;
-import com.bendude56.hunted.config.SettingsManager;
+import com.bendude56.hunted.settings.SettingsManager;
 
 public class TeamManager implements ITeamManager {
 
@@ -116,7 +117,7 @@ public class TeamManager implements ITeamManager {
 		
 	}
 
-	//SIMPLE LIST SYSTEM FOR REMEMBERING WHO WAS IN CREATIVE MODE BEFORE THE GAME
+	//SIMPLE LIST SYSTEM FOR REMEMBERING WHO WAS IN CREATIVE MODE BEFORE THE GAME STARTED
 	public void addCreativePlayer(Player p)
 	{
 		String name = p.getName();
@@ -125,6 +126,36 @@ public class TeamManager implements ITeamManager {
 		{
 			creativePlayers.add(name);
 		}
+	}
+
+	/**
+	 * Will collect all players who are in creative mode in the Manhunt world and set them to survival.
+	 */
+	public void collectAllCreativePlayers()
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			if (p.getWorld() == HuntedPlugin.getInstance().getWorld() && p.getGameMode() == GameMode.CREATIVE && !creativePlayers.contains(p.getName()))
+			{
+				creativePlayers.add(p.getName());
+				p.setGameMode(GameMode.SURVIVAL);
+			}
+		}
+	}
+	
+	/**
+	 * Takes all saved "creative" players, sets their game mode to Creative, then clears the list.
+	 */
+	public void restoreAllCreativePlayers()
+	{
+		for (String name : creativePlayers)
+		{
+			if (Bukkit.getPlayer(name) != null)
+			{
+				Bukkit.getPlayer(name).setGameMode(GameMode.CREATIVE);
+			}
+		}
+		creativePlayers.clear();
 	}
 
 	public List<Player> getAllCreativePlayers()
