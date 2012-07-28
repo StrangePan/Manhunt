@@ -64,6 +64,11 @@ public class SettingsManager
 		files.add(FILE_MAIN = new SettingsFile("Main Config", plugin_path, "Manhunt"));
 		
 		secretSettings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
+		if (Bukkit.getWorld(WORLD.value) == null)
+		{
+			WORLD.setValue(Bukkit.getWorlds().get(0).getName());
+		}
+		
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
 		settings.add(PUBLIC_MODE = new Setting<Boolean>("publicMode", true, FILE_MAIN, "The game is running in public mode.", "The game is running in private mode."));
 		settings.add(AUTO_JOIN = new Setting<Boolean>("autoJoin", true, FILE_MAIN, "New players automatically join team Hunters.", "New players will remain spectators."));
