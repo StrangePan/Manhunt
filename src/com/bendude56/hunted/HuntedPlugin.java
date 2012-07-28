@@ -63,7 +63,7 @@ public class HuntedPlugin extends JavaPlugin {
 	public void onDisable()
 	{
 		
-		//Save players who are in creative mode in the Team Manager
+		teams.restoreAllCreativePlayers();
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
