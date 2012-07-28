@@ -6,21 +6,21 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-public class PreyFinderManager implements IPreyFinderManager {
+public class FinderManager implements IFinderManager {
 
-	HashMap<String, PreyFinder> finders = new HashMap<String, PreyFinder>();
+	HashMap<String, Finder> finders = new HashMap<String, Finder>();
 
 	public void registerNewFinder(Player p)
 	{
 		removeFinder(p.getName());
-		finders.put(p.getName(), new PreyFinder(p));
+		finders.put(p.getName(), new Finder(p));
 	}
 
-	public List<PreyFinder> getExpiredFinders()
+	public List<Finder> getExpiredFinders()
 	{
-		List<PreyFinder> expired = new ArrayList<PreyFinder>();
+		List<Finder> expired = new ArrayList<Finder>();
 		
-		for (PreyFinder finder : finders.values())
+		for (Finder finder : finders.values())
 		{
 			if (finder.isExpired())
 			{
@@ -31,7 +31,7 @@ public class PreyFinderManager implements IPreyFinderManager {
 		return expired;
 	}
 
-	public boolean removeFinder(PreyFinder f)
+	public boolean removeFinder(Finder f)
 	{
 		if (finders.containsValue(f.player))
 		{

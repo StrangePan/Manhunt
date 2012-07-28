@@ -10,13 +10,13 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.utilities.ManhuntUtil;
 
-public class PreyFinder {
+public class Finder {
 
 	public final String player;
 	public final Location location;
 	public final Long timeout;
 
-	public PreyFinder(Player player)
+	public Finder(Player player)
 	{
 		this.player = player.getName();
 		this.location = player.getLocation();
