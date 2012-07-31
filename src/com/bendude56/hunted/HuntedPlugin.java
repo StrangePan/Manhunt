@@ -50,7 +50,7 @@ public class HuntedPlugin extends JavaPlugin {
 
 		settings =	new SettingsManager();
 		loadouts =	new LoadoutManager();
-		teams =		new TeamManager();
+		teams =		new TeamManager(this);
 		finders =	new FinderManager();
 		game =		null;
 		new Switchboard();
@@ -68,7 +68,7 @@ public class HuntedPlugin extends JavaPlugin {
 	public void onDisable()
 	{
 		
-		teams.restoreAllCreativePlayers();
+		teams.restoreAllGameModes();
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
