@@ -2,35 +2,34 @@ package com.bendude56.hunted.games;
 
 import org.bukkit.World;
 
+import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.timeouts.TimeoutManager;
 
 /**
- * This class is an instance class (only one running per world at a time)
+ * This class is a persistent class that manages a Manhunt game.
  * Owns it's own timeout and finder managers. Also contains game logic.
- * @author The Scoop
+ * @author Deaboy
  *
  */
 public class Game
 {
-	public final GameManager manager;
-	public final World world;
-	public TeamManager teams;
+	private World world;
+	private HuntedPlugin plugin;
 	public TimeoutManager timeouts;
 	public FinderManager finders;
 	
 	private Long end_hunt_tick;
 	private Long end_setup_tick;
 	
-	public Game(GameManager manager)
+	public Game(HuntedPlugin plugin)
 	{
 		//Initialize important classes
-		this.manager = manager;
-		this.world = manager.mWorld.world;
-		this.teams = manager.mWorld.teams;
+		this.plugin = plugin;
+		this.world = plugin.getWorld();
 		this.timeouts = new TimeoutManager(this);
-		this.finders = new FinderManager();
+		this.finders = new FinderManager(this);
 	}
 	
 	/*
@@ -50,11 +49,25 @@ public class Game
 	 * Resets the world, reset the player gamemodes, etc.
 	 * FORGETS ITS OWN TIMEOUT MANAGER AND FINDER MANAGER
 	 */
-	
-	private void destroySelf()
-	{
-		timeouts = null;
-		finders = null;
+
+	/**
+	 * Returns this class's pointer to the Manhunt plugin for quick access.
+	 * @return
+	 */
+	public HuntedPlugin getPlugin() {
+		return plugin;
 	}
-	
+
+	/**
+	 * Closes the class and all of the classes it tracks
+	 */
+	public void close()
+	{
+		timeouts.close();
+		timeouts = null;
+		finders.close();
+		finders = null;
+		plugin = null;
+	}
+
 }
