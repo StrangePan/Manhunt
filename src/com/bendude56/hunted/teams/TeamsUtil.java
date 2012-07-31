@@ -7,25 +7,29 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
+/**
+ * A class with static team-related methods.
+ * @author Deaboy
+ *
+ */
 public class TeamsUtil {
 
+	/**
+	 * Alerts the player to which team they have joined.
+	 * @param p
+	 */
 	public static void sendMessageJoinTeam(Player p)
 	{
 		TeamManager teams = HuntedPlugin.getInstance().getTeams();
 		
-		p.sendMessage(ChatColor.YELLOW + "You have joined the " + getTeamColor(teams.getTeamOf(p) + getTeamName(teams.getTeamOf(p), true) + ChatColor.YELLOW + "."));
+		p.sendMessage(ChatColor.GOLD + "You have joined the " + getTeamColor(teams.getTeamOf(p)) + getTeamName(teams.getTeamOf(p), true) + ChatColor.GOLD + ".");
 	}
 
-	public static ChatColor getTeamColor(Player p)
-	{
-		return getTeamColor(HuntedPlugin.getInstance().getTeams().getTeamOf(p));
-	}
-
-	public static ChatColor getTeamColor(String s)
-	{
-		return getTeamColor(HuntedPlugin.getInstance().getTeams().getTeamOf(s));
-	}
-
+	/**
+	 * Returns the color of the team.
+	 * @param t
+	 * @return
+	 */
 	public static ChatColor getTeamColor(Team t)
 	{
 		switch (t) {
@@ -37,6 +41,12 @@ public class TeamsUtil {
 		return ChatColor.WHITE;
 	}
 
+	/**
+	 * Returns the name of the team the player belongs to.
+	 * @param team
+	 * @param plural Whether or not to return the plural name.
+	 * @return
+	 */
 	public static String getTeamName(Team team, boolean plural)
 	{
 		switch (team) {
