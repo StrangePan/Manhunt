@@ -115,5 +115,11 @@ public class TimeoutManager {
 	{
 		return game;
 	}
-	
+
+	public void close()
+	{
+		game = null;
+		stopAllTimeouts();
+	}
+
 }
