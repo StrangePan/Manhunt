@@ -1,10 +1,11 @@
 package com.bendude56.hunted.finder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+
+import com.bendude56.hunted.games.Game;
 
 public class FinderManager
 {
