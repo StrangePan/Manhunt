@@ -51,6 +51,11 @@ public class FinderUtil {
 		}
 	}
 
+	/**
+	 * Tells the player the direction to the nearest enemy, or if
+	 * the nearest enemy is within 10 blocks of them.
+	 * @param p
+	 */
 	public static void sendMessageFinderResults(Player p)
 	{
 		TeamManager teams = HuntedPlugin.getInstance().getTeams();

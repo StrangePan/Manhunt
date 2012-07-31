@@ -10,33 +10,97 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 
-public class Finder {
+public class Finder
+{
+	private FinderManager manager;
 
-	public final String player;
+	public final String player_name;
 	public final Location location;
-	public final Long timeout;
+	public final Long activation_time; //REAL-LIFE TIME to SEND FINDER INFORMATION
+	public final Long expire_time; //REAL-LIFE TIME to SELF-DESTRUCT
 
-	public Finder(Player player)
+	private boolean used = false; //Whether or not the finder has sent the nearest enemy.
+
+	private int schedule;
+
+	public Finder(Player player, FinderManager manager)
 	{
-		this.player = player.getName();
+		this.manager = manager;
+
+		this.player_name = player.getName();
 		this.location = player.getLocation();
 
 		Date time = new Date();
-		this.timeout = time.getTime() + (60000*HuntedPlugin.getInstance().getSettings().OFFLINE_TIMEOUT.value);
+		this.activation_time = time.getTime() + 8000;
+		this.expire_time = activation_time + (1000*manager.getGame().getPlugin().getSettings().FINDER_COOLDOWN.value);
+		
+		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(HuntedPlugin.getInstance(), new Runnable()
+		{
+			public void run()
+			{
+				onTick();
+			}
+		}, 0, 5);
 	}
 
-	public boolean isCancelled()
+	/**
+	 * Checks when to send a player the finder results.
+	 * Checks when to shut itself down.
+	 */
+	public void onTick()
 	{
-		Player p = Bukkit.getPlayer(player);
+		Long time = (new Date()).getTime();
+		
+		if (!used && time >= activation_time) //Should I send the player the information?
+		{
+			Player p = Bukkit.getPlayer(player_name);
+			if (p != null)
+			{
+				if (checkValidity())
+				{
+					FinderUtil.sendMessageFinderResults(p);
+				}
+			}
+			else
+			{
+				manager.stopFinder(this);
+			}
+			used = true;
+		}
+		if (time >= expire_time)
+		{
+			Player p = Bukkit.getPlayer(player_name);
+			if (p != null)
+			{
+				//TODO Alert the player that their finder is ready.
+				manager.stopFinder(this);
+			}
+		}
+	}
+
+	/**
+	 * Determines if a this finder is still valid based on the
+	 * player's location and item held in hand. If it returns false,
+	 * will self-destruct, sending the player the cancel message.
+	 * Will always return true if the finder has already been used.
+	 * @return True if the finder is still valid, false if not.
+	 */
+	public boolean checkValidity()
+	{
+		if (used)
+		{
+			return true;
+		}
+
+		Player p = Bukkit.getPlayer(player_name);
 
 		if (p != null)
 		{
-			if (p.getItemInHand().getType() == Material.COMPASS)
+			if (p.getItemInHand().getType() != Material.COMPASS || ManhuntUtil.areEqual(p.getLocation(), location, 0.5, true))
 			{
-				if (ManhuntUtil.areEqual(p.getLocation(), location, 0.5, true))
-				{
-					return false;
-				}
+				FinderUtil.sendMessageFinderCancel(p);
+				manager.stopFinder(this);
+				return false;
 			}
 		}
 
@@ -44,10 +108,10 @@ public class Finder {
 
 	}
 
-	public boolean isExpired()
+	protected void close()
 	{
-		Date time = new Date();
-		return (timeout >= time.getTime());
+		Bukkit.getScheduler().cancelTask(schedule);
+		manager = null;
 	}
 
 }
