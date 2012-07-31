@@ -60,11 +60,11 @@ public class FinderUtil {
 		
 		if (teams.getTeamOf(p) == Team.HUNTERS)
 		{
-			enemies = teams.getTeam(Team.PREY);
+			enemies = teams.getTeamPlayers(Team.PREY);
 		}
 		else if (teams.getTeamOf(p) == Team.PREY)
 		{
-			enemies = teams.getTeam(Team.HUNTERS);
+			enemies = teams.getTeamPlayers(Team.HUNTERS);
 		}
 		else
 		{

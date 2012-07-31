@@ -111,5 +111,10 @@ public class HuntedPlugin extends JavaPlugin {
 	public ManhuntGame getGame() {
 		return game;
 	}
+	
+	public boolean gameIsRunning()
+	{
+		return game != null;
+	}
 
 }
