@@ -13,92 +13,135 @@ import com.bendude56.hunted.settings.SettingsManager;
 
 public class TeamManager
 {
-
-	private HashMap<String, Team> players = new HashMap<String, Team>();
+	HuntedPlugin plugin;
 	
-	private List<String> creativePlayers = new ArrayList<String>();
+	private HashMap<String, Team> players = new HashMap<String, Team>();
+	private HashMap<String, GameMode> gamemodes = new HashMap<String, GameMode>();
 
-	public boolean addPlayer(Player p, Team t)
+	public TeamManager(HuntedPlugin plugin)
 	{
-		if (!players.containsKey(p.getName()))
-		{
-			players.put(p.getName(), t);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		this.plugin = plugin;
 	}
 
-	public boolean addPlayer(Player p)
+	private void putPlayerTeam(String p, Team t)
+	{
+		players.put(p, t);
+	}
+
+	/**
+	 * This method handles players joining the game, either by
+	 * logging in to the server or switching worlds. Only
+	 * handles players in context of the TeamManager, does not
+	 * deal with any other aspects of the game.
+	 * @param p The player to add.
+	 */
+	public void addPlayer(Player p)
 	{
 		SettingsManager settings = HuntedPlugin.getInstance().getSettings();
 		
-		if (!players.containsKey(p.getName()))
+		if (players.containsKey(p.getName()))
 		{
-			if (p.getWorld() != HuntedPlugin.getInstance().getWorld())
+			return;
+		}
+		
+		if (p.getWorld() != plugin.getWorld())
+		{
+			putPlayerTeam(p.getName(), Team.NONE);
+		}
+		else if (plugin.gameIsRunning())
+		{
+			putPlayerTeam(p.getName(), Team.SPECTATORS);
+		}
+		else
+		{
+			if (settings.PUBLIC_MODE.value)
 			{
-				return addPlayer(p, Team.NONE);
-			}
-			else if (settings.PUBLIC_MODE.value)
-			{
-				return addPlayer(p, Team.SPECTATORS);
+				putPlayerTeam(p.getName(), Team.SPECTATORS);
 			}
 			else if (settings.AUTO_JOIN.value)
 			{
-				return addPlayer(p, Team.HUNTERS);
+				putPlayerTeam(p.getName(), Team.HUNTERS);
 			}
 			else
 			{
-				return addPlayer(p, Team.SPECTATORS);
+				putPlayerTeam(p.getName(), Team.SPECTATORS);
 			}
 		}
-		return false;
 	}
 
-	public boolean removePlayer(String s)
+	/**
+	 * This method changes a player's team. Player must
+	 * already be added, using the addPlayer(Player p) method.
+	 * @param p
+	 * @param t
+	 */
+	public void changePlayerTeam(Player p, Team t)
+	{
+		if (!gamemodes.containsKey(p.getName()))
+		{
+			putPlayerTeam(p.getName(), t);
+		}
+	}
+
+	/**
+	 * This method simply deletes a player from the team manager.
+	 * Used only after the player times out.
+	 * @param s
+	 */
+	public void deletePlayer(String s)
 	{
 		if (players.containsKey(s))
 		{
 			players.remove(s);
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 
-	public boolean setTeam(Player p, Team t)
-	{
-		return setTeam(p.getName(), t);
-	}
-
-	public boolean setTeam(String s, Team t)
-	{
-		if (players.containsKey(s))
-		{
-			players.put(s, t);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
+	/**
+	 * Returns the Team the player is on
+	 * @param p The Player in question
+	 * @return
+	 */
 	public Team getTeamOf(Player p)
 	{
 		return getTeamOf(p.getName());
 	}
 
+	/**
+	 * Returns the Team the player is on
+	 * @param s The name of the player in question
+	 * @return
+	 */
 	public Team getTeamOf(String s)
 	{
 		return players.get(s);
 	}
 
-	public List<Player> getTeam(Team team)
+	/**
+	 * Returns a List<String> of the names of players who
+	 * belong to the specified team.
+	 * @param team 
+	 * @return
+	 */
+	public List<String> getTeamNames(Team team)
+	{
+		List<String> results = new ArrayList<String>();
+		for (String name : players.keySet())
+		{
+			if (players.get(name) == team)
+			{
+				results.add(name);
+			}
+		}
+		return results;
+	}
+
+	/**
+	 * Returns a List<Player> of players who belong to the
+	 * given team.
+	 * @param team
+	 * @return
+	 */
+	public List<Player> getTeamPlayers(Team team)
 	{
 		List<Player> results = new ArrayList<Player>();
 		
@@ -118,95 +161,83 @@ public class TeamManager
 		
 	}
 
+	//TODO DELETE THIS. MOVE TO CHATMANAGER.
 	public void sendMessageToTeam(Team team, String message)
 	{
-		for (Player p : getTeam(team))
+		for (Player p : getTeamPlayers(team))
 		{
 			p.sendMessage(message);
 		}
 	}
 
-	//SIMPLE LIST SYSTEM FOR REMEMBERING WHO WAS IN CREATIVE MODE BEFORE THE GAME STARTED
-	public void addCreativePlayer(Player p)
+	/**
+	 * Saves a player's game mode if it isn't already saved.
+	 * @param p The player
+	 */
+	public void savePlayerGameMode(Player p)
 	{
-		String name = p.getName();
-		
-		if (!creativePlayers.contains(name))
+		if (!gamemodes.containsKey(p.getName()))
 		{
-			creativePlayers.add(name);
+			putPlayerGameMode(p);
 		}
 	}
 
 	/**
-	 * Will collect all players who are in creative mode in the Manhunt world and set them to survival.
+	 * Private method used to simply save a player's current game mode.
+	 * @param p the player to save
 	 */
-	public void collectAllCreativePlayers()
+	private void putPlayerGameMode(Player p)
+	{
+		gamemodes.put(p.getName(), p.getGameMode());
+	}
+
+	/**
+	 * Will collect the game modes of all players in the Manhunt world
+	 */
+	public void saveAllGameModes()
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			if (p.getWorld() == HuntedPlugin.getInstance().getWorld() && p.getGameMode() == GameMode.CREATIVE && !creativePlayers.contains(p.getName()))
+			if (p.getWorld() == HuntedPlugin.getInstance().getWorld())
 			{
-				creativePlayers.add(p.getName());
-				p.setGameMode(GameMode.SURVIVAL);
+				putPlayerGameMode(p);
 			}
 		}
 	}
-	
+
 	/**
-	 * Takes all saved "creative" players, sets their game mode to Creative, then clears the list.
+	 * Restores the game mode of a single player.
+	 * Deletes their saved game mode.
 	 */
-	public void restoreAllCreativePlayers()
+	public void restorePlayerGameMode(Player p)
 	{
-		for (String name : creativePlayers)
+		if (gamemodes.containsKey(p.getName()))
 		{
-			if (Bukkit.getPlayer(name) != null)
+			if (p.getGameMode() != gamemodes.get(p.getName()))
 			{
-				Bukkit.getPlayer(name).setGameMode(GameMode.CREATIVE);
+				p.setGameMode(gamemodes.get(p.getName()));
 			}
 		}
-		creativePlayers.clear();
 	}
 
-	public List<Player> getAllCreativePlayers()
+	/**
+	 * Gives all players their saved game modes.
+	 * Clears all saved game modes.
+	 */
+	public void restoreAllGameModes()
 	{
-		List<Player> results = new ArrayList<Player>();
-		
-		for (String name : creativePlayers)
+		for (String name : gamemodes.keySet())
 		{
-			Player player = Bukkit.getPlayer(name);
-			
-			if (player != null && !results.contains(player))
+			Player p = Bukkit.getPlayer(name);
+			if (p != null)
 			{
-				results.add(player);
+				if (p.getGameMode() != gamemodes.get(name))
+				{
+					Bukkit.getPlayer(name).setGameMode(gamemodes.get(name));
+				}
 			}
 		}
-		
-		return results;
-	}
-
-	public boolean wasCreative(Player p)
-	{
-		return (creativePlayers.contains(p.getName()));
-	}
-	
-	public List<Player> clearCreativePlayers()
-	{
-		List<Player> clone = getAllCreativePlayers();
-		creativePlayers.clear();
-		return clone;
-	}
-	
-	public void removeCreativePlayer(Player p)
-	{
-		removeCreativePlayer(p.getName());
-	}
-	
-	public void removeCreativePlayer(String s)
-	{
-		if (creativePlayers.contains(s))
-		{
-			creativePlayers.remove(s);
-		}
+		gamemodes.clear();
 	}
 
 	public enum Team
