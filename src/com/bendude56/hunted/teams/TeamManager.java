@@ -11,7 +11,8 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.settings.SettingsManager;
 
-public class TeamManager implements ITeamManager {
+public class TeamManager
+{
 
 	private HashMap<String, Team> players = new HashMap<String, Team>();
 	
