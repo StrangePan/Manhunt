@@ -1,5 +1,7 @@
 package com.bendude56.hunted.games;
 
+import org.bukkit.World;
+
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -17,8 +19,11 @@ public class Game
 	public TimeoutManager timeouts;
 	public FinderManager finders;
 	
-	private Long end_hunt_tick;
-	private Long end_setup_tick;
+	private World world; //Eh, why not?
+	
+	private Long start_setup_tick;
+	private Long start_hunt_tick;
+	private Long stop_hunt_tick;
 	
 	public Game(HuntedPlugin plugin)
 	{
@@ -26,6 +31,23 @@ public class Game
 		this.plugin = plugin;
 		this.timeouts = new TimeoutManager(this);
 		this.finders = new FinderManager(this);
+		
+		//Save pointer to world
+		this.world = plugin.getWorld();
+		
+		//Calculate milestones ticks
+		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
+		start_setup_tick += (24000 - start_setup_tick % 24000); //Calculating. Next day
+		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value * 1200); //Compensate for shorter setup times
+		this.start_setup_tick = start_setup_tick; //Save the start_tick;
+		
+		Long start_hunt_tick = start_setup_tick; //Set up the start_hunt_tick, giving it a baseline
+		start_hunt_tick += plugin.getSettings().SETUP_TIME.value * 1200;
+		this.start_hunt_tick = start_hunt_tick; //Save the end_setup_tick
+		
+		Long stop_hunt_tick = start_hunt_tick; //Set up the end_hunt_tick, giving it a baseline.
+		stop_hunt_tick += plugin.getSettings().DAY_LIMIT.value * 24000;
+		this.stop_hunt_tick = stop_hunt_tick;
 	}
 	
 	/*
