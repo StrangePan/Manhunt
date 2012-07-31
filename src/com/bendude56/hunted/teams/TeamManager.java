@@ -37,7 +37,7 @@ public class TeamManager
 	 */
 	public void addPlayer(Player p)
 	{
-		SettingsManager settings = HuntedPlugin.getInstance().getSettings();
+		SettingsManager settings = plugin.getSettings();
 		
 		if (players.containsKey(p.getName()))
 		{
@@ -198,7 +198,7 @@ public class TeamManager
 	{
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
-			if (p.getWorld() == HuntedPlugin.getInstance().getWorld())
+			if (p.getWorld() == plugin.getWorld())
 			{
 				putPlayerGameMode(p);
 			}
@@ -243,6 +243,19 @@ public class TeamManager
 	public enum Team
 	{
 		HUNTERS, PREY, SPECTATORS, NONE;
+		
+		public Team fromString(String team)
+		{
+			if (team.equalsIgnoreCase("hunter") || team.equalsIgnoreCase("hunters"))
+				return HUNTERS;
+			if (team.equalsIgnoreCase("prey"))
+				return PREY;
+			if (team.equalsIgnoreCase("spectator") || team.equalsIgnoreCase("spectators"))
+				return SPECTATORS;
+			if (team.equalsIgnoreCase("none") || team.equalsIgnoreCase("null"))
+				return NONE;
+			return null;
+		}
 	}
 
 }
