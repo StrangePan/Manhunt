@@ -1,10 +1,8 @@
 package com.bendude56.hunted.games;
 
-import org.bukkit.World;
-
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.finder.FinderManager;
-import com.bendude56.hunted.teams.TeamManager;
+import com.bendude56.hunted.teams.TeamManager.Team;
 import com.bendude56.hunted.timeouts.TimeoutManager;
 
 /**
@@ -15,7 +13,6 @@ import com.bendude56.hunted.timeouts.TimeoutManager;
  */
 public class Game
 {
-	private World world;
 	private HuntedPlugin plugin;
 	public TimeoutManager timeouts;
 	public FinderManager finders;
@@ -27,7 +24,6 @@ public class Game
 	{
 		//Initialize important classes
 		this.plugin = plugin;
-		this.world = plugin.getWorld();
 		this.timeouts = new TimeoutManager(this);
 		this.finders = new FinderManager(this);
 	}
@@ -50,16 +46,63 @@ public class Game
 	 * FORGETS ITS OWN TIMEOUT MANAGER AND FINDER MANAGER
 	 */
 
+
+	/**
+	 * Stops the Manhunt Game. Private, because only other in-class
+	 * public methods may stop this game.
+	 */
+	private void stopGame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Forfeits a player. Only meant to be used by Timeouts.
+	 * @param player_name
+	 */
+	public void onPlayerForfeit(String player_name)
+	{
+		GameUtil.broadcastPlayerForfeit(player_name);
+		plugin.getTeams().deletePlayer(player_name);
+		
+		checkTeamCounts();
+	}
+
+	/**
+	 * Private method, checks team count and will stop the game if
+	 * one team has won. 
+	 */
+	private void checkTeamCounts() //TODO Make this more efficient
+	{
+		Team winners;
+		Team losers;
+		if (plugin.getTeams().getTeamNames(Team.HUNTERS).size() == 0)
+		{
+			winners = Team.PREY;
+			losers = Team.HUNTERS;
+			GameUtil.broadcastManhuntWinners(winners, losers);
+			stopGame();
+		}
+		else if (plugin.getTeams().getTeamNames(Team.PREY).size() == 0)
+		{
+			winners = Team.HUNTERS;
+			losers = Team.PREY;
+			GameUtil.broadcastManhuntWinners(winners, losers);
+			stopGame();
+		}
+	}
+
 	/**
 	 * Returns this class's pointer to the Manhunt plugin for quick access.
 	 * @return
 	 */
-	public HuntedPlugin getPlugin() {
+	public HuntedPlugin getPlugin()
+	{
 		return plugin;
 	}
 
 	/**
-	 * Closes the class and all of the classes it tracks
+	 * Closes ONLY the classes this class tracks
 	 */
 	public void close()
 	{
@@ -67,7 +110,7 @@ public class Game
 		timeouts = null;
 		finders.close();
 		finders = null;
-		plugin = null;
 	}
+
 
 }
