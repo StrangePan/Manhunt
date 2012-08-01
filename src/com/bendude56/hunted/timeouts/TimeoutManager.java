@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.games.Game;
 
 /**
@@ -31,9 +30,6 @@ public class TimeoutManager {
 	 */
 	public Timeout startTimeout(Player p)
 	{
-		Long boot_tick = HuntedPlugin.getInstance().getWorld().getFullTime();
-		boot_tick += HuntedPlugin.getInstance().getSettings().OFFLINE_TIMEOUT.value * 20;
-		
 		Timeout timeout = getTimeout(p.getName());
 		
 		if (timeout != null)
@@ -41,7 +37,7 @@ public class TimeoutManager {
 			stopTimeout(timeout);
 		}
 		
-		timeout = new Timeout(p.getName(), boot_tick, this);
+		timeout = new Timeout(p.getName(), this);
 		timeouts.add(timeout);
 		
 		return timeout;
