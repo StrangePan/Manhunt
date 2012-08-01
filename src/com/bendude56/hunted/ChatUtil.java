@@ -1,10 +1,44 @@
 package com.bendude56.hunted;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import com.bendude56.hunted.teams.TeamManager.Team;
+
 /**
  * Simple class full of static methods for messaging players and teams.
  * @author Deaboy
  *
  */
 public class ChatUtil {
+	private HuntedPlugin plugin;
 
+	public final static ChatColor color = ChatColor.GOLD;
+	public final static String bracket1 = color + "---[" + ChatColor.WHITE;
+	public final static String bracket1_ = bracket1 + " ";
+	public final static String bracket2 = color + "]---" + ChatColor.WHITE;
+	public final static String bracket2_ = " " + bracket2;
+	public final static String leftborder = color + "|  " + ChatColor.WHITE;
+	public final static String divider = color + "--------------------";
+
+	public ChatUtil(HuntedPlugin plugin)
+	{
+		this.plugin = plugin;
+	}
+
+	public void broadcastAll(String s, boolean spectators)
+	{
+		for (Player p : plugin.getTeams().getAllPlayers(spectators))
+		{
+			p.sendMessage(s);
+		}
+	}
+	
+	public void broadcastTeam(String s, Team t)
+	{
+		for (Player p : plugin.getTeams().getTeamPlayers(t))
+		{
+			p.sendMessage(s);
+		}
+	}
 }

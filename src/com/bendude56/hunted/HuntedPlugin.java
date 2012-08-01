@@ -28,6 +28,7 @@ public class HuntedPlugin extends JavaPlugin {
 	private TeamManager		teams;
 	private FinderManager	finders;
 	private ManhuntGame		game;
+	private ChatUtil		chat;
 	public SpConnect		spoutConnect;
 	
 	public boolean	spoutEnabled;
@@ -51,7 +52,7 @@ public class HuntedPlugin extends JavaPlugin {
 		settings =	new SettingsManager();
 		loadouts =	new LoadoutManager();
 		teams =		new TeamManager(this);
-		finders =	new FinderManager();
+		chat =		new ChatUtil(this);
 		game =		null;
 		new OldCommands();
 		
@@ -101,6 +102,11 @@ public class HuntedPlugin extends JavaPlugin {
 	public TeamManager getTeams()
 	{
 		return teams;
+	}
+
+	public ChatUtil getChat()
+	{
+		return chat;
 	}
 	
 	public FinderManager getFinders()

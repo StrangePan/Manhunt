@@ -1,8 +1,10 @@
 package com.bendude56.hunted.games;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 
+import com.bendude56.hunted.ChatUtil;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -42,6 +44,14 @@ public class Game
 		//Save pointer to world
 		this.world = plugin.getWorld();
 		
+		startGame();
+	}
+
+	/**
+	 * Initializes everything
+	 */
+	private void startGame()
+	{
 		//Calculate milestones ticks
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - start_setup_tick % 24000); //Calculating. Next day
@@ -60,13 +70,15 @@ public class Game
 		this.hunt_started = false; //States that the hunt has not started. Used to assist starting the game.
 		this.setup_stage = 0; //This var assists in the setup events.
 		
+		GameUtil.broadcastGameStart();
+		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(HuntedPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{
 				onTick();
 			}
-		}, 0, 5);
+		}, 0, 1);
 	}
 
 	private void onTick()
@@ -108,7 +120,7 @@ public class Game
 			this.close();
 		}
 	}
-	
+
 	/*
 	 * Gives a 30 second countdown until the game starts
 	 * gradually sets the world's time.
@@ -127,7 +139,6 @@ public class Game
 	 * FORGETS ITS OWN TIMEOUT MANAGER AND FINDER MANAGER
 	 */
 
-
 	/**
 	 * Stops the Manhunt Game. Private, because only other in-class
 	 * public methods may stop this game.
@@ -135,6 +146,24 @@ public class Game
 	private void stopGame() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Private method broadcasts one of the setup messages.
+	 * EX: "The hunt starts in 5...", "4...", etc.
+	 */
+	private void broadcastSetupMessages()
+	{
+		Long tick = world.getTime() - start_setup_tick;
+		if (tick > 0 && setup_stage == 0)
+		{
+			plugin.getChat().broadcastAll(ChatUtil.bracket1 + ChatColor.DARK_PURPLE + "The hunt will begin at sundown! (" + plugin.getSettings().SETUP_TIME.value + " minutes)" + ChatUtil.bracket2, true);
+		}//TODO add more messages
+		else
+		{
+			setup_stage--;
+		}
+		setup_stage++;
 	}
 
 	/**
@@ -174,15 +203,6 @@ public class Game
 	}
 
 	/**
-	 * Private method broadcasts one of the setup messages.
-	 * EX: "The hunt starts in 5...", "4...", etc.
-	 */
-	private void broadcastSetupMessages()
-	{
-		//TODO
-	}
-
-	/**
 	 * Returns this class's pointer to the Manhunt plugin for quick access.
 	 * @return
 	 */
@@ -192,9 +212,10 @@ public class Game
 	}
 
 	/**
-	 * Closes ONLY the classes this class tracks
+	 * Closes the classes this class tracks and
+	 * stops the schedule.
 	 */
-	public void close()
+	private void close()
 	{
 		Bukkit.getScheduler().cancelTask(schedule);
 		

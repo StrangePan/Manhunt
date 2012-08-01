@@ -10,7 +10,15 @@ import com.bendude56.hunted.teams.TeamManager.Team;
 public class GameUtil {
 
 	/**
-	 * Broadcasts to all palyers the results of the match.
+	 * Broadcast to everyone that the game has started
+	 */
+	public static void broadcastGameStart() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Broadcasts to all players the results of the match.
 	 * @param winners
 	 * @param losers
 	 */
@@ -20,7 +28,7 @@ public class GameUtil {
 	}
 
 	/**
-	 * Announces that the porey have won because the time ran out.
+	 * Announces that the prey have won because the time ran out.
 	 */
 	protected static void broadcastTimoeutWinners()
 	{
@@ -28,7 +36,7 @@ public class GameUtil {
 	}
 
 	/**
-	 * Broadcasts to all palyers that a player has forfeit.
+	 * Broadcasts to all players that a player has forfeit.
 	 * @param player_name
 	 */
 	protected static void broadcastPlayerForfeit(String player_name) {

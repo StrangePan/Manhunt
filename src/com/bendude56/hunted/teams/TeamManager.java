@@ -161,13 +161,15 @@ public class TeamManager
 		
 	}
 
-	//TODO DELETE THIS. MOVE TO CHATMANAGER.
-	public void sendMessageToTeam(Team team, String message)
-	{
-		for (Player p : getTeamPlayers(team))
-		{
-			p.sendMessage(message);
-		}
+
+
+	public List<Player> getAllPlayers(boolean spectators) {
+		List<Player> players = new ArrayList<Player>();
+		players.addAll(getTeamPlayers(Team.HUNTERS));
+		players.addAll(getTeamPlayers(Team.PREY));
+		if (spectators)
+			players.addAll(getTeamPlayers(Team.SPECTATORS));
+		return players;
 	}
 
 	/**
