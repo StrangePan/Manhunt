@@ -20,6 +20,14 @@ public class GameUtil {
 	}
 
 	/**
+	 * Announces that the porey have won because the time ran out.
+	 */
+	protected static void broadcastTimoeutWinners()
+	{
+		// TODO
+	}
+
+	/**
 	 * Broadcasts to all palyers that a player has forfeit.
 	 * @param player_name
 	 */

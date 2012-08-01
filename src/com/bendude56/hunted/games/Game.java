@@ -1,5 +1,6 @@
 package com.bendude56.hunted.games;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import com.bendude56.hunted.HuntedPlugin;
@@ -25,6 +26,12 @@ public class Game
 	private Long start_hunt_tick;
 	private Long stop_hunt_tick;
 	
+	private boolean setup_started;
+	private boolean hunt_started;
+	
+	private int schedule;
+	private int setup_stage;
+	
 	public Game(HuntedPlugin plugin)
 	{
 		//Initialize important classes
@@ -39,15 +46,67 @@ public class Game
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - start_setup_tick % 24000); //Calculating. Next day
 		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value * 1200); //Compensate for shorter setup times
-		this.start_setup_tick = start_setup_tick; //Save the start_tick;
+		this.start_setup_tick = start_setup_tick; //Save the start_setup_tick;
 		
 		Long start_hunt_tick = start_setup_tick; //Set up the start_hunt_tick, giving it a baseline
 		start_hunt_tick += plugin.getSettings().SETUP_TIME.value * 1200;
-		this.start_hunt_tick = start_hunt_tick; //Save the end_setup_tick
+		this.start_hunt_tick = start_hunt_tick; //Save the start_hunt_tick
 		
 		Long stop_hunt_tick = start_hunt_tick; //Set up the end_hunt_tick, giving it a baseline.
 		stop_hunt_tick += plugin.getSettings().DAY_LIMIT.value * 24000;
-		this.stop_hunt_tick = stop_hunt_tick;
+		this.stop_hunt_tick = stop_hunt_tick; //Save the stop_hunt_tick
+		
+		this.setup_started = false; //States that setup has not started. Used to assist in setup events.
+		this.hunt_started = false; //States that the hunt has not started. Used to assist starting the game.
+		this.setup_stage = 0; //This var assists in the setup events.
+		
+		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(HuntedPlugin.getInstance(), new Runnable()
+		{
+			public void run()
+			{
+				onTick();
+			}
+		}, 0, 5);
+	}
+
+	private void onTick()
+	{
+		Long tick = world.getFullTime();
+		if (tick < start_setup_tick)
+		{
+			//Setup has not started. Figure out if it needs to send a message, change the world time, or anything like that.
+		}
+		else if (tick < start_hunt_tick)
+		{
+			if (setup_started) //Setup has begun, and this is NOT the first tick.
+			{
+				broadcastSetupMessages();
+				//Check if we need to send a message or something.
+				//Possibly teleport the hunters
+			}
+			else //Setup has begun, this is the first tick
+			{
+				//Release the prey, trap the hunters
+				setup_started = true;
+			}
+		}
+		else if (tick < stop_hunt_tick) //Hunt has begun...
+		{
+			if (hunt_started) //This is NOT the first tick
+			{
+				//TODO something...
+			}
+			else //This is the FIRST tick
+			{
+				//TODO something else :P
+			}
+		}
+		else //Hunt is over
+		{
+			//Prey have won.
+			
+			this.close();
+		}
 	}
 	
 	/*
@@ -115,6 +174,15 @@ public class Game
 	}
 
 	/**
+	 * Private method broadcasts one of the setup messages.
+	 * EX: "The hunt starts in 5...", "4...", etc.
+	 */
+	private void broadcastSetupMessages()
+	{
+		//TODO
+	}
+
+	/**
 	 * Returns this class's pointer to the Manhunt plugin for quick access.
 	 * @return
 	 */
@@ -128,6 +196,8 @@ public class Game
 	 */
 	public void close()
 	{
+		Bukkit.getScheduler().cancelTask(schedule);
+		
 		timeouts.close();
 		timeouts = null;
 		finders.close();
