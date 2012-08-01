@@ -9,7 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.bendude56.hunted.commands.Switchboard;
+import com.bendude56.hunted.commands.OldCommands;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.listeners.HuntedBlockListener;
@@ -53,7 +53,7 @@ public class HuntedPlugin extends JavaPlugin {
 		teams =		new TeamManager(this);
 		finders =	new FinderManager();
 		game =		null;
-		new Switchboard();
+		new OldCommands();
 		
 		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		

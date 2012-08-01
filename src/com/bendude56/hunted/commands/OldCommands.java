@@ -19,11 +19,11 @@ import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.Setting;
 import com.bendude56.hunted.settings.SettingsManager;
 
-public class Switchboard implements CommandExecutor {
+public class OldCommands implements CommandExecutor {
 
 	public final static String pre = ChatColor.GOLD + "| " + ChatColor.WHITE;
 	
-	public Switchboard() {
+	public OldCommands() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 		Bukkit.getPluginCommand("m").setExecutor(this);
 	}
