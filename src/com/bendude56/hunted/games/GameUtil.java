@@ -1,5 +1,8 @@
 package com.bendude56.hunted.games;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 /**
@@ -42,6 +45,30 @@ public class GameUtil {
 	protected static void broadcastPlayerForfeit(String player_name) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Makes a player invisible to all other players on the server
+	 * @param p
+	 */
+	public static void makeInvisible(Player p)
+	{
+		for (Player p2 : Bukkit.getOnlinePlayers())
+		{
+			p2.hidePlayer(p);
+		}
+	}
+
+	/**
+	 * Makes a player visible to all other players on the server
+	 * @param p
+	 */
+	public static void makeVisible(Player p)
+	{
+		for (Player p2: Bukkit.getOnlinePlayers())
+		{
+			p2.showPlayer(p);
+		}
 	}
 
 }
