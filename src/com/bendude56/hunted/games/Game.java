@@ -2,10 +2,14 @@ package com.bendude56.hunted.games;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ChatUtil;
 import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 import com.bendude56.hunted.timeouts.TimeoutManager;
@@ -149,21 +153,55 @@ public class Game
 	}
 
 	/**
-	 * Private method broadcasts one of the setup messages.
-	 * EX: "The hunt starts in 5...", "4...", etc.
+	 * Occurs when a player joins a game, which IS in progress
+	 * @param p
 	 */
-	private void broadcastSetupMessages()
+	public void onPlayerJoin(Player p)
 	{
-		Long tick = world.getTime() - start_setup_tick;
-		if (tick > 0 && setup_stage == 0)
+		plugin.getTeams().addPlayer(p);
+		plugin.getTeams().savePlayerGameMode(p);
+		//TODO Save the player's inventory
+		timeouts.stopTimeout(p);
+	}
+
+	/**
+	 * Occurs when a player is disconnected or leaves the world.
+	 * @param p
+	 */
+	public void onPlayerLeave(Player p)
+	{
+		plugin.getTeams().restorePlayerGameMode(p);
+		//TODO Restore player's inventory
+		finders.stopFinder(p);
+		timeouts.startTimeout(p);
+	}
+
+	/**
+	 * Occurs when a player dies and is Eliminated.
+	 */
+	public void onPlayerDie(Player p)
+	{
+		plugin.getTeams().changePlayerTeam(p, Team.SPECTATORS);
+		p.setGameMode(GameMode.CREATIVE);
+		GameUtil.makeInvisible(p);
+		
+		checkTeamCounts();
+	}
+
+	/**
+	 * When a player respawns, sends them to the correct spawn point.
+	 * @param p
+	 */
+	public void onPlayerRespawn(Player p)
+	{
+		Location spawn;
+		switch (plugin.getTeams().getTeamOf(p))
 		{
-			plugin.getChat().broadcastAll(ChatUtil.bracket1 + ChatColor.DARK_PURPLE + "The hunt will begin at sundown! (" + plugin.getSettings().SETUP_TIME.value + " minutes)" + ChatUtil.bracket2, true);
-		}//TODO add more messages
-		else
-		{
-			setup_stage--;
+			case HUNTERS:	spawn = ManhuntUtil.safeTeleport(plugin.getSettings().SPAWN_HUNTER.value);
+			case PREY:		spawn = ManhuntUtil.safeTeleport(plugin.getSettings().SPAWN_PREY.value);
+			default:		spawn = p.getBedSpawnLocation() == null ? p.getWorld().getSpawnLocation() : p.getBedSpawnLocation();
 		}
-		setup_stage++;
+		p.teleport(spawn);
 	}
 
 	/**
@@ -182,24 +220,36 @@ public class Game
 	 * Private method, checks team count and will stop the game if
 	 * one team has won. 
 	 */
-	private void checkTeamCounts() //TODO Make this more efficient
+	private void checkTeamCounts()
 	{
-		Team winners;
-		Team losers;
 		if (plugin.getTeams().getTeamNames(Team.HUNTERS).size() == 0)
 		{
-			winners = Team.PREY;
-			losers = Team.HUNTERS;
-			GameUtil.broadcastManhuntWinners(winners, losers);
+			GameUtil.broadcastManhuntWinners(Team.PREY, Team.HUNTERS);
 			stopGame();
 		}
 		else if (plugin.getTeams().getTeamNames(Team.PREY).size() == 0)
 		{
-			winners = Team.HUNTERS;
-			losers = Team.PREY;
-			GameUtil.broadcastManhuntWinners(winners, losers);
+			GameUtil.broadcastManhuntWinners(Team.HUNTERS, Team.PREY);
 			stopGame();
 		}
+	}
+
+	/**
+	 * Private method broadcasts one of the setup messages.
+	 * EX: "The hunt starts in 5...", "4...", etc.
+	 */
+	private void broadcastSetupMessages()
+	{
+		Long tick = world.getTime() - start_setup_tick;
+		if (tick > 0 && setup_stage == 0)
+		{
+			plugin.getChat().broadcastAll(ChatUtil.bracket1 + ChatColor.DARK_PURPLE + "The hunt will begin at sundown! (" + plugin.getSettings().SETUP_TIME.value + " minutes)" + ChatUtil.bracket2, true);
+		}//TODO add more messages
+		else
+		{
+			setup_stage--;
+		}
+		setup_stage++;
 	}
 
 	/**
