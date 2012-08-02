@@ -162,7 +162,11 @@ public class TeamManager
 	}
 
 
-
+	/**
+	 * Simply returns a list of all Players who are playing
+	 * @param spectators True if you wish to include spectators
+	 * @return
+	 */
 	public List<Player> getAllPlayers(boolean spectators) {
 		List<Player> players = new ArrayList<Player>();
 		players.addAll(getTeamPlayers(Team.HUNTERS));
@@ -173,7 +177,8 @@ public class TeamManager
 	}
 
 	/**
-	 * Saves a player's game mode if it isn't already saved.
+	 * Saves a player's game mode if it isn't already saved and sets
+	 * their game mode to the one they're supposed to be in.
 	 * @param p The player
 	 */
 	public void savePlayerGameMode(Player p)
@@ -181,6 +186,17 @@ public class TeamManager
 		if (!gamemodes.containsKey(p.getName()))
 		{
 			putPlayerGameMode(p);
+		}
+		GameMode mode;
+		switch (getTeamOf(p)) {
+			case HUNTERS:	mode = GameMode.SURVIVAL;
+			case PREY:		mode = GameMode.SURVIVAL;
+			case SPECTATORS:mode = GameMode.CREATIVE;
+			default:		mode = p.getGameMode();
+		}
+		if (p.getGameMode() != mode)
+		{
+			p.setGameMode(mode);
 		}
 	}
 
@@ -194,7 +210,8 @@ public class TeamManager
 	}
 
 	/**
-	 * Will collect the game modes of all players in the Manhunt world
+	 * Will collect the game modes of all players in the Manhunt world and
+	 * change their game mode to the one they need to be in.
 	 */
 	public void saveAllGameModes()
 	{
@@ -202,7 +219,7 @@ public class TeamManager
 		{
 			if (p.getWorld() == plugin.getWorld())
 			{
-				putPlayerGameMode(p);
+				savePlayerGameMode(p);
 			}
 		}
 	}
