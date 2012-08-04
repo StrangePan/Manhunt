@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.commands.OldCommands;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.ManhuntGame;
@@ -28,7 +29,7 @@ public class HuntedPlugin extends JavaPlugin {
 	private TeamManager		teams;
 	private FinderManager	finders;
 	private ManhuntGame		game;
-	private ChatUtil		chat;
+	private ChatManager		chat;
 	public SpConnect		spoutConnect;
 	
 	public boolean	spoutEnabled;
@@ -52,7 +53,7 @@ public class HuntedPlugin extends JavaPlugin {
 		settings =	new SettingsManager();
 		loadouts =	new LoadoutManager();
 		teams =		new TeamManager(this);
-		chat =		new ChatUtil(this);
+		chat =		new ChatManager(this);
 		game =		null;
 		new OldCommands();
 		
@@ -104,7 +105,7 @@ public class HuntedPlugin extends JavaPlugin {
 		return teams;
 	}
 
-	public ChatUtil getChat()
+	public ChatManager getChat()
 	{
 		return chat;
 	}
