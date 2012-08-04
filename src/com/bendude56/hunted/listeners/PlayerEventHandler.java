@@ -1,6 +1,5 @@
 package com.bendude56.hunted.listeners;
 
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -58,9 +57,9 @@ public class PlayerEventHandler implements Listener {
 
 	/*
 	 * public void onPlayerKick(PlayerKickEvent e) { if
-	 * (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld() &&
-	 * g.gameHasBegun() && g.isPlaying(e.getPlayer())) {
-	 * e.setLeaveMessage(null); } g.onLogout(e.getPlayer()); }
+	 * (e.getPlayer().getWorld() == plugin.getWorld() &&
+	 * plugin.gameIsRunning() && plugin.getGame().isPlaying(e.getPlayer())) {
+	 * e.setLeaveMessage(null); } plugin.getGame().onLogout(e.getPlayer()); }
 	 */
 
 	@EventHandler
@@ -70,58 +69,59 @@ public class PlayerEventHandler implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		if (!g.gameHasBegun()) {
-			if (e.getPlayer().getWorld() == HuntedPlugin.getInstance()
-					.getWorld()) {
-				e.getPlayer().setFoodLevel(20);
-			}
+	public void onPlayerMove(PlayerMoveEvent e)
+	{
+		if (e.getPlayer().getWorld() != plugin.getWorld())
+		{
 			return;
 		}
-		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+		if (!plugin.gameIsRunning())
+		{
 			return;
 		}
-		if (!g.isHunted(e.getPlayer()) && !g.isHunter(e.getPlayer())) {
-			return;
-		}
+		
 		Player p = e.getPlayer();
-		if (!g.huntHasBegun() && g.isHunter(p)
-				&& settings.BOUNDARY_SETUP.value > -1) {
-			if (settings.BOUNDARY_BOXED.value) {
-				if (g.outsideBoxedArea(p.getLocation(), true)) {
-					p.teleport(ManhuntUtil.safeTeleport(g.teleportPregameBoxedLocation(p
-							.getLocation())));
+		Team team = plugin.getTeams().getTeamOf(p);
+		
+		if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			return;
+		}
+		if (!plugin.gameIsRunning() && team == Team.HUNTERS && plugin.getSettings().BOUNDARY_SETUP.value > -1) {
+			if (plugin.getSettings().BOUNDARY_BOXED.value) {
+				if (plugin.getGame().outsideBoxedArea(p.getLocation(), true)) {
+					p.teleport(ManhuntUtil.safeTeleport(plugin.getGame().teleportPregameBoxedLocation(p.getLocation())));
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED
 								+ "You've ventured too far!");
 					return;
 				}
 			} else {
-				if (ManhuntUtil.getDistance(settings.SPAWN_SETUP.value, p.getLocation()) > settings.BOUNDARY_SETUP.value) {
-					ManhuntUtil.stepPlayer(p, 1.0, settings.SPAWN_SETUP.value);
+				if (ManhuntUtil.getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value) {
+					ManhuntUtil.stepPlayer(p, 1.0, plugin.getSettings().SPAWN_SETUP.value);
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			}
 		} else {
-			if (settings.BOUNDARY_BOXED.value) {
-				if (g.outsideBoxedArea(p.getLocation(), false)) {
-					p.teleport(ManhuntUtil.safeTeleport(g.teleportBoxedLocation(p.getLocation())));
+			if (plugin.getSettings().BOUNDARY_BOXED.value) {
+				if (plugin.getGame().outsideBoxedArea(p.getLocation(), false)) {
+					p.teleport(ManhuntUtil.safeTeleport(plugin.getGame().teleportBoxedLocation(p.getLocation())));
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED + "You've ventured too far!");
 					return;
 				}
 			} else {
 				if (ManhuntUtil.getDistance(
-						g.getNearestLocation(p.getLocation(), settings.SPAWN_PREY.value, settings.SPAWN_HUNTER.value),
-						p.getLocation()) > settings.BOUNDARY_WORLD.value) {
+						plugin.getGame().getNearestLocation(p.getLocation(), plugin.getSettings().SPAWN_PREY.value, plugin.getSettings().SPAWN_HUNTER.value),
+						p.getLocation()) > plugin.getSettings().BOUNDARY_WORLD.value) {
 					ManhuntUtil.stepPlayer(
 							p,
 							1.0,
-							g.getNearestLocation(p.getLocation(),
-									settings.SPAWN_PREY.value,
-									settings.SPAWN_HUNTER.value));
+							plugin.getGame().getNearestLocation(p.getLocation(),
+									plugin.getSettings().SPAWN_PREY.value,
+									plugin.getSettings().SPAWN_HUNTER.value));
 					if (Math.random() > 0.75)
 						p.sendMessage(ChatColor.RED
 								+ "You've ventured too far!");
@@ -129,18 +129,18 @@ public class PlayerEventHandler implements Listener {
 				}
 			}
 		}
-		if (g.getLocatorByPlayer(p) != -1
-				&& g.getLocatorStage(g.getLocatorByPlayer(p)) != 2) { // PLAYER
+		if (plugin.getGame().getLocatorByPlayer(p) != -1
+				&& plugin.getGame().getLocatorStage(plugin.getGame().getLocatorByPlayer(p)) != 2) { // PLAYER
 																		// IS IN
 																		// LOCATOR
 																		// LIST
 			if (ManhuntUtil.getDistance(p.getLocation(),
-					g.getLocatorLocation(g.getLocatorByPlayer(p))) > 1.5
-					|| p.getPlayer().getWorld() != HuntedPlugin.getInstance()
+					plugin.getGame().getLocatorLocation(plugin.getGame().getLocatorByPlayer(p))) > 1.5
+					|| p.getPlayer().getWorld() != plugin
 							.getWorld()) {
 				p.sendMessage(ChatColor.RED
 						+ "You moved before nearest Prey could be found!");
-				g.stopLocator(p);
+				plugin.getGame().stopLocator(p);
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class PlayerEventHandler implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 
-		if (HuntedPlugin.getInstance().getWorld() != p.getWorld()) {
+		if (plugin.getWorld() != p.getWorld()) {
 			return;
 		}
 
@@ -164,45 +164,45 @@ public class PlayerEventHandler implements Listener {
 				|| e.getAction() == Action.LEFT_CLICK_BLOCK
 				|| e.getAction() == Action.LEFT_CLICK_AIR) {
 
-			if (g.gameHasBegun() && g.isSpectating(p)) {
+			if (plugin.gameIsRunning() && plugin.getGame().isSpectating(p)) {
 				e.setCancelled(true);
 				return;
 			}
 
-			if (g.isHunter(p)
+			if (plugin.getGame().isHunter(p)
 					&& p.getItemInHand().getType() == Material.COMPASS
-					&& settings.PREY_FINDER.value && g.huntHasBegun()) {
-				if (g.getLocatorByPlayer(p) == -1) {
-					if (g.HuntedAmount(true) == 0) {
+					&& plugin.getSettings().PREY_FINDER.value && plugin.gameIsRunning()) {
+				if (plugin.getGame().getLocatorByPlayer(p) == -1) {
+					if (plugin.getGame().HuntedAmount(true) == 0) {
 						p.sendMessage(ChatColor.RED
 								+ "There are no Prey online!");
 						return;
 					}
-					g.startLocator(p);
+					plugin.getGame().startLocator(p);
 					p.sendMessage(ChatColor.GOLD
 							+ "Prey Finder 9001 activated! Stand still for 8 seconds.");
 
 				} else {
-					String time = ((int) Math.floor((g.getLocatorTick(g
-							.getLocatorByPlayer(p)) - g.getTick()) / 1200))
+					String time = ((int) Math.floor((plugin.getGame().getLocatorTick(g
+							.getLocatorByPlayer(p)) - plugin.getGame().getTick()) / 1200))
 							+ ":";
-					if ((int) (Math.floor((g.getLocatorTick(g
-							.getLocatorByPlayer(p)) - g.getTick()) / 20) - (int) Math
-							.floor((g.getLocatorTick(g.getLocatorByPlayer(p)) - g
+					if ((int) (Math.floor((plugin.getGame().getLocatorTick(g
+							.getLocatorByPlayer(p)) - plugin.getGame().getTick()) / 20) - (int) Math
+							.floor((plugin.getGame().getLocatorTick(plugin.getGame().getLocatorByPlayer(p)) - g
 									.getTick()) / 1200) * 60) < 10) {
 						time += "0";
 					}
 					time += ""
 							+ (int) (Math
-									.floor((g.getLocatorTick(g
+									.floor((plugin.getGame().getLocatorTick(g
 											.getLocatorByPlayer(p)) - g
 											.getTick()) / 20) - (int) Math
-									.floor((g.getLocatorTick(g
+									.floor((plugin.getGame().getLocatorTick(g
 											.getLocatorByPlayer(p)) - g
 											.getTick()) / 1200) * 60);
-					if (g.getLocatorStage(g.getLocatorByPlayer(e.getPlayer())) == 2) {
+					if (plugin.getGame().getLocatorStage(plugin.getGame().getLocatorByPlayer(e.getPlayer())) == 2) {
 						p.sendMessage(ChatColor.RED
-								+ "Prey Finder 9001 is still charging. Time left: "
+								+ "Prey Finder 9001 is still charginplugin.getGame(). Time left: "
 								+ time);
 					}
 					return;
@@ -239,56 +239,20 @@ public class PlayerEventHandler implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onBucketEmpty(PlayerBucketEmptyEvent e) {
-
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			} else if (g.isHunted(e.getPlayer())
-					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
-							settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value) {
-				e.setCancelled(true);
-			} else if (g.isHunter(e.getPlayer())
-					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
-							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value) {
-				e.setCancelled(true);
-			}
-		}
-	}
-
 	/*
 	 * public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
 	 * 
 	 * Player p = e.getPlayer(); if (p.getWorld() !=
-	 * HuntedPlugin.getInstance().getWorld()) { return; } if (!g.gameHasBegun())
+	 * plugin.getWorld()) { return; } if (!plugin.gameIsRunning())
 	 * { return; }
 	 * 
-	 * if (g.isHunter(p) || g.isHunted(p)) { if (e.getNewGameMode() !=
+	 * if (plugin.getGame().isHunter(p) || plugin.getGame().isHunted(p)) { if (e.getNewGameMode() !=
 	 * GameMode.SURVIVAL) { e.setCancelled(true); return; } } if
-	 * (g.isSpectating(p)) { if (settings.flyingSpectators()) { if
+	 * (plugin.getGame().isSpectating(p)) { if (plugin.getSettings().flyingSpectators()) { if
 	 * (e.getNewGameMode() != GameMode.CREATIVE) { e.setCancelled(true); } }
 	 * else { if (e.getNewGameMode() != GameMode.SURVIVAL) {
 	 * e.setCancelled(true); } } } }
 	 */
-
-	@EventHandler
-	public void onBucketFill(PlayerBucketFillEvent e) {
-
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			} else if (g.isHunted(e.getPlayer())
-					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
-							settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value) {
-				e.setCancelled(true);
-			} else if (g.isHunter(e.getPlayer())
-					&& ManhuntUtil.getDistance(e.getBlockClicked().getLocation(),
-							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value) {
-				e.setCancelled(true);
-			}
-		}
-	}
 
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e)

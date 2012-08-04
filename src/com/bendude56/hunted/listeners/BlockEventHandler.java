@@ -1,15 +1,17 @@
 package com.bendude56.hunted.listeners;
 
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.games.ManhuntGame;
-import com.bendude56.hunted.settings.SettingsManager;
+import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class BlockEventHandler implements Listener {
 
@@ -21,50 +23,54 @@ public class BlockEventHandler implements Listener {
 	}
 
 	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent e) {
-		if (e.getPlayer().getWorld() != plugin.getWorld()) {
-			return;
-		}
-
-		if (settings.NO_BUILD.value && !e.getPlayer().isOp() && !g.gameHasBegun()) {
-			e.setCancelled(true);
-		}
-
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			} else if (ManhuntUtil.getDistance(e.getBlock().getLocation(),
-					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
-							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
-							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
-				e.setCancelled(true);
-			}
-		}
+	public void onBlockPlace(BlockPlaceEvent e)
+	{
+		e.setCancelled(canBuildHere(e.getPlayer(), e.getBlock()));
 	}
 
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e) {
-		if (e.getPlayer().getWorld() != plugin.getWorld()) {
-			return;
+	public void onBlockBreak(BlockBreakEvent e)
+	{
+		e.setCancelled(canBuildHere(e.getPlayer(), e.getBlock()));
+	}
+	
+	@EventHandler
+	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e)
+	{
+		e.setCancelled(canBuildHere(e.getPlayer(), e.getBlockClicked()));
+	}
+	
+	@EventHandler
+	public void onPlayerBucketFill(PlayerBucketFillEvent e)
+	{
+		e.setCancelled(canBuildHere(e.getPlayer(), e.getBlockClicked()));
+	}
+	
+	private boolean canBuildHere(Player p, Block b)
+	{
+		if (p.getWorld() != plugin.getWorld())
+		{
+			return true;
 		}
 
-		if (settings.NO_BUILD.value && !e.getPlayer().isOp() && !g.gameHasBegun()) {
-			e.setCancelled(true);
-		}
-
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			} else if (ManhuntUtil.getDistance(e.getBlock().getLocation(),
-					settings.SPAWN_HUNTER.value) <= settings.SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
-							settings.SPAWN_PREY.value) <= settings.SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(e.getBlock().getLocation(),
-							settings.SPAWN_SETUP.value) <= settings.SPAWN_PROTECTION.value) {
-				e.setCancelled(true);
+		if (plugin.gameIsRunning())
+		{
+			if (plugin.getTeams().getTeamOf(p) == Team.SPECTATORS)
+			{
+				return false;
+			}
+			if (ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_HUNTER.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
+					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_PREY.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
+					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_SETUP.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value)
+			{
+				return false;
 			}
 		}
+		else if (plugin.getSettings().NO_BUILD.value && !p.isOp())
+		{
+			return false;
+		}
+		return true;
 	}
+	
 }
