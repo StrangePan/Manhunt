@@ -28,7 +28,7 @@ import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
-public class HuntedPlayerListener implements Listener {
+public class PlayerEventHandler implements Listener {
 	
 	HuntedPlugin plugin = HuntedPlugin.getInstance();
 	

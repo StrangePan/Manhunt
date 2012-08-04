@@ -36,7 +36,7 @@ import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 
-public class HuntedEntityListener implements Listener {
+public class EntityEventHandler implements Listener {
 
 	ManhuntGame g = HuntedPlugin.getInstance().getGame();
 	SettingsManager settings = HuntedPlugin.getInstance().getSettings();

@@ -11,7 +11,7 @@ import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.settings.SettingsManager;
 
-public class HuntedBlockListener implements Listener {
+public class BlockEventHandler implements Listener {
 
 	private ManhuntGame g = HuntedPlugin.getInstance().getGame();
 	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
