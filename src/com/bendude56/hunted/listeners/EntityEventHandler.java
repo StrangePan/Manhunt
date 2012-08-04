@@ -36,27 +36,30 @@ import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 
-public class EntityEventHandler implements Listener {
+public class EntityEventHandler implements Listener
+{
+	private HuntedPlugin plugin;
 
-	ManhuntGame g = HuntedPlugin.getInstance().getGame();
-	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
-	LoadoutManager loadouts = HuntedPlugin.getInstance().getLoadouts();
-
+	public EntityEventHandler(HuntedPlugin plugin)
+	{
+		this.plugin = plugin;
+	}
+	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		Player p;
 
-		if (e.getEntity().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+		if (e.getEntity().getWorld() != plugin.getWorld()) {
 			return;
 		}
 
 		if (e.getEntity() instanceof Player) {
-			if (g.isSpectating((Player) e.getEntity())) { // SPECTATOR
+			if (plugin.getGame().isSpectating((Player) e.getEntity())) { // SPECTATOR
 															// EXCEPTIONS
 				e.setCancelled(true);
 				return;
 			}
-			if (!g.gameHasBegun()) { // GAME HASN'T STARTED EXCEPTIONS
+			if (!plugin.getGame().gameHasBegun()) { // GAME HASN'T STARTED EXCEPTIONS
 				e.setCancelled(true);
 				return;
 			}
@@ -64,8 +67,8 @@ public class EntityEventHandler implements Listener {
 		if (e instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 			if (event.getDamager() instanceof Player) {
-				if (g.isSpectating((Player) event.getDamager())
-						&& g.gameHasBegun()) {
+				if (plugin.getGame().isSpectating((Player) event.getDamager())
+						&& plugin.getGame().gameHasBegun()) {
 					e.setCancelled(true);
 					return;
 				}
@@ -80,7 +83,7 @@ public class EntityEventHandler implements Listener {
 			return;
 		}
 
-		if (g.isSpectating(p)) {
+		if (plugin.getGame().isSpectating(p)) {
 			e.setCancelled(true);
 			return;
 		}
@@ -111,31 +114,31 @@ public class EntityEventHandler implements Listener {
 				return;
 			}
 
-			if (g.isSpectating(p2)) {
+			if (plugin.getGame().isSpectating(p2)) {
 				e.setCancelled(true);
 				return;
 			}
 
-			if (!g.huntHasBegun()) {
+			if (!plugin.getGame().huntHasBegun()) {
 				e.setCancelled(true);
 				return;
 			}
 
 			if (!settings.FRIENDLY_FIRE.value
-					&& ((g.isHunted(p) && g.isHunted(p2)) || (g.isHunter(p) && g
+					&& ((plugin.getGame().isHunted(p) && plugin.getGame().isHunted(p2)) || (plugin.getGame().isHunter(p) && plugin.getGame()
 							.isHunter(p2)))) {
 				e.setCancelled(true);
 				return;
 			}
 
 			if (settings.FRIENDLY_FIRE.value
-					&& ((g.isHunter(p) && g.isHunted(p2)) || (g.isHunted(p) && g
+					&& ((plugin.getGame().isHunter(p) && plugin.getGame().isHunted(p2)) || (plugin.getGame().isHunted(p) && plugin.getGame()
 							.isHunter(p2)))) {
 				p.setHealth(0);
 				return;
 			}
 		} else {
-			if (!settings.ENVIRONMENT_DEATH.value || !g.huntHasBegun()) {
+			if (!settings.ENVIRONMENT_DEATH.value || !plugin.getGame().huntHasBegun()) {
 				if (e.getDamage() >= p.getHealth()) {
 					e.setDamage(p.getHealth() - 1);
 				}
@@ -147,27 +150,27 @@ public class EntityEventHandler implements Listener {
 	public void onEntityDeath(EntityDeathEvent e) {
 
 		if (!e.getEntity().getWorld()
-				.equals(HuntedPlugin.getInstance().getWorld())
+				.equals(plugin.getWorld())
 				|| !(e.getEntity() instanceof Player)) {
 			return;
 		}
-		if (!g.gameHasBegun()) {
+		if (!plugin.getGame().gameHasBegun()) {
 			return;
 		}
 		if (e instanceof PlayerDeathEvent) {
 			PlayerDeathEvent event = (PlayerDeathEvent) e;
 			Player p = (Player) event.getEntity();
 
-			if (!g.isSpectating(p) && !g.isHunted(p) && !g.isHunter(p)) {
+			if (!plugin.getGame().isSpectating(p) && !plugin.getGame().isHunted(p) && !plugin.getGame().isHunter(p)) {
 				return;
 			}
 
 			Player p2;
-			if (!g.isHunted(p) && !g.isHunter(p)) {
+			if (!plugin.getGame().isHunted(p) && !plugin.getGame().isHunter(p)) {
 				return;
 			}
-			if (g.getLocatorByPlayer(p) != -1) { // PLAYER IS IN LOCATOR LIST
-				g.stopLocator(p);
+			if (plugin.getGame().getLocatorByPlayer(p) != -1) { // PLAYER IS IN LOCATOR LIST
+				plugin.getGame().stopLocator(p);
 			}
 			if (p.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
 				if (((EntityDamageByEntityEvent) p.getLastDamageCause())
@@ -185,12 +188,12 @@ public class EntityEventHandler implements Listener {
 					p.setHealth(20);
 					p.setFoodLevel(20);
 
-					if (g.isHunter(p)) {
+					if (plugin.getGame().isHunter(p)) {
 						p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_HUNTER.value));
 					} else {
 						p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_PREY.value));
 					}
-					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
+					plugin.getGame().broadcastAll(ChatColor.GOLD + "---[ " + plugin.getGame().getColor(p)
 							+ p.getName() + ChatColor.WHITE
 							+ " died from natural causes and has respawned!"
 							+ ChatColor.GOLD + " ]---");
@@ -201,13 +204,13 @@ public class EntityEventHandler implements Listener {
 											+ p.getName()
 											+ " died from natural causes and has respawned! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
-					if (g.isHunter(p))
+					if (plugin.getGame().isHunter(p))
 						p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
-					if (g.isHunted(p))
+					if (plugin.getGame().isHunted(p))
 						p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 					return;
 				} else {
-					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
+					plugin.getGame().broadcastAll(ChatColor.GOLD + "---[ " + plugin.getGame().getColor(p)
 							+ p.getName() + ChatColor.WHITE
 							+ " died from natural causes and is now "
 							+ ChatColor.YELLOW + "Spectating!" + ChatColor.GOLD
@@ -219,47 +222,47 @@ public class EntityEventHandler implements Listener {
 											+ p.getName()
 											+ " died from natural causes and is now spectating! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
-					g.onDie(p);
+					plugin.getGame().onDie(p);
 					return;
 				}
 
-				if ((g.isHunter(p) && g.isHunter(p2))
-						|| (g.isHunted(p) && g.isHunted(p2))) {
-					g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
+				if ((plugin.getGame().isHunter(p) && plugin.getGame().isHunter(p2))
+						|| (plugin.getGame().isHunted(p) && plugin.getGame().isHunted(p2))) {
+					plugin.getGame().broadcastAll(ChatColor.GOLD + "---[ " + plugin.getGame().getColor(p)
 							+ p.getName() + ChatColor.WHITE + " was "
 							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE
-							+ " by " + g.getColor(p2) + "teammate "
+							+ " by " + plugin.getGame().getColor(p2) + "teammate "
 							+ p2.getName() + "!" + ChatColor.GOLD + " ]---");
-					HuntedPlugin.getInstance().log(
+					plugin.log(
 							Level.INFO,
 							"---[ " + p.getName()
 									+ " was ELIMINATED by teammate "
 									+ p2.getName() + "! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
-					g.onDie(p);
+					plugin.getGame().onDie(p);
 				} else {
-					g.broadcastAll(ChatColor.GOLD + "---[   " + g.getColor(p)
+					plugin.getGame().broadcastAll(ChatColor.GOLD + "---[   " + plugin.getGame().getColor(p)
 							+ p.getName() + ChatColor.WHITE + " was "
 							+ ChatColor.RED + "ELIMINATED" + ChatColor.WHITE
-							+ " by " + g.getColor(p2) + p2.getName() + "!"
+							+ " by " + plugin.getGame().getColor(p2) + p2.getName() + "!"
 							+ ChatColor.GOLD + " ]---");
-					HuntedPlugin.getInstance().log(
+					plugin.log(
 							Level.INFO,
 							"---[ " + p.getName() + " was ELIMINATED by "
 									+ p2.getName() + "! ]---");
 					((PlayerDeathEvent) e).setDeathMessage(null);
-					g.onDie(p);
+					plugin.getGame().onDie(p);
 				}
 			} else if (settings.ENVIRONMENT_RESPAWN.value) {
 				p.setHealth(20);
 				p.setFoodLevel(20);
 
-				if (g.isHunter(p)) {
+				if (plugin.getGame().isHunter(p)) {
 					p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_HUNTER.value));
 				} else {
 					p.teleport(ManhuntUtil.safeTeleport(settings.SPAWN_PREY.value));
 				}
-				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
+				plugin.getGame().broadcastAll(ChatColor.GOLD + "---[ " + plugin.getGame().getColor(p)
 						+ p.getName() + ChatColor.WHITE
 						+ " died from natural causes and has respawned!"
 						+ ChatColor.GOLD + " ]---");
@@ -270,13 +273,13 @@ public class EntityEventHandler implements Listener {
 										+ p.getName()
 										+ " died from natural causes and has respawned! ]---");
 				((PlayerDeathEvent) e).setDeathMessage(null);
-				if (g.isHunter(p))
+				if (plugin.getGame().isHunter(p))
 					p.getInventory().setContents(loadouts.getHunterLoadout().getContents());
-				if (g.isHunted(p))
+				if (plugin.getGame().isHunted(p))
 					p.getInventory().setContents(loadouts.getPreyLoadout().getContents());
 				return;
 			} else {
-				g.broadcastAll(ChatColor.GOLD + "---[ " + g.getColor(p)
+				plugin.getGame().broadcastAll(ChatColor.GOLD + "---[ " + plugin.getGame().getColor(p)
 						+ p.getName() + ChatColor.WHITE
 						+ " died from natural causes and is now "
 						+ ChatColor.YELLOW + "Spectating!" + ChatColor.GOLD
@@ -288,7 +291,7 @@ public class EntityEventHandler implements Listener {
 										+ p.getName()
 										+ " died from natural causes and is now spectating! ]---");
 				((PlayerDeathEvent) e).setDeathMessage(null);
-				g.onDie(p);
+				plugin.getGame().onDie(p);
 				return;
 			}
 		}
@@ -297,7 +300,7 @@ public class EntityEventHandler implements Listener {
 	@EventHandler
 	public void onEntityTarget(EntityTargetEvent e) {
 		if (e.getTarget() instanceof Player) {
-			if (g.isSpectating((Player) e.getTarget()) && g.gameHasBegun()) {
+			if (plugin.getGame().isSpectating((Player) e.getTarget()) && plugin.getGame().gameHasBegun()) {
 				e.setCancelled(true);
 			}
 		}
@@ -305,7 +308,7 @@ public class EntityEventHandler implements Listener {
 
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent e) {
-		if (e.getLocation().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+		if (e.getLocation().getWorld() != plugin.getWorld()) {
 			return;
 		}
 		Entity ent = e.getEntity();
