@@ -14,9 +14,9 @@ import com.bendude56.hunted.commands.OldCommands;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.Game;
 import com.bendude56.hunted.games.ManhuntGame;
-import com.bendude56.hunted.listeners.HuntedBlockListener;
-import com.bendude56.hunted.listeners.HuntedEntityListener;
-import com.bendude56.hunted.listeners.HuntedPlayerListener;
+import com.bendude56.hunted.listeners.BlockEventHandler;
+import com.bendude56.hunted.listeners.EntityEventHandler;
+import com.bendude56.hunted.listeners.PlayerEventHandler;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.TeamManager;
@@ -61,9 +61,9 @@ public class HuntedPlugin extends JavaPlugin {
 		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		
 		//Register Events
-		getServer().getPluginManager().registerEvents(new HuntedPlayerListener(), this);
-		getServer().getPluginManager().registerEvents(new HuntedBlockListener(), this);
-		getServer().getPluginManager().registerEvents(new HuntedEntityListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerEventHandler(this), this);
+		getServer().getPluginManager().registerEvents(new BlockEventHandler(this), this);
+		getServer().getPluginManager().registerEvents(new EntityEventHandler(this), this);
 		
 	}
 

@@ -13,12 +13,16 @@ import com.bendude56.hunted.settings.SettingsManager;
 
 public class BlockEventHandler implements Listener {
 
-	private ManhuntGame g = HuntedPlugin.getInstance().getGame();
-	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
+	private HuntedPlugin plugin;
+	
+	public BlockEventHandler(HuntedPlugin plugin)
+	{
+		this.plugin = plugin;
+	}
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+		if (e.getPlayer().getWorld() != plugin.getWorld()) {
 			return;
 		}
 
@@ -42,7 +46,7 @@ public class BlockEventHandler implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
-		if (e.getPlayer().getWorld() != HuntedPlugin.getInstance().getWorld()) {
+		if (e.getPlayer().getWorld() != plugin.getWorld()) {
 			return;
 		}
 

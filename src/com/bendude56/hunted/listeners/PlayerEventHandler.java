@@ -30,7 +30,12 @@ import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class PlayerEventHandler implements Listener {
 	
-	HuntedPlugin plugin = HuntedPlugin.getInstance();
+	private HuntedPlugin plugin;
+	
+	public PlayerEventHandler(HuntedPlugin plugin)
+	{
+		this.plugin = plugin;
+	}
 	
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent e)
