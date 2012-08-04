@@ -12,7 +12,7 @@ import com.bendude56.hunted.teams.TeamManager.Team;
  * @author Deaboy
  *
  */
-public class ChatUtil {
+public class ChatManager {
 	private HuntedPlugin plugin;
 
 	public final static ChatColor color = ChatColor.GOLD;
@@ -28,7 +28,7 @@ public class ChatUtil {
 		
 	}
 
-	public ChatUtil(HuntedPlugin plugin)
+	public ChatManager(HuntedPlugin plugin)
 	{
 		this.plugin = plugin;
 	}
