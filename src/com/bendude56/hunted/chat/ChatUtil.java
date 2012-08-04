@@ -2,6 +2,7 @@ package com.bendude56.hunted.chat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerChatEvent;
 
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -21,6 +22,11 @@ public class ChatUtil {
 	public final static String bracket2_ = " " + bracket2;
 	public final static String leftborder = color + "|  " + ChatColor.WHITE;
 	public final static String divider = color + "--------------------";
+
+	public void onPlayerchat(PlayerChatEvent e)
+	{
+		
+	}
 
 	public ChatUtil(HuntedPlugin plugin)
 	{

@@ -4,9 +4,6 @@ import org.bukkit.event.player.PlayerChatEvent;
 
 public class ChatManager {
 
-	public void onPlayerchat(PlayerChatEvent e)
-	{
-		
-	}
+	
 
 }
