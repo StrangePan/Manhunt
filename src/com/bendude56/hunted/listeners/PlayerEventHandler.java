@@ -1,14 +1,9 @@
 package com.bendude56.hunted.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -23,8 +18,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.games.ManhuntGame;
-import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class PlayerEventHandler implements Listener {
@@ -100,61 +93,34 @@ public class PlayerEventHandler implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent e) {
+	public void onPlayerInteract(PlayerInteractEvent e)
+	{
 		Player p = e.getPlayer();
 
-		if (plugin.getWorld() != p.getWorld()) {
+		if (p.getWorld() != plugin.getWorld())
+		{
 			return;
 		}
-
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK
-				|| e.getAction() == Action.RIGHT_CLICK_AIR
-				|| e.getAction() == Action.LEFT_CLICK_BLOCK
-				|| e.getAction() == Action.LEFT_CLICK_AIR) {
-
-			if (plugin.gameIsRunning() && plugin.getGame().isSpectating(p)) {
-				e.setCancelled(true);
-				return;
-			}
-
-			if (plugin.getGame().isHunter(p)
-					&& p.getItemInHand().getType() == Material.COMPASS
-					&& plugin.getSettings().PREY_FINDER.value && plugin.gameIsRunning()) {
-				if (plugin.getGame().getLocatorByPlayer(p) == -1) {
-					if (plugin.getGame().HuntedAmount(true) == 0) {
-						p.sendMessage(ChatColor.RED
-								+ "There are no Prey online!");
-						return;
-					}
-					plugin.getGame().startLocator(p);
-					p.sendMessage(ChatColor.GOLD
-							+ "Prey Finder 9001 activated! Stand still for 8 seconds.");
-
-				} else {
-					String time = ((int) Math.floor((plugin.getGame().getLocatorTick(g
-							.getLocatorByPlayer(p)) - plugin.getGame().getTick()) / 1200))
-							+ ":";
-					if ((int) (Math.floor((plugin.getGame().getLocatorTick(g
-							.getLocatorByPlayer(p)) - plugin.getGame().getTick()) / 20) - (int) Math
-							.floor((plugin.getGame().getLocatorTick(plugin.getGame().getLocatorByPlayer(p)) - g
-									.getTick()) / 1200) * 60) < 10) {
-						time += "0";
-					}
-					time += ""
-							+ (int) (Math
-									.floor((plugin.getGame().getLocatorTick(g
-											.getLocatorByPlayer(p)) - g
-											.getTick()) / 20) - (int) Math
-									.floor((plugin.getGame().getLocatorTick(g
-											.getLocatorByPlayer(p)) - g
-											.getTick()) / 1200) * 60);
-					if (plugin.getGame().getLocatorStage(plugin.getGame().getLocatorByPlayer(e.getPlayer())) == 2) {
-						p.sendMessage(ChatColor.RED
-								+ "Prey Finder 9001 is still charginplugin.getGame(). Time left: "
-								+ time);
-					}
-					return;
-				}
+		if (!plugin.gameIsRunning())
+		{
+			return;
+		}
+		
+		Team team = plugin.getTeams().getTeamOf(p);
+		
+		if (team == Team.SPECTATORS)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else if (team == Team.HUNTERS || team == Team.PREY)
+		{
+			if (e.getAction() == Action.RIGHT_CLICK_BLOCK
+					|| e.getAction() == Action.RIGHT_CLICK_AIR
+					|| e.getAction() == Action.LEFT_CLICK_BLOCK
+					|| e.getAction() == Action.LEFT_CLICK_AIR)
+			{
+				plugin.getGame().finders.startFinder(p);
 			}
 		}
 	}
