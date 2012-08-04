@@ -8,8 +8,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class ManhuntUtil {
 	
@@ -114,7 +115,7 @@ public class ManhuntUtil {
 		return dir2 - dir1;
 	}
 
-	public static boolean areEqual(Location loc1, Location loc2, double tolerance, boolean ignoreY) {
+	public static boolean areEqualLocations(Location loc1, Location loc2, double tolerance, boolean ignoreY) {
 		if (loc1.getWorld() == loc2.getWorld()
 				&& loc2.getX() >= loc1.getX() - tolerance
 				&& loc2.getX() <= loc1.getX() + tolerance
@@ -127,7 +128,154 @@ public class ManhuntUtil {
 			return false;
 		}
 	}
-	
+
+	public static boolean checkPlayerInBounds(Player p)
+	{
+		if (!isInBounds(p))
+		{
+			stepInBounds(p);
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	private static boolean isInBounds(Player p)
+	{
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!plugin.gameIsRunning())
+		{
+			return true;
+		}
+		
+		Team team = plugin.getTeams().getTeamOf(p);
+		
+		if (team != Team.HUNTERS || team != Team.PREY)
+		{
+			return true;
+		}
+		
+		if (plugin.getSettings().BOUNDARY_BOXED.value)
+		{
+			if (plugin.gameIsRunning() && team == Team.HUNTERS)
+			{
+				if (p.getLocation().getX() < plugin.getSettings().SPAWN_SETUP.value.getX() - plugin.getSettings().BOUNDARY_SETUP.value)
+					return false;
+				if (p.getLocation().getX() > plugin.getSettings().SPAWN_SETUP.value.getX() + plugin.getSettings().BOUNDARY_SETUP.value)
+					return false;
+				if (p.getLocation().getZ() < plugin.getSettings().SPAWN_SETUP.value.getZ() - plugin.getSettings().BOUNDARY_SETUP.value)
+					return false;
+				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_SETUP.value.getZ() + plugin.getSettings().BOUNDARY_SETUP.value)
+					return false;
+				return true;
+			}
+			else
+			{
+				if (p.getLocation().getX() < plugin.getSettings().SPAWN_HUNTER.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() < plugin.getSettings().SPAWN_PREY.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value)
+					return false;
+				if (p.getLocation().getX() > plugin.getSettings().SPAWN_HUNTER.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() > plugin.getSettings().SPAWN_PREY.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value)
+					return false;
+				if (p.getLocation().getZ() < plugin.getSettings().SPAWN_HUNTER.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() < plugin.getSettings().SPAWN_PREY.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value)
+					return false;
+				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_HUNTER.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() > plugin.getSettings().SPAWN_PREY.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value)
+					return false;
+				return true;
+			}
+		}
+		else
+		{
+			if (plugin.gameIsRunning() && team == Team.HUNTERS)
+			{
+				if (getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value)
+					return false;
+				return true;
+			}
+			else
+			{
+				Location nearestLocation = getNearestCenterPoint(p.getLocation());
+				
+				if (getDistance(p.getLocation(), nearestLocation, true) > plugin.getSettings().BOUNDARY_WORLD.value)
+					return false;
+				return true;
+			}
+		}
+	}
+
+	private static void stepInBounds(Player p)
+	{
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (plugin.getSettings().BOUNDARY_BOXED.value)
+		{
+			Location newLoc = p.getLocation();
+			
+			if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(p) == Team.HUNTERS)
+			{
+				if (p.getLocation().getX() < plugin.getSettings().SPAWN_SETUP.value.getX() - plugin.getSettings().BOUNDARY_SETUP.value)
+					newLoc.setX(newLoc.getX() + 1);
+				if (p.getLocation().getX() > plugin.getSettings().SPAWN_SETUP.value.getX() + plugin.getSettings().BOUNDARY_SETUP.value)
+					newLoc.setX(newLoc.getX() - 1);
+				if (p.getLocation().getZ() < plugin.getSettings().SPAWN_SETUP.value.getZ() - plugin.getSettings().BOUNDARY_SETUP.value)
+					newLoc.setZ(newLoc.getZ() + 1);
+				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_SETUP.value.getZ() + plugin.getSettings().BOUNDARY_SETUP.value)
+					newLoc.setZ(newLoc.getZ() - 1);
+			}
+			else
+			{
+				if (p.getLocation().getX() < plugin.getSettings().SPAWN_HUNTER.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() < plugin.getSettings().SPAWN_PREY.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value)
+					newLoc.setX(p.getLocation().getX() + 1);
+				if (p.getLocation().getX() > plugin.getSettings().SPAWN_HUNTER.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() > plugin.getSettings().SPAWN_PREY.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value)
+					newLoc.setX(p.getLocation().getX() - 1);
+				if (p.getLocation().getZ() < plugin.getSettings().SPAWN_HUNTER.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() < plugin.getSettings().SPAWN_PREY.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value)
+					newLoc.setZ(p.getLocation().getZ() + 1);
+				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_HUNTER.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() > plugin.getSettings().SPAWN_PREY.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value)
+					newLoc.setZ(p.getLocation().getZ() - 1);
+			}
+			
+			p.teleport(safeTeleport(newLoc));
+		}
+		else
+		{
+			if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(p) == Team.HUNTERS)
+			{
+				stepPlayer(p, (double) 1, safeTeleport(plugin.getSettings().SPAWN_SETUP.value));
+			}
+			else
+			{
+				stepPlayer(p, (double) 1, getNearestCenterPoint(safeTeleport(p.getLocation())));
+			}
+		}
+	}
+
+	private static Location getNearestCenterPoint(Location loc)
+	{
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		Location nearestLocation;
+		Location hunterSpawn = plugin.getSettings().SPAWN_HUNTER.value;
+		Location preySpawn = plugin.getSettings().SPAWN_PREY.value;
+		
+		double scalar = ((((hunterSpawn.getX() - preySpawn.getX()) * (loc.getX() - preySpawn.getX())) + ((hunterSpawn.getY() - preySpawn.getY()) * (loc.getY() - preySpawn.getY())) + ((hunterSpawn.getZ() - preySpawn.getZ()) * (loc.getZ() - preySpawn.getZ()))) / (((hunterSpawn.getX() - preySpawn.getX()) * (hunterSpawn.getX() - preySpawn.getX())) + ((hunterSpawn.getY() - preySpawn.getY()) * (hunterSpawn.getY() - preySpawn.getY())) + ((hunterSpawn.getZ() - preySpawn.getZ()) * (hunterSpawn.getZ() - preySpawn.getZ()))));
+		
+		if (scalar > 1 || scalar < 0)
+		{
+			if (ManhuntUtil.getDistance(preySpawn, loc, true) < ManhuntUtil.getDistance(hunterSpawn, loc, true)) {
+				nearestLocation = preySpawn;
+			} else {
+				nearestLocation = hunterSpawn;
+			}
+		}
+		else
+		{
+			nearestLocation = new Location(plugin.getWorld(), (preySpawn.getX() + scalar * (hunterSpawn.getX() - preySpawn.getX())), (preySpawn.getY() + scalar * (hunterSpawn.getY() - preySpawn.getY())), (preySpawn.getZ() + scalar * (hunterSpawn.getZ() - preySpawn.getZ())));
+		}
+		
+		return nearestLocation;
+	}
+
 	public static boolean isTransparent(Block block) {
 		List<Material> types = new ArrayList<Material>();
 				types.add(Material.AIR);
@@ -163,16 +311,7 @@ public class ManhuntUtil {
 				types.add(Material.YELLOW_FLOWER);
 		return (types.contains(block.getType()));
 	}
-	
-	public static void clearInventory(Inventory inv)
-	{
-		inv.clear();
-		inv.clear(36);
-		inv.clear(37);
-		inv.clear(38);
-		inv.clear(39);
-	}
-	
+
 	public static HashMap<Integer, ItemStack> defaultHunterLoadout(HashMap<Integer, ItemStack> inv)
 	{
 		inv.clear();

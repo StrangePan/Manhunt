@@ -87,62 +87,10 @@ public class PlayerEventHandler implements Listener {
 		{
 			return;
 		}
-		if (!plugin.gameIsRunning() && team == Team.HUNTERS && plugin.getSettings().BOUNDARY_SETUP.value > -1) {
-			if (plugin.getSettings().BOUNDARY_BOXED.value) {
-				if (plugin.getGame().outsideBoxedArea(p.getLocation(), true)) {
-					p.teleport(ManhuntUtil.safeTeleport(plugin.getGame().teleportPregameBoxedLocation(p.getLocation())));
-					if (Math.random() > 0.75)
-						p.sendMessage(ChatColor.RED
-								+ "You've ventured too far!");
-					return;
-				}
-			} else {
-				if (ManhuntUtil.getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value) {
-					ManhuntUtil.stepPlayer(p, 1.0, plugin.getSettings().SPAWN_SETUP.value);
-					if (Math.random() > 0.75)
-						p.sendMessage(ChatColor.RED + "You've ventured too far!");
-					return;
-				}
-			}
-		} else {
-			if (plugin.getSettings().BOUNDARY_BOXED.value) {
-				if (plugin.getGame().outsideBoxedArea(p.getLocation(), false)) {
-					p.teleport(ManhuntUtil.safeTeleport(plugin.getGame().teleportBoxedLocation(p.getLocation())));
-					if (Math.random() > 0.75)
-						p.sendMessage(ChatColor.RED + "You've ventured too far!");
-					return;
-				}
-			} else {
-				if (ManhuntUtil.getDistance(
-						plugin.getGame().getNearestLocation(p.getLocation(), plugin.getSettings().SPAWN_PREY.value, plugin.getSettings().SPAWN_HUNTER.value),
-						p.getLocation()) > plugin.getSettings().BOUNDARY_WORLD.value) {
-					ManhuntUtil.stepPlayer(
-							p,
-							1.0,
-							plugin.getGame().getNearestLocation(p.getLocation(),
-									plugin.getSettings().SPAWN_PREY.value,
-									plugin.getSettings().SPAWN_HUNTER.value));
-					if (Math.random() > 0.75)
-						p.sendMessage(ChatColor.RED
-								+ "You've ventured too far!");
-					return;
-				}
-			}
-		}
-		if (plugin.getGame().getLocatorByPlayer(p) != -1
-				&& plugin.getGame().getLocatorStage(plugin.getGame().getLocatorByPlayer(p)) != 2) { // PLAYER
-																		// IS IN
-																		// LOCATOR
-																		// LIST
-			if (ManhuntUtil.getDistance(p.getLocation(),
-					plugin.getGame().getLocatorLocation(plugin.getGame().getLocatorByPlayer(p))) > 1.5
-					|| p.getPlayer().getWorld() != plugin
-							.getWorld()) {
-				p.sendMessage(ChatColor.RED
-						+ "You moved before nearest Prey could be found!");
-				plugin.getGame().stopLocator(p);
-			}
-		}
+		
+		ManhuntUtil.checkPlayerInBounds(p);
+		
+		plugin.getGame().finders.verifyFinder(p);
 	}
 
 	@EventHandler

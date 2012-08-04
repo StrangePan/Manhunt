@@ -96,7 +96,7 @@ public class Finder
 
 		if (p != null)
 		{
-			if (p.getItemInHand().getType() != Material.COMPASS || ManhuntUtil.areEqual(p.getLocation(), location, 0.5, true))
+			if (p.getItemInHand().getType() != Material.COMPASS || ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.5, true))
 			{
 				FinderUtil.sendMessageFinderCancel(p);
 				manager.stopFinder(this);
