@@ -13,7 +13,6 @@ import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.commands.OldCommands;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.Game;
-import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.listeners.BlockEventHandler;
 import com.bendude56.hunted.listeners.EntityEventHandler;
 import com.bendude56.hunted.listeners.PlayerEventHandler;
