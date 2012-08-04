@@ -26,80 +26,28 @@ import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.games.ManhuntGame;
 import com.bendude56.hunted.settings.SettingsManager;
+import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class HuntedPlayerListener implements Listener {
 	
-	ManhuntGame g = HuntedPlugin.getInstance().getGame();
-	SettingsManager settings = HuntedPlugin.getInstance().getSettings();
+	HuntedPlugin plugin = HuntedPlugin.getInstance();
 	
 	@EventHandler
-	public void onPlayerChat(PlayerChatEvent e) {
-		if (e.isCancelled() || !settings.CONTROL_CHAT.value)
+	public void onPlayerChat(PlayerChatEvent e)
+	{
+		if (e.isCancelled() || !plugin.getSettings().CONTROL_CHAT.value)
 		{
 			return;
 		}
-		Player p = e.getPlayer();
-		HuntedPlugin.getInstance().log(Level.INFO,
-				"<" + p.getName() + "> " + e.getMessage());
-		if (!g.gameHasBegun()) {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
-						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			}
-			e.setCancelled(true);
-			return;
-		}
-		if (settings.ALL_TALK.value) {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				player.sendMessage(ChatColor.WHITE + "<" + g.getColor(p)
-						+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			}
-			e.setCancelled(true);
-			return;
-		}
-		if (g.isHunter(p)
-				&& p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			g.broadcastHunters(ChatColor.WHITE + "<" + g.getColor(p)
-					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			e.setCancelled(true);
-			return;
-		} else if (g.isHunted(p)
-				&& p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			g.broadcastHunted(ChatColor.WHITE + "<" + g.getColor(p)
-					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			e.setCancelled(true);
-			return;
-		} else if (g.isSpectating(p)
-				&& p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			g.broadcastSpectators(ChatColor.WHITE + "<" + g.getColor(p)
-					+ p.getName() + ChatColor.WHITE + "> " + e.getMessage());
-			e.setCancelled(true);
-			return;
-		} else {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				if ((!g.isHunted(player) && !g.isHunter(player) && !g
-						.isSpectating(player))
-						|| player.getWorld() == HuntedPlugin.getInstance()
-								.getWorld()) {
-					player.sendMessage(ChatColor.WHITE + "<" + p.getName()
-							+ "> " + e.getMessage());
-				}
-			}
-		}
+		plugin.getChat().onPlayerchat(e);
 	}
 
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent e) {
-
-		Player p = e.getPlayer();
-		if (p.getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			if (g.gameHasBegun() && g.isPlaying(p)) {
-				e.setJoinMessage(null);
-			}
-			g.onLogin(p);
-		} else if (g.isPlaying(p)) {
-			p.sendMessage(ChatColor.RED
-					+ "To rejoin the manhunt game, type /manhunt join");
+	public void onPlayerJoin(PlayerJoinEvent e)
+	{
+		if (plugin.gameIsRunning())
+		{
+			plugin.getGame().onPlayerJoin(e.getPlayer());
 		}
 	}
 
@@ -111,12 +59,9 @@ public class HuntedPlayerListener implements Listener {
 	 */
 
 	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent e) {
-		if (e.getPlayer().getWorld() == HuntedPlugin.getInstance().getWorld()
-				&& g.gameHasBegun() && g.isPlaying(e.getPlayer())) {
-			e.setQuitMessage(null);
-		}
-		g.onLogout(e.getPlayer());
+	public void onPlayerQuit(PlayerQuitEvent e)
+	{
+		plugin.getGame().onPlayerLeave(e.getPlayer());
 	}
 
 	@EventHandler
@@ -196,14 +141,9 @@ public class HuntedPlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerItemHeld(PlayerItemHeldEvent e) {
-		Player p = e.getPlayer();
-		if (p.getItemInHand().getType() != Material.COMPASS
-				&& g.getLocatorByPlayer(p) != -1
-				&& g.getLocatorStage(g.getLocatorByPlayer(p)) != 2) {
-			p.sendMessage(ChatColor.RED + "Prey Finder 9001 cancelled.");
-			g.stopLocator(p);
-		}
+	public void onPlayerItemHeld(PlayerItemHeldEvent e)
+	{
+		plugin.getGame().finders.verifyFinder(e.getPlayer());
 	}
 
 	@EventHandler
@@ -267,30 +207,30 @@ public class HuntedPlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent e) {
-
-		Player p = e.getPlayer();
-		if (e.getFrom().getWorld() == e.getTo().getWorld()) {
-			return;
+	public void onPlayerTeleport(PlayerTeleportEvent e)
+	{
+		if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
+		{
+			plugin.getGame().onPlayerLeave(e.getPlayer());
 		}
-		if (e.getTo().getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			g.onLogin(p);
-		} else {
-			g.onLogout(p);
+		else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
+		{
+			plugin.getGame().onPlayerJoin(e.getPlayer());
 		}
+		
 	}
 
 	@EventHandler
-	public void onPlayerPortal(PlayerPortalEvent e) {
+	public void onPlayerPortal(PlayerPortalEvent e)
+	{
 
-		Player p = e.getPlayer();
-		if (e.getFrom().getWorld() == e.getTo().getWorld()) {
-			return;
+		if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
+		{
+			plugin.getGame().onPlayerLeave(e.getPlayer());
 		}
-		if (e.getTo().getWorld() == HuntedPlugin.getInstance().getWorld()) {
-			g.onLogin(p);
-		} else {
-			g.onLogout(p);
+		else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
+		{
+			plugin.getGame().onPlayerJoin(e.getPlayer());
 		}
 	}
 
@@ -346,20 +286,28 @@ public class HuntedPlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			}
+	public void onPlayerPickupItem(PlayerPickupItemEvent e)
+	{
+		if (e.getPlayer().getWorld() != plugin.getWorld())
+		{
+			return;
+		}
+		if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
+		{
+			e.setCancelled(true);
 		}
 	}
 
 	@EventHandler
-	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		if (g.gameHasBegun()) {
-			if (g.isSpectating(e.getPlayer())) {
-				e.setCancelled(true);
-			}
+	public void onPlayerDropItem(PlayerDropItemEvent e)
+	{
+		if (e.getPlayer().getWorld() != plugin.getWorld())
+		{
+			return;
+		}
+		if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
+		{
+			e.setCancelled(true);
 		}
 	}
 
