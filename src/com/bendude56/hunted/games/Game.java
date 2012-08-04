@@ -7,9 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.ChatUtil;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 import com.bendude56.hunted.timeouts.TimeoutManager;
@@ -243,7 +243,7 @@ public class Game
 		Long tick = world.getTime() - start_setup_tick;
 		if (tick > 0 && setup_stage == 0)
 		{
-			plugin.getChat().broadcastAll(ChatUtil.bracket1 + ChatColor.DARK_PURPLE + "The hunt will begin at sundown! (" + plugin.getSettings().SETUP_TIME.value + " minutes)" + ChatUtil.bracket2, true);
+			plugin.getChat().broadcastAll(ChatManager.bracket1 + ChatColor.DARK_PURPLE + "The hunt will begin at sundown! (" + plugin.getSettings().SETUP_TIME.value + " minutes)" + ChatManager.bracket2, true);
 		}//TODO add more messages
 		else
 		{
