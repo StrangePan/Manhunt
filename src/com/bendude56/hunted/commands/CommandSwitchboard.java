@@ -31,19 +31,19 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (arg.equalsIgnoreCase("help"))
 		{
-			//Display extended help, link to more.
+			HelpCommands.onCommandHelp(sender, args);
 		}
 		if (arg.equalsIgnoreCase("rules"))
 		{
-			//Display Manhunt rules
+			HelpCommands.onCommandRules(sender);
 		}
 		if (arg.equalsIgnoreCase("info"))
 		{
-			//Display info on the plugin
+			HelpCommands.onCommandInfo(sender);
 		}
 		if (arg.equalsIgnoreCase("status"))
 		{
-			//Display the game status
+			HelpCommands.onCommandStatus(sender);
 		}
 		
 		//SETTINGS COMMANDS
