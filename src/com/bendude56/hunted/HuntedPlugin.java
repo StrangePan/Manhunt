@@ -30,25 +30,13 @@ public class HuntedPlugin extends JavaPlugin {
 	private FinderManager	finders;
 	private Game			game;
 	private ChatManager		chat;
-	public SpConnect		spoutConnect;
 	
-	public boolean	spoutEnabled;
 	private World 	manhuntWorld;
 
 	@Override
 	public void onEnable()
 	{
-		
 		//Start up all the classes.
-		if (getServer().getPluginManager().isPluginEnabled("Spout"))
-		{
-			spoutEnabled = true;
-			spoutConnect = new SpConnect();
-		}
-		else
-		{
-			spoutEnabled = false;
-		}
 
 		settings =	new SettingsManager();
 		loadouts =	new LoadoutManager();
