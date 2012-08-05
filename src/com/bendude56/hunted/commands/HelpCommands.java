@@ -6,6 +6,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.chat.ChatManager;
+import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
@@ -104,7 +105,30 @@ public class HelpCommands
 	
 	public static void onCommandStatus(CommandSender sender)
 	{
-		//TODOs
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		String pre = ChatManager.leftborder + ChatManager.color;
+		
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Game Status" + ChatManager.bracket2_);
+		
+		if (plugin.gameIsRunning())
+		{
+			GameStage stage = plugin.getGame().getStage();
+			Long time = plugin.getWorld().getFullTime();
+			Long nexttime = plugin.getGame().getStageStopTick(stage);
+			
+			int hours = (int) Math.floor((nexttime - time)/72000);
+			int minutes = (int) Math.floor(((nexttime - time) - (hours*72000))/1200);
+			int seconds = (int) Math.floor(((nexttime - time) - (hours*72000) - (minutes*1200))/20);
+			
+			sender.sendMessage(pre + "Time left in the " + stage + " stage: " + ChatColor.DARK_BLUE + hours + ":" + minutes + ":" + seconds);
+			sender.sendMessage(TeamUtil.getTeamColor(Team.HUNTERS) + TeamUtil.getTeamName(Team.HUNTERS, true) + ": " + plugin.getTeams().getTeamNames(Team.HUNTERS).size()
+					+ "  " + TeamUtil.getTeamColor(Team.PREY) + TeamUtil.getTeamName(Team.PREY, true) + ": " + plugin.getTeams().getTeamNames(Team.PREY).size()
+					+ "  " + TeamUtil.getTeamColor(Team.SPECTATORS) + TeamUtil.getTeamName(Team.SPECTATORS, true) + ": " + plugin.getTeams().getTeamNames(Team.SPECTATORS).size());
+		}
+		else
+		{
+			sender.sendMessage(pre + ChatColor.RED + "There are no Manhunt games running.");
+		}
 	}
 	
 }
