@@ -349,5 +349,21 @@ public class ManhuntUtil {
 		
 		return inv;
 	}
+
+	
+	public static void sendToSpawn(Player p)
+	{
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		Location loc = plugin.getWorld().getSpawnLocation();
+		
+		switch (plugin.getTeams().getTeamOf(p))
+		{
+			case HUNTERS:	loc = randomLocation(plugin.getSettings().SPAWN_HUNTER.value, 2);
+			case PREY:		loc = randomLocation(plugin.getSettings().SPAWN_PREY.value, 2);
+			default:		loc = p.getWorld().getSpawnLocation();
+		}
+		
+		p.teleport(safeTeleport(loc));
+	}
 	
 }

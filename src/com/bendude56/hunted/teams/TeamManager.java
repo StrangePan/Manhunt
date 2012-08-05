@@ -161,7 +161,6 @@ public class TeamManager
 		
 	}
 
-
 	/**
 	 * Simply returns a list of all Players who are playing
 	 * @param spectators True if you wish to include spectators
