@@ -28,7 +28,7 @@ public class Game
 	
 	private World world; //Eh, why not?
 	
-	private final Long pregame_length = (long) 400; //20 seconds, not including time changing stuff
+	private final Long pregame_length = (long) 500; //20 seconds, not including time changing stuff
 	private Long start_setup_tick;
 	private Long start_hunt_tick;
 	private Long stop_hunt_tick;

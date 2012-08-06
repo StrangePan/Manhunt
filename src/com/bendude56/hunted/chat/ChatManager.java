@@ -16,11 +16,11 @@ public class ChatManager {
 	private HuntedPlugin plugin;
 
 	public final static ChatColor color = ChatColor.GOLD;
-	public final static String bracket1 = color + "---[" + ChatColor.WHITE;
+	public final static String bracket1 = color + "---[";
 	public final static String bracket1_ = bracket1 + " ";
-	public final static String bracket2 = color + "]---" + ChatColor.WHITE;
+	public final static String bracket2 = color + "]---";
 	public final static String bracket2_ = " " + bracket2;
-	public final static String leftborder = color + "|  " + ChatColor.WHITE;
+	public final static String leftborder = color + "|  ";
 	public final static String divider = color + "--------------------";
 
 	public void onPlayerchat(PlayerChatEvent e)
