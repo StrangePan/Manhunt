@@ -60,6 +60,36 @@ public class SettingsCommands
 		sender.sendMessage(ChatManager.divider);
 	}
 
+	public static void onCommandSet(CommandSender sender, String[] args)
+	{
+		String SYNTAX_ERROR = ChatColor.RED + "Proper syntax is: /m set <setting> <value>";
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		if (args.length != 3)
+		{
+			sender.sendMessage(SYNTAX_ERROR);
+			return;
+		}
+		
+		Setting<?> setting = HuntedPlugin.getInstance().getSettings().getSetting(args[1]);
+		
+		if (setting == null)
+		{
+			sender.sendMessage(ChatColor.RED + "That setting does not exist.");
+			return;
+		}
+		
+		if (setting.parseValue(args[2]))
+			sender.sendMessage(ChatManager.leftborder + ChatColor.BLUE + setting.label + " " + setting.formattedValue() + " " + setting.message());
+		else
+			sender.sendMessage(ChatColor.RED + args[2] + "is an invalid setting for \"" + setting.label + "\"");
+	}
+
 	
 
 }
