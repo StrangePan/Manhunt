@@ -28,6 +28,7 @@ public class Game
 	
 	private World world; //Eh, why not?
 	
+	private final Long pregame_length = (long) 400; //20 seconds, not including time changing stuff
 	private Long start_setup_tick;
 	private Long start_hunt_tick;
 	private Long stop_hunt_tick;
@@ -58,7 +59,8 @@ public class Game
 	{
 		//Calculate milestones ticks
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
-		start_setup_tick += (24000 - start_setup_tick % 24000); //Calculating. Next day
+		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day
+		start_setup_tick += (24000 - world.getTime() < pregame_length ? 24000 : 0); //If not enough time for pregame, start setup on next day
 		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value * 1200); //Compensate for shorter setup times
 		this.start_setup_tick = start_setup_tick; //Save the start_setup_tick;
 		
@@ -150,6 +152,30 @@ public class Game
 	private void stopGame() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public long getStageStartTick(GameStage stage)
+	{
+		if (stage == GameStage.PREGAME)
+			return 0;
+		if (stage == GameStage.SETUP)
+			return start_setup_tick;
+		if (stage == GameStage.HUNT)
+			return start_hunt_tick;
+		if (stage == GameStage.DONE)
+			return stop_hunt_tick;
+		return stop_hunt_tick;
+	}
+
+	public long getStageStopTick(GameStage stage)
+	{
+		if (stage == GameStage.PREGAME)
+			return start_setup_tick;
+		if (stage == GameStage.SETUP)
+			return start_hunt_tick;
+		if (stage == GameStage.HUNT)
+			return stop_hunt_tick;
+		return 0;
 	}
 
 	/**
@@ -253,6 +279,23 @@ public class Game
 	}
 
 	/**
+	 * Gets the current stage of the game
+	 * @return
+	 */
+	public GameStage getStage()
+	{
+		Long time = world.getFullTime();
+		
+		if (time < start_setup_tick)
+			return GameStage.PREGAME;
+		if (time < start_hunt_tick)
+			return GameStage.SETUP;
+		if (time < stop_hunt_tick)
+			return GameStage.HUNT;
+		return GameStage.DONE;
+	}
+
+	/**
 	 * Returns this class's pointer to the Manhunt plugin for quick access.
 	 * @return
 	 */
@@ -275,5 +318,20 @@ public class Game
 		finders = null;
 	}
 
+	public enum GameStage
+	{
+		PREGAME, SETUP, HUNT, DONE;
+		
+		public String toString()
+		{
+			switch (this)
+			{
+			case PREGAME:	return "pregame";
+			case SETUP:		return "setup";
+			case HUNT:		return "hunt";
+			default:		return "none";
+			}
+		}
+	}
 
 }

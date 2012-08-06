@@ -12,7 +12,7 @@ import com.bendude56.hunted.teams.TeamManager.Team;
  * @author Deaboy
  *
  */
-public class TeamsUtil {
+public class TeamUtil {
 
 	/**
 	 * Alerts the player to which team they have joined.
