@@ -7,6 +7,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -60,6 +61,15 @@ public class PlayerEventHandler implements Listener {
 	{
 		plugin.getGame().onPlayerLeave(e.getPlayer());
 	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent e)
+	{
+		if (plugin.gameIsRunning())
+		{
+			plugin.getGame().onPlayerRespawn(e.getPlayer());
+		}
+	}
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e)
@@ -78,6 +88,17 @@ public class PlayerEventHandler implements Listener {
 		
 		if (team != Team.HUNTERS && team != Team.PREY)
 		{
+			return;
+		}
+		
+		if (team == Team.HUNTERS && plugin.getGame().freeze_hunters)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		if (team == Team.PREY && plugin.getGame().freeze_prey)
+		{
+			e.setCancelled(true);
 			return;
 		}
 		
