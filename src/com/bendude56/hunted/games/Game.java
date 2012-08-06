@@ -1,7 +1,6 @@
 package com.bendude56.hunted.games;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,6 +11,7 @@ import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.timeouts.TimeoutManager;
 
 /**
@@ -25,7 +25,7 @@ public class Game
 	private HuntedPlugin plugin;
 	public TimeoutManager timeouts;
 	public FinderManager finders;
-	public GameEvents gamevents;
+	public GameEvents gameevents;
 	
 	private World world; //Eh, why not?
 	
@@ -34,11 +34,8 @@ public class Game
 	private Long start_hunt_tick;
 	private Long stop_hunt_tick;
 	
-	private boolean setup_started;
-	private boolean hunt_started;
-	
-	private int schedule;
-	private int setup_stage;
+	public boolean freeze_hunters = false;
+	public boolean freeze_prey = false;
 	
 	public Game(HuntedPlugin plugin)
 	{
@@ -46,7 +43,7 @@ public class Game
 		this.plugin = plugin;
 		this.timeouts = new TimeoutManager(this);
 		this.finders = new FinderManager(this);
-		this.gamevents = new GameEvents(this);
+		this.gameevents = new GameEvents(this);
 		
 		//Save pointer to world
 		this.world = plugin.getWorld();
@@ -73,60 +70,6 @@ public class Game
 		Long stop_hunt_tick = start_hunt_tick; //Set up the end_hunt_tick, giving it a baseline.
 		stop_hunt_tick += plugin.getSettings().DAY_LIMIT.value * 24000;
 		this.stop_hunt_tick = stop_hunt_tick; //Save the stop_hunt_tick
-		
-		this.setup_started = false; //States that setup has not started. Used to assist in setup events.
-		this.hunt_started = false; //States that the hunt has not started. Used to assist starting the game.
-		this.setup_stage = 0; //This var assists in the setup events.
-		
-		GameUtil.broadcastGameStart();
-		
-		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(HuntedPlugin.getInstance(), new Runnable()
-		{
-			public void run()
-			{
-				onTick();
-			}
-		}, 0, 1);
-	}
-
-	private void onTick()
-	{
-		Long tick = world.getFullTime();
-		if (tick < start_setup_tick)
-		{
-			//Setup has not started. Figure out if it needs to send a message, change the world time, or anything like that.
-		}
-		else if (tick < start_hunt_tick)
-		{
-			if (setup_started) //Setup has begun, and this is NOT the first tick.
-			{
-				broadcastSetupMessages();
-				//Check if we need to send a message or something.
-				//Possibly teleport the hunters
-			}
-			else //Setup has begun, this is the first tick
-			{
-				//Release the prey, trap the hunters
-				setup_started = true;
-			}
-		}
-		else if (tick < stop_hunt_tick) //Hunt has begun...
-		{
-			if (hunt_started) //This is NOT the first tick
-			{
-				//TODO something...
-			}
-			else //This is the FIRST tick
-			{
-				//TODO something else :P
-			}
-		}
-		else //Hunt is over
-		{
-			//Prey have won.
-			
-			this.close();
-		}
 	}
 
 	/*
@@ -151,9 +94,30 @@ public class Game
 	 * Stops the Manhunt Game. Private, because only other in-class
 	 * public methods may stop this game.
 	 */
-	private void stopGame() {
-		// TODO Auto-generated method stub
+	protected void stopGame(boolean announceWinners) {
+		if (announceWinners)
+		{
+			int hunterCount = plugin.getTeams().getTeamNames(Team.HUNTERS).size();
+			int preyCount = plugin.getTeams().getTeamNames(Team.PREY).size();
+			Team team;
+			
+			if (preyCount == 0) //HUNTERS WIN
+				team = Team.HUNTERS;
+			else if (hunterCount == 0) //PREY WIN
+				team = Team.PREY;
+			else //GAME TIMED OUT: PREY WIN
+				team = Team.PREY;
+			
+			GameUtil.broadcast(ChatManager.divider, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatManager.bracket1_ + "THE GAME IS OVER! THE " + TeamUtil.getTeamColor(team) + TeamUtil.getTeamName(team, true).toUpperCase() + " HAVE WON!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatManager.divider, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		}
+		else
+		{
+			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		}
 		
+		close();
 	}
 
 	public long getStageStartTick(GameStage stage)
@@ -213,7 +177,7 @@ public class Game
 		p.setGameMode(GameMode.CREATIVE);
 		GameUtil.makeInvisible(p);
 		
-		checkTeamCounts();
+		checkTeamCounts(true);
 	}
 
 	/**
@@ -238,46 +202,33 @@ public class Game
 	 */
 	public void onPlayerForfeit(String player_name)
 	{
-		GameUtil.broadcastPlayerForfeit(player_name);
-		plugin.getTeams().deletePlayer(player_name);
+		GameUtil.broadcast(ChatManager.bracket1_ + TeamUtil.getTeamColor(plugin.getTeams().getTeamOf(player_name)) + player_name + ChatManager.color + " has forfeit the game!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
-		checkTeamCounts();
+		if (Bukkit.getPlayer(player_name) == null)
+			plugin.getTeams().deletePlayer(player_name);
+		else
+			plugin.getTeams().changePlayerTeam(Bukkit.getPlayer(player_name), Team.NONE);
+		
+		checkTeamCounts(true);
 	}
 
 	/**
 	 * Private method, checks team count and will stop the game if
 	 * one team has won. 
 	 */
-	private void checkTeamCounts()
+	private void checkTeamCounts(boolean broadcastRemaining)
 	{
-		if (plugin.getTeams().getTeamNames(Team.HUNTERS).size() == 0)
+		int hunterCount = plugin.getTeams().getTeamNames(Team.HUNTERS).size();
+		int preyCount = plugin.getTeams().getTeamNames(Team.PREY).size();
+		if (hunterCount == 0 || preyCount == 0)
 		{
-			GameUtil.broadcastManhuntWinners(Team.PREY, Team.HUNTERS);
-			stopGame();
+			stopGame(true);
+			return;
 		}
-		else if (plugin.getTeams().getTeamNames(Team.PREY).size() == 0)
+		if (broadcastRemaining)
 		{
-			GameUtil.broadcastManhuntWinners(Team.HUNTERS, Team.PREY);
-			stopGame();
+			GameUtil.broadcast(ChatManager.bracket1_+ TeamUtil.getTeamColor(Team.HUNTERS) + "Remaining " + TeamUtil.getTeamName(Team.HUNTERS, true) + ": " + hunterCount + "  " + TeamUtil.getTeamColor(Team.PREY) + "Remaining " + TeamUtil.getTeamName(Team.PREY, true) + ": " + preyCount + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
-	}
-
-	/**
-	 * Private method broadcasts one of the setup messages.
-	 * EX: "The hunt starts in 5...", "4...", etc.
-	 */
-	private void broadcastSetupMessages()
-	{
-		Long tick = world.getTime() - start_setup_tick;
-		if (tick > 0 && setup_stage == 0)
-		{
-			plugin.getChat().broadcastAll(ChatManager.bracket1 + ChatColor.DARK_PURPLE + "The hunt will begin at sundown! (" + plugin.getSettings().SETUP_TIME.value + " minutes)" + ChatManager.bracket2, true);
-		}//TODO add more messages
-		else
-		{
-			setup_stage--;
-		}
-		setup_stage++;
 	}
 
 	/**
@@ -294,7 +245,8 @@ public class Game
 			return GameStage.SETUP;
 		if (time < stop_hunt_tick)
 			return GameStage.HUNT;
-		return GameStage.DONE;
+		else
+			return GameStage.DONE;
 	}
 
 	/**
@@ -310,14 +262,14 @@ public class Game
 	 * Closes the classes this class tracks and
 	 * stops the schedule.
 	 */
-	private void close()
+	public void close()
 	{
-		Bukkit.getScheduler().cancelTask(schedule);
-		
 		timeouts.close();
 		timeouts = null;
 		finders.close();
 		finders = null;
+		gameevents.close();
+		gameevents = null;
 	}
 
 	public enum GameStage
