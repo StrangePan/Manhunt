@@ -79,6 +79,7 @@ public class HelpCommands
 			sender.sendMessage(cmdColor + "/m hunterinv [name]" + cmdDesc + "Sets the " + TeamUtil.getTeamColor(Team.HUNTERS) + TeamUtil.getTeamName(Team.HUNTERS, false) + " loadout.");
 			sender.sendMessage(cmdColor + "/m preyinv [name]" + cmdDesc + "Sets the " + TeamUtil.getTeamColor(Team.PREY) + TeamUtil.getTeamName(Team.PREY, false) + " loadout.");
 		}
+		sender.sendMessage(ChatManager.divider);
 	}
 	
 	public static void onCommandRules(CommandSender sender)
@@ -95,12 +96,16 @@ public class HelpCommands
 		sender.sendMessage(pre + "The rules are simple: The " + hunters + " must hunt the " + prey + ", who must survive.");
 		sender.sendMessage(pre + "The " + prey + " have until sundown to prepare for the hunt.");
 		sender.sendMessage(pre + "That's it! Type " + ChatColor.GREEN + "/m settings" + color + " for more info.");
+		sender.sendMessage(ChatManager.divider);
 	}
 	
 	public static void onCommandInfo(CommandSender sender)
 	{
 		PluginDescriptionFile desc = HuntedPlugin.getInstance().getDescription();
+		sender.sendMessage(ChatManager.divider);
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + desc.getName() + " " + desc.getVersion() + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + "Written by Deaboy. " + ChatColor.UNDERLINE + "http://youtube.com/fearofmobs");
+		sender.sendMessage(ChatManager.divider);
 	}
 	
 	public static void onCommandStatus(CommandSender sender)
