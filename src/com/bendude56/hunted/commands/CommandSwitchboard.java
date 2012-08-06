@@ -50,7 +50,7 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (arg.equalsIgnoreCase("settings"))
 		{
-			//Display page of settings
+			SettingsCommands.onCommandSettings(sender, args);
 		}
 		if (arg.equalsIgnoreCase("set"))
 		{
