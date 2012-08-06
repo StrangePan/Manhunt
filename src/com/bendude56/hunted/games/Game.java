@@ -25,6 +25,7 @@ public class Game
 	private HuntedPlugin plugin;
 	public TimeoutManager timeouts;
 	public FinderManager finders;
+	public GameEvents gamevents;
 	
 	private World world; //Eh, why not?
 	
@@ -45,6 +46,7 @@ public class Game
 		this.plugin = plugin;
 		this.timeouts = new TimeoutManager(this);
 		this.finders = new FinderManager(this);
+		this.gamevents = new GameEvents(this);
 		
 		//Save pointer to world
 		this.world = plugin.getWorld();

@@ -82,6 +82,11 @@ public class GameEvents
 			if (countdown == 25)
 			{
 				broadcast(ChatManager.bracket1_ + "The Manhunt game will start " + color + "soon." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				countdown = 20;
+			}
+			else if (countdown == 20 & time > start_setup_tick - 400)
+			{
+				world.setFullTime(start_setup_tick - 400);
 				countdown = 17;
 			}
 			else if (countdown == 17 && time > start_setup_tick - 360)
