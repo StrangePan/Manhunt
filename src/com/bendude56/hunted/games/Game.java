@@ -28,6 +28,7 @@ public class Game
 	
 	private World world; //Eh, why not?
 	
+	private final Long pregame_length = (long) 400; //20 seconds, not including time changing stuff
 	private Long start_setup_tick;
 	private Long start_hunt_tick;
 	private Long stop_hunt_tick;
@@ -58,7 +59,8 @@ public class Game
 	{
 		//Calculate milestones ticks
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
-		start_setup_tick += (24000 - start_setup_tick % 24000); //Calculating. Next day
+		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day
+		start_setup_tick += (24000 - world.getTime() < pregame_length ? 24000 : 0); //If not enough time for pregame, start setup on next day
 		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value * 1200); //Compensate for shorter setup times
 		this.start_setup_tick = start_setup_tick; //Save the start_setup_tick;
 		
