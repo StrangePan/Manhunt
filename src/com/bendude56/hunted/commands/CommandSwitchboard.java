@@ -81,7 +81,7 @@ public class CommandSwitchboard implements CommandExecutor
 		}
 		if (arg.equalsIgnoreCase("loadloadout") || arg.equalsIgnoreCase("loadinv"))
 		{
-			//Load a loadout
+			CommandsLoadouts.onCommandLoadinv(sender, args);
 		}
 		if (arg.equalsIgnoreCase("deleteloadout") || arg.equalsIgnoreCase("delloadout") || arg.equalsIgnoreCase("delinv") || arg.equalsIgnoreCase("deleteinv"))
 		{

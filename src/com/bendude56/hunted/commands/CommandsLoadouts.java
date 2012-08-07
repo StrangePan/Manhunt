@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.loadouts.Loadout;
+import com.bendude56.hunted.loadouts.LoadoutUtil;
 
 public class CommandsLoadouts
 {
@@ -76,7 +77,7 @@ public class CommandsLoadouts
 
 	public static void onCommandNewinv(CommandSender sender, String[] args)
 	{
-		String SYNTAX = ChatColor.RED + "Proper syntax is /m listinv [page]";
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m newinv [name]";
 		HuntedPlugin plugin = HuntedPlugin.getInstance();
 		
 		if (!sender.isOp())
@@ -125,7 +126,58 @@ public class CommandsLoadouts
 
 	public static void onCommandLoadinv(CommandSender sender, String[] args)
 	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m loadinv [name]";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
 		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		Player p;
+		
+		if (sender instanceof Player)
+		{
+			p = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return;
+		}
+		
+		if (args.length != 2)
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		Loadout loadout;
+		
+		if (args[1].equalsIgnoreCase("hunter"))
+		{
+			loadout = plugin.getLoadouts().getHunterLoadout();
+		}
+		else if (args[1].equalsIgnoreCase("prey"))
+		{
+			loadout = plugin.getLoadouts().getPreyLoadout();;
+		}
+		else
+		{
+			loadout = plugin.getLoadouts().getLoadout(args[1]);
+		}
+		
+		if (loadout == null)
+		{
+			p.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+			return;
+		}
+		
+		LoadoutUtil.clearInventory(p.getInventory());
+		p.getInventory().setContents(loadout.getContents());
+		p.getInventory().setArmorContents(loadout.getArmor());
+		p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadout.name + "\" has been loaded.");
 	}
 
 }
