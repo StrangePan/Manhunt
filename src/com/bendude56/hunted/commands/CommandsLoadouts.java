@@ -86,6 +86,12 @@ public class CommandsLoadouts
 			return;
 		}
 		
+		if (plugin.gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
 		Player p;
 		
 		if (sender instanceof Player)
@@ -135,6 +141,12 @@ public class CommandsLoadouts
 			return;
 		}
 		
+		if (plugin.gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
 		Player p;
 		
 		if (sender instanceof Player)
@@ -178,6 +190,46 @@ public class CommandsLoadouts
 		p.getInventory().setContents(loadout.getContents());
 		p.getInventory().setArmorContents(loadout.getArmor());
 		p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadout.name + "\" has been loaded.");
+	}
+
+	public static void onCommandDelinv(CommandSender sender, String[] args)
+	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m loadinv [name]";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		if (plugin.gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
+		if (args.length != 2)
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		Loadout loadout = plugin.getLoadouts().getLoadout(args[1]);
+		
+		if (loadout == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+			return;
+		}
+		else
+		{
+			if (plugin.getLoadouts().deleteLoadout(args[1]))
+				sender.sendMessage(ChatColor.GREEN + "Loadout \"" + loadout.name + "\" was deleted.");
+			else
+				sender.sendMessage(ChatColor.RED + "Loadout \"" + loadout.name + "\" was NOT deleted.");
+			return;
+		}
 	}
 
 }
