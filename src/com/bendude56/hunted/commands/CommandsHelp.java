@@ -10,7 +10,7 @@ import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
-public class HelpCommands
+public class CommandsHelp
 {
 	
 	public static void onCommandHelp(CommandSender sender, String[] args)

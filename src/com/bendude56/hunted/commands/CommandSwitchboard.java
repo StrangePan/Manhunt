@@ -31,30 +31,30 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (arg.equalsIgnoreCase("help"))
 		{
-			HelpCommands.onCommandHelp(sender, args);
+			CommandsHelp.onCommandHelp(sender, args);
 		}
 		if (arg.equalsIgnoreCase("rules"))
 		{
-			HelpCommands.onCommandRules(sender);
+			CommandsHelp.onCommandRules(sender);
 		}
 		if (arg.equalsIgnoreCase("info"))
 		{
-			HelpCommands.onCommandInfo(sender);
+			CommandsHelp.onCommandInfo(sender);
 		}
 		if (arg.equalsIgnoreCase("status"))
 		{
-			HelpCommands.onCommandStatus(sender);
+			CommandsHelp.onCommandStatus(sender);
 		}
 		
 		//SETTINGS COMMANDS
 		
 		if (arg.equalsIgnoreCase("settings"))
 		{
-			SettingsCommands.onCommandSettings(sender, args);
+			CommandsSettings.onCommandSettings(sender, args);
 		}
 		if (arg.equalsIgnoreCase("set"))
 		{
-			SettingsCommands.onCommandSet(sender, args);
+			CommandsSettings.onCommandSet(sender, args);
 		}
 		if (arg.equalsIgnoreCase("setworld"))
 		{

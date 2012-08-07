@@ -78,6 +78,7 @@ public class HuntedPlugin extends JavaPlugin {
 
 	public void setWorld(World world)
 	{
+		settings.WORLD.setValue(world.getName());
 		settings.saveAll();
 		
 		this.manhuntWorld = world;

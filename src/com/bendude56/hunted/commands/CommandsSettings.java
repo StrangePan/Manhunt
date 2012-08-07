@@ -10,7 +10,7 @@ import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.settings.Setting;
 
-public class SettingsCommands
+public class CommandsSettings
 {
 	public static void onCommandSettings(CommandSender sender, String[] args)
 	{
