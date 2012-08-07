@@ -148,7 +148,7 @@ public class CommandSwitchboard implements CommandExecutor
 			CommandsGeneral.onCommandStopgame(sender, args);
 		}
 		
-		
 		return true;
 	}
+	
 }

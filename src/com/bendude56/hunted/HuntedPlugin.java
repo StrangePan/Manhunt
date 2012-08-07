@@ -102,6 +102,7 @@ public class HuntedPlugin extends JavaPlugin {
 		this.manhuntWorld = world;
 		
 		settings = new SettingsManager();
+		loadouts = new LoadoutManager();
 		teams.refreshPlayers();
 	}
 

@@ -46,8 +46,8 @@ public class CommandsHelp
 		sender.sendMessage(header);
 		if (page == 1)
 		{
-			sender.sendMessage(cmdColor + "/m startgame [now]" + cmdDesc + "Starts a Manhunt game.");
-			sender.sendMessage(cmdColor + "/m stopgame [now]" + cmdDesc + "Starts a Manhunt game.");
+			sender.sendMessage(cmdColor + "/m startgame" + cmdDesc + "Starts a Manhunt game.");
+			sender.sendMessage(cmdColor + "/m stopgame" + cmdDesc + "Starts a Manhunt game.");
 			sender.sendMessage(cmdColor + "/m help [page]" + cmdDesc + "Displays a list of Manhunt commands.");
 			sender.sendMessage(cmdColor + "/m rules" + cmdDesc + "Displays the rules of Manhunt.");
 			sender.sendMessage(cmdColor + "/m info" + cmdDesc + "Displays info about the Manhunt plugin.");
