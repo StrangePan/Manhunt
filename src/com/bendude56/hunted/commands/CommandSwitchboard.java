@@ -92,30 +92,30 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (arg.equalsIgnoreCase("hunter"))
 		{
-			//Changes a player to team hunter
+			CommandsTeams.onCommandHunter(sender, args);
 		}
 		if (arg.equalsIgnoreCase("prey"))
 		{
-			//Changes a player to team prey
+			CommandsTeams.onCommandPrey(sender, args);
 		}
 		if (arg.equalsIgnoreCase("spectator"))
 		{
-			//Changes a player to team spectator
+			CommandsTeams.onCommandSpectate(sender, args);
 		}
 		
 		//COMMANDS FOR CONTORLLING PLAYERS
 		
 		if (arg.equalsIgnoreCase("lock"))
 		{
-			//Locks teams
+			CommandsTeams.onCommandLock(sender, args);
 		}
 		if (arg.equalsIgnoreCase("kick"))
 		{
-			CommandsGeneral.onCommandKick(sender, args);
+			CommandsTeams.onCommandKick(sender, args);
 		}
 		if (arg.equalsIgnoreCase("quit"))
 		{
-			//Quits the manhunt game
+			CommandsTeams.onCommandQuit(sender, args);
 		}
 		
 		//COMMANDS FOR EDITING SPAWN

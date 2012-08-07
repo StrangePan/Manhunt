@@ -32,6 +32,8 @@ public class HuntedPlugin extends JavaPlugin {
 	private ChatManager		chat;
 	
 	private World 	manhuntWorld;
+	
+	public Boolean locked = false;
 
 	@Override
 	public void onEnable()
@@ -137,6 +139,30 @@ public class HuntedPlugin extends JavaPlugin {
 	public boolean gameIsRunning()
 	{
 		return game != null;
+	}
+	
+	public enum ManhuntMode
+	{
+		PRIVATE, PUBLIC;
+		
+		public static ManhuntMode fromString(String s)
+		{
+			if (s.equalsIgnoreCase("private"))
+				return PRIVATE;
+			if (s.equalsIgnoreCase("public"))
+				return PUBLIC;
+			return null;
+		}
+		
+		public String toString()
+		{
+			switch (this)
+			{
+				case PRIVATE:	return "PRIVATE";
+				case PUBLIC:	return "PUBLIC";
+				default:		return null;
+			}
+		}
 	}
 
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import com.bendude56.hunted.HuntedPlugin.ManhuntMode;
+
 
 public class SettingsManager
 {
@@ -19,6 +21,8 @@ public class SettingsManager
 	
 	private List<Setting<?>> settings = new ArrayList<Setting<?>>();
 	private List<Setting<?>> secretSettings = new ArrayList<Setting<?>>();
+
+	public final Setting<ManhuntMode> MANHUNT_MODE;
 
 	public final Setting<String> WORLD;
 	public final Setting<String> HUNTER_LOADOUT_CURRENT;
@@ -68,6 +72,8 @@ public class SettingsManager
 		{
 			WORLD.setValue(Bukkit.getWorlds().get(0).getName());
 		}
+		
+		secretSettings.add(MANHUNT_MODE = new Setting<ManhuntMode>("gameMode", ManhuntMode.PRIVATE, FILE_MAIN, "The type of mode Manhunt is running in.", ""));
 		
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
 		settings.add(PUBLIC_MODE = new Setting<Boolean>("publicMode", true, FILE_MAIN, "The game is running in public mode.", "The game is running in private mode."));

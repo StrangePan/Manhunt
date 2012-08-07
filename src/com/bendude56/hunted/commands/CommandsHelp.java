@@ -55,11 +55,12 @@ public class CommandsHelp
 		}
 		if (page == 2)
 		{
-			sender.sendMessage(cmdColor + "/m list" + cmdDesc + "Lists the current teams.");
+			sender.sendMessage(cmdColor + "/m list" + cmdDesc + "Lists the current players and their teams.");
 			sender.sendMessage(cmdColor + "/m hunter [player]" + cmdDesc + "Puts you or a player on the " + TeamUtil.getTeamColor(Team.HUNTERS) + TeamUtil.getTeamName(Team.HUNTERS, false) + cmdDesc + " team");
 			sender.sendMessage(cmdColor + "/m prey [player]" + cmdDesc + "Puts you or a player on the " + TeamUtil.getTeamColor(Team.PREY) + TeamUtil.getTeamName(Team.PREY, false) + cmdDesc + " team");
 			sender.sendMessage(cmdColor + "/m spectator [player]" + cmdDesc + "Makes you or a player a " + TeamUtil.getTeamColor(Team.SPECTATORS) + TeamUtil.getTeamName(Team.SPECTATORS, false) + cmdDesc + ".");
 			sender.sendMessage(cmdColor + "/m lock" + cmdDesc + "Locks the teams and the world.");
+			sender.sendMessage(cmdColor + "/m quit" + cmdDesc + "Lets you quit the Manhunt game.");
 			sender.sendMessage(cmdColor + "/m kick [player]" + cmdDesc + "Kicks a player from the game.");
 		}
 		if (page == 3)
@@ -69,7 +70,7 @@ public class CommandsHelp
 			sender.sendMessage(cmdColor + "/m spawn [spawn] [player]" + cmdDesc + "Teleports a player to a spawn.");
 			sender.sendMessage(cmdColor + "/m setspawn <spawn>" + cmdDesc + "Changes the given spawnpoint.");
 			sender.sendMessage(cmdColor + "/m setworld" + cmdDesc + "Changes the Manhunt World to the current one.");
-			sender.sendMessage(cmdColor + "/m mode [mode]" + cmdDesc + "Displays / changes Manhunt's privacy mode.");
+			sender.sendMessage(cmdColor + "/m setmode [mode]" + cmdDesc + "Sets Manhunt's privacy mode.");
 		}
 		if (page == 4)
 		{
