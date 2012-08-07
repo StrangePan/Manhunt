@@ -76,6 +76,16 @@ public class HuntedPlugin extends JavaPlugin {
 		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Manhunt");
 	}
 
+	public void setWorld(World world)
+	{
+		settings.saveAll();
+		
+		this.manhuntWorld = world;
+		
+		settings = new SettingsManager();
+		teams.refreshPlayers();
+	}
+
 	public World getWorld() {
 		return manhuntWorld;
 	}

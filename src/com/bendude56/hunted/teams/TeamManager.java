@@ -21,6 +21,18 @@ public class TeamManager
 	public TeamManager(HuntedPlugin plugin)
 	{
 		this.plugin = plugin;
+		
+	}
+
+	public void refreshPlayers()
+	{
+		players.clear();
+		gamemodes.clear();
+		
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			addPlayer(p);
+		}
 	}
 
 	private void putPlayerTeam(String p, Team t)

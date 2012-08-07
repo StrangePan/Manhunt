@@ -54,7 +54,7 @@ public class CommandSwitchboard implements CommandExecutor
 		}
 		if (arg.equalsIgnoreCase("set"))
 		{
-			//Changes a setting
+			SettingsCommands.onCommandSet(sender, args);
 		}
 		if (arg.equalsIgnoreCase("setworld"))
 		{

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.chat.ChatManager;
@@ -70,6 +71,12 @@ public class SettingsCommands
 			return;
 		}
 		
+		if (HuntedPlugin.getInstance().gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
 		if (args.length != 3)
 		{
 			sender.sendMessage(SYNTAX_ERROR);
@@ -90,6 +97,41 @@ public class SettingsCommands
 			sender.sendMessage(ChatColor.RED + args[2] + "is an invalid setting for \"" + setting.label + "\"");
 	}
 
-	
+	public static void onCommandSetworld(CommandSender sender, String[] args)
+	{
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		Player player;
+		
+		if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return;
+		}
+		
+		if (HuntedPlugin.getInstance().gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
+		if (player.getWorld() != HuntedPlugin.getInstance().getWorld())
+		{
+			HuntedPlugin.getInstance().setWorld(player.getWorld());
+			sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "The Manhunt world has been changed" + ChatManager.bracket2_);
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "You are already in the Manhunt world!");
+		}
+	}
 
 }
