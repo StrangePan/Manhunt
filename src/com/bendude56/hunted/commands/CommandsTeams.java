@@ -1,5 +1,7 @@
 package com.bendude56.hunted.commands;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -7,10 +9,56 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.chat.ChatManager;
+import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.teams.TeamUtil;
 
 public class CommandsTeams
 {
+	public static void onCommandList(CommandSender sender, String[] args)
+	{
+		TeamManager teams = HuntedPlugin.getInstance().getTeams();
+		List<String> hunters = teams.getTeamNames(Team.HUNTERS);
+		List<String> prey = teams.getTeamNames(Team.PREY);
+		List<String> spectators = teams.getTeamNames(Team.SPECTATORS);
+		
+		sender.sendMessage(ChatManager.bracket1_ + TeamUtil.getTeamColor(Team.HUNTERS) + hunters.size() + " " + TeamUtil.getTeamName(Team.HUNTERS, true) + "  " + TeamUtil.getTeamColor(Team.PREY) + prey.size() + " " + TeamUtil.getTeamName(Team.PREY, true) + "  " + TeamUtil.getTeamColor(Team.SPECTATORS) + spectators.size() + " " + TeamUtil.getTeamName(Team.SPECTATORS, true) + ChatManager.bracket2_);
+		
+		String msgHunters = "";
+		for (String n : hunters)
+		{
+			msgHunters += TeamUtil.getTeamColor(Team.HUNTERS);
+			msgHunters += n;
+			if (Bukkit.getPlayer(n) == null)
+				msgHunters += ChatColor.GRAY + " (offline)";
+			msgHunters += "  ";
+		}
+		String msgPrey = "";
+		for (String n : prey)
+		{
+			msgPrey += TeamUtil.getTeamColor(Team.PREY);
+			msgPrey += n;
+			if (Bukkit.getPlayer(n) == null)
+				msgPrey += ChatColor.GRAY + " (offline)";
+			msgPrey += "  ";
+		}
+		String msgSpectators = "";
+		for (String n : spectators)
+		{
+			msgSpectators += TeamUtil.getTeamColor(Team.SPECTATORS);
+			msgSpectators += n;
+			msgSpectators += "  ";
+		}
+		
+		sender.sendMessage(msgHunters);
+		sender.sendMessage(msgPrey);
+		if (!msgSpectators.isEmpty())
+			sender.sendMessage(msgSpectators);
+		
+		sender.sendMessage(ChatManager.divider);
+	}
+
 	public static void onCommandQuit(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m quit";

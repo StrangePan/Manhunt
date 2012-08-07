@@ -45,6 +45,10 @@ public class CommandSwitchboard implements CommandExecutor
 		{
 			CommandsHelp.onCommandStatus(sender);
 		}
+		if (arg.equalsIgnoreCase("list"))
+		{
+			CommandsTeams.onCommandList(sender, args);
+		}
 		
 		//SETTINGS COMMANDS
 		
@@ -59,6 +63,10 @@ public class CommandSwitchboard implements CommandExecutor
 		if (arg.equalsIgnoreCase("setworld"))
 		{
 			CommandsSettings.onCommandSetworld(sender, args);
+		}
+		if (arg.equalsIgnoreCase("setmode"))
+		{
+			CommandsSettings.onCommandSetmode(sender, args);
 		}
 		
 		//LOADOUT COMMANDS

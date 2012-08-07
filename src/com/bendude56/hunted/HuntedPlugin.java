@@ -105,6 +105,16 @@ public class HuntedPlugin extends JavaPlugin {
 		teams.refreshPlayers();
 	}
 
+	public void setMode(ManhuntMode mode)
+	{
+		settings.MANHUNT_MODE.setValue(mode);
+		
+		if (mode == ManhuntMode.PUBLIC)
+		{
+			startGame();
+		}
+	}
+
 	public World getWorld() {
 		return manhuntWorld;
 	}

@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.HuntedPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.settings.Setting;
 
@@ -132,6 +133,42 @@ public class CommandsSettings
 		{
 			sender.sendMessage(ChatColor.RED + "You are already in the Manhunt world!");
 		}
+	}
+
+	public static void onCommandSetmode(CommandSender sender, String[] args)
+	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m setmode <mode>";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		if (HuntedPlugin.getInstance().gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
+		if (args.length != 2)
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		ManhuntMode mode = ManhuntMode.fromString(args[1]);
+		
+		if (mode == null)
+		{
+			sender.sendMessage(ChatColor.RED + "'" + args[1] + "' is an invalid mode.");
+			return;
+		}
+		
+		plugin.setMode(mode);
+		
+		sender.sendMessage(ChatManager.bracket1_ + "Manhunt mode set to " + mode + ChatManager.bracket2_);
 	}
 
 }
