@@ -17,15 +17,15 @@ public class LoadoutManager {
 	private final String loadouts_directory = "plugins/Manhunt";
 	private final String world_loadouts_directory = HuntedPlugin.getInstance().getWorld().getName() + "/Manhunt";
 
-	public final Loadout HUNTER_LOADOUT;
-	public final Loadout PREY_LOADOUT;
+	public final Loadout DEFAULT_HUNTER_LOADOUT;
+	public final Loadout DEFAULT_PREY_LOADOUT;
 
 	public LoadoutManager()
 	{
 		File hl = new File(world_loadouts_directory + "/" + "hunter_loadout.inv");
 		if (hl.exists())
 		{
-			HUNTER_LOADOUT = new Loadout("hunter_loadout", world_loadouts_directory);
+			DEFAULT_HUNTER_LOADOUT = new Loadout("hunter_loadout", world_loadouts_directory);
 		}
 		else
 		{
@@ -52,13 +52,13 @@ public class LoadoutManager {
 			armour[2] = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
 			armour[3] = new ItemStack(Material.LEATHER_HELMET, 1);
 			
-			HUNTER_LOADOUT = new Loadout("hunter_loadout", world_loadouts_directory, contents, armour);
+			DEFAULT_HUNTER_LOADOUT = new Loadout("hunter_loadout", world_loadouts_directory, contents, armour);
 		}
 		
 		File pl = new File(world_loadouts_directory + "/" + "prey_loadout.inv");
 		if (pl.exists())
 		{
-			PREY_LOADOUT = new Loadout("prey_loadout", world_loadouts_directory);
+			DEFAULT_PREY_LOADOUT = new Loadout("prey_loadout", world_loadouts_directory);
 		}
 		else
 		{
@@ -85,7 +85,7 @@ public class LoadoutManager {
 			// armour[2] = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
 			// armour[3] = new ItemStack(Material.LEATHER_HELMET, 1);
 			
-			PREY_LOADOUT = new Loadout("prey_loadout", world_loadouts_directory, contents, armour);
+			DEFAULT_PREY_LOADOUT = new Loadout("prey_loadout", world_loadouts_directory, contents, armour);
 		}
 		
 		File loadoutFolder = new File(loadouts_directory);
@@ -107,7 +107,7 @@ public class LoadoutManager {
 	public Loadout getHunterLoadout()
 	{
 		if (getLoadout(HuntedPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value) == null)
-			return HUNTER_LOADOUT;
+			return DEFAULT_HUNTER_LOADOUT;
 		else
 			return getLoadout(HuntedPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value);
 	}
@@ -115,7 +115,7 @@ public class LoadoutManager {
 	public Loadout getPreyLoadout()
 	{
 		if (getLoadout(HuntedPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value) == null)
-			return PREY_LOADOUT;
+			return DEFAULT_PREY_LOADOUT;
 		else
 			return getLoadout(HuntedPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value);
 	}

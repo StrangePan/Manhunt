@@ -259,7 +259,7 @@ public class CommandsLoadouts
 		
 		if (args[1].equalsIgnoreCase("default"))
 		{
-			loadout = plugin.getLoadouts().HUNTER_LOADOUT;
+			loadout = plugin.getLoadouts().DEFAULT_HUNTER_LOADOUT;
 		}
 		else
 		{
@@ -274,7 +274,7 @@ public class CommandsLoadouts
 		else
 		{
 			plugin.getSettings().HUNTER_LOADOUT_CURRENT.setValue(loadout.name);
-			if (loadout == plugin.getLoadouts().HUNTER_LOADOUT)
+			if (loadout == plugin.getLoadouts().DEFAULT_HUNTER_LOADOUT)
 				sender.sendMessage(ChatColor.GREEN + "The Hunter loadout has been reset to default.");
 			else
 				sender.sendMessage(ChatColor.GREEN + "'" + loadout.name + "' is now the current Hunter loadout.");
@@ -308,7 +308,7 @@ public class CommandsLoadouts
 		
 		if (args[1].equalsIgnoreCase("default"))
 		{
-			loadout = plugin.getLoadouts().PREY_LOADOUT;
+			loadout = plugin.getLoadouts().DEFAULT_PREY_LOADOUT;
 		}
 		else
 		{
@@ -323,7 +323,7 @@ public class CommandsLoadouts
 		else
 		{
 			plugin.getSettings().PREY_LOADOUT_CURRENT.setValue(loadout.name);
-			if (loadout == plugin.getLoadouts().PREY_LOADOUT)
+			if (loadout == plugin.getLoadouts().DEFAULT_PREY_LOADOUT)
 				sender.sendMessage(ChatColor.GREEN + "The Prey loadout has been reset to default.");
 			else
 				sender.sendMessage(ChatColor.GREEN + "'" + loadout.name + "' is now the current Prey loadout.");

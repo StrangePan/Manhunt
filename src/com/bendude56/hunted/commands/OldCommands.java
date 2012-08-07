@@ -1259,13 +1259,13 @@ public class OldCommands implements CommandExecutor {
 			{
 				if (args[1].equalsIgnoreCase("hunter"))
 				{
-					settings.HUNTER_LOADOUT_CURRENT.setValue(loadouts.HUNTER_LOADOUT.name);
+					settings.HUNTER_LOADOUT_CURRENT.setValue(loadouts.DEFAULT_HUNTER_LOADOUT.name);
 					p.sendMessage(ChatColor.GREEN + "The Hunter has been reset to default.");
 					return;
 				}
 				else if (args[1].equalsIgnoreCase("prey"))
 				{
-					settings.PREY_LOADOUT_CURRENT.setValue(loadouts.PREY_LOADOUT.name);
+					settings.PREY_LOADOUT_CURRENT.setValue(loadouts.DEFAULT_PREY_LOADOUT.name);
 					p.sendMessage(ChatColor.GREEN + "The Prey has been reset to default.");
 					return;
 				}
