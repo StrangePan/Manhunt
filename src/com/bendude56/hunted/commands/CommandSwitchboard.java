@@ -89,11 +89,11 @@ public class CommandSwitchboard implements CommandExecutor
 		}
 		if (arg.equalsIgnoreCase("hunterloadout") || arg.equalsIgnoreCase("hunterinv"))
 		{
-			//Sets the hunter loadout or loads it
+			CommandsLoadouts.onCommandHunterinv(sender, args);
 		}
 		if (arg.equalsIgnoreCase("preyloadout") || arg.equalsIgnoreCase("preyinv"))
 		{
-			//Sets the prey loadout or loads it
+			CommandsLoadouts.onCommandPreyinv(sender, args);
 		}
 		
 		//COMMANDS FOR SETTING UP THE TEAMS

@@ -110,7 +110,7 @@ public class CommandsLoadouts
 			return;
 		}
 		
-		if (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("prey"))
+		if (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("prey") || args[1].equalsIgnoreCase("default"))
 		{
 			sender.sendMessage(ChatColor.RED + "You may not use that name!");
 			return;
@@ -229,6 +229,104 @@ public class CommandsLoadouts
 			else
 				sender.sendMessage(ChatColor.RED + "Loadout \"" + loadout.name + "\" was NOT deleted.");
 			return;
+		}
+	}
+
+	public static void onCommandHunterinv(CommandSender sender, String[] args)
+	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m hunterinv [name]";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		if (plugin.gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
+		if (args.length != 2)
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		Loadout loadout;
+		
+		if (args[1].equalsIgnoreCase("default"))
+		{
+			loadout = plugin.getLoadouts().HUNTER_LOADOUT;
+		}
+		else
+		{
+			loadout = plugin.getLoadouts().getLoadout(args[1]);
+		}
+		
+		if (loadout == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+			return;
+		}
+		else
+		{
+			plugin.getSettings().HUNTER_LOADOUT_CURRENT.setValue(loadout.name);
+			if (loadout == plugin.getLoadouts().HUNTER_LOADOUT)
+				sender.sendMessage(ChatColor.GREEN + "The Hunter loadout has been reset to default.");
+			else
+				sender.sendMessage(ChatColor.GREEN + "'" + loadout.name + "' is now the current Hunter loadout.");
+		}
+	}
+
+	public static void onCommandPreyinv(CommandSender sender, String[] args)
+	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m preyinv [name]";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		if (plugin.gameIsRunning())
+		{
+			sender.sendMessage(CommandUtil.GAME_RUNNING);
+			return;
+		}
+		
+		if (args.length != 2)
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		Loadout loadout;
+		
+		if (args[1].equalsIgnoreCase("default"))
+		{
+			loadout = plugin.getLoadouts().PREY_LOADOUT;
+		}
+		else
+		{
+			loadout = plugin.getLoadouts().getLoadout(args[1]);
+		}
+		
+		if (loadout == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No loadout with that name exists.");
+			return;
+		}
+		else
+		{
+			plugin.getSettings().PREY_LOADOUT_CURRENT.setValue(loadout.name);
+			if (loadout == plugin.getLoadouts().PREY_LOADOUT)
+				sender.sendMessage(ChatColor.GREEN + "The Prey loadout has been reset to default.");
+			else
+				sender.sendMessage(ChatColor.GREEN + "'" + loadout.name + "' is now the current Prey loadout.");
 		}
 	}
 
