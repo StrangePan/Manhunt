@@ -8,17 +8,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.settings.SettingsManager;
 
 public class TeamManager
 {
-	HuntedPlugin plugin;
+	ManhuntPlugin plugin;
 	
 	private HashMap<String, Team> players = new HashMap<String, Team>();
 	private HashMap<String, GameMode> gamemodes = new HashMap<String, GameMode>();
 
-	public TeamManager(HuntedPlugin plugin)
+	public TeamManager(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
 		

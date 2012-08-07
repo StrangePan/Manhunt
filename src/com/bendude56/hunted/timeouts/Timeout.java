@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.bukkit.Bukkit;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 
 public class Timeout {
 	public final String player_name;
@@ -21,7 +21,7 @@ public class Timeout {
 		this.manager = manager;
 		
 		//Start the scheduler
-		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(HuntedPlugin.getInstance(), new Runnable()
+		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{

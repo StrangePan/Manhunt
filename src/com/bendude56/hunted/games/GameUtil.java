@@ -3,7 +3,7 @@ package com.bendude56.hunted.games;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 /**
@@ -19,7 +19,7 @@ public class GameUtil {
 	 */
 	public static void broadcast(String message, Team...team)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		for (Team t : team)
 		{

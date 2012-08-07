@@ -8,14 +8,14 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 
 public class LoadoutManager {
 
 	private HashMap<String, Loadout> loadouts = new HashMap<String, Loadout>();
 
 	private final String loadouts_directory = "plugins/Manhunt";
-	private final String world_loadouts_directory = HuntedPlugin.getInstance().getWorld().getName() + "/Manhunt";
+	private final String world_loadouts_directory = ManhuntPlugin.getInstance().getWorld().getName() + "/Manhunt";
 
 	public final Loadout DEFAULT_HUNTER_LOADOUT;
 	public final Loadout DEFAULT_PREY_LOADOUT;
@@ -106,18 +106,18 @@ public class LoadoutManager {
 
 	public Loadout getHunterLoadout()
 	{
-		if (getLoadout(HuntedPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value) == null)
+		if (getLoadout(ManhuntPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value) == null)
 			return DEFAULT_HUNTER_LOADOUT;
 		else
-			return getLoadout(HuntedPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value);
+			return getLoadout(ManhuntPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value);
 	}
 	
 	public Loadout getPreyLoadout()
 	{
-		if (getLoadout(HuntedPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value) == null)
+		if (getLoadout(ManhuntPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value) == null)
 			return DEFAULT_PREY_LOADOUT;
 		else
-			return getLoadout(HuntedPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value);
+			return getLoadout(ManhuntPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value);
 	}
 	
 	public void addLoadout(String name, ItemStack[] contents, ItemStack[] armour)

@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 /**
@@ -13,7 +13,7 @@ import com.bendude56.hunted.teams.TeamManager.Team;
  *
  */
 public class ChatManager {
-	private HuntedPlugin plugin;
+	private ManhuntPlugin plugin;
 
 	public final static ChatColor color = ChatColor.GOLD;
 	public final static String bracket1 = color + "---[";
@@ -28,7 +28,7 @@ public class ChatManager {
 		
 	}
 
-	public ChatManager(HuntedPlugin plugin)
+	public ChatManager(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
 	}

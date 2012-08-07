@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.loadouts.Loadout;
 import com.bendude56.hunted.loadouts.LoadoutUtil;
@@ -16,7 +16,7 @@ public class CommandsLoadouts
 	public static void onCommandListinv(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m listinv [page]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -78,7 +78,7 @@ public class CommandsLoadouts
 	public static void onCommandNewinv(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m newinv [name]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -133,7 +133,7 @@ public class CommandsLoadouts
 	public static void onCommandLoadinv(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m loadinv [name]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -195,7 +195,7 @@ public class CommandsLoadouts
 	public static void onCommandDelinv(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m loadinv [name]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -235,7 +235,7 @@ public class CommandsLoadouts
 	public static void onCommandHunterinv(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m hunterinv [name]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -284,7 +284,7 @@ public class CommandsLoadouts
 	public static void onCommandPreyinv(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m preyinv [name]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{

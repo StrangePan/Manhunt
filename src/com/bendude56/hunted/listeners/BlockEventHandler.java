@@ -9,15 +9,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class BlockEventHandler implements Listener {
 
-	private HuntedPlugin plugin;
+	private ManhuntPlugin plugin;
 	
-	public BlockEventHandler(HuntedPlugin plugin)
+	public BlockEventHandler(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
 	}

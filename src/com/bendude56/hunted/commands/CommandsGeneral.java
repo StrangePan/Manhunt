@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
@@ -20,7 +20,7 @@ public class CommandsGeneral
 			return;
 		}
 		
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (plugin.gameIsRunning())
 		{
@@ -39,7 +39,7 @@ public class CommandsGeneral
 			return;
 		}
 		
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!plugin.gameIsRunning())
 		{
@@ -53,7 +53,7 @@ public class CommandsGeneral
 	public static void onCommandSpawn(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is: /m spawn [spawn] [player]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		Player p2;
 		
@@ -151,7 +151,7 @@ public class CommandsGeneral
 	public static void onCommandSetspawn(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is: /m setspawn <spawn>";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
 		if (sender instanceof Player)

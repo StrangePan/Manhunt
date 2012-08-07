@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamUtil;
@@ -103,7 +103,7 @@ public class CommandsHelp
 	
 	public static void onCommandInfo(CommandSender sender)
 	{
-		PluginDescriptionFile desc = HuntedPlugin.getInstance().getDescription();
+		PluginDescriptionFile desc = ManhuntPlugin.getInstance().getDescription();
 		sender.sendMessage(ChatManager.divider);
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + desc.getName() + " " + desc.getVersion() + ChatManager.bracket2_);
 		sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + "Written by Deaboy. " + ChatColor.UNDERLINE + "http://youtube.com/fearofmobs");
@@ -112,7 +112,7 @@ public class CommandsHelp
 	
 	public static void onCommandStatus(CommandSender sender)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		String pre = ChatManager.leftborder + ChatManager.color;
 		
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Game Status" + ChatManager.bracket2_);

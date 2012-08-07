@@ -6,8 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
-import com.bendude56.hunted.HuntedPlugin.ManhuntMode;
+import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.settings.Setting;
 
@@ -15,7 +15,7 @@ public class CommandsSettings
 {
 	public static void onCommandSettings(CommandSender sender, String[] args)
 	{
-		List<Setting<?>> settings = HuntedPlugin.getInstance().getSettings().getAllSettings();
+		List<Setting<?>> settings = ManhuntPlugin.getInstance().getSettings().getAllSettings();
 		
 		String syntax = "Proper syntax is: /m settings [page]";
 		
@@ -72,7 +72,7 @@ public class CommandsSettings
 			return;
 		}
 		
-		if (HuntedPlugin.getInstance().gameIsRunning())
+		if (ManhuntPlugin.getInstance().gameIsRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
 			return;
@@ -84,7 +84,7 @@ public class CommandsSettings
 			return;
 		}
 		
-		Setting<?> setting = HuntedPlugin.getInstance().getSettings().getSetting(args[1]);
+		Setting<?> setting = ManhuntPlugin.getInstance().getSettings().getSetting(args[1]);
 		
 		if (setting == null)
 		{
@@ -118,15 +118,15 @@ public class CommandsSettings
 			return;
 		}
 		
-		if (HuntedPlugin.getInstance().gameIsRunning())
+		if (ManhuntPlugin.getInstance().gameIsRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
 			return;
 		}
 		
-		if (player.getWorld() != HuntedPlugin.getInstance().getWorld())
+		if (player.getWorld() != ManhuntPlugin.getInstance().getWorld())
 		{
-			HuntedPlugin.getInstance().setWorld(player.getWorld());
+			ManhuntPlugin.getInstance().setWorld(player.getWorld());
 			sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "The Manhunt world has been changed" + ChatManager.bracket2_);
 		}
 		else
@@ -138,7 +138,7 @@ public class CommandsSettings
 	public static void onCommandSetmode(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m setmode <mode>";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -146,7 +146,7 @@ public class CommandsSettings
 			return;
 		}
 		
-		if (HuntedPlugin.getInstance().gameIsRunning())
+		if (ManhuntPlugin.getInstance().gameIsRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
 			return;

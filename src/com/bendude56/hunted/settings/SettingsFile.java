@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 
 public class SettingsFile extends Properties{
 
@@ -33,7 +33,7 @@ public class SettingsFile extends Properties{
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				HuntedPlugin.getInstance().log(Level.SEVERE,
+				ManhuntPlugin.getInstance().log(Level.SEVERE,
 						"Problem loading the Manhunt file \"" + title + "\"!");
 				return;
 			}
@@ -41,9 +41,9 @@ public class SettingsFile extends Properties{
 		try {
 			load(new FileInputStream(file));
 		} catch (IOException e) {
-			HuntedPlugin.getInstance().log(Level.SEVERE,
+			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt file \"" + title + "!\"");
-			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 			return;
 		}
 		saveFile();
@@ -59,9 +59,9 @@ public class SettingsFile extends Properties{
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				HuntedPlugin.getInstance().log(Level.SEVERE,
+				ManhuntPlugin.getInstance().log(Level.SEVERE,
 						"Problem loading the Manhunt file \"" + title + "!\"");
-				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+				ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
 		}
@@ -69,9 +69,9 @@ public class SettingsFile extends Properties{
 			store(new FileOutputStream(file),
 					"- Manhunt " + title + " File -");
 		} catch (IOException e) {
-			HuntedPlugin.getInstance().log(Level.SEVERE,
+			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt file \"" + title + "!\"");
-			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 			return;
 		}
 	}

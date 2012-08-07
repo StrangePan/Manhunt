@@ -13,7 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 
 public class LoadoutFile extends Properties {
 
@@ -94,7 +94,7 @@ public class LoadoutFile extends Properties {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				HuntedPlugin.getInstance().log(Level.SEVERE,
+				ManhuntPlugin.getInstance().log(Level.SEVERE,
 						"Problem loading the Manhunt loadout \"" + loadout.name + "\"!");
 				return;
 			}
@@ -102,9 +102,9 @@ public class LoadoutFile extends Properties {
 		try {
 			load(new FileInputStream(file));
 		} catch (IOException e) {
-			HuntedPlugin.getInstance().log(Level.SEVERE,
+			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
-			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 			return;
 		}
 	}
@@ -178,9 +178,9 @@ public class LoadoutFile extends Properties {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				HuntedPlugin.getInstance().log(Level.SEVERE,
+				ManhuntPlugin.getInstance().log(Level.SEVERE,
 						"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
-				HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+				ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
 		}
@@ -188,9 +188,9 @@ public class LoadoutFile extends Properties {
 			store(new FileOutputStream(file),
 					"- Manhunt " + loadout.name + " Loadout -");
 		} catch (IOException e) {
-			HuntedPlugin.getInstance().log(Level.SEVERE,
+			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
-			HuntedPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 			return;
 		}
 	}

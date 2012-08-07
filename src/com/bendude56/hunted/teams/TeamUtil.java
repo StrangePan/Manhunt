@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 /**
@@ -20,7 +20,7 @@ public class TeamUtil {
 	 */
 	public static void sendMessageJoinTeam(Player p)
 	{
-		TeamManager teams = HuntedPlugin.getInstance().getTeams();
+		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
 		
 		p.sendMessage(ChatColor.GOLD + "You have joined the " + getTeamColor(teams.getTeamOf(p)) + getTeamName(teams.getTeamOf(p), true) + ChatColor.GOLD + ".");
 	}

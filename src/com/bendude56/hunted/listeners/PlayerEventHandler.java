@@ -18,15 +18,15 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class PlayerEventHandler implements Listener {
 	
-	private HuntedPlugin plugin;
+	private ManhuntPlugin plugin;
 	
-	public PlayerEventHandler(HuntedPlugin plugin)
+	public PlayerEventHandler(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
 	}

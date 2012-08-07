@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.finder.FinderManager;
@@ -22,7 +22,7 @@ import com.bendude56.hunted.timeouts.TimeoutManager;
  */
 public class Game
 {
-	private HuntedPlugin plugin;
+	private ManhuntPlugin plugin;
 	public TimeoutManager timeouts;
 	public FinderManager finders;
 	public GameEvents gameevents;
@@ -37,7 +37,7 @@ public class Game
 	public boolean freeze_hunters = false;
 	public boolean freeze_prey = false;
 	
-	public Game(HuntedPlugin plugin)
+	public Game(ManhuntPlugin plugin)
 	{
 		//Initialize important classes
 		this.plugin = plugin;
@@ -267,7 +267,7 @@ public class Game
 	 * Returns this class's pointer to the Manhunt plugin for quick access.
 	 * @return
 	 */
-	public HuntedPlugin getPlugin()
+	public ManhuntPlugin getPlugin()
 	{
 		return plugin;
 	}

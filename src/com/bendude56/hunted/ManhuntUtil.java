@@ -144,7 +144,7 @@ public class ManhuntUtil {
 
 	private static boolean isInBounds(Player p)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!plugin.gameIsRunning())
 		{
@@ -206,7 +206,7 @@ public class ManhuntUtil {
 
 	private static void stepInBounds(Player p)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (plugin.getSettings().BOUNDARY_BOXED.value)
 		{
@@ -252,7 +252,7 @@ public class ManhuntUtil {
 
 	private static Location getNearestCenterPoint(Location loc)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		Location nearestLocation;
 		Location hunterSpawn = plugin.getSettings().SPAWN_HUNTER.value;
@@ -353,7 +353,7 @@ public class ManhuntUtil {
 	
 	public static void sendToSpawn(Player p)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Location loc = plugin.getWorld().getSpawnLocation();
 		
 		switch (plugin.getTeams().getTeamOf(p))

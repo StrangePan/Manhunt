@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 
 public class Setting<Type> {
 
@@ -87,7 +87,7 @@ public class Setting<Type> {
 			}
 			else
 			{
-				HuntedPlugin.getInstance().log(Level.SEVERE, "Unknown value type for setting \"" + label + "\"");
+				ManhuntPlugin.getInstance().log(Level.SEVERE, "Unknown value type for setting \"" + label + "\"");
 				return false;
 			}
 			save(true);

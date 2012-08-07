@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -15,7 +15,7 @@ public class FinderUtil {
 
 	public static void sendMessageNoOnlinePrey(Player p)
 	{
-		TeamManager teams = HuntedPlugin.getInstance().getTeams();
+		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
 		
 		if (teams.getTeamOf(p) == Team.HUNTERS)
 		{
@@ -39,7 +39,7 @@ public class FinderUtil {
 
 	private static void sendMessageFinderResultsNearby(Player p)
 	{
-		TeamManager teams = HuntedPlugin.getInstance().getTeams();
+		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
 		
 		if (teams.getTeamOf(p) == Team.HUNTERS)
 		{
@@ -58,7 +58,7 @@ public class FinderUtil {
 	 */
 	public static void sendMessageFinderResults(Player p)
 	{
-		TeamManager teams = HuntedPlugin.getInstance().getTeams();
+		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
 		
 		//GET ALL ENEMIES
 		List<Player> enemies;

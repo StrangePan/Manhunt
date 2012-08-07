@@ -20,7 +20,7 @@ import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.TeamManager;
 
-public class HuntedPlugin extends JavaPlugin {
+public class ManhuntPlugin extends JavaPlugin {
 
 	private Logger log = Logger.getLogger("Minecraft");
 	
@@ -74,8 +74,8 @@ public class HuntedPlugin extends JavaPlugin {
 		log.log(level, "[" + this.getDescription().getName() + "] " + message);
 	}
 
-	public static HuntedPlugin getInstance() {
-		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Manhunt");
+	public static ManhuntPlugin getInstance() {
+		return (ManhuntPlugin) Bukkit.getServer().getPluginManager().getPlugin("Manhunt");
 	}
 	
 	public void startGame()

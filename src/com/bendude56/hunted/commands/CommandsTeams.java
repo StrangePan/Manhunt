@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -18,7 +18,7 @@ public class CommandsTeams
 {
 	public static void onCommandList(CommandSender sender, String[] args)
 	{
-		TeamManager teams = HuntedPlugin.getInstance().getTeams();
+		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
 		List<String> hunters = teams.getTeamNames(Team.HUNTERS);
 		List<String> prey = teams.getTeamNames(Team.PREY);
 		List<String> spectators = teams.getTeamNames(Team.SPECTATORS);
@@ -62,7 +62,7 @@ public class CommandsTeams
 	public static void onCommandQuit(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m quit";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
 		if (sender instanceof Player)
@@ -94,7 +94,7 @@ public class CommandsTeams
 	public static void onCommandHunter(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m spectate [player]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
 		if (plugin.gameIsRunning())
@@ -156,7 +156,7 @@ public class CommandsTeams
 	public static void onCommandPrey(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m spectate [player]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
 		if (plugin.gameIsRunning())
@@ -218,7 +218,7 @@ public class CommandsTeams
 	public static void onCommandSpectate(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m spectate [player]";
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
 		if (plugin.gameIsRunning())
@@ -279,7 +279,7 @@ public class CommandsTeams
 
 	public static void onCommandLock(CommandSender sender, String[] args)
 	{
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (!sender.isOp())
 		{
@@ -311,7 +311,7 @@ public class CommandsTeams
 			return;
 		}
 		
-		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		
 		if (plugin.getTeams().getTeamOf(args[1]) == null)
 		{

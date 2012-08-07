@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import com.bendude56.hunted.HuntedPlugin.ManhuntMode;
+import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 
 
 public class SettingsManager

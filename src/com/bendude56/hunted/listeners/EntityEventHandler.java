@@ -28,15 +28,15 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 
-import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class EntityEventHandler implements Listener
 {
-	private HuntedPlugin plugin;
+	private ManhuntPlugin plugin;
 
-	public EntityEventHandler(HuntedPlugin plugin)
+	public EntityEventHandler(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
 	}
