@@ -75,6 +75,22 @@ public class HuntedPlugin extends JavaPlugin {
 	public static HuntedPlugin getInstance() {
 		return (HuntedPlugin) Bukkit.getServer().getPluginManager().getPlugin("Manhunt");
 	}
+	
+	public void startGame()
+	{
+		stopGame();
+		game = new Game(this);
+	}
+	
+	public void stopGame()
+	{
+		if (game == null)
+		{
+			return;
+		}
+		game.stopGame(false);
+		game = null;
+	}
 
 	public void setWorld(World world)
 	{

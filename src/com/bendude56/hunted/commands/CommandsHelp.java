@@ -60,6 +60,7 @@ public class CommandsHelp
 			sender.sendMessage(cmdColor + "/m prey [player]" + cmdDesc + "Puts you or a player on the " + TeamUtil.getTeamColor(Team.PREY) + TeamUtil.getTeamName(Team.PREY, false) + cmdDesc + " team");
 			sender.sendMessage(cmdColor + "/m spectator [player]" + cmdDesc + "Makes you or a player a " + TeamUtil.getTeamColor(Team.SPECTATORS) + TeamUtil.getTeamName(Team.SPECTATORS, false) + cmdDesc + ".");
 			sender.sendMessage(cmdColor + "/m lock" + cmdDesc + "Locks the teams and the world.");
+			sender.sendMessage(cmdColor + "/m kick [player]" + cmdDesc + "Kicks a player from the game.");
 		}
 		if (page == 3)
 		{

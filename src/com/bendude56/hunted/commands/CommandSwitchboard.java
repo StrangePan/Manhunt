@@ -58,7 +58,7 @@ public class CommandSwitchboard implements CommandExecutor
 		}
 		if (arg.equalsIgnoreCase("setworld"))
 		{
-			//Sets the Manhunt world.
+			CommandsSettings.onCommandSetworld(sender, args);
 		}
 		
 		//LOADOUT COMMANDS

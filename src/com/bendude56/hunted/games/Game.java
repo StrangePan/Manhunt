@@ -94,7 +94,7 @@ public class Game
 	 * Stops the Manhunt Game. Private, because only other in-class
 	 * public methods may stop this game.
 	 */
-	protected void stopGame(boolean announceWinners) {
+	public void stopGame(boolean announceWinners) {
 		if (announceWinners)
 		{
 			int hunterCount = plugin.getTeams().getTeamNames(Team.HUNTERS).size();
@@ -204,12 +204,26 @@ public class Game
 	{
 		GameUtil.broadcast(ChatManager.bracket1_ + TeamUtil.getTeamColor(plugin.getTeams().getTeamOf(player_name)) + player_name + ChatManager.color + " has forfeit the game!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
-		if (Bukkit.getPlayer(player_name) == null)
-			plugin.getTeams().deletePlayer(player_name);
-		else
-			plugin.getTeams().changePlayerTeam(Bukkit.getPlayer(player_name), Team.NONE);
+		Player player = Bukkit.getPlayer(player_name);
 		
-		checkTeamCounts(true);
+		if (player == null)
+		{
+			plugin.getTeams().deletePlayer(player_name);
+			checkTeamCounts(true);
+		}
+		else
+		{
+			if (player.getWorld() == world)
+			{
+				onPlayerDie(player);
+			}
+			else
+			{
+				plugin.getTeams().changePlayerTeam(Bukkit.getPlayer(player_name), Team.NONE);
+				checkTeamCounts(true);
+			}
+		}
+		
 	}
 
 	/**
