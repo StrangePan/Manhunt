@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -32,7 +32,7 @@ public class PlayerEventHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerChat(PlayerChatEvent e)
+	public void onPlayerChat(AsyncPlayerChatEvent e)
 	{
 		if (e.isCancelled() || !plugin.getSettings().CONTROL_CHAT.value)
 		{

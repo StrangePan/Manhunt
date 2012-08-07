@@ -2,7 +2,7 @@ package com.bendude56.hunted.chat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -23,7 +23,7 @@ public class ChatManager {
 	public final static String leftborder = color + "|  ";
 	public final static String divider = color + "--------------------";
 
-	public void onPlayerchat(PlayerChatEvent e)
+	public void onPlayerchat(AsyncPlayerChatEvent e)
 	{
 		
 	}
