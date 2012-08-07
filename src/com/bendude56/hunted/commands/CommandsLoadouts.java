@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.HuntedPlugin;
 import com.bendude56.hunted.chat.ChatManager;
@@ -15,6 +16,12 @@ public class CommandsLoadouts
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is /m listinv [page]";
 		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
 		
 		List<Loadout> loads = plugin.getLoadouts().getAllLoadouts();
 		
@@ -67,6 +74,58 @@ public class CommandsLoadouts
 		sender.sendMessage(ChatManager.divider);
 	}
 
-	
+	public static void onCommandNewinv(CommandSender sender, String[] args)
+	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m listinv [page]";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return;
+		}
+		
+		Player p;
+		
+		if (sender instanceof Player)
+		{
+			p = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return;
+		}
+		
+		if (args.length != 2)
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		if (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("prey"))
+		{
+			sender.sendMessage(ChatColor.RED + "You may not use that name!");
+			return;
+		}
+		
+		Loadout loadout = plugin.getLoadouts().getLoadout(args[1]);
+		
+		if (loadout == null)
+		{
+			plugin.getLoadouts().addLoadout(args[1], p.getInventory().getContents(), p.getInventory().getArmorContents());
+			sender.sendMessage(ChatColor.GREEN + "New loadout created with name " + args[1]);
+		}
+		else
+		{
+			plugin.getLoadouts().getLoadout(args[1]).setContents(p.getInventory().getContents(), p.getInventory().getArmorContents());
+			p.sendMessage(ChatColor.GREEN + "The existing loadout " + loadout.name + " was overwritten.");
+		}
+	}
+
+	public static void onCommandLoadinv(CommandSender sender, String[] args)
+	{
+		
+	}
 
 }

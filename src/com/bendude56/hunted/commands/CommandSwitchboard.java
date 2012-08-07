@@ -75,9 +75,9 @@ public class CommandSwitchboard implements CommandExecutor
 		{
 			CommandsLoadouts.onCommandListinv(sender, args);
 		}
-		if (arg.equalsIgnoreCase("saveloadout") || arg.equalsIgnoreCase("saveinv") || arg.equalsIgnoreCase("newloadout") || arg.equalsIgnoreCase("newinv")) //TODO FINISH
+		if (arg.equalsIgnoreCase("saveloadout") || arg.equalsIgnoreCase("saveinv") || arg.equalsIgnoreCase("newloadout") || arg.equalsIgnoreCase("newinv"))
 		{
-			//Save a new loadout
+			CommandsLoadouts.onCommandNewinv(sender, args);
 		}
 		if (arg.equalsIgnoreCase("loadloadout") || arg.equalsIgnoreCase("loadinv"))
 		{
