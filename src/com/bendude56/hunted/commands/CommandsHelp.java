@@ -67,7 +67,7 @@ public class CommandsHelp
 			sender.sendMessage(cmdColor + "/m settings [page]" + cmdDesc + "Lists the current Manhunt settings.");
 			sender.sendMessage(cmdColor + "/m set <setting> <value>" + cmdDesc + "Changes a Manhunt setting.");
 			sender.sendMessage(cmdColor + "/m spawn [spawn] [player]" + cmdDesc + "Teleports a player to a spawn.");
-			sender.sendMessage(cmdColor + "/m setspawn [spawn]" + cmdDesc + "Changes the given spawnpoint.");
+			sender.sendMessage(cmdColor + "/m setspawn <spawn>" + cmdDesc + "Changes the given spawnpoint.");
 			sender.sendMessage(cmdColor + "/m setworld" + cmdDesc + "Changes the Manhunt World to the current one.");
 			sender.sendMessage(cmdColor + "/m mode [mode]" + cmdDesc + "Displays / changes Manhunt's privacy mode.");
 		}

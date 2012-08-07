@@ -111,7 +111,7 @@ public class CommandSwitchboard implements CommandExecutor
 		}
 		if (arg.equalsIgnoreCase("kick"))
 		{
-			//Kicks a player from the manhunt game
+			CommandsGeneral.onCommandKick(sender, args);
 		}
 		if (arg.equalsIgnoreCase("quit"))
 		{
@@ -122,22 +122,22 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (arg.equalsIgnoreCase("spawn"))
 		{
-			//Teleports the player to a spawn
+			CommandsGeneral.onCommandSpawn(sender, args);
 		}
 		if (arg.equalsIgnoreCase("setspawn"))
 		{
-			//Sets a spawn point
+			CommandsGeneral.onCommandSetspawn(sender, args);
 		}
 		
 		//COMMANDS FOR STARTING/STOPING THE GAME
 		
 		if (arg.equalsIgnoreCase("startgame"))
 		{
-			//Starts the manhunt game
+			CommandsGeneral.onCommandStartgame(sender, args);
 		}
 		if (arg.equalsIgnoreCase("stopgame"))
 		{
-			//Stops the game
+			CommandsGeneral.onCommandStopgame(sender, args);
 		}
 		
 		
