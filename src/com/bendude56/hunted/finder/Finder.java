@@ -3,12 +3,14 @@ package com.bendude56.hunted.finder;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.chat.ChatManager;
 
 public class Finder
 {
@@ -72,9 +74,9 @@ public class Finder
 			Player p = Bukkit.getPlayer(player_name);
 			if (p != null)
 			{
-				//TODO Alert the player that their finder is ready.
-				manager.stopFinder(this);
+				p.sendMessage(ChatManager.bracket1_ + "The " + ChatColor.DARK_RED + "Prey Finder" + ChatManager.color + " is fully charged." + ChatManager.bracket2_);
 			}
+			manager.stopFinder(this);
 		}
 	}
 
