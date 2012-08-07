@@ -1,0 +1,72 @@
+package com.bendude56.hunted.commands;
+
+import java.util.List;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import com.bendude56.hunted.HuntedPlugin;
+import com.bendude56.hunted.chat.ChatManager;
+import com.bendude56.hunted.loadouts.Loadout;
+
+public class CommandsLoadouts
+{
+	public static void onCommandListinv(CommandSender sender, String[] args)
+	{
+		String SYNTAX = ChatColor.RED + "Proper syntax is /m listinv [page]";
+		HuntedPlugin plugin = HuntedPlugin.getInstance();
+		
+		List<Loadout> loads = plugin.getLoadouts().getAllLoadouts();
+		
+		int page; //between 1 and max_pages
+		int per_page = 6; //settings displayed per page
+		int max_pages = (int) Math.ceil(loads.size() / per_page);
+		
+		if (args.length == 1)
+		{
+			page = 1;
+		}
+		else if (args.length == 2)
+		{
+			try
+			{
+				page = Integer.parseInt(args[1]);
+			}
+			catch (NumberFormatException e)
+			{
+				sender.sendMessage(SYNTAX);
+				return;
+			}
+		}
+		else
+		{
+			sender.sendMessage(SYNTAX);
+			return;
+		}
+		
+		if (page > max_pages)
+			page = max_pages;
+		if (page < 1)
+			page = 1;
+		
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Saved Loadouts (" + page + "/" + max_pages + ")" + ChatManager.bracket2_);
+		
+		loads = loads.subList((page-1) * per_page, page * max_pages > loads.size() ? loads.size() - 1 : page * max_pages);
+
+		if (loads.isEmpty())
+		{
+			sender.sendMessage(ChatColor.RED + "There are no saved loadouts!");
+			return;
+		}
+		
+		for (Loadout load : loads)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GREEN + load.name + (plugin.getSettings().HUNTER_LOADOUT_CURRENT.value.equals(load.name) ? " (" + ChatColor.DARK_RED + "Hunter" + ChatColor.GREEN + ")" : "") + ChatColor.GREEN + (plugin.getSettings().PREY_LOADOUT_CURRENT.value.equals(load.name) ? " (" + ChatColor.BLUE + "Prey" + ChatColor.GREEN + ")" : ""));
+		}
+		
+		sender.sendMessage(ChatManager.divider);
+	}
+
+	
+
+}

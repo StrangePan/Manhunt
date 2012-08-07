@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -49,12 +50,11 @@ public class PlayerEventHandler implements Listener {
 		}
 	}
 
-	/*
-	 * public void onPlayerKick(PlayerKickEvent e) { if
-	 * (e.getPlayer().getWorld() == plugin.getWorld() &&
-	 * plugin.gameIsRunning() && plugin.getGame().isPlaying(e.getPlayer())) {
-	 * e.setLeaveMessage(null); } plugin.getGame().onLogout(e.getPlayer()); }
-	 */
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent e)
+	{
+		plugin.getGame().onPlayerLeave(e.getPlayer());
+	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
