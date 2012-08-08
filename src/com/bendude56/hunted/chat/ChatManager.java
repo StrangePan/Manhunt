@@ -1,10 +1,14 @@
 package com.bendude56.hunted.chat;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.games.GameUtil;
+import com.bendude56.hunted.games.Game.GameStage;
+import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 /**
@@ -25,27 +29,37 @@ public class ChatManager {
 
 	public void onPlayerchat(AsyncPlayerChatEvent e)
 	{
+		e.setCancelled(true);
+		
+		if (e.getPlayer().getWorld() != plugin.getWorld())
+		{
+			for (Player p : Bukkit.getOnlinePlayers())
+			{
+				if (p.getWorld() != plugin.getWorld())
+				{
+					p.sendMessage("<" + e.getPlayer().getName() + "> " + e.getMessage());
+				}
+			}
+		}
+		else
+		{
+			Team t = plugin.getTeams().getTeamOf(e.getPlayer());
+			String message = TeamUtil.getTeamColor(t) + e.getPlayer().getName() + ": " + ChatColor.WHITE + e.getMessage();
+			
+			if (!plugin.getSettings().ALL_TALK.value && plugin.gameIsRunning() && plugin.getGame().getStage() != GameStage.PREGAME)
+			{
+				GameUtil.broadcast(message, t);
+			}
+			else
+			{
+				GameUtil.broadcast(message, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			}
+		}
 		
 	}
 
 	public ChatManager(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
-	}
-
-	public void broadcastAll(String s, boolean spectators)
-	{
-		for (Player p : plugin.getTeams().getAllPlayers(spectators))
-		{
-			p.sendMessage(s);
-		}
-	}
-	
-	public void broadcastTeam(String s, Team t)
-	{
-		for (Player p : plugin.getTeams().getTeamPlayers(t))
-		{
-			p.sendMessage(s);
-		}
 	}
 }

@@ -85,11 +85,11 @@ public class EntityEventHandler implements Listener
 			if (p2 != null)
 				t2 = plugin.getTeams().getTeamOf(p2);
 			
-			if ((t != Team.HUNTERS && t != Team.PREY) || (t2 != Team.HUNTERS && t2 != Team.PREY))
+			if (t == Team.SPECTATORS || t2 == Team.SPECTATORS)
 			{
 				e.setCancelled(true);
 			}
-			if (t == t2 && !plugin.getSettings().FRIENDLY_FIRE.value)
+			if (t == t2 && p != null && p2 != null && !plugin.getSettings().FRIENDLY_FIRE.value)
 			{
 				e.setCancelled(true);
 			}

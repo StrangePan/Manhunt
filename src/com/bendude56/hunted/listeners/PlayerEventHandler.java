@@ -22,8 +22,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.games.Game.GameStage;
+import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class PlayerEventHandler implements Listener {
@@ -60,6 +62,9 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getTeams().addPlayer(e.getPlayer());
 		}
+		
+		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
+		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.GREEN + "joined" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 	}
 
 	@EventHandler
@@ -77,6 +82,9 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getTeams().deletePlayer(e.getPlayer().getName());
 		}
+		
+		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
+		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 	}
 
 	@EventHandler
@@ -94,6 +102,9 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getTeams().deletePlayer(e.getPlayer().getName());
 		}
+		
+		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
+		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 	}
 	
 	@EventHandler

@@ -70,6 +70,10 @@ public class BlockEventHandler implements Listener {
 		{
 			return false;
 		}
+		else if (plugin.locked)
+		{
+			return false;
+		}
 		return true;
 	}
 	

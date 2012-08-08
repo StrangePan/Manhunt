@@ -28,6 +28,10 @@ public class FinderManager
 		{
 			finders.add(new Finder(p, this));
 		}
+		else
+		{
+			getFinder(p).sendTimeLeft();
+		}
 	}
 
 	/**

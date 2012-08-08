@@ -22,7 +22,7 @@ public class TeamManager
 	public TeamManager(ManhuntPlugin plugin)
 	{
 		this.plugin = plugin;
-		
+		refreshPlayers();
 	}
 
 	public void refreshPlayers()

@@ -1,14 +1,12 @@
 package com.bendude56.hunted;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -36,10 +34,8 @@ public class ManhuntUtil {
 		double z2 = target.getZ();
 		Location destination = player.getLocation();
 
-		destination
-				.setX(x1 + distance * (x2 - x1) / getDistance(x1, 0, z1, x2, 0, z2, false));
-		destination
-				.setZ(z1 + distance * (z2 - z1) / getDistance(z1, 0, z1, z2, 0, z2, false));
+		destination.setX(x1 + distance * (x2 - x1) / getDistance(x1, 0, z1, x2, 0, z2, false));
+		destination.setZ(z1 + distance * (z2 - z1) / getDistance(z1, 0, z1, z2, 0, z2, false));
 
 		player.teleport(safeTeleport(destination));
 	}
@@ -151,6 +147,10 @@ public class ManhuntUtil {
 		{
 			return true;
 		}
+		else if (plugin.getGame().getStage() == GameStage.PREGAME)
+		{
+			return true;
+		}
 		
 		Team team = plugin.getTeams().getTeamOf(p);
 		
@@ -161,7 +161,7 @@ public class ManhuntUtil {
 		
 		if (plugin.getSettings().BOUNDARY_BOXED.value)
 		{
-			if (plugin.gameIsRunning() && team == Team.HUNTERS)
+			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS)
 			{
 				if (p.getLocation().getX() < plugin.getSettings().SPAWN_SETUP.value.getX() - plugin.getSettings().BOUNDARY_SETUP.value)
 					return false;
@@ -171,7 +171,6 @@ public class ManhuntUtil {
 					return false;
 				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_SETUP.value.getZ() + plugin.getSettings().BOUNDARY_SETUP.value)
 					return false;
-				return true;
 			}
 			else
 			{
@@ -183,7 +182,6 @@ public class ManhuntUtil {
 					return false;
 				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_HUNTER.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() > plugin.getSettings().SPAWN_PREY.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value)
 					return false;
-				return true;
 			}
 		}
 		else
@@ -192,7 +190,6 @@ public class ManhuntUtil {
 			{
 				if (getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value)
 					return false;
-				return true;
 			}
 			else
 			{
@@ -200,9 +197,9 @@ public class ManhuntUtil {
 				
 				if (getDistance(p.getLocation(), nearestLocation, true) > plugin.getSettings().BOUNDARY_WORLD.value)
 					return false;
-				return true;
 			}
 		}
+		return true;
 	}
 
 	private static void stepInBounds(Player p)
@@ -240,7 +237,7 @@ public class ManhuntUtil {
 		}
 		else
 		{
-			if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(p) == Team.HUNTERS)
+			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.PREGAME && plugin.getTeams().getTeamOf(p) == Team.HUNTERS)
 			{
 				stepPlayer(p, (double) 1, safeTeleport(plugin.getSettings().SPAWN_SETUP.value));
 			}
@@ -312,45 +309,6 @@ public class ManhuntUtil {
 				types.add(Material.YELLOW_FLOWER);
 		return (types.contains(block.getType()));
 	}
-
-	public static HashMap<Integer, ItemStack> defaultHunterLoadout(HashMap<Integer, ItemStack> inv)
-	{
-		inv.clear();
-		inv.put(0, new ItemStack(Material.STONE_SWORD, 1));
-		inv.put(1, new ItemStack(Material.BOW, 1));
-		// inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
-		// inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
-		// inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
-		inv.put(2, new ItemStack(Material.TORCH, 3));
-		inv.put(3, new ItemStack(Material.COOKED_CHICKEN, 3));
-		inv.put(4, new ItemStack(Material.ARROW, 64));
-		inv.put(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		inv.put(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		inv.put(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		inv.put(39, new ItemStack(Material.LEATHER_HELMET, 1));
-		
-		return inv;
-	}
-	
-	public static HashMap<Integer, ItemStack> defaultPreyLoadout(HashMap<Integer, ItemStack> inv)
-	{
-		inv.clear();
-		inv.put(0, new ItemStack(Material.STONE_SWORD, 1));
-		inv.put(1, new ItemStack(Material.BOW, 1));
-		// inv.setItem(2, new ItemStack(Material.STONE_PICKAXE, 1));
-		// inv.setItem(3, new ItemStack(Material.STONE_SPADE, 1));
-		// inv.setItem(4, new ItemStack(Material.STONE_AXE, 1));
-		inv.put(2, new ItemStack(Material.TORCH, 3));
-		inv.put(3, new ItemStack(Material.COOKED_CHICKEN, 1));
-		inv.put(4, new ItemStack(Material.ARROW, 64));
-		// inv.setItem(36, new ItemStack(Material.LEATHER_BOOTS, 1));
-		// inv.setItem(37, new ItemStack(Material.LEATHER_LEGGINGS, 1));
-		// inv.setItem(38, new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-		// inv.setItem(39, new ItemStack(Material.LEATHER_HELMET, 1));
-		
-		return inv;
-	}
-
 	
 	public static void sendToSpawn(Player p)
 	{

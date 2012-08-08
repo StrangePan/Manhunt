@@ -36,6 +36,8 @@ public class Finder
 		this.activation_time = time.getTime() + 8000;
 		this.expire_time = activation_time + (1000*manager.getGame().getPlugin().getSettings().FINDER_COOLDOWN.value);
 		
+		player.sendMessage(ChatManager.bracket1_ + "Finding nearest enemy. Please stand still for " + ChatColor.DARK_RED + "8 seconds." + ChatManager.bracket2_);
+		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
@@ -91,23 +93,46 @@ public class Finder
 	{
 		if (used)
 		{
-			return true;
+			return false;
 		}
 
 		Player p = Bukkit.getPlayer(player_name);
 
 		if (p != null)
 		{
-			if (p.getItemInHand().getType() != Material.COMPASS || ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.5, true))
+			if (p.getItemInHand().getType() != Material.COMPASS || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.5, true))
 			{
 				FinderUtil.sendMessageFinderCancel(p);
 				manager.stopFinder(this);
 				return false;
 			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			FinderUtil.sendMessageFinderCancel(p);
+			manager.stopFinder(this);
+			return false;
 		}
 
-		return true;
+	}
 
+	public void sendTimeLeft()
+	{
+		Player p = Bukkit.getPlayer(player_name);
+		
+		if (p == null)
+		{
+			checkValidity();
+		}
+		else if (used)
+		{
+			Date time = new Date();
+			p.sendMessage(ChatManager.leftborder + "Your Prey Finder is still charging. Please wait for " + ChatColor.DARK_RED + (int) Math.ceil((expire_time - time.getTime())/1000) + " seconds.");
+		}
 	}
 
 	protected void close()
@@ -115,5 +140,6 @@ public class Finder
 		Bukkit.getScheduler().cancelTask(schedule);
 		manager = null;
 	}
+
 
 }

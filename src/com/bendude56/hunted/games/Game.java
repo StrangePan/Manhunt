@@ -3,7 +3,6 @@ package com.bendude56.hunted.games;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -137,10 +136,6 @@ public class Game
 	{
 		plugin.getTeams().addPlayer(p);
 		timeouts.stopTimeout(p);
-		Team team = plugin.getTeams().getTeamOf(p);
-
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + p.getName() + ChatColor.WHITE + " has " + ChatColor.GREEN + "joined" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-		
 		plugin.getTeams().savePlayerGameMode(p);
 		//TODO Save the player's inventory
 	}
@@ -155,11 +150,6 @@ public class Game
 		//TODO Restore player's inventory
 		finders.stopFinder(p);
 		timeouts.startTimeout(p);
-		
-		Team team = plugin.getTeams().getTeamOf(p);
-
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + p.getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-		
 	}
 
 	/**
