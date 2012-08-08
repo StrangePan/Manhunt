@@ -47,7 +47,7 @@ public class CommandsGeneral
 			return;
 		}
 		
-		plugin.startGame();
+		plugin.stopGame();
 	}
 
 	public static void onCommandSpawn(CommandSender sender, String[] args)

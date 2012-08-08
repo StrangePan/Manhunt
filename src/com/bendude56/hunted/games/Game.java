@@ -1,5 +1,7 @@
 package com.bendude56.hunted.games;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -41,21 +43,13 @@ public class Game
 	{
 		//Initialize important classes
 		this.plugin = plugin;
-		this.timeouts = new TimeoutManager(this);
-		this.finders = new FinderManager(this);
-		this.gameevents = new GameEvents(this);
 		
 		//Save pointer to world
 		this.world = plugin.getWorld();
 		
-		startGame();
-	}
-
-	/**
-	 * Initializes everything
-	 */
-	private void startGame()
-	{
+		this.timeouts = new TimeoutManager(this);
+		this.finders = new FinderManager(this);
+		
 		//Calculate milestones ticks
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day
@@ -70,6 +64,17 @@ public class Game
 		Long stop_hunt_tick = start_hunt_tick; //Set up the end_hunt_tick, giving it a baseline.
 		stop_hunt_tick += plugin.getSettings().DAY_LIMIT.value * 24000;
 		this.stop_hunt_tick = stop_hunt_tick; //Save the stop_hunt_tick
+		
+		this.gameevents = new GameEvents(this);
+		
+		startGame();
+	}
+
+	/**
+	 * Initializes everything
+	 */
+	private void startGame()
+	{
 	}
 
 	/*
@@ -115,6 +120,13 @@ public class Game
 		else
 		{
 			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		}
+		
+
+		List<Player> spectators = getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
+		for (Player p : spectators)
+		{
+			GameUtil.makeVisible(p);
 		}
 		
 		close();

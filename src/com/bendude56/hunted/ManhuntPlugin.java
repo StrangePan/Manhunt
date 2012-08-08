@@ -41,13 +41,14 @@ public class ManhuntPlugin extends JavaPlugin {
 		//Start up all the classes.
 
 		settings =	new SettingsManager();
+		
+		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
+		
 		loadouts =	new LoadoutManager();
 		teams =		new TeamManager(this);
 		chat =		new ChatManager(this);
 		game =		null;
 		new CommandSwitchboard();
-		
-		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		
 		//Register Events
 		getServer().getPluginManager().registerEvents(new PlayerEventHandler(this), this);

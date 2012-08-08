@@ -1,5 +1,6 @@
 package com.bendude56.hunted.listeners;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class PlayerEventHandler implements Listener {
@@ -48,18 +50,36 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getGame().onPlayerJoin(e.getPlayer());
 		}
+		else
+		{
+			plugin.getTeams().addPlayer(e.getPlayer());
+		}
 	}
 
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent e)
 	{
-		plugin.getGame().onPlayerLeave(e.getPlayer());
+		if (plugin.gameIsRunning())
+		{
+			plugin.getGame().onPlayerLeave(e.getPlayer());
+		}
+		else
+		{
+			plugin.getTeams().deletePlayer(e.getPlayer().getName());
+		}
 	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
-		plugin.getGame().onPlayerLeave(e.getPlayer());
+		if (plugin.gameIsRunning())
+		{
+			plugin.getGame().onPlayerLeave(e.getPlayer());
+		}
+		else
+		{
+			plugin.getTeams().deletePlayer(e.getPlayer().getName());
+		}
 	}
 	
 	@EventHandler
@@ -126,6 +146,11 @@ public class PlayerEventHandler implements Listener {
 		{
 			return;
 		}
+		if (plugin.locked && !p.isOp())
+		{
+			e.setCancelled(true);
+			return;
+		}
 		
 		Team team = plugin.getTeams().getTeamOf(p);
 		
@@ -141,7 +166,10 @@ public class PlayerEventHandler implements Listener {
 					|| e.getAction() == Action.LEFT_CLICK_BLOCK
 					|| e.getAction() == Action.LEFT_CLICK_AIR)
 			{
-				plugin.getGame().finders.startFinder(p);
+				if (p.getItemInHand().getType() == Material.COMPASS)
+				{
+					plugin.getGame().finders.startFinder(p);
+				}
 			}
 		}
 	}
@@ -196,9 +224,25 @@ public class PlayerEventHandler implements Listener {
 		{
 			return;
 		}
-		if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
+		
+		if (plugin.gameIsRunning())
 		{
-			e.setCancelled(true);
+			if (plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
+			{
+				e.setCancelled(true);
+			}
+			if (plugin.getGame().getStage() == GameStage.PREGAME)
+			{
+				e.setCancelled(true);
+			}
+		}
+		else
+		{
+			if (plugin.locked && e.getPlayer().isOp())
+			{
+				e.setCancelled(true);
+				return;
+			}
 		}
 	}
 
@@ -209,9 +253,25 @@ public class PlayerEventHandler implements Listener {
 		{
 			return;
 		}
-		if (plugin.gameIsRunning() && plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
+		
+		if (plugin.gameIsRunning())
 		{
-			e.setCancelled(true);
+			if (plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
+			{
+				e.setCancelled(true);
+			}
+			if (plugin.getGame().getStage() == GameStage.PREGAME)
+			{
+				e.setCancelled(true);
+			}
+		}
+		else
+		{
+			if (plugin.locked && e.getPlayer().isOp())
+			{
+				e.setCancelled(true);
+				return;
+			}
 		}
 	}
 

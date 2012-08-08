@@ -51,8 +51,10 @@ public class CommandsTeams
 			msgSpectators += "  ";
 		}
 		
-		sender.sendMessage(msgHunters);
-		sender.sendMessage(msgPrey);
+		if (!msgHunters.isEmpty())
+			sender.sendMessage(msgHunters);
+		if (!msgPrey.isEmpty())
+			sender.sendMessage(msgPrey);
 		if (!msgSpectators.isEmpty())
 			sender.sendMessage(msgSpectators);
 		

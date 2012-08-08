@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class ManhuntUtil {
@@ -187,7 +188,7 @@ public class ManhuntUtil {
 		}
 		else
 		{
-			if (plugin.gameIsRunning() && team == Team.HUNTERS)
+			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS)
 			{
 				if (getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value)
 					return false;

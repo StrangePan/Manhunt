@@ -1,6 +1,5 @@
 package com.bendude56.hunted.listeners;
 
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Cow;
@@ -9,6 +8,7 @@ import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
@@ -30,6 +30,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class EntityEventHandler implements Listener
@@ -67,17 +68,25 @@ public class EntityEventHandler implements Listener
 				{
 					p2 = (Player) ((EntityDamageByEntityEvent) e).getDamager();
 				}
+				else if (((EntityDamageByEntityEvent) e).getDamager() instanceof Projectile)
+				{
+					if (((Projectile) (((EntityDamageByEntityEvent) e).getDamager())).getShooter() instanceof Player)
+					{
+						p2 = (Player) ((Projectile) (((EntityDamageByEntityEvent) e).getDamager())).getShooter();
+					}
+				}
 			}
 			
-			t = plugin.getTeams().getTeamOf(p);
-			t2 = plugin.getTeams().getTeamOf(p2);
+			if (p != null)
+				t = plugin.getTeams().getTeamOf(p);
+			if (p2 != null)
+				t2 = plugin.getTeams().getTeamOf(p2);
 			
-			if (t != Team.HUNTERS || t != Team.PREY || t2 != Team.HUNTERS || t2 != Team.PREY)
+			if ((t != Team.HUNTERS && t != Team.PREY) || (t2 != Team.HUNTERS && t2 != Team.PREY))
 			{
 				e.setCancelled(true);
 			}
-			
-			if (!plugin.getSettings().FRIENDLY_FIRE.value && t == t2)
+			if (t == t2 && !plugin.getSettings().FRIENDLY_FIRE.value)
 			{
 				e.setCancelled(true);
 			}
@@ -89,6 +98,18 @@ public class EntityEventHandler implements Listener
 					e.setDamage(p.getHealth() - 1);
 				}
 			}
+			if (p != null && p2 != null) //Player damaged by other player
+			{
+				GameStage stage = plugin.getGame().getStage();
+				
+				switch (stage)
+				{
+					case PREGAME: e.setCancelled(true);
+					case SETUP:	if (t != t2) e.setCancelled(true);
+					default:	break;
+				}
+			}
+			
 		}
 		else
 		{
@@ -111,7 +132,7 @@ public class EntityEventHandler implements Listener
 		{
 			return;
 		}
-		if (plugin.gameIsRunning())
+		if (!plugin.gameIsRunning())
 		{
 			return;
 		}
@@ -138,9 +159,9 @@ public class EntityEventHandler implements Listener
 			{
 				p2 = (Player) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager();
 			}
-			if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Arrow && ((Arrow) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter() instanceof Player)
+			if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Projectile && ((Projectile) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter() instanceof Player)
 			{
-				p2 = (Player) ((Arrow) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter();
+				p2 = (Player) ((Projectile) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter();
 			}
 		}
 		if (p.getLastDamageCause().getCause() == DamageCause.MAGIC)

@@ -104,6 +104,7 @@ public class GameEvents
 			{
 				//TELEPORT PLAYERS TO THEIR SPAWN POINTS
 				//AND SET THEIR INVENTORIES
+				//AND MAKES SPECTATORS INVISIBLE
 				//TODO Save their old inventories for restoring later
 				List<Player> hunters = game.getPlugin().getTeams().getTeamPlayers(Team.HUNTERS);
 				for (Player p : hunters)
@@ -138,6 +139,11 @@ public class GameEvents
 					{
 						LoadoutUtil.clearInventory(p.getInventory());
 					}
+				}
+				List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
+				for (Player p : spectators)
+				{
+					GameUtil.makeInvisible(p);
 				}
 				game.freeze_prey = true;
 				
