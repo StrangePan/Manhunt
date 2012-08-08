@@ -144,7 +144,10 @@ public class PlayerEventHandler implements Listener {
 	@EventHandler
 	public void onPlayerItemHeld(PlayerItemHeldEvent e)
 	{
-		plugin.getGame().finders.verifyFinder(e.getPlayer());
+		if (plugin.gameIsRunning())
+		{
+			plugin.getGame().finders.verifyFinder(e.getPlayer());
+		}
 	}
 
 	@EventHandler

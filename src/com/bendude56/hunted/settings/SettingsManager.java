@@ -76,7 +76,7 @@ public class SettingsManager
 		secretSettings.add(MANHUNT_MODE = new Setting<ManhuntMode>("gameMode", ManhuntMode.PRIVATE, FILE_MAIN, "The type of mode Manhunt is running in.", ""));
 		
 		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
-		settings.add(PUBLIC_MODE = new Setting<Boolean>("publicMode", true, FILE_MAIN, "The game is running in public mode.", "The game is running in private mode."));
+		settings.add(PUBLIC_MODE = new Setting<Boolean>("publicMode", false, FILE_MAIN, "The game is running in public mode.", "The game is running in private mode."));
 		settings.add(AUTO_JOIN = new Setting<Boolean>("autoJoin", true, FILE_MAIN, "New players automatically join team Hunters.", "New players will remain spectators."));
 
 		settings.add(ALL_TALK = new Setting<Boolean>("allTalk", false, FILE_MAIN, "Teams can communicate with each other.", "Teams cannot communicate with each other."));

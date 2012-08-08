@@ -20,136 +20,144 @@ public class CommandSwitchboard implements CommandExecutor
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args)
 	{
-		if (args.length == 0)
+		String arg;
+		
+		if (args.length > 0)
 		{
-			//Display quick reference sheet
-			return true;
+			arg = args[0];
+		}
+		else
+		{
+			arg = null;
 		}
 		
-		String arg = args[0]; //shortcut
-		
-		//COMMANDS FOR GENERAL MANHUNT HELP AND INFO
-		
-		if (arg.equalsIgnoreCase("help"))
+		if (arg == null)
+		{
+			Bukkit.getServer().dispatchCommand(sender, "m help");
+		}
+		else if (arg.equalsIgnoreCase("help"))
 		{
 			CommandsHelp.onCommandHelp(sender, args);
 		}
-		if (arg.equalsIgnoreCase("rules"))
+		else if (arg.equalsIgnoreCase("rules"))
 		{
 			CommandsHelp.onCommandRules(sender);
 		}
-		if (arg.equalsIgnoreCase("info"))
+		else if (arg.equalsIgnoreCase("info"))
 		{
 			CommandsHelp.onCommandInfo(sender);
 		}
-		if (arg.equalsIgnoreCase("status"))
+		else if (arg.equalsIgnoreCase("status"))
 		{
 			CommandsHelp.onCommandStatus(sender);
 		}
-		if (arg.equalsIgnoreCase("list"))
+		else if (arg.equalsIgnoreCase("list"))
 		{
 			CommandsTeams.onCommandList(sender, args);
 		}
 		
 		//SETTINGS COMMANDS
 		
-		if (arg.equalsIgnoreCase("settings"))
+		else if (arg.equalsIgnoreCase("settings"))
 		{
 			CommandsSettings.onCommandSettings(sender, args);
 		}
-		if (arg.equalsIgnoreCase("set"))
+		else if (arg.equalsIgnoreCase("set"))
 		{
 			CommandsSettings.onCommandSet(sender, args);
 		}
-		if (arg.equalsIgnoreCase("setworld"))
+		else if (arg.equalsIgnoreCase("setworld"))
 		{
 			CommandsSettings.onCommandSetworld(sender, args);
 		}
-		if (arg.equalsIgnoreCase("setmode"))
+		else if (arg.equalsIgnoreCase("setmode"))
 		{
 			CommandsSettings.onCommandSetmode(sender, args);
 		}
 		
 		//LOADOUT COMMANDS
 		
-		if (arg.equalsIgnoreCase("listinv"))
+		else if (arg.equalsIgnoreCase("listinv"))
 		{
 			CommandsLoadouts.onCommandListinv(sender, args);
 		}
-		if (arg.equalsIgnoreCase("saveloadout") || arg.equalsIgnoreCase("saveinv") || arg.equalsIgnoreCase("newloadout") || arg.equalsIgnoreCase("newinv"))
+		else if (arg.equalsIgnoreCase("saveloadout") || arg.equalsIgnoreCase("saveinv") || arg.equalsIgnoreCase("newloadout") || arg.equalsIgnoreCase("newinv"))
 		{
 			CommandsLoadouts.onCommandNewinv(sender, args);
 		}
-		if (arg.equalsIgnoreCase("loadloadout") || arg.equalsIgnoreCase("loadinv"))
+		else if (arg.equalsIgnoreCase("loadloadout") || arg.equalsIgnoreCase("loadinv"))
 		{
 			CommandsLoadouts.onCommandLoadinv(sender, args);
 		}
-		if (arg.equalsIgnoreCase("deleteloadout") || arg.equalsIgnoreCase("delloadout") || arg.equalsIgnoreCase("delinv") || arg.equalsIgnoreCase("deleteinv"))
+		else if (arg.equalsIgnoreCase("deleteloadout") || arg.equalsIgnoreCase("delloadout") || arg.equalsIgnoreCase("delinv") || arg.equalsIgnoreCase("deleteinv"))
 		{
 			CommandsLoadouts.onCommandDelinv(sender, args);
 		}
-		if (arg.equalsIgnoreCase("hunterloadout") || arg.equalsIgnoreCase("hunterinv"))
+		else if (arg.equalsIgnoreCase("hunterloadout") || arg.equalsIgnoreCase("hunterinv"))
 		{
 			CommandsLoadouts.onCommandHunterinv(sender, args);
 		}
-		if (arg.equalsIgnoreCase("preyloadout") || arg.equalsIgnoreCase("preyinv"))
+		else if (arg.equalsIgnoreCase("preyloadout") || arg.equalsIgnoreCase("preyinv"))
 		{
 			CommandsLoadouts.onCommandPreyinv(sender, args);
 		}
 		
 		//COMMANDS FOR SETTING UP THE TEAMS
 		
-		if (arg.equalsIgnoreCase("hunter"))
+		else if (arg.equalsIgnoreCase("hunter"))
 		{
 			CommandsTeams.onCommandHunter(sender, args);
 		}
-		if (arg.equalsIgnoreCase("prey"))
+		else if (arg.equalsIgnoreCase("prey"))
 		{
 			CommandsTeams.onCommandPrey(sender, args);
 		}
-		if (arg.equalsIgnoreCase("spectator"))
+		else if (arg.equalsIgnoreCase("spectator"))
 		{
 			CommandsTeams.onCommandSpectate(sender, args);
 		}
 		
 		//COMMANDS FOR CONTORLLING PLAYERS
 		
-		if (arg.equalsIgnoreCase("lock"))
+		else if (arg.equalsIgnoreCase("lock"))
 		{
 			CommandsTeams.onCommandLock(sender, args);
 		}
-		if (arg.equalsIgnoreCase("kick"))
+		else if (arg.equalsIgnoreCase("kick"))
 		{
 			CommandsTeams.onCommandKick(sender, args);
 		}
-		if (arg.equalsIgnoreCase("quit"))
+		else if (arg.equalsIgnoreCase("quit"))
 		{
 			CommandsTeams.onCommandQuit(sender, args);
 		}
 		
 		//COMMANDS FOR EDITING SPAWN
 		
-		if (arg.equalsIgnoreCase("spawn"))
+		else if (arg.equalsIgnoreCase("spawn"))
 		{
 			CommandsGeneral.onCommandSpawn(sender, args);
 		}
-		if (arg.equalsIgnoreCase("setspawn"))
+		else if (arg.equalsIgnoreCase("setspawn"))
 		{
 			CommandsGeneral.onCommandSetspawn(sender, args);
 		}
 		
 		//COMMANDS FOR STARTING/STOPING THE GAME
 		
-		if (arg.equalsIgnoreCase("startgame"))
+		else if (arg.equalsIgnoreCase("startgame"))
 		{
 			CommandsGeneral.onCommandStartgame(sender, args);
 		}
-		if (arg.equalsIgnoreCase("stopgame"))
+		else if (arg.equalsIgnoreCase("stopgame"))
 		{
 			CommandsGeneral.onCommandStopgame(sender, args);
 		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Unknown Manhunt command. Type /m help for a list of available commands.");
+		}
 		
-		sender.sendMessage(ChatColor.RED + "Unknown Manhunt command. Type /m help for a list of available commands.");
 		return true;
 	}
 	
