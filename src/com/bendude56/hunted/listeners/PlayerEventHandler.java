@@ -1,5 +1,6 @@
 package com.bendude56.hunted.listeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
@@ -34,7 +36,7 @@ public class PlayerEventHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerChat(AsyncPlayerChatEvent e)
+	public void onAsynchPlayerChat(AsyncPlayerChatEvent e)
 	{
 		if (e.isCancelled() || !plugin.getSettings().CONTROL_CHAT.value)
 		{
@@ -46,6 +48,10 @@ public class PlayerEventHandler implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
+		e.setJoinMessage(null);
+
+		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has joined the game", Team.NONE);
+		
 		if (plugin.gameIsRunning())
 		{
 			plugin.getGame().onPlayerJoin(e.getPlayer());
@@ -59,6 +65,10 @@ public class PlayerEventHandler implements Listener {
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent e)
 	{
+		e.setLeaveMessage(null);
+		
+		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
+		
 		if (plugin.gameIsRunning())
 		{
 			plugin.getGame().onPlayerLeave(e.getPlayer());
@@ -72,6 +82,10 @@ public class PlayerEventHandler implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
+		e.setQuitMessage(null);
+		
+		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
+		
 		if (plugin.gameIsRunning())
 		{
 			plugin.getGame().onPlayerLeave(e.getPlayer());

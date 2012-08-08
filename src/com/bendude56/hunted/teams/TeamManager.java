@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -285,6 +286,16 @@ public class TeamManager
 			if (team.equalsIgnoreCase("none") || team.equalsIgnoreCase("null"))
 				return NONE;
 			return null;
+		}
+		
+		public ChatColor getColor()
+		{
+			return TeamUtil.getTeamColor(this);
+		}
+		
+		public String getName(boolean plural)
+		{
+			return TeamUtil.getTeamName(this, plural);
 		}
 	}
 
