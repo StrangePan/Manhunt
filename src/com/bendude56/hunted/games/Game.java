@@ -91,15 +91,16 @@ public class Game
 		}
 		else
 		{
-			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
-		
 
 		List<Player> spectators = getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
 		for (Player p : spectators)
 		{
 			GameUtil.makeVisible(p);
 		}
+		
+		plugin.getTeams().restoreAllGameModes();
 		
 		close();
 	}

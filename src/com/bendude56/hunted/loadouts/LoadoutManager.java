@@ -47,6 +47,7 @@ public class LoadoutManager {
 			contents[2] = new ItemStack(Material.TORCH, 3);
 			contents[3] = new ItemStack(Material.COOKED_CHICKEN, 3);
 			contents[4] = new ItemStack(Material.ARROW, 64);
+			contents[5] = new ItemStack(Material.COMPASS);
 			armour[0] = new ItemStack(Material.LEATHER_BOOTS, 1);
 			armour[1] = new ItemStack(Material.LEATHER_LEGGINGS, 1);
 			armour[2] = new ItemStack(Material.LEATHER_CHESTPLATE, 1);

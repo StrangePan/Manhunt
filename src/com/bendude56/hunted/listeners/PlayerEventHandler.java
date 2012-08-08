@@ -194,7 +194,7 @@ public class PlayerEventHandler implements Listener {
 					|| e.getAction() == Action.LEFT_CLICK_BLOCK
 					|| e.getAction() == Action.LEFT_CLICK_AIR)
 			{
-				if (p.getItemInHand().getType() == Material.COMPASS)
+				if (plugin.getSettings().PREY_FINDER.value && p.getItemInHand().getType() == Material.COMPASS)
 				{
 					plugin.getGame().finders.startFinder(p);
 				}

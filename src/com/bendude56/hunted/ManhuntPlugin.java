@@ -60,8 +60,8 @@ public class ManhuntPlugin extends JavaPlugin {
 	@Override
 	public void onDisable()
 	{
-		
 		teams.restoreAllGameModes();
+		stopGame();
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()

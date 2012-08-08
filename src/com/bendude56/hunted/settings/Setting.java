@@ -122,4 +122,9 @@ public class Setting<Type> {
 		else
 			return onMessage;
 	}
+	
+	public String toString()
+	{
+		return value.toString();
+	}
 }
