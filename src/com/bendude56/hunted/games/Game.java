@@ -47,9 +47,6 @@ public class Game
 		//Save pointer to world
 		this.world = plugin.getWorld();
 		
-		this.timeouts = new TimeoutManager(this);
-		this.finders = new FinderManager(this);
-		
 		//Calculate milestones ticks
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day
@@ -66,34 +63,9 @@ public class Game
 		this.stop_hunt_tick = stop_hunt_tick; //Save the stop_hunt_tick
 		
 		this.gameevents = new GameEvents(this);
-		
-		startGame();
+		this.timeouts = new TimeoutManager(this);
+		this.finders = new FinderManager(this);
 	}
-
-	/**
-	 * Initializes everything
-	 */
-	private void startGame()
-	{
-	}
-
-	/*
-	 * Gives a 30 second countdown until the game starts
-	 * gradually sets the world's time.
-	 * Teleports the hunters to their setup spawn, sets their loadouts, sets their stats
-	 * Teleports the prey to their spawn, sets their loadouts, sets their stats
-	 * 
-	 * Releases the hunters
-	 * 
-	 * Lets players know every time a day has passed
-	 * 
-	 * Lets players know when the last day has come
-	 * 
-	 * Counts down the last 10 seconds of the game
-	 * 
-	 * Resets the world, reset the player gamemodes, etc.
-	 * FORGETS ITS OWN TIMEOUT MANAGER AND FINDER MANAGER
-	 */
 
 	/**
 	 * Stops the Manhunt Game. Private, because only other in-class

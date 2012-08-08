@@ -17,7 +17,7 @@ public class CommandsSettings
 	{
 		List<Setting<?>> settings = ManhuntPlugin.getInstance().getSettings().getAllSettings();
 		
-		String syntax = "Proper syntax is: /m settings [page]";
+		String SYNTAX = ChatColor.RED + "Proper syntax is: /m settings [page]";
 		
 		int page; //between 1 and max_pages
 		int per_page = 6; //settings displayed per page
@@ -35,13 +35,13 @@ public class CommandsSettings
 			}
 			catch (NumberFormatException e)
 			{
-				sender.sendMessage(ChatColor.RED + syntax);
+				sender.sendMessage(SYNTAX);
 				return;
 			}
 		}
 		else
 		{
-			sender.sendMessage(ChatColor.RED + syntax);
+			sender.sendMessage(SYNTAX);
 			return;
 		}
 		
@@ -52,7 +52,7 @@ public class CommandsSettings
 		
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Settings (" + page + "/" + max_pages + ")" + ChatManager.bracket2_);
 		
-		settings = settings.subList((page-1) * per_page, page * max_pages > settings.size() ? settings.size() - 1 : page * max_pages);
+		settings = settings.subList((page-1) * per_page, page * per_page > settings.size() ? settings.size() - 1 : page * per_page);
 		
 		for (Setting<?> setting : settings)
 		{

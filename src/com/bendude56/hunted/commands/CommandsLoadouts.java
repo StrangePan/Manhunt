@@ -27,7 +27,7 @@ public class CommandsLoadouts
 		List<Loadout> loads = plugin.getLoadouts().getAllLoadouts();
 		
 		int page; //between 1 and max_pages
-		int per_page = 6; //settings displayed per page
+		int per_page = 6; //loadouts displayed per page
 		int max_pages = (int) Math.ceil(loads.size() / per_page);
 		
 		if (args.length == 1)
@@ -57,14 +57,16 @@ public class CommandsLoadouts
 		if (page < 1)
 			page = 1;
 		
-		sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Saved Loadouts (" + page + "/" + max_pages + ")" + ChatManager.bracket2_);
-		
-		loads = loads.subList((page-1) * per_page, page * max_pages > loads.size() ? loads.size() - 1 : page * max_pages);
+		loads = loads.subList((page-1) * per_page, page * per_page > loads.size() ? loads.size() - 1 : page * per_page);
 
 		if (loads.isEmpty())
 		{
 			sender.sendMessage(ChatColor.RED + "There are no saved loadouts!");
 			return;
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Saved Loadouts (" + page + "/" + max_pages + ")" + ChatManager.bracket2_);
 		}
 		
 		for (Loadout load : loads)

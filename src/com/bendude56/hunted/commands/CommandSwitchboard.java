@@ -1,6 +1,7 @@
 package com.bendude56.hunted.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -148,6 +149,7 @@ public class CommandSwitchboard implements CommandExecutor
 			CommandsGeneral.onCommandStopgame(sender, args);
 		}
 		
+		sender.sendMessage(ChatColor.RED + "Unknown Manhunt command. Type /m help for a list of available commands.");
 		return true;
 	}
 	
