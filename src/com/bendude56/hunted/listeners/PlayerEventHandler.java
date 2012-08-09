@@ -3,9 +3,11 @@ package com.bendude56.hunted.listeners;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -18,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.PlayerInventory;
 
 
 import com.bendude56.hunted.ManhuntPlugin;
@@ -297,6 +300,29 @@ public class PlayerEventHandler implements Listener {
 				e.setCancelled(true);
 				return;
 			}
+		}
+	}
+
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent e)
+	{
+		if (!plugin.gameIsRunning())
+		{
+			return;
+		}
+		if (!plugin.getSettings().TEAM_HATS.value)
+		{
+			return;
+		}
+		if (!(e.getInventory() instanceof PlayerInventory))
+		{
+			return;
+		}
+		if (e.getSlot() == 39)
+		{
+			e.setCancelled(true);
+			e.setResult(Result.DENY);
+			return;
 		}
 	}
 

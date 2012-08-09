@@ -30,20 +30,9 @@ public class LoadoutManager {
 		else
 		{
 			ItemStack[] contents = new ItemStack[36];
-			/*for (int i = 0; i < contents.length; i++)
-			{
-				contents[i] = new ItemStack((Integer) null, (Integer) null, (Short) null);
-			}*/
 			ItemStack[] armour = new ItemStack[4];
-			/*for (int i = 0; i < armour.length; i++)
-			{
-				armour[i] = new ItemStack((Integer) null, (Integer) null, (Short) null);
-			}*/
 			contents[0] = new ItemStack(Material.STONE_SWORD, 1);
 			contents[1] = new ItemStack(Material.BOW, 1);
-			// contents[2] = new ItemStack(Material.STONE_PICKAXE, 1);
-			// contents[3] = new ItemStack(Material.STONE_SPADE, 1);
-			// contents[4] = new ItemStack(Material.STONE_AXE, 1);
 			contents[2] = new ItemStack(Material.TORCH, 3);
 			contents[3] = new ItemStack(Material.COOKED_CHICKEN, 3);
 			contents[4] = new ItemStack(Material.ARROW, 64);
@@ -64,27 +53,12 @@ public class LoadoutManager {
 		else
 		{
 			ItemStack[] contents = new ItemStack[36];
-			/*for (int i = 0; i < contents.length; i++)
-			{
-				contents[i] = new ItemStack((Integer) null, (Integer) null, (Short) null);
-			}*/
 			ItemStack[] armour = new ItemStack[4];
-			/*for (int i = 0; i < armour.length; i++)
-			{
-				armour[i] = new ItemStack((Integer) null, (Integer) null, (Short) null);
-			}*/
 			contents[0] = new ItemStack(Material.STONE_SWORD, 1);
 			contents[1] = new ItemStack(Material.BOW, 1);
-			// contents[2] = new ItemStack(Material.STONE_PICKAXE, 1);
-			// contents[3] = new ItemStack(Material.STONE_SPADE, 1);
-			// contents[4] = new ItemStack(Material.STONE_AXE, 1);
 			contents[2] = new ItemStack(Material.TORCH, 3);
 			contents[3] = new ItemStack(Material.COOKED_CHICKEN, 1);
 			contents[4] = new ItemStack(Material.ARROW, 64);
-			// armour[0] = new ItemStack(Material.LEATHER_BOOTS, 1);
-			// armour[1] = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-			// armour[2] = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-			// armour[3] = new ItemStack(Material.LEATHER_HELMET, 1);
 			
 			DEFAULT_PREY_LOADOUT = new Loadout("prey_loadout", world_loadouts_directory, contents, armour);
 		}
