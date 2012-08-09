@@ -43,8 +43,6 @@ public class SettingsManager
 	
 	public final Setting<Boolean> PASSIVE_MOBS;
 	public final Setting<Boolean> HOSTILE_MOBS;
-	public final Setting<Boolean> ENVIRONMENT_RESPAWN;
-	public final Setting<Boolean> ENVIRONMENT_DEATH;
 	public final Setting<Boolean> PREY_FINDER;
 	public final Setting<Boolean> NORTH_COMPASS;
 	public final Setting<Integer> FINDER_COOLDOWN;
@@ -90,8 +88,6 @@ public class SettingsManager
 		
 		settings.add(PASSIVE_MOBS = new Setting<Boolean>("passiveMobs", true, FILE_MAIN, "Passive mobs are enabled.", "Passive mobs are disabled."));
 		settings.add(HOSTILE_MOBS = new Setting<Boolean>("hostileMobs", true, FILE_MAIN, "Hostile mobs are enabled.", "Hostile mobs are disabled."));
-		settings.add(ENVIRONMENT_RESPAWN = new Setting<Boolean>("envRespawn", true, FILE_MAIN, "Players will respawn when dying from the environment.", "Players will not respawn when dying from the environment."));
-		settings.add(ENVIRONMENT_DEATH = new Setting<Boolean>("envDeath", false, FILE_MAIN, "Players can die from the environment.", "Players cannot die from the environment."));
 		
 		settings.add(OFFLINE_TIMEOUT = new Setting<Integer>("offlineTimeout", 60, FILE_MAIN, "How many seconds until offline players are disqualified.", "Offline players will not be disqualified."));
 		settings.add(DAY_LIMIT = new Setting<Integer>("dayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));

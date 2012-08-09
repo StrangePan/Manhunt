@@ -30,7 +30,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 
 import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.games.Game.GameStage;
@@ -92,14 +91,6 @@ public class EntityEventHandler implements Listener
 			if (t == t2 && p != null && p2 != null && !plugin.getSettings().FRIENDLY_FIRE.value)
 			{
 				e.setCancelled(true);
-			}
-			
-			if (p2 == null && p != null) //Player damaged by environment
-			{
-				if (!plugin.getSettings().ENVIRONMENT_DEATH.value && e.getDamage() >= p.getHealth())
-				{
-					e.setDamage(p.getHealth() - 1);
-				}
 			}
 			if (p != null && p2 != null) //Player damaged by other player
 			{
@@ -174,16 +165,8 @@ public class EntityEventHandler implements Listener
 		
 		if (p2 == null) //Player died from the environment
 		{
-			if (plugin.getSettings().ENVIRONMENT_RESPAWN.value)
-			{
-				ManhuntUtil.sendToSpawn(p);
-				GameUtil.broadcast(ChatManager.leftborder + t.getColor() + p.getName() + ChatColor.WHITE + " has died, but has respawned.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-			}
-			else
-			{
-				GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " has died and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				plugin.getGame().onPlayerDie(p);
-			}
+			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " has died and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			plugin.getGame().onPlayerDie(p);
 		}
 		else //Player dies from another player
 		{
