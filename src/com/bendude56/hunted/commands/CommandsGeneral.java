@@ -143,7 +143,7 @@ public class CommandsGeneral
 		else
 		{
 			p.teleport(ManhuntUtil.safeTeleport(loc));
-			p.sendMessage(ChatColor.GREEN + "You have teleported to the " + args[1] + " spawn.");
+			p.sendMessage(ChatColor.GREEN + "You have teleported to the " + spawn + " spawn.");
 		}
 		
 	}

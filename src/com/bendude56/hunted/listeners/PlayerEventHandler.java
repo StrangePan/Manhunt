@@ -52,8 +52,6 @@ public class PlayerEventHandler implements Listener {
 	{
 		e.setJoinMessage(null);
 
-		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has joined the game", Team.NONE);
-		
 		if (plugin.gameIsRunning())
 		{
 			plugin.getGame().onPlayerJoin(e.getPlayer());
@@ -65,6 +63,7 @@ public class PlayerEventHandler implements Listener {
 		
 		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
 		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.GREEN + "joined" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has joined the game", Team.NONE);
 	}
 
 	@EventHandler
@@ -72,6 +71,8 @@ public class PlayerEventHandler implements Listener {
 	{
 		e.setLeaveMessage(null);
 		
+		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
+		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
 		
 		if (plugin.gameIsRunning())
@@ -82,9 +83,6 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getTeams().deletePlayer(e.getPlayer().getName());
 		}
-		
-		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 	}
 
 	@EventHandler
@@ -92,6 +90,8 @@ public class PlayerEventHandler implements Listener {
 	{
 		e.setQuitMessage(null);
 		
+		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
+		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
 		
 		if (plugin.gameIsRunning())
@@ -102,9 +102,6 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getTeams().deletePlayer(e.getPlayer().getName());
 		}
-		
-		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 	}
 	
 	@EventHandler

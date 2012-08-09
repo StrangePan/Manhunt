@@ -89,20 +89,20 @@ public class SettingsManager
 		settings.add(PASSIVE_MOBS = new Setting<Boolean>("passiveMobs", true, FILE_MAIN, "Passive mobs are enabled.", "Passive mobs are disabled."));
 		settings.add(HOSTILE_MOBS = new Setting<Boolean>("hostileMobs", true, FILE_MAIN, "Hostile mobs are enabled.", "Hostile mobs are disabled."));
 		
-		settings.add(OFFLINE_TIMEOUT = new Setting<Integer>("offlineTimeout", 60, FILE_MAIN, "How many seconds until offline players are disqualified.", "Offline players will not be disqualified."));
+		settings.add(OFFLINE_TIMEOUT = new Setting<Integer>("offlineTimeout", 60, FILE_MAIN, "Seconds until offline players disqualify.", "Offline players will not disqualify."));
 		settings.add(DAY_LIMIT = new Setting<Integer>("dayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));
 		settings.add(SETUP_TIME = new Setting<Integer>("setupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
 		
 		settings.add(PREY_FINDER = new Setting<Boolean>("preyFinder", true, FILE_MAIN, "Hunters may use the Prey Finder.", "The compass is just a regular compass."));
-		settings.add(FINDER_COOLDOWN = new Setting<Integer>("finderCooldown", 180, FILE_MAIN, "The Preyfinder cooldown delay in seconds.", "The PreyFinder has no cooldown delay."));
+		settings.add(FINDER_COOLDOWN = new Setting<Integer>("finderCooldown", 180, FILE_MAIN, "Seconds until the PreyFinder is ready.", "The PreyFinder has no cooldown delay."));
 		settings.add(NORTH_COMPASS = new Setting<Boolean>("northCompass", true, FILE_MAIN, "Compasses will always point north.", "Compasses will always point towards spawn."));
 		
 		this.world_path = (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt";
 		files.add(FILE_WORLD = new SettingsFile("World Config", world_path, "Config"));
 		
-		settings.add(BOUNDARY_WORLD = new Setting<Integer>("worldBoundary", 128, FILE_WORLD, "How far players may roam during the hunt.", "There is no boundary around the world."));
-		settings.add(BOUNDARY_SETUP = new Setting<Integer>("setupBoundary", 16, FILE_WORLD, "The region in which the hunters must wait.", "The hunters are not constrained during setup."));
-		settings.add(SPAWN_PROTECTION = new Setting<Integer>("spawnProtection", 24, FILE_WORLD, "The protected region around the spawn points.", "The spawn points are not protected."));
+		settings.add(BOUNDARY_WORLD = new Setting<Integer>("worldBoundary", 128, FILE_WORLD, "Blocks players may roam during the hunt.", "There is no boundary around the world."));
+		settings.add(BOUNDARY_SETUP = new Setting<Integer>("setupBoundary", 16, FILE_WORLD, "Blocks Hunters are confined to.", "The hunters are not constrained during setup."));
+		settings.add(SPAWN_PROTECTION = new Setting<Integer>("spawnProtection", 24, FILE_WORLD, "The protected region around the spawns.", "The spawn points are not protected."));
 		settings.add(BOUNDARY_BOXED = new Setting<Boolean>("boxedBoundary", true, FILE_WORLD, "The world's boundary is rectangular.", "The world's shape is rounded."));
 		
 		secretSettings.add(HUNTER_LOADOUT_CURRENT = new Setting<String>("currentHunterLoadout", "default", FILE_WORLD, "The loadout the hunter get.", ""));
