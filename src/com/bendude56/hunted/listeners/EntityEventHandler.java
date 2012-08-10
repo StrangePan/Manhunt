@@ -1,6 +1,5 @@
 package com.bendude56.hunted.listeners;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Cow;
@@ -23,15 +22,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 
 import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
@@ -112,66 +106,6 @@ public class EntityEventHandler implements Listener
 				e.setCancelled(true);
 				return;
 			}
-		}
-	}
-
-	@EventHandler
-	public void onEntityDeath(EntityDeathEvent e)
-	{
-		if (e.getEntity().getWorld() != plugin.getWorld())
-		{
-			return;
-		}
-		if (!(e.getEntity() instanceof Player))
-		{
-			return;
-		}
-		if (!plugin.gameIsRunning())
-		{
-			return;
-		}
-		if (!(e instanceof PlayerDeathEvent))
-		{
-			return;
-		}
-		
-		Player p = (Player) e.getEntity();
-		Team t = plugin.getTeams().getTeamOf(p);
-		
-		plugin.getGame().finders.stopFinder(p);
-		
-		if (t != Team.HUNTERS && t != Team.PREY)
-		{
-			return;
-		}
-		
-		Player p2 = null;
-		
-		if (p.getLastDamageCause() instanceof EntityDamageByEntityEvent)
-		{
-			if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Player)
-			{
-				p2 = (Player) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager();
-			}
-			if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Projectile && ((Projectile) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter() instanceof Player)
-			{
-				p2 = (Player) ((Projectile) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter();
-			}
-		}
-		if (p.getLastDamageCause().getCause() == DamageCause.MAGIC)
-		{
-			//TODO Take into account magic and potions
-		}
-		
-		if (p2 == null) //Player died from the environment
-		{
-			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " has died and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-			plugin.getGame().onPlayerDie(p);
-		}
-		else //Player dies from another player
-		{
-			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " was killed by " + plugin.getTeams().getTeamOf(p2).getColor() + p2.getName() + " and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-			plugin.getGame().onPlayerDie(p);
 		}
 	}
 

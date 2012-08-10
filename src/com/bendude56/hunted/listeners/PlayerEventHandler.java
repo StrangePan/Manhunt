@@ -3,10 +3,13 @@ package com.bendude56.hunted.listeners;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -106,7 +109,54 @@ public class PlayerEventHandler implements Listener {
 			plugin.getTeams().deletePlayer(e.getPlayer().getName());
 		}
 	}
-	
+
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent e)
+	{
+		Player p = e.getEntity();
+		Player p2 = null;
+		Team t = null;
+		Team t2 = null;
+		
+		if (p.getWorld() != plugin.getWorld())
+		{
+			return;
+		}
+		if (!plugin.gameIsRunning())
+		{
+			return;
+		}
+		
+		if (p.getLastDamageCause() instanceof EntityDamageByEntityEvent)
+		{
+			if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Player)
+			{
+				p2 = (Player) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager();
+			}
+			if (((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager() instanceof Projectile && ((Projectile) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter() instanceof Player)
+			{
+				p2 = (Player) ((Projectile) ((EntityDamageByEntityEvent) p.getLastDamageCause()).getDamager()).getShooter();
+			}
+		}
+		
+		t = plugin.getTeams().getTeamOf(p);
+		t2 = plugin.getTeams().getTeamOf(p2);
+		
+		if (p2 == null) //Player died from the environment
+		{
+			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " has died and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		}
+		else //Player dies from another player
+		{
+			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " was killed by " + t2.getColor() + p2.getName() + " and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		}
+		
+		GameUtil.broadcast(e.getDeathMessage(), Team.NONE);
+		e.setDeathMessage(null);
+		
+		plugin.getGame().onPlayerDie(p);
+	}
+
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e)
 	{
