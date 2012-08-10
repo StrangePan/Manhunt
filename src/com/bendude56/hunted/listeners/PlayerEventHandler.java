@@ -1,6 +1,7 @@
 package com.bendude56.hunted.listeners;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -197,6 +198,11 @@ public class PlayerEventHandler implements Listener {
 			e.setCancelled(true);
 			p.teleport(e.getFrom());
 			return;
+		}
+		
+		if (plugin.getSettings().NORTH_COMPASS.value)
+		{
+			p.setCompassTarget(new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ() - 2000));
 		}
 		
 		ManhuntUtil.checkPlayerInBounds(p);

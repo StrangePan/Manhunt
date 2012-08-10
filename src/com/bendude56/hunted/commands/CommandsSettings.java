@@ -52,7 +52,7 @@ public class CommandsSettings
 		
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Settings (" + page + "/" + max_pages + ")" + ChatManager.bracket2_);
 		
-		settings = settings.subList((page-1) * per_page, page * per_page > settings.size() ? settings.size() - 1 : page * per_page);
+		settings = settings.subList((page-1) * per_page, page * per_page > settings.size() ? settings.size() : page * per_page);
 		
 		for (Setting<?> setting : settings)
 		{

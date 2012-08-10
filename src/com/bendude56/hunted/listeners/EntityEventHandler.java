@@ -1,22 +1,7 @@
 package com.bendude56.hunted.listeners;
 
-import org.bukkit.entity.CaveSpider;
-import org.bukkit.entity.Chicken;
-import org.bukkit.entity.Cow;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Enderman;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Silverfish;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Spider;
-import org.bukkit.entity.Squid;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -26,6 +11,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.games.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
@@ -116,34 +102,45 @@ public class EntityEventHandler implements Listener
 		{
 			return;
 		}
-		if (e.getTarget() instanceof Player)
+		if (plugin.gameIsRunning())
 		{
-			Player p = (Player) e.getTarget();
-			Team t = plugin.getTeams().getTeamOf(p);
-			
-			if (t != Team.HUNTERS && t != Team.PREY && plugin.gameIsRunning())
+			if (e.getTarget() instanceof Player)
 			{
-				e.setCancelled(true);
+				Player p = (Player) e.getTarget();
+				Team t = plugin.getTeams().getTeamOf(p);
+				
+				if (t != Team.HUNTERS && t != Team.PREY)
+				{
+					e.setCancelled(true);
+				}
 			}
+		}
+		else
+		{
+			e.setCancelled(true);
 		}
 	}
 
 	@EventHandler
-	public void onCreatureSpawn(CreatureSpawnEvent e) {
-		if (e.getLocation().getWorld() != plugin.getWorld()) {
+	public void onCreatureSpawn(CreatureSpawnEvent e)
+	{
+		if (e.getLocation().getWorld() != plugin.getWorld())
+		{
 			return;
 		}
-		Entity ent = e.getEntity();
-		if (ent instanceof Zombie || ent instanceof Skeleton
-				|| ent instanceof Creeper || ent instanceof Slime
-				|| ent instanceof Spider || ent instanceof CaveSpider
-				|| ent instanceof Enderman || ent instanceof Silverfish
-				|| ent instanceof Wolf) {
-			e.setCancelled(e.isCancelled() || !plugin.getSettings().HOSTILE_MOBS.value);
-		} else if (ent instanceof Chicken || ent instanceof Pig
-				|| ent instanceof Cow || ent instanceof Sheep
-				|| ent instanceof Squid || ent instanceof Wolf) {
-			e.setCancelled(e.isCancelled() || !plugin.getSettings().PASSIVE_MOBS.value);
+		if (e.isCancelled())
+		{
+			return;
+		}
+		
+		if (!plugin.getSettings().HOSTILE_MOBS.value && ManhuntUtil.isHostile(e.getEntity()))
+		{
+			e.setCancelled(true);
+		}
+		
+		if (!plugin.getSettings().PASSIVE_MOBS.value && ManhuntUtil.isPassive(e.getEntity()))
+		{
+			e.setCancelled(true);
 		}
 	}
 }

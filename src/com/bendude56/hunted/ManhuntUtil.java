@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.games.Game.GameStage;
@@ -309,7 +311,39 @@ public class ManhuntUtil {
 				types.add(Material.YELLOW_FLOWER);
 		return (types.contains(block.getType()));
 	}
-	
+
+	public static boolean isHostile(Entity entity)
+	{
+		EntityType type = entity.getType();
+		
+		return (type == EntityType.ZOMBIE
+				|| type == EntityType.SKELETON
+				|| type == EntityType.SPIDER
+				|| type == EntityType.CREEPER
+				|| type == EntityType.SLIME
+				|| type == EntityType.ENDERMAN
+				|| type == EntityType.CAVE_SPIDER
+				|| type == EntityType.SILVERFISH
+				|| type == EntityType.PIG_ZOMBIE
+				|| type == EntityType.GHAST
+				|| type == EntityType.MAGMA_CUBE
+				|| type == EntityType.BLAZE);
+	}
+
+	public static boolean isPassive(Entity entity)
+	{
+		EntityType type = entity.getType();
+		
+		return (type == EntityType.PIG
+				|| type == EntityType.COW
+				|| type == EntityType.SHEEP
+				|| type == EntityType.CHICKEN
+				|| type == EntityType.SQUID
+				|| type == EntityType.WOLF
+				|| type == EntityType.OCELOT
+				|| type == EntityType.MUSHROOM_COW);
+	}
+
 	public static void sendToSpawn(Player p)
 	{
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();

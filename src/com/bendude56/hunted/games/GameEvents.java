@@ -7,6 +7,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -166,6 +168,22 @@ public class GameEvents
 				for (Player p : spectators)
 				{
 					GameUtil.makeInvisible(p);
+				}
+				
+				for (Entity e : world.getEntities())
+				{
+					if (!game.getPlugin().getSettings().HOSTILE_MOBS.value && ManhuntUtil.isHostile(e))
+					{
+						e.remove();
+					}
+					if (!game.getPlugin().getSettings().PASSIVE_MOBS.value && ManhuntUtil.isPassive(e))
+					{
+						e.remove();
+					}
+					if (e.getType() == EntityType.DROPPED_ITEM || e.getType() == EntityType.PRIMED_TNT)
+					{
+						e.remove();
+					}
 				}
 				
 				game.freeze_prey = true;

@@ -57,7 +57,7 @@ public class CommandsLoadouts
 		if (page < 1)
 			page = 1;
 		
-		loads = loads.subList((page-1) * per_page, page * per_page > loads.size() ? loads.size() - 1 : page * per_page);
+		loads = loads.subList((page-1) * per_page, page * per_page > loads.size() ? loads.size() : page * per_page);
 
 		if (loads.isEmpty())
 		{
