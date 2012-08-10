@@ -127,10 +127,6 @@ public class GameEvents
 					loc = ManhuntUtil.safeTeleport(loc);
 					p.teleport(loc);
 					
-					p.setHealth(20);
-					p.setFoodLevel(20);
-					p.setSaturation(10);
-					
 					GameUtil.prepareForGame(p);
 				}
 				

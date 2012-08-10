@@ -109,6 +109,10 @@ public class EntityEventHandler implements Listener
 				Player p = (Player) e.getTarget();
 				Team t = plugin.getTeams().getTeamOf(p);
 				
+				if (plugin.getGame().getStage() == GameStage.PREGAME)
+				{
+					e.setCancelled(true);
+				}
 				if (t != Team.HUNTERS && t != Team.PREY)
 				{
 					e.setCancelled(true);

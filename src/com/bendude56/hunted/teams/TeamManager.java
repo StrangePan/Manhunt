@@ -195,30 +195,36 @@ public class TeamManager
 	 */
 	public void savePlayerGameMode(Player p)
 	{
+		GameMode oldMode, mode;
+		Team team = getTeamOf(p);;
 		if (!gamemodes.containsKey(p.getName()))
 		{
-			putPlayerGameMode(p);
+			oldMode = p.getGameMode();
 		}
-		GameMode mode;
-		switch (getTeamOf(p)) {
+		else
+		{
+			oldMode = null;
+		}
+		
+		switch (team)
+		{
 			case HUNTERS:	mode = GameMode.SURVIVAL;
+							break;
 			case PREY:		mode = GameMode.SURVIVAL;
+							break;
 			case SPECTATORS:mode = GameMode.CREATIVE;
+							break;
 			default:		mode = p.getGameMode();
+							break;
 		}
 		if (p.getGameMode() != mode)
 		{
 			p.setGameMode(mode);
 		}
-	}
-
-	/**
-	 * Private method used to simply save a player's current game mode.
-	 * @param p the player to save
-	 */
-	private void putPlayerGameMode(Player p)
-	{
-		gamemodes.put(p.getName(), p.getGameMode());
+		if (!gamemodes.containsKey(p.getName()))
+		{
+			gamemodes.put(p.getName(), oldMode);
+		}
 	}
 
 	/**
@@ -236,18 +242,27 @@ public class TeamManager
 		}
 	}
 
+	public boolean modeIsSaved(Player p)
+	{
+		return (gamemodes.containsKey(p.getName()));
+	}
+
 	/**
 	 * Restores the game mode of a single player.
 	 * Deletes their saved game mode.
 	 */
 	public void restorePlayerGameMode(Player p)
 	{
-		if (gamemodes.containsKey(p.getName()))
+		if (!modeIsSaved(p))
 		{
-			if (p.getGameMode() != gamemodes.get(p.getName()))
-			{
-				p.setGameMode(gamemodes.get(p.getName()));
-			}
+			return;
+		}
+		
+		GameMode mode = gamemodes.get(p.getName());
+		gamemodes.remove(p.getName());
+		if (p.getGameMode() != mode)
+		{
+			p.setGameMode(mode);
 		}
 	}
 
@@ -257,18 +272,23 @@ public class TeamManager
 	 */
 	public void restoreAllGameModes()
 	{
-		for (String name : gamemodes.keySet())
+		HashMap<String, GameMode> modes = new HashMap<String, GameMode>();
+		modes.putAll(gamemodes);
+		
+		gamemodes.clear();
+		
+		for (String name : modes.keySet())
 		{
 			Player p = Bukkit.getPlayer(name);
 			if (p != null)
 			{
-				if (p.getGameMode() != gamemodes.get(name))
+				if (p.getGameMode() != modes.get(name))
 				{
-					Bukkit.getPlayer(name).setGameMode(gamemodes.get(name));
+					GameMode mode = modes.get(name);
+					p.setGameMode(mode);
 				}
 			}
 		}
-		gamemodes.clear();
 	}
 
 	public enum Team

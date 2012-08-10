@@ -138,6 +138,12 @@ public class Game
 	public void onPlayerJoin(Player p)
 	{
 		plugin.getTeams().addPlayer(p);
+		
+		if (plugin.getTeams().getTeamOf(p) == Team.SPECTATORS)
+		{
+			GameUtil.makeInvisible(p);
+		}
+		
 		timeouts.stopTimeout(p);
 		plugin.getTeams().savePlayerGameMode(p);
 		plugin.getLoadouts().restoreInventory(p);

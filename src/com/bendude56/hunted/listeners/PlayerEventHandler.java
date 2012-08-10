@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -288,20 +289,29 @@ public class PlayerEventHandler implements Listener {
 		}
 	}
 
-	/*
-	 * public void onPlayerGameModeChange(PlayerGameModeChangeEvent e) {
-	 * 
-	 * Player p = e.getPlayer(); if (p.getWorld() !=
-	 * plugin.getWorld()) { return; } if (!plugin.gameIsRunning())
-	 * { return; }
-	 * 
-	 * if (plugin.getGame().isHunter(p) || plugin.getGame().isHunted(p)) { if (e.getNewGameMode() !=
-	 * GameMode.SURVIVAL) { e.setCancelled(true); return; } } if
-	 * (plugin.getGame().isSpectating(p)) { if (plugin.getSettings().flyingSpectators()) { if
-	 * (e.getNewGameMode() != GameMode.CREATIVE) { e.setCancelled(true); } }
-	 * else { if (e.getNewGameMode() != GameMode.SURVIVAL) {
-	 * e.setCancelled(true); } } } }
-	 */
+	@EventHandler
+	public void onPlayerGameModeChange(PlayerGameModeChangeEvent e)
+	{
+		if (e.getPlayer().getWorld() != plugin.getWorld())
+		{
+			return;
+		}
+		
+		if (!plugin.gameIsRunning())
+		{
+			return;
+		}
+		
+		if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.HUNTERS && plugin.getTeams().getTeamOf(e.getPlayer()) != Team.PREY)
+		{
+			return;
+		}
+		
+		if (plugin.getTeams().modeIsSaved(e.getPlayer()))
+		{
+			e.setCancelled(true);
+		}
+	}
 
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e)
