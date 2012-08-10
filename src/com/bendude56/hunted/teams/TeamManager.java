@@ -188,6 +188,8 @@ public class TeamManager
 		return players;
 	}
 
+	//PLAYER STATES
+
 	/**
 	 * Saves a player's game mode if it isn't already saved and sets
 	 * their game mode to the one they're supposed to be in.

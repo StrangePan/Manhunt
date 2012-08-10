@@ -195,7 +195,7 @@ public class Game
 	 */
 	public void onPlayerForfeit(String player_name)
 	{
-		GameUtil.broadcast(ChatManager.bracket1_ + TeamUtil.getTeamColor(plugin.getTeams().getTeamOf(player_name)) + player_name + ChatManager.color + " has forfeit the game!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		GameUtil.broadcast(ChatManager.bracket1_ + TeamUtil.getTeamColor(plugin.getTeams().getTeamOf(player_name)) + player_name + ChatManager.color + " has forfeit the game!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
 		Player player = Bukkit.getPlayer(player_name);
 		
