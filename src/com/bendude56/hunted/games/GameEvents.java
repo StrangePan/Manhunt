@@ -304,7 +304,7 @@ public class GameEvents
 		}
 		else if (stage == GameStage.HUNT)
 		{
-			if (countdown == 100 && time > stop_hunt_tick)
+			if (countdown == 100 && time > start_hunt_tick)
 			{
 				broadcast(ChatManager.bracket1_ + color + "The hunt has started! Let the games begin!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				game.freeze_hunters = false;
