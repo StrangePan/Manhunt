@@ -1,9 +1,12 @@
 package com.bendude56.hunted.games;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.loadouts.LoadoutUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 /**
@@ -51,6 +54,51 @@ public class GameUtil {
 		for (Player p2: Bukkit.getOnlinePlayers())
 		{
 			p2.showPlayer(p);
+		}
+	}
+
+	public static void prepareForGame(Player p)
+	{
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		
+		Team team = plugin.getTeams().getTeamOf(p);
+		
+		if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			return;
+		}
+		
+		p.setHealth(20);
+		p.setFoodLevel(20);
+		p.setSaturation(10);
+		
+		plugin.getLoadouts().saveInventory(p);
+		
+		if (plugin.getSettings().LOADOUTS.value)
+		{
+			if (team == Team.HUNTERS)
+			{
+				LoadoutUtil.setPlayerInventory(p, plugin.getLoadouts().getHunterLoadout());
+			}
+			else if (team == Team.PREY)
+			{
+				LoadoutUtil.setPlayerInventory(p, plugin.getLoadouts().getPreyLoadout());
+			}
+		}
+		else
+		{
+			LoadoutUtil.clearInventory(p.getInventory());
+		}
+		if (plugin.getSettings().TEAM_HATS.value)
+		{
+			if (team == Team.HUNTERS)
+			{
+				p.getInventory().setHelmet(new ItemStack(Material.WOOL, 0, (short) 14)); 
+			}
+			else if (team == Team.PREY)
+			{
+				p.getInventory().setHelmet(new ItemStack(Material.LEAVES, 0));
+			}
 		}
 	}
 

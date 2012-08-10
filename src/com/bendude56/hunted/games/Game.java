@@ -101,6 +101,7 @@ public class Game
 		}
 		
 		plugin.getTeams().restoreAllGameModes();
+		plugin.getLoadouts().restoreAllInventories();
 		
 		plugin.forgetGame();
 		close();
@@ -139,7 +140,7 @@ public class Game
 		plugin.getTeams().addPlayer(p);
 		timeouts.stopTimeout(p);
 		plugin.getTeams().savePlayerGameMode(p);
-		//TODO Save the player's inventory
+		plugin.getLoadouts().restoreInventory(p);
 	}
 
 	/**
@@ -149,7 +150,7 @@ public class Game
 	public void onPlayerLeave(Player p)
 	{
 		plugin.getTeams().restorePlayerGameMode(p);
-		//TODO Restore player's inventory
+		plugin.getLoadouts().restoreInventory(p);
 		finders.stopFinder(p);
 		timeouts.startTimeout(p);
 	}

@@ -33,6 +33,17 @@ public class Loadout {
 		save();
 	}
 
+	public Loadout(ItemStack[] contents, ItemStack[] armor)
+	{
+		this.name = null;
+		this.directory = null;
+		this.filename = null;
+		this.fullpath = null;
+		
+		this.contents = contents;
+		this.armor = armor;
+	}
+
 	public void setContents(ItemStack[] contents, ItemStack[] armor)
 	{
 		this.contents = contents;
@@ -53,16 +64,30 @@ public class Loadout {
 	
 	public void save()
 	{
-		(new LoadoutFile(this)).save();
+		if (name != null)
+		{
+			(new LoadoutFile(this)).save();
+		}
 	}
 	
 	public void load()
 	{
-		(new LoadoutFile(this)).load();
+		if (name != null)
+		{
+			(new LoadoutFile(this)).load();
+		}
 	}
 	
-	public boolean delete() {
-		return (new LoadoutFile(this)).delete();
+	public boolean delete()
+	{
+		if (name != null)
+		{
+			return (new LoadoutFile(this)).delete();
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 }

@@ -5,18 +5,15 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.games.Game.GameStage;
-import com.bendude56.hunted.loadouts.LoadoutUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class GameEvents
@@ -110,7 +107,6 @@ public class GameEvents
 				//AND SET THEIR INVENTORIES
 				//AND MAKE SPECTATORS INVISIBLE
 				//AND FILL THEIR FOOD AND HEALTH BARS
-				//TODO Save their old inventories for restoring later
 				
 				List<Player> hunters = game.getPlugin().getTeams().getTeamPlayers(Team.HUNTERS);
 				for (Player p : hunters)
@@ -120,22 +116,7 @@ public class GameEvents
 					loc = ManhuntUtil.safeTeleport(loc);
 					p.teleport(loc);
 					
-					p.setHealth(20);
-					p.setFoodLevel(20);
-					p.setSaturation(10);
-					
-					if (game.getPlugin().getSettings().LOADOUTS.value)
-					{
-						LoadoutUtil.setPlayerInventory(p, game.getPlugin().getLoadouts().getHunterLoadout());
-					}
-					else
-					{
-						LoadoutUtil.clearInventory(p.getInventory());
-					}
-					if (game.getPlugin().getSettings().TEAM_HATS.value)
-					{
-						p.getInventory().setHelmet(new ItemStack(Material.WOOL, 0, (short) 14)); 
-					}
+					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> prey = game.getPlugin().getTeams().getTeamPlayers(Team.PREY);
@@ -149,19 +130,8 @@ public class GameEvents
 					p.setHealth(20);
 					p.setFoodLevel(20);
 					p.setSaturation(10);
-
-					if (game.getPlugin().getSettings().LOADOUTS.value)
-					{
-						LoadoutUtil.setPlayerInventory(p, game.getPlugin().getLoadouts().getPreyLoadout());
-					}
-					else
-					{
-						LoadoutUtil.clearInventory(p.getInventory());
-					}
-					if (game.getPlugin().getSettings().TEAM_HATS.value)
-					{
-						p.getInventory().setHelmet(new ItemStack(Material.LEAVES, 0)); 
-					}
+					
+					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
