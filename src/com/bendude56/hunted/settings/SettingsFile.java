@@ -21,6 +21,8 @@ public class SettingsFile extends Properties{
 		this.title = title;
 		this.directory = directory;
 		this.filename = name + ".properties";
+		
+		loadFile();
 	}
 	
 	public void loadFile() {

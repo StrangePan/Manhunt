@@ -102,6 +102,7 @@ public class Game
 		
 		plugin.getTeams().restoreAllGameModes();
 		
+		plugin.forgetGame();
 		close();
 	}
 
@@ -269,6 +270,7 @@ public class Game
 		finders = null;
 		gameevents.close();
 		gameevents = null;
+		plugin = null;
 	}
 
 	public enum GameStage

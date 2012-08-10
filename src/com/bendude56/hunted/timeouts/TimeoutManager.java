@@ -34,7 +34,7 @@ public class TimeoutManager {
 		
 		if (timeout != null)
 		{
-			stopTimeout(timeout, true);
+			stopTimeout(timeout);
 		}
 		
 		timeout = new Timeout(p.getName(), this);
@@ -78,7 +78,7 @@ public class TimeoutManager {
 		Timeout t = getTimeout(p);
 		if (t != null)
 		{
-			stopTimeout(t, true);
+			stopTimeout(t);
 		}
 	}
 	
@@ -86,9 +86,9 @@ public class TimeoutManager {
 	 * Tells the timeout to shutdown
 	 * @param t
 	 */
-	protected void stopTimeout(Timeout t, boolean forgetManager)
+	protected void stopTimeout(Timeout t)
 	{
-		t.close(forgetManager);
+		t.close();
 		if (timeouts.contains(t));
 		{
 			timeouts.remove(t);
@@ -102,7 +102,7 @@ public class TimeoutManager {
 	{
 		for (Timeout t : timeouts)
 		{
-			t.close(true);
+			t.close();
 		}
 		timeouts.clear();
 	}

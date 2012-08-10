@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -20,7 +21,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.PlayerInventory;
 
 
 import com.bendude56.hunted.ManhuntPlugin;
@@ -139,11 +139,13 @@ public class PlayerEventHandler implements Listener {
 		if (team == Team.HUNTERS && plugin.getGame().freeze_hunters)
 		{
 			e.setCancelled(true);
+			p.teleport(e.getFrom());
 			return;
 		}
 		if (team == Team.PREY && plugin.getGame().freeze_prey)
 		{
 			e.setCancelled(true);
+			p.teleport(e.getFrom());
 			return;
 		}
 		
@@ -314,7 +316,7 @@ public class PlayerEventHandler implements Listener {
 		{
 			return;
 		}
-		if (!(e.getInventory() instanceof PlayerInventory))
+		if (e.getSlotType() != SlotType.ARMOR)
 		{
 			return;
 		}

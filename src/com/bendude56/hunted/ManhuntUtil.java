@@ -64,7 +64,7 @@ public class ManhuntUtil {
 	
 	public static double getDistance(double x1, double y1, double z1, double x2, double y2, double z2, boolean ignoreY)
 	{
-		return Math.sqrt(Math.pow((x2 - x1), 2) + (ignoreY ? Math.pow((y2 - y1), 2) : 0) + Math.pow((z2 - z1), 2));
+		return Math.sqrt(Math.pow((x2 - x1), 2) + (ignoreY ? 0 : Math.pow((y2 - y1), 2)) + Math.pow((z2 - z1), 2));
 	}
 
 	public static double getDistance(Location loc1, Location loc2, boolean ignoreY)
@@ -154,7 +154,7 @@ public class ManhuntUtil {
 		
 		Team team = plugin.getTeams().getTeamOf(p);
 		
-		if (team != Team.HUNTERS || team != Team.PREY)
+		if (team != Team.HUNTERS && team != Team.PREY)
 		{
 			return true;
 		}

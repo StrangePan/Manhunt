@@ -47,15 +47,16 @@ public class Timeout {
 		manager.getGame().onPlayerForfeit(player_name);
 		
 		//Delete the Timeout from the TimeoutManager
-		manager.stopTimeout(this, false);
-		
-		manager = null;
+		if (manager != null)
+		{
+			manager.stopTimeout(this);
+		}
 	}
 	
-	protected void close(boolean forgetManager)
+	protected void close()
 	{
 		Bukkit.getScheduler().cancelTask(schedule);
-		if (forgetManager) manager = null;
+		manager = null;
 	}
 	
 }

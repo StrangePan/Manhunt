@@ -61,7 +61,7 @@ public class ManhuntPlugin extends JavaPlugin {
 	public void onDisable()
 	{
 		teams.restoreAllGameModes();
-		stopGame();
+		forgetGame();
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
@@ -81,17 +81,12 @@ public class ManhuntPlugin extends JavaPlugin {
 	
 	public void startGame()
 	{
-		stopGame();
+		forgetGame();
 		game = new Game(this);
 	}
 	
-	public void stopGame()
+	public void forgetGame()
 	{
-		if (game == null)
-		{
-			return;
-		}
-		game.stopGame(false);
 		game = null;
 	}
 
@@ -150,7 +145,7 @@ public class ManhuntPlugin extends JavaPlugin {
 	
 	public boolean gameIsRunning()
 	{
-		return game != null;
+		return (game != null);
 	}
 	
 	public enum ManhuntMode

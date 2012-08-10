@@ -25,25 +25,37 @@ public class BlockEventHandler implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e)
 	{
-		e.setCancelled(!canBuildHere(e.getPlayer(), e.getBlock()));
+		if (!canBuildHere(e.getPlayer(), e.getBlock()))
+		{
+			e.setCancelled(true);
+		}
 	}
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e)
 	{
-		e.setCancelled(!canBuildHere(e.getPlayer(), e.getBlock()));
+		if (!canBuildHere(e.getPlayer(), e.getBlock()))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e)
 	{
-		e.setCancelled(!canBuildHere(e.getPlayer(), e.getBlockClicked()));
+		if (!canBuildHere(e.getPlayer(), e.getBlockClicked()))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
 	public void onPlayerBucketFill(PlayerBucketFillEvent e)
 	{
-		e.setCancelled(!canBuildHere(e.getPlayer(), e.getBlockClicked()));
+		if (!canBuildHere(e.getPlayer(), e.getBlockClicked()))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	private boolean canBuildHere(Player p, Block b)

@@ -52,7 +52,7 @@ public class EntityEventHandler implements Listener
 			return;
 		}
 		
-		if (plugin.gameIsRunning())
+		if (plugin.gameIsRunning() && plugin.getGame().getStage() != GameStage.PREGAME)
 		{
 			Player p = null;
 			Player p2 = null;
