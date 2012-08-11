@@ -63,7 +63,7 @@ public class PlayerState
 		p.setFallDistance(falldistance);
 		p.setSaturation(saturation);
 		p.setAllowFlight(flight);
-		p.setBedSpawnLocation(bed);
+		if (bed != null) p.setBedSpawnLocation(bed);
 		p.setCompassTarget(compass);
 		p.setExhaustion(exhaustion);
 		p.setTotalExperience(xp);

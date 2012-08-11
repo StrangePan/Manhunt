@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.settings.SettingsManager;
 
 public class TeamManager
@@ -89,10 +90,7 @@ public class TeamManager
 	 */
 	public void changePlayerTeam(Player p, Team t)
 	{
-		if (!playerStates.containsKey(p.getName()))
-		{
-			putPlayerTeam(p.getName(), t);
-		}
+		putPlayerTeam(p.getName(), t);
 	}
 
 	/**
@@ -125,7 +123,14 @@ public class TeamManager
 	 */
 	public Team getTeamOf(String s)
 	{
-		return players.get(s);
+		if (players.containsKey(s))
+		{
+			return players.get(s);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	/**
@@ -201,6 +206,8 @@ public class TeamManager
 		
 		PlayerState state = new PlayerState(p);
 		
+		GameUtil.prepareForGame(p);
+		
 		playerStates.put(p.getName(), state);
 	}
 
@@ -220,21 +227,28 @@ public class TeamManager
 	 */
 	public void restorePlayerState(Player p)
 	{
-		restorePlayerState(p.getName());
-	}
-
-	private void restorePlayerState(String name)
-	{
-		if (!playerStates.containsKey(name))
+		if (!playerStates.containsKey(p.getName()))
 		{
 			return;
 		}
 		
-		PlayerState state = playerStates.get(name);
+		PlayerState oldState = playerStates.get(p.getName());
+		PlayerState newState = new PlayerState(p);
 		
-		playerStates.remove(name);
+		playerStates.remove(p.getName());
 		
-		state.restorePlayer();
+		oldState.restorePlayer();
+		
+		playerStates.put(p.getName(), newState);
+	}
+	private void restorePlayerState(String name)
+	{
+		Player p = Bukkit.getPlayerExact(name);
+		
+		if (p != null)
+		{
+			restorePlayerState(p);
+		}
 	}
 
 	/**
@@ -243,14 +257,17 @@ public class TeamManager
 	public void restoreAllPlayerStates()
 	{
 		HashMap<String, PlayerState> states = new HashMap<String, PlayerState>();
-		states.putAll(playerStates);
-		
-		playerStates.clear();
+		for (String name : playerStates.keySet())
+		{
+			states.put(name, playerStates.get(name));
+		}
 		
 		for (String name : states.keySet())
 		{
 			restorePlayerState(name);
 		}
+		
+		playerStates.clear();
 	}
 
 	//TEAM ENUM

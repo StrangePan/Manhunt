@@ -34,7 +34,7 @@ public class TeamUtil {
 	{
 		switch (t) {
 			case HUNTERS:	return ChatColor.DARK_RED;
-			case PREY:		return ChatColor.DARK_BLUE;
+			case PREY:		return ChatColor.BLUE;
 			case SPECTATORS:return ChatColor.YELLOW;
 			default:		return ChatColor.WHITE;
 		}

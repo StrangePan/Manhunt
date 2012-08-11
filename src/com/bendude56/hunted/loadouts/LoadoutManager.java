@@ -13,6 +13,7 @@ import com.bendude56.hunted.ManhuntPlugin;
 public class LoadoutManager {
 
 	private HashMap<String, Loadout> loadouts = new HashMap<String, Loadout>();
+	//private HashMap<String, Loadout> tempLoadouts = new HashMap<String, Loadout>();
 
 	private final String loadouts_directory = "plugins/Manhunt";
 	private final String world_loadouts_directory = ManhuntPlugin.getInstance().getWorld().getName() + "/Manhunt";
@@ -129,5 +130,22 @@ public class LoadoutManager {
 			return true;
 		}
 	}
+/*
+	public void saveLoadout(Player p)
+	{
+		if (!tempLoadouts.containsKey(p.getName()))
+		{
+			tempLoadouts.put(p.getName(), new Loadout(p.getInventory().getContents(), p.getInventory().getArmorContents()));
+		}
+	}
 
+	public void restoreLoadout(Player p)
+	{
+		if (tempLoadouts.containsKey(p.getName()))
+		{
+			LoadoutUtil.setPlayerInventory(p, tempLoadouts.get(p.getName()));
+			tempLoadouts.remove(p.getName());
+		}
+	}
+*/
 }

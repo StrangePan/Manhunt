@@ -100,6 +100,11 @@ public class CommandsTeams
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
+		if (plugin.locked)
+		{
+			sender.sendMessage(CommandUtil.LOCKED);
+			return;
+		}
 		if (plugin.gameIsRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
@@ -163,6 +168,11 @@ public class CommandsTeams
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
+		if (plugin.locked)
+		{
+			sender.sendMessage(CommandUtil.LOCKED);
+			return;
+		}
 		if (plugin.gameIsRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
@@ -226,6 +236,11 @@ public class CommandsTeams
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		Player p;
 		
+		if (plugin.locked)
+		{
+			sender.sendMessage(CommandUtil.LOCKED);
+			return;
+		}
 		if (plugin.gameIsRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);

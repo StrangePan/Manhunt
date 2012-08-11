@@ -141,7 +141,7 @@ public class PlayerEventHandler implements Listener {
 		}
 		
 		t = plugin.getTeams().getTeamOf(p);
-		t2 = plugin.getTeams().getTeamOf(p2);
+		if (p2 != null) t2 = plugin.getTeams().getTeamOf(p2);
 		
 		if (p2 == null) //Player died from the environment
 		{
@@ -149,7 +149,7 @@ public class PlayerEventHandler implements Listener {
 		}
 		else //Player dies from another player
 		{
-			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " was killed by " + t2.getColor() + p2.getName() + " and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " was killed by " + t2.getColor() + p2.getName() + ChatColor.WHITE + " and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
 		
 		GameUtil.broadcast(e.getDeathMessage(), Team.NONE);

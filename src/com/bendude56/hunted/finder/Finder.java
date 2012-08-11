@@ -36,7 +36,7 @@ public class Finder
 		this.activation_time = time.getTime() + 8000;
 		this.expire_time = activation_time + (1000*manager.getGame().getPlugin().getSettings().FINDER_COOLDOWN.value);
 		
-		player.sendMessage(ChatManager.bracket1_ + "Finding nearest enemy. Please stand still for " + ChatColor.DARK_RED + "8 seconds." + ChatManager.bracket2_);
+		player.sendMessage(ChatManager.bracket1_ + "Finding nearest enemy. Stand still for " + ChatColor.DARK_RED + "8 seconds." + ChatManager.bracket2_);
 		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{

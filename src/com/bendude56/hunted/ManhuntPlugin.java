@@ -13,6 +13,7 @@ import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.commands.CommandSwitchboard;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.Game;
+import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.listeners.BlockEventHandler;
 import com.bendude56.hunted.listeners.EntityEventHandler;
 import com.bendude56.hunted.listeners.PlayerEventHandler;
@@ -55,6 +56,11 @@ public class ManhuntPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new BlockEventHandler(this), this);
 		getServer().getPluginManager().registerEvents(new EntityEventHandler(this), this);
 		
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
+					+ ChatColor.GREEN + " has been enabled.");
+		}
 	}
 
 	@Override
@@ -63,10 +69,13 @@ public class ManhuntPlugin extends JavaPlugin {
 		teams.restoreAllPlayerStates();
 		forgetGame();
 		
-		for (Player p : Bukkit.getOnlinePlayers()) {
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			GameUtil.makeVisible(p);
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
 					+ ChatColor.RED + " has been disabled.");
 		}
+		
 		
 		log(Level.INFO, "Unloaded from memory.");
 	}

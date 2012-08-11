@@ -70,15 +70,7 @@ public class GameEvents
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
-			if (time < start_timechange + 100)
-			{
-				world.setFullTime(world.getFullTime() + 10);
-			}
-			else if (time < start_timechange + 1100)
-			{
-				world.setFullTime(world.getFullTime() + 100);
-			}
-			else if (stop_timechange - time > 2400)
+			if (stop_timechange - time > 2400)
 			{
 				world.setFullTime(world.getFullTime() + 400);
 			}
@@ -129,7 +121,6 @@ public class GameEvents
 					p.teleport(loc);
 
 					game.getPlugin().getTeams().savePlayerState(p);
-					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> prey = game.getPlugin().getTeams().getTeamPlayers(Team.PREY);
@@ -141,7 +132,6 @@ public class GameEvents
 					p.teleport(loc);
 
 					game.getPlugin().getTeams().savePlayerState(p);
-					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
@@ -201,7 +191,7 @@ public class GameEvents
 			else if (countdown == 1 && time > start_setup_tick - sec)
 			{
 				broadcast(ChatManager.color + "Setup will start in " + color + "1" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				stage = game.getPlugin().getSettings().SETUP_TIME.value >= 0 ? GameStage.HUNT : GameStage.SETUP;
+				stage = game.getPlugin().getSettings().SETUP_TIME.value <= 0 ? GameStage.HUNT : GameStage.SETUP;
 				countdown = 100;
 			}
 		}

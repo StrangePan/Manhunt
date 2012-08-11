@@ -127,7 +127,7 @@ public class CommandsHelp
 			int minutes = (int) Math.floor(((nexttime - time) - (hours*72000))/1200);
 			int seconds = (int) Math.floor(((nexttime - time) - (hours*72000) - (minutes*1200))/20);
 			
-			sender.sendMessage(pre + "Time left in the " + stage + " stage: " + ChatColor.DARK_BLUE + String.format("%d:%02d:%02d", hours, minutes, seconds));
+			sender.sendMessage(pre + "Time left in the " + stage + " stage: " + ChatColor.BLUE + String.format("%d:%02d:%02d", hours, minutes, seconds));
 			sender.sendMessage(TeamUtil.getTeamColor(Team.HUNTERS) + TeamUtil.getTeamName(Team.HUNTERS, true) + ": " + plugin.getTeams().getTeamNames(Team.HUNTERS).size()
 					+ "  " + TeamUtil.getTeamColor(Team.PREY) + TeamUtil.getTeamName(Team.PREY, true) + ": " + plugin.getTeams().getTeamNames(Team.PREY).size()
 					+ "  " + TeamUtil.getTeamColor(Team.SPECTATORS) + TeamUtil.getTeamName(Team.SPECTATORS, true) + ": " + plugin.getTeams().getTeamNames(Team.SPECTATORS).size());

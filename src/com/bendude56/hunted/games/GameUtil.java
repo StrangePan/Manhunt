@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -73,12 +74,22 @@ public class GameUtil {
 		
 		if (team != Team.HUNTERS && team != Team.PREY)
 		{
+			if (team == Team.SPECTATORS)
+			{
+				p.setGameMode(GameMode.CREATIVE);
+				p.setAllowFlight(plugin.getSettings().FLYING_SPECTATORS.value);
+			}
 			return;
+		}
+		else
+		{
+			p.setGameMode(GameMode.SURVIVAL);
 		}
 		
 		p.setHealth(20);
 		p.setFoodLevel(20);
 		p.setSaturation(10);
+		p.setFireTicks(0);
 		
 		if (plugin.getSettings().LOADOUTS.value)
 		{

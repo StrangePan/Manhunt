@@ -93,7 +93,7 @@ public class Game
 		{
 			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
-
+		
 		List<Player> spectators = getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
 		for (Player p : spectators)
 		{
@@ -103,6 +103,7 @@ public class Game
 		plugin.getTeams().restoreAllPlayerStates();
 		
 		plugin.forgetGame();
+		plugin.getTeams().refreshPlayers();
 		close();
 	}
 
@@ -144,7 +145,7 @@ public class Game
 		}
 		
 		timeouts.stopTimeout(p);
-		plugin.getTeams().savePlayerState(p);
+		plugin.getTeams().restorePlayerState(p);
 	}
 
 	/**
@@ -155,7 +156,13 @@ public class Game
 	{
 		plugin.getTeams().restorePlayerState(p);
 		finders.stopFinder(p);
-		timeouts.startTimeout(p);
+		
+		Team team = plugin.getTeams().getTeamOf(p);
+		
+		if (team == Team.HUNTERS || team == Team.PREY)
+		{
+			timeouts.startTimeout(p);
+		}
 	}
 
 	/**

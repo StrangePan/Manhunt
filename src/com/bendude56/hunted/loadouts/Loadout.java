@@ -40,14 +40,14 @@ public class Loadout {
 		this.filename = null;
 		this.fullpath = null;
 		
-		this.contents = contents;
-		this.armor = armor;
+		this.contents = contents.clone();
+		this.armor = armor.clone();
 	}
 
 	public void setContents(ItemStack[] contents, ItemStack[] armor)
 	{
-		this.contents = contents;
-		this.armor = armor;
+		this.contents = contents.clone();
+		this.armor = armor.clone();
 		
 		save();
 	}
