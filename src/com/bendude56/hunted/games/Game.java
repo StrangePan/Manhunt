@@ -100,7 +100,7 @@ public class Game
 			GameUtil.makeVisible(p);
 		}
 		
-		plugin.getTeams().restoreAllPlayerStates();
+		plugin.getTeams().restoreAllOriginalPlayerStates();
 		
 		plugin.forgetGame();
 		plugin.getTeams().refreshPlayers();
@@ -145,7 +145,8 @@ public class Game
 		}
 		
 		timeouts.stopTimeout(p);
-		plugin.getTeams().restorePlayerState(p);
+		plugin.getTeams().saveOriginalPlayerState(p);
+		plugin.getTeams().restoreManhuntPlayerState(p);
 	}
 
 	/**
@@ -154,7 +155,8 @@ public class Game
 	 */
 	public void onPlayerLeave(Player p)
 	{
-		plugin.getTeams().restorePlayerState(p);
+		plugin.getTeams().restoreOriginalPlayerState(p);
+		plugin.getTeams().saveManhuntPlayerState(p);
 		finders.stopFinder(p);
 		
 		Team team = plugin.getTeams().getTeamOf(p);

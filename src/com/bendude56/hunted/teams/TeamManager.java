@@ -9,15 +9,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.settings.SettingsManager;
+import com.bendude56.hunted.teams.PlayerState.PlayerStateType;
 
 public class TeamManager
 {
 	ManhuntPlugin plugin;
 	
 	private HashMap<String, Team> players = new HashMap<String, Team>();
-	private HashMap<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
+	private List<PlayerState> playerStates = new ArrayList<PlayerState>();
 
 	public TeamManager(ManhuntPlugin plugin)
 	{
@@ -197,18 +197,24 @@ public class TeamManager
 	 * Saves a snapshot of a player.
 	 * @param p
 	 */
-	public void savePlayerState(Player p)
+	public void saveOriginalPlayerState(Player p)
 	{
-		if (playerStates.containsKey(p.getName()))
+		if (getPlayerState(p, PlayerStateType.ORIGINAL) != null)
 		{
 			return;
 		}
 		
-		PlayerState state = new PlayerState(p);
+		playerStates.add(new PlayerState(p, PlayerStateType.ORIGINAL));
+	}
+
+	public void saveManhuntPlayerState(Player p)
+	{
+		if (getPlayerState(p, PlayerStateType.MANHUNT) != null)
+		{
+			return;
+		}
 		
-		GameUtil.prepareForGame(p);
-		
-		playerStates.put(p.getName(), state);
+		playerStates.add(new PlayerState(p, PlayerStateType.MANHUNT));
 	}
 
 	/**
@@ -218,53 +224,73 @@ public class TeamManager
 	 */
 	public boolean stateIsSaved(Player p)
 	{
-		return playerStates.containsKey(p.getName());
+		return getPlayerState(p, PlayerStateType.ORIGINAL) != null;
+	}
+
+	private PlayerState getPlayerState(Player p, PlayerStateType t)
+	{
+		for (PlayerState state : playerStates)
+		{
+			if (state.getType() == t && state.getName().equals(p.getName()))
+			{
+				return state;
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * Restores a single player's state.
 	 * @param p
 	 */
-	public void restorePlayerState(Player p)
+	public void restoreOriginalPlayerState(Player p)
 	{
-		if (!playerStates.containsKey(p.getName()))
+		PlayerState originalState = getPlayerState(p, PlayerStateType.ORIGINAL);
+		
+		if (originalState == null)
 		{
 			return;
 		}
+		playerStates.remove(originalState);
 		
-		PlayerState oldState = playerStates.get(p.getName());
-		PlayerState newState = new PlayerState(p);
-		
-		playerStates.remove(p.getName());
-		
-		oldState.restorePlayer();
-		
-		playerStates.put(p.getName(), newState);
-	}
-	private void restorePlayerState(String name)
-	{
-		Player p = Bukkit.getPlayerExact(name);
-		
-		if (p != null)
-		{
-			restorePlayerState(p);
-		}
+		originalState.restorePlayer();
 	}
 
+	public void restoreManhuntPlayerState(Player p)
+	{
+		PlayerState manhuntState = getPlayerState(p, PlayerStateType.MANHUNT);
+		
+		if (manhuntState == null)
+		{
+			manhuntState = new PlayerState(p, PlayerStateType.MANHUNT);
+			manhuntState.clearInventory();
+		}
+		if (playerStates.contains(manhuntState))
+		{
+			playerStates.remove(manhuntState);
+		}
+		
+		manhuntState.restorePlayer();
+	}
+	
 	/**
 	 * Restores all saved player states and clears the list.
 	 */
-	public void restoreAllPlayerStates()
+	public void restoreAllOriginalPlayerStates()
 	{
-		HashMap<String, PlayerState> states = new HashMap<String, PlayerState>();
-		for (String name : playerStates.keySet())
-		{
-			states.put(name, playerStates.get(name));
-		}
+		List<PlayerState> states = playerStates;
 		
-		for (String name : states.keySet())
+		for (PlayerState state : states)
 		{
-			restorePlayerState(name);
+			if (state.getType() == PlayerStateType.ORIGINAL)
+			{
+				Player p = Bukkit.getPlayerExact(state.getName());
+				
+				if (p != null)
+				{
+					restoreOriginalPlayerState(p);
+				}
+			}
 		}
 		
 		playerStates.clear();

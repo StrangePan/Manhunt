@@ -69,8 +69,9 @@ public class GameUtil {
 	public static void prepareForGame(Player p)
 	{
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
-		
 		Team team = plugin.getTeams().getTeamOf(p);
+		
+		plugin.getTeams().saveOriginalPlayerState(p);
 		
 		if (team != Team.HUNTERS && team != Team.PREY)
 		{

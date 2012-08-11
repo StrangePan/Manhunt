@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import com.bendude56.hunted.loadouts.Loadout;
@@ -13,6 +14,8 @@ import com.bendude56.hunted.loadouts.LoadoutUtil;
 
 public class PlayerState
 {
+	private final PlayerStateType type;
+	
 	private final String name;
 	private final GameMode gamemode;
 	private final Loadout loadout;
@@ -31,8 +34,10 @@ public class PlayerState
 	//private final Location location;
 	
 
-	public PlayerState(Player p)
+	public PlayerState(Player p, PlayerStateType type)
 	{
+		this.type = type;
+		
 		this.name = p.getName();
 		this.gamemode = p.getGameMode();
 		this.loadout = new Loadout(p.getInventory().getContents(), p.getInventory().getArmorContents());
@@ -79,8 +84,24 @@ public class PlayerState
 		}
 	}
 	
+	public void clearInventory()
+	{
+		loadout.setContents(new ItemStack[36], new ItemStack[4]);
+	}
+	
 	public String getName()
 	{
 		return name;
 	}
+
+	public PlayerStateType getType()
+	{
+		return type;
+	}
+
+	public enum PlayerStateType
+	{
+		ORIGINAL, MANHUNT;
+	}
+
 }

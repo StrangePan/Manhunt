@@ -120,7 +120,7 @@ public class GameEvents
 					loc = ManhuntUtil.safeTeleport(loc);
 					p.teleport(loc);
 
-					game.getPlugin().getTeams().savePlayerState(p);
+					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> prey = game.getPlugin().getTeams().getTeamPlayers(Team.PREY);
@@ -131,13 +131,13 @@ public class GameEvents
 					loc = ManhuntUtil.safeTeleport(loc);
 					p.teleport(loc);
 
-					game.getPlugin().getTeams().savePlayerState(p);
+					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
 				for (Player p : spectators)
 				{
-					game.getPlugin().getTeams().savePlayerState(p);
+					GameUtil.prepareForGame(p);
 					GameUtil.makeInvisible(p);
 				}
 				

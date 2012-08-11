@@ -1,4 +1,4 @@
-package com.bendude56.hunted.listeners;
+package com.bendude56.hunted.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;

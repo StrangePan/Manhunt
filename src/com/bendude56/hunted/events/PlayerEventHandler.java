@@ -1,4 +1,4 @@
-package com.bendude56.hunted.listeners;
+package com.bendude56.hunted.events;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -156,6 +156,12 @@ public class PlayerEventHandler implements Listener {
 		e.setDeathMessage(null);
 		
 		plugin.getGame().onPlayerDie(p);
+		
+		if (plugin.gameIsRunning())
+		{
+			e.setDroppedExp(0);
+			e.getDrops().clear();
+		}
 	}
 
 	@EventHandler

@@ -11,12 +11,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.commands.CommandSwitchboard;
+import com.bendude56.hunted.events.BlockEventHandler;
+import com.bendude56.hunted.events.EntityEventHandler;
+import com.bendude56.hunted.events.PlayerEventHandler;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.Game;
 import com.bendude56.hunted.games.GameUtil;
-import com.bendude56.hunted.listeners.BlockEventHandler;
-import com.bendude56.hunted.listeners.EntityEventHandler;
-import com.bendude56.hunted.listeners.PlayerEventHandler;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.TeamManager;
@@ -66,7 +66,7 @@ public class ManhuntPlugin extends JavaPlugin {
 	@Override
 	public void onDisable()
 	{
-		teams.restoreAllPlayerStates();
+		teams.restoreAllOriginalPlayerStates();
 		forgetGame();
 		
 		for (Player p : Bukkit.getOnlinePlayers())

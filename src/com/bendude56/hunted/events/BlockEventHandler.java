@@ -1,4 +1,4 @@
-package com.bendude56.hunted.listeners;
+package com.bendude56.hunted.events;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
