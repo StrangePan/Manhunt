@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.chat.ChatManager;
+import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 import com.bendude56.hunted.teams.TeamUtil;
@@ -152,6 +153,7 @@ public class CommandsTeams
 		}
 		
 		plugin.getTeams().changePlayerTeam(p, Team.HUNTERS);
+		GameUtil.broadcast(ChatManager.leftborder + Team.HUNTERS.getColor() + p.getName() + ChatColor.WHITE + " has joined team " + Team.HUNTERS.getColor() + Team.HUNTERS.getName(true), Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
 	}
 
@@ -214,6 +216,7 @@ public class CommandsTeams
 		}
 		
 		plugin.getTeams().changePlayerTeam(p, Team.PREY);
+		GameUtil.broadcast(ChatManager.leftborder + Team.PREY.getColor() + p.getName() + ChatColor.WHITE + " has joined team " + Team.PREY.getColor() + Team.PREY.getName(true), Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
 	}
 
@@ -276,6 +279,7 @@ public class CommandsTeams
 		}
 		
 		plugin.getTeams().changePlayerTeam(p, Team.SPECTATORS);
+		GameUtil.broadcast(ChatManager.leftborder + Team.SPECTATORS.getColor() + p.getName() + ChatColor.WHITE + " has become a " + Team.SPECTATORS.getColor() + Team.SPECTATORS.getName(true), Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
 	}
 

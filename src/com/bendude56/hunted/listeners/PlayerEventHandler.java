@@ -17,7 +17,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -264,29 +263,40 @@ public class PlayerEventHandler implements Listener {
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent e)
 	{
-		if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
+		if (plugin.gameIsRunning())
 		{
-			plugin.getGame().onPlayerLeave(e.getPlayer());
+			if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
+			{
+				plugin.getGame().onPlayerLeave(e.getPlayer());
+				if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.SPECTATORS)
+				{
+					e.getPlayer().sendMessage(ChatManager.bracket1_ + ChatColor.RED + "You have left the Manhunt world!" + ChatManager.bracket2_);
+					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the Manhunt world!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				}
+				else
+				{
+					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				}
+			}
+			else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
+			{
+				plugin.getGame().onPlayerJoin(e.getPlayer());
+				
+				if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.SPECTATORS)
+				{
+					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.GREEN + "returned" + ChatColor.WHITE + " to the Manhunt world!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				}
+				else
+				{
+					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.GREEN + "joined" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				}
+			}
 		}
-		else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
+		else
 		{
-			plugin.getGame().onPlayerJoin(e.getPlayer());
+			
 		}
 		
-	}
-
-	@EventHandler
-	public void onPlayerPortal(PlayerPortalEvent e)
-	{
-
-		if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
-		{
-			plugin.getGame().onPlayerLeave(e.getPlayer());
-		}
-		else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
-		{
-			plugin.getGame().onPlayerJoin(e.getPlayer());
-		}
 	}
 
 	@EventHandler
