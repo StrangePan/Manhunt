@@ -165,40 +165,52 @@ public class ManhuntUtil {
 		{
 			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS)
 			{
-				if (p.getLocation().getX() < plugin.getSettings().SPAWN_SETUP.value.getX() - plugin.getSettings().BOUNDARY_SETUP.value)
-					return false;
-				if (p.getLocation().getX() > plugin.getSettings().SPAWN_SETUP.value.getX() + plugin.getSettings().BOUNDARY_SETUP.value)
-					return false;
-				if (p.getLocation().getZ() < plugin.getSettings().SPAWN_SETUP.value.getZ() - plugin.getSettings().BOUNDARY_SETUP.value)
-					return false;
-				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_SETUP.value.getZ() + plugin.getSettings().BOUNDARY_SETUP.value)
-					return false;
+				if (plugin.getSettings().BOUNDARY_SETUP.value >= 0)
+				{
+					if (p.getLocation().getX() < plugin.getSettings().SPAWN_SETUP.value.getX() - plugin.getSettings().BOUNDARY_SETUP.value)
+						return false;
+					if (p.getLocation().getX() > plugin.getSettings().SPAWN_SETUP.value.getX() + plugin.getSettings().BOUNDARY_SETUP.value)
+						return false;
+					if (p.getLocation().getZ() < plugin.getSettings().SPAWN_SETUP.value.getZ() - plugin.getSettings().BOUNDARY_SETUP.value)
+						return false;
+					if (p.getLocation().getZ() > plugin.getSettings().SPAWN_SETUP.value.getZ() + plugin.getSettings().BOUNDARY_SETUP.value)
+						return false;
+				}
 			}
 			else
 			{
-				if (p.getLocation().getX() < plugin.getSettings().SPAWN_HUNTER.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() < plugin.getSettings().SPAWN_PREY.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value)
-					return false;
-				if (p.getLocation().getX() > plugin.getSettings().SPAWN_HUNTER.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() > plugin.getSettings().SPAWN_PREY.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value)
-					return false;
-				if (p.getLocation().getZ() < plugin.getSettings().SPAWN_HUNTER.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() < plugin.getSettings().SPAWN_PREY.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value)
-					return false;
-				if (p.getLocation().getZ() > plugin.getSettings().SPAWN_HUNTER.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() > plugin.getSettings().SPAWN_PREY.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value)
-					return false;
+				if (plugin.getSettings().BOUNDARY_WORLD.value >= 0)
+				{
+					if (p.getLocation().getX() < plugin.getSettings().SPAWN_HUNTER.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() < plugin.getSettings().SPAWN_PREY.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value)
+						return false;
+					if (p.getLocation().getX() > plugin.getSettings().SPAWN_HUNTER.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() > plugin.getSettings().SPAWN_PREY.value.getX() + plugin.getSettings().BOUNDARY_WORLD.value)
+						return false;
+					if (p.getLocation().getZ() < plugin.getSettings().SPAWN_HUNTER.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() < plugin.getSettings().SPAWN_PREY.value.getZ() - plugin.getSettings().BOUNDARY_WORLD.value)
+						return false;
+					if (p.getLocation().getZ() > plugin.getSettings().SPAWN_HUNTER.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getZ() > plugin.getSettings().SPAWN_PREY.value.getZ() + plugin.getSettings().BOUNDARY_WORLD.value)
+						return false;
+				}
 			}
 		}
 		else
 		{
-			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS)
+			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS && plugin.getSettings().BOUNDARY_SETUP.value >= 0)
 			{
-				if (getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value)
-					return false;
+				if (plugin.getSettings().BOUNDARY_SETUP.value >= 0)
+				{
+					if (getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value)
+						return false;
+				}
 			}
 			else
 			{
-				Location nearestLocation = getNearestCenterPoint(p.getLocation());
-				
-				if (getDistance(p.getLocation(), nearestLocation, true) > plugin.getSettings().BOUNDARY_WORLD.value)
-					return false;
+				if (plugin.getSettings().BOUNDARY_WORLD.value >= 0)
+				{
+					Location nearestLocation = getNearestCenterPoint(p.getLocation());
+					
+					if (getDistance(p.getLocation(), nearestLocation, true) > plugin.getSettings().BOUNDARY_WORLD.value)
+						return false;
+				}
 			}
 		}
 		return true;

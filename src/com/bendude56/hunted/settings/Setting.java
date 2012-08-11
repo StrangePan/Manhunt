@@ -66,7 +66,8 @@ public class Setting<Type> {
 	@SuppressWarnings("unchecked")
 	public boolean parseValue(String value)
 	{
-		try {
+		try
+		{
 			if (this.value instanceof Boolean)
 			{
 				value = (value.equalsIgnoreCase("on") ? "true" : value);
@@ -74,7 +75,14 @@ public class Setting<Type> {
 			}
 			else if (this.value instanceof Integer)
 			{
-				this.value = (Type) Integer.class.cast(Integer.parseInt(value));
+				if (value.equalsIgnoreCase("off"))
+				{
+					this.value = (Type) Integer.class.cast(-1);
+				}
+				else
+				{
+					this.value = (Type) Integer.class.cast(Integer.parseInt(value));
+				}
 			}
 			else if (this.value instanceof String)
 			{

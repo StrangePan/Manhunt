@@ -31,7 +31,7 @@ public class GameEvents
 	
 	private int countdown;
 	private GameStage stage;
-	private ChatColor color = ChatColor.DARK_BLUE;
+	private ChatColor color = ChatColor.BLUE;
 	
 	/**
 	 * This instanced class is meant to assist the Game class by handling the
@@ -70,13 +70,25 @@ public class GameEvents
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
-			if (start_setup_tick - time > 1200)
+			if (time < start_timechange + 100)
+			{
+				world.setFullTime(world.getFullTime() + 10);
+			}
+			else if (time < start_timechange + 1100)
+			{
+				world.setFullTime(world.getFullTime() + 100);
+			}
+			else if (stop_timechange - time > 2400)
 			{
 				world.setFullTime(world.getFullTime() + 400);
 			}
-			else if (start_setup_tick - time > 40)
+			else if (stop_timechange - time > 800)
 			{
 				world.setFullTime(world.getFullTime() + 40);
+			}
+			else if (stop_timechange - time > 10)
+			{
+				world.setFullTime(world.getFullTime() + 10);
 			}
 			else
 			{
@@ -84,7 +96,7 @@ public class GameEvents
 			}
 		}
 		
-		if (stage == GameStage.PREGAME) //Pregame
+		if (stage == GameStage.PREGAME) //---------------- PREGAME STAGE --------------------
 		{
 			if (countdown == 25)
 			{
@@ -189,11 +201,11 @@ public class GameEvents
 			else if (countdown == 1 && time > start_setup_tick - sec)
 			{
 				broadcast(ChatManager.color + "Setup will start in " + color + "1" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				stage = GameStage.SETUP;
+				stage = game.getPlugin().getSettings().SETUP_TIME.value >= 0 ? GameStage.HUNT : GameStage.SETUP;
 				countdown = 100;
 			}
 		}
-		else if (stage == GameStage.SETUP)
+		else if (stage == GameStage.SETUP) //---------------- SETUP STAGE --------------------
 		{
 			if (countdown == 100 && time > start_setup_tick)
 			{
@@ -363,7 +375,7 @@ public class GameEvents
 				countdown = 100;
 			}
 		}
-		else if (stage == GameStage.DONE)
+		else if (stage == GameStage.DONE) //---------------- GAME IS FINISHED --------------------
 		{
 			if (time > stop_hunt_tick)
 			{

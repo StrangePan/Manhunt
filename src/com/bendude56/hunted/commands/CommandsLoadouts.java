@@ -28,7 +28,7 @@ public class CommandsLoadouts
 		
 		int page; //between 1 and max_pages
 		int per_page = 6; //loadouts displayed per page
-		int max_pages = (int) Math.ceil(loads.size() / per_page) + 1;
+		int max_pages = (int) Math.ceil((double) loads.size() / (double) per_page) + 1;
 		
 		if (args.length == 1)
 		{

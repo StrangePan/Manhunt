@@ -131,7 +131,7 @@ public class Finder
 		else if (used)
 		{
 			Date time = new Date();
-			p.sendMessage(ChatManager.leftborder + "Your Prey Finder is still charging. Please wait for " + ChatColor.DARK_RED + (int) Math.ceil((expire_time - time.getTime())/1000) + " seconds.");
+			p.sendMessage(ChatManager.leftborder + "Your Prey Finder is still charging. Please wait for " + ChatColor.DARK_RED + (int) Math.ceil(((double) expire_time - (double) time.getTime())/(double) 1000) + " seconds.");
 		}
 	}
 

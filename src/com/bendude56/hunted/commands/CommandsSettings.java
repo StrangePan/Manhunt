@@ -21,7 +21,7 @@ public class CommandsSettings
 		
 		int page; //between 1 and max_pages
 		int per_page = 6; //settings displayed per page
-		int max_pages = (int) Math.ceil(settings.size() / per_page) + 1;
+		int max_pages = (int) Math.ceil((double) settings.size() / (double) per_page);
 		
 		if (args.length == 1)
 		{
