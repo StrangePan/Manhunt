@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
@@ -28,6 +29,8 @@ public class GameEvents
 	
 	private Long start_timechange;
 	private Long stop_timechange;
+	
+	private Long checkTeams = null;
 	
 	private int countdown;
 	private GameStage stage;
@@ -67,6 +70,12 @@ public class GameEvents
 	{
 		Long time = world.getFullTime();
 		int sec = countdown*20;
+		
+		if (checkTeams != null && time >= checkTeams)
+		{
+			checkTeams = null;
+			game.checkTeamCounts(true);
+		}
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
@@ -143,15 +152,15 @@ public class GameEvents
 				
 				for (Entity e : world.getEntities())
 				{
-					if (!game.getPlugin().getSettings().HOSTILE_MOBS.value && ManhuntUtil.isHostile(e))
+					if (ManhuntUtil.isHostile(e))
 					{
 						e.remove();
 					}
-					if (!game.getPlugin().getSettings().PASSIVE_MOBS.value && ManhuntUtil.isPassive(e))
+					if (ManhuntUtil.isPassive(e))
 					{
 						e.remove();
 					}
-					if (e.getType() == EntityType.DROPPED_ITEM || e.getType() == EntityType.PRIMED_TNT)
+					if (e.getType() == EntityType.DROPPED_ITEM || e.getType() == EntityType.PRIMED_TNT || e instanceof Projectile)
 					{
 						e.remove();
 					}
@@ -159,6 +168,7 @@ public class GameEvents
 				
 				game.freeze_prey = true;
 				game.freeze_hunters = true;
+				game.lockGameModes = true;
 				
 				broadcast(ChatManager.bracket1_ + color + "All players are in position" + ChatManager.bracket2_, Team.SPECTATORS);
 				countdown = 10;
@@ -384,6 +394,11 @@ public class GameEvents
 	{
 		game = null;
 		Bukkit.getScheduler().cancelTask(schedule);
+	}
+
+	public void checkTeamCounts()
+	{
+		checkTeams = world.getFullTime() + 20;
 	}
 
 }

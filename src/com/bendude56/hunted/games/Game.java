@@ -1,12 +1,13 @@
 package com.bendude56.hunted.games;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
@@ -38,6 +39,7 @@ public class Game
 	
 	public boolean freeze_hunters = false;
 	public boolean freeze_prey = false;
+	public boolean lockGameModes = false;
 	
 	public Game(ManhuntPlugin plugin)
 	{
@@ -94,11 +96,22 @@ public class Game
 			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
 		
-		List<Player> spectators = getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
-		for (Player p : spectators)
+		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			GameUtil.makeVisible(p);
 		}
+		
+
+		
+		for (Entity e : world.getEntities())
+		{
+			if (e.getType() == EntityType.DROPPED_ITEM || e.getType() == EntityType.PRIMED_TNT || e instanceof Projectile)
+			{
+				e.remove();
+			}
+		}
+		
+		lockGameModes = false;
 		
 		plugin.getTeams().restoreAllOriginalPlayerStates();
 		
@@ -155,8 +168,8 @@ public class Game
 	 */
 	public void onPlayerLeave(Player p)
 	{
-		plugin.getTeams().restoreOriginalPlayerState(p);
 		plugin.getTeams().saveManhuntPlayerState(p);
+		plugin.getTeams().restoreOriginalPlayerState(p);
 		finders.stopFinder(p);
 		
 		Team team = plugin.getTeams().getTeamOf(p);
@@ -173,10 +186,15 @@ public class Game
 	public void onPlayerDie(Player p)
 	{
 		plugin.getTeams().changePlayerTeam(p, Team.SPECTATORS);
-		p.setGameMode(GameMode.CREATIVE);
-		GameUtil.makeInvisible(p);
+		gameevents.checkTeamCounts();
+		gameevents.checkTeamCounts();
 		
-		checkTeamCounts(true);
+		if (plugin != null) //GAME IS NOT OVER
+		{
+			p.setGameMode(GameMode.CREATIVE);
+			GameUtil.makeInvisible(p);
+		}
+		
 	}
 
 	/**
@@ -208,7 +226,7 @@ public class Game
 		if (player == null)
 		{
 			plugin.getTeams().deletePlayer(player_name);
-			checkTeamCounts(true);
+			gameevents.checkTeamCounts();
 		}
 		else
 		{
@@ -219,7 +237,7 @@ public class Game
 			else
 			{
 				plugin.getTeams().changePlayerTeam(Bukkit.getPlayer(player_name), Team.NONE);
-				checkTeamCounts(true);
+				gameevents.checkTeamCounts();
 			}
 		}
 		
@@ -229,7 +247,7 @@ public class Game
 	 * Private method, checks team count and will stop the game if
 	 * one team has won. 
 	 */
-	private void checkTeamCounts(boolean broadcastRemaining)
+	public void checkTeamCounts(boolean broadcastRemaining)
 	{
 		int hunterCount = plugin.getTeams().getTeamNames(Team.HUNTERS).size();
 		int preyCount = plugin.getTeams().getTeamNames(Team.PREY).size();

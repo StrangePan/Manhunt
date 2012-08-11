@@ -156,12 +156,6 @@ public class PlayerEventHandler implements Listener {
 		e.setDeathMessage(null);
 		
 		plugin.getGame().onPlayerDie(p);
-		
-		if (plugin.gameIsRunning())
-		{
-			e.setDroppedExp(0);
-			e.getDrops().clear();
-		}
 	}
 
 	@EventHandler
@@ -171,6 +165,8 @@ public class PlayerEventHandler implements Listener {
 		{
 			plugin.getGame().onPlayerRespawn(e.getPlayer());
 		}
+		
+		plugin.getTeams().restoreTemporaryState(e.getPlayer());
 	}
 
 	@EventHandler
@@ -325,7 +321,7 @@ public class PlayerEventHandler implements Listener {
 			return;
 		}
 		
-		if (plugin.getTeams().stateIsSaved(e.getPlayer()))
+		if (plugin.getGame().lockGameModes)
 		{
 			e.setCancelled(true);
 		}

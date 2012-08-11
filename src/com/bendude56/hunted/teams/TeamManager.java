@@ -18,6 +18,7 @@ public class TeamManager
 	
 	private HashMap<String, Team> players = new HashMap<String, Team>();
 	private List<PlayerState> playerStates = new ArrayList<PlayerState>();
+	private List<PlayerState> tempStates = new ArrayList<PlayerState>();
 
 	public TeamManager(ManhuntPlugin plugin)
 	{
@@ -227,7 +228,7 @@ public class TeamManager
 		return getPlayerState(p, PlayerStateType.ORIGINAL) != null;
 	}
 
-	private PlayerState getPlayerState(Player p, PlayerStateType t)
+	public PlayerState getPlayerState(Player p, PlayerStateType t)
 	{
 		for (PlayerState state : playerStates)
 		{
@@ -238,6 +239,29 @@ public class TeamManager
 		}
 		return null;
 	}
+
+	public void restoreTemporaryState(Player p)
+	{
+		PlayerState state = getTemporaryPlayerState(p);
+		
+		if (state != null)
+		{
+			state.restorePlayer();
+		}
+	}
+
+	public PlayerState getTemporaryPlayerState(Player p)
+	{
+		for (PlayerState state : tempStates)
+		{
+			if (state.getName().equals(p.getName()))
+			{
+				return state;
+			}
+		}
+		return null;
+	}
+
 
 	/**
 	 * Restores a single player's state.
@@ -252,8 +276,15 @@ public class TeamManager
 			return;
 		}
 		playerStates.remove(originalState);
-		
-		originalState.restorePlayer();
+
+		if (p.isDead())
+		{
+			tempStates.add(originalState);
+		}
+		else
+		{
+			originalState.restorePlayer();
+		}
 	}
 
 	public void restoreManhuntPlayerState(Player p)
@@ -270,7 +301,14 @@ public class TeamManager
 			playerStates.remove(manhuntState);
 		}
 		
-		manhuntState.restorePlayer();
+		if (p.isDead())
+		{
+			tempStates.add(manhuntState);
+		}
+		else
+		{
+			manhuntState.restorePlayer();
+		}
 	}
 	
 	/**
@@ -278,7 +316,8 @@ public class TeamManager
 	 */
 	public void restoreAllOriginalPlayerStates()
 	{
-		List<PlayerState> states = playerStates;
+		List<PlayerState> states = new ArrayList<PlayerState>();
+		states.addAll(playerStates);
 		
 		for (PlayerState state : states)
 		{
@@ -288,7 +327,14 @@ public class TeamManager
 				
 				if (p != null)
 				{
-					restoreOriginalPlayerState(p);
+					if (p.isDead())
+					{
+						tempStates.add(state);
+					}
+					else
+					{
+						restoreOriginalPlayerState(p);
+					}
 				}
 			}
 		}
