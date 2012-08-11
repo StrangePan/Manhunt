@@ -307,7 +307,7 @@ public class PlayerEventHandler implements Listener {
 			return;
 		}
 		
-		if (plugin.getTeams().modeIsSaved(e.getPlayer()))
+		if (plugin.getTeams().stateIsSaved(e.getPlayer()))
 		{
 			e.setCancelled(true);
 		}

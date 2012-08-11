@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.bendude56.hunted.ManhuntPlugin;
@@ -15,7 +13,6 @@ import com.bendude56.hunted.ManhuntPlugin;
 public class LoadoutManager {
 
 	private HashMap<String, Loadout> loadouts = new HashMap<String, Loadout>();
-	private HashMap<String, Loadout> tempLoadouts = new HashMap<String, Loadout>();
 
 	private final String loadouts_directory = "plugins/Manhunt";
 	private final String world_loadouts_directory = ManhuntPlugin.getInstance().getWorld().getName() + "/Manhunt";
@@ -131,37 +128,6 @@ public class LoadoutManager {
 		{
 			return true;
 		}
-	}
-
-	//TEMPORARY LOADOUTS
-
-	public void saveInventory(Player p)
-	{
-		tempLoadouts.put(p.getName(), new Loadout(p.getInventory().getContents(), p.getInventory().getArmorContents()));
-	}
-
-	public void restoreInventory(Player p)
-	{
-		if (tempLoadouts.containsKey(p.getName()))
-		{
-			Loadout loadout = new Loadout(p.getInventory().getContents(), p.getInventory().getArmorContents());
-			
-			LoadoutUtil.setPlayerInventory(p, tempLoadouts.get(p.getName()));
-			tempLoadouts.put(p.getName(), loadout);
-		}
-	}
-
-	public void restoreAllInventories()
-	{
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			if (tempLoadouts.containsKey(p.getName()))
-			{
-				LoadoutUtil.setPlayerInventory(p, tempLoadouts.get(p.getName()));
-			}
-		}
-		
-		tempLoadouts.clear();
 	}
 
 }

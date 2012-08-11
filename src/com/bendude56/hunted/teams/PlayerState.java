@@ -2,6 +2,7 @@ package com.bendude56.hunted.teams;
 
 import java.util.Collection;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class PlayerState
 	private final Location compass;
 	private final Float exhaustion;
 	private final Integer xp;
-	private final Location location;
+	//private final Location location;
 	
 
 	public PlayerState(Player p)
@@ -47,10 +48,10 @@ public class PlayerState
 		this.compass = p.getCompassTarget();
 		this.exhaustion = p.getExhaustion();
 		this.xp = p.getTotalExperience();
-		this.location = p.getLocation();
+		//this.location = p.getLocation();
 	}
 	
-	public void restorePlayer(Player p)
+	private void restorePlayer(Player p)
 	{
 		p.setGameMode(gamemode);
 		LoadoutUtil.setPlayerInventory(p, loadout);
@@ -66,7 +67,16 @@ public class PlayerState
 		p.setCompassTarget(compass);
 		p.setExhaustion(exhaustion);
 		p.setTotalExperience(xp);
-		p.teleport(location);
+		//p.teleport(location);
+	}
+	
+	public void restorePlayer()
+	{
+		Player p = Bukkit.getPlayer(name);
+		if (p != null)
+		{
+			restorePlayer(p);
+		}
 	}
 	
 	public String getName()

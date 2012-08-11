@@ -115,7 +115,8 @@ public class GameEvents
 					loc = ManhuntUtil.randomLocation(loc, 2);
 					loc = ManhuntUtil.safeTeleport(loc);
 					p.teleport(loc);
-					
+
+					game.getPlugin().getTeams().savePlayerState(p);
 					GameUtil.prepareForGame(p);
 				}
 				
@@ -126,13 +127,15 @@ public class GameEvents
 					loc = ManhuntUtil.randomLocation(loc, Math.sqrt(prey.size()));
 					loc = ManhuntUtil.safeTeleport(loc);
 					p.teleport(loc);
-					
+
+					game.getPlugin().getTeams().savePlayerState(p);
 					GameUtil.prepareForGame(p);
 				}
 				
 				List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
 				for (Player p : spectators)
 				{
+					game.getPlugin().getTeams().savePlayerState(p);
 					GameUtil.makeInvisible(p);
 				}
 				
@@ -154,7 +157,6 @@ public class GameEvents
 				
 				game.freeze_prey = true;
 				game.freeze_hunters = true;
-				game.getPlugin().getTeams().saveAllGameModes();
 				
 				broadcast(ChatManager.bracket1_ + color + "All players are in position" + ChatManager.bracket2_, Team.SPECTATORS);
 				countdown = 10;

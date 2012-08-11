@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
@@ -17,7 +16,7 @@ public class TeamManager
 	ManhuntPlugin plugin;
 	
 	private HashMap<String, Team> players = new HashMap<String, Team>();
-	private HashMap<String, GameMode> gamemodes = new HashMap<String, GameMode>();
+	private HashMap<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
 
 	public TeamManager(ManhuntPlugin plugin)
 	{
@@ -28,7 +27,7 @@ public class TeamManager
 	public void refreshPlayers()
 	{
 		players.clear();
-		gamemodes.clear();
+		playerStates.clear();
 		
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
@@ -90,7 +89,7 @@ public class TeamManager
 	 */
 	public void changePlayerTeam(Player p, Team t)
 	{
-		if (!gamemodes.containsKey(p.getName()))
+		if (!playerStates.containsKey(p.getName()))
 		{
 			putPlayerTeam(p.getName(), t);
 		}
@@ -189,110 +188,72 @@ public class TeamManager
 	}
 
 	//PLAYER STATES
-
 	/**
-	 * Saves a player's game mode if it isn't already saved and sets
-	 * their game mode to the one they're supposed to be in.
-	 * @param p The player
+	 * Saves a snapshot of a player.
+	 * @param p
 	 */
-	public void savePlayerGameMode(Player p)
+	public void savePlayerState(Player p)
 	{
-		GameMode oldMode, mode;
-		Team team = getTeamOf(p);;
-		if (!gamemodes.containsKey(p.getName()))
-		{
-			oldMode = p.getGameMode();
-		}
-		else
-		{
-			oldMode = null;
-		}
-		
-		switch (team)
-		{
-			case HUNTERS:	mode = GameMode.SURVIVAL;
-							break;
-			case PREY:		mode = GameMode.SURVIVAL;
-							break;
-			case SPECTATORS:mode = GameMode.CREATIVE;
-							break;
-			default:		mode = p.getGameMode();
-							break;
-		}
-		if (p.getGameMode() != mode)
-		{
-			p.setGameMode(mode);
-		}
-		if (!gamemodes.containsKey(p.getName()))
-		{
-			gamemodes.put(p.getName(), oldMode);
-		}
-	}
-
-	/**
-	 * Will collect the game modes of all players in the Manhunt world and
-	 * change their game mode to the one they need to be in.
-	 */
-	public void saveAllGameModes()
-	{
-		for (Player p : Bukkit.getOnlinePlayers())
-		{
-			if (p.getWorld() == plugin.getWorld())
-			{
-				savePlayerGameMode(p);
-			}
-		}
-	}
-
-	public boolean modeIsSaved(Player p)
-	{
-		return (gamemodes.containsKey(p.getName()));
-	}
-
-	/**
-	 * Restores the game mode of a single player.
-	 * Deletes their saved game mode.
-	 */
-	public void restorePlayerGameMode(Player p)
-	{
-		if (!modeIsSaved(p))
+		if (playerStates.containsKey(p.getName()))
 		{
 			return;
 		}
 		
-		GameMode mode = gamemodes.get(p.getName());
-		gamemodes.remove(p.getName());
-		if (p.getGameMode() != mode)
-		{
-			p.setGameMode(mode);
-		}
+		PlayerState state = new PlayerState(p);
+		
+		playerStates.put(p.getName(), state);
 	}
 
 	/**
-	 * Gives all players their saved game modes.
-	 * Clears all saved game modes.
+	 * Returns true if a player's state is saved.
+	 * @param p
+	 * @return
 	 */
-	public void restoreAllGameModes()
+	public boolean stateIsSaved(Player p)
 	{
-		HashMap<String, GameMode> modes = new HashMap<String, GameMode>();
-		modes.putAll(gamemodes);
-		
-		gamemodes.clear();
-		
-		for (String name : modes.keySet())
+		return playerStates.containsKey(p.getName());
+	}
+
+	/**
+	 * Restores a single player's state.
+	 * @param p
+	 */
+	public void restorePlayerState(Player p)
+	{
+		restorePlayerState(p.getName());
+	}
+
+	private void restorePlayerState(String name)
+	{
+		if (!playerStates.containsKey(name))
 		{
-			Player p = Bukkit.getPlayer(name);
-			if (p != null)
-			{
-				if (p.getGameMode() != modes.get(name))
-				{
-					GameMode mode = modes.get(name);
-					p.setGameMode(mode);
-				}
-			}
+			return;
+		}
+		
+		PlayerState state = playerStates.get(name);
+		
+		playerStates.remove(name);
+		
+		state.restorePlayer();
+	}
+
+	/**
+	 * Restores all saved player states and clears the list.
+	 */
+	public void restoreAllPlayerStates()
+	{
+		HashMap<String, PlayerState> states = new HashMap<String, PlayerState>();
+		states.putAll(playerStates);
+		
+		playerStates.clear();
+		
+		for (String name : states.keySet())
+		{
+			restorePlayerState(name);
 		}
 	}
 
+	//TEAM ENUM
 	public enum Team
 	{
 		HUNTERS, PREY, SPECTATORS, NONE;

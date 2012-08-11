@@ -60,7 +60,7 @@ public class ManhuntPlugin extends JavaPlugin {
 	@Override
 	public void onDisable()
 	{
-		teams.restoreAllGameModes();
+		teams.restoreAllPlayerStates();
 		forgetGame();
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {

@@ -100,8 +100,7 @@ public class Game
 			GameUtil.makeVisible(p);
 		}
 		
-		plugin.getTeams().restoreAllGameModes();
-		plugin.getLoadouts().restoreAllInventories();
+		plugin.getTeams().restoreAllPlayerStates();
 		
 		plugin.forgetGame();
 		close();
@@ -145,8 +144,7 @@ public class Game
 		}
 		
 		timeouts.stopTimeout(p);
-		plugin.getTeams().savePlayerGameMode(p);
-		plugin.getLoadouts().restoreInventory(p);
+		plugin.getTeams().savePlayerState(p);
 	}
 
 	/**
@@ -155,8 +153,7 @@ public class Game
 	 */
 	public void onPlayerLeave(Player p)
 	{
-		plugin.getTeams().restorePlayerGameMode(p);
-		plugin.getLoadouts().restoreInventory(p);
+		plugin.getTeams().restorePlayerState(p);
 		finders.stopFinder(p);
 		timeouts.startTimeout(p);
 	}

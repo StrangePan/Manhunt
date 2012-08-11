@@ -72,8 +72,6 @@ public class GameUtil {
 		p.setFoodLevel(20);
 		p.setSaturation(10);
 		
-		plugin.getLoadouts().saveInventory(p);
-		
 		if (plugin.getSettings().LOADOUTS.value)
 		{
 			if (team == Team.HUNTERS)
