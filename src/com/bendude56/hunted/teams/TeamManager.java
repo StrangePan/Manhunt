@@ -246,7 +246,7 @@ public class TeamManager
 		
 		if (state != null)
 		{
-			state.restorePlayer();
+			state.restorePlayer(p);
 		}
 	}
 
@@ -277,13 +277,13 @@ public class TeamManager
 		}
 		playerStates.remove(originalState);
 
-		if (p.isDead())
+		if (p.isDead() && p.isOnline())
 		{
 			tempStates.add(originalState);
 		}
 		else
 		{
-			originalState.restorePlayer();
+			originalState.restorePlayer(p);
 		}
 	}
 
@@ -301,13 +301,13 @@ public class TeamManager
 			playerStates.remove(manhuntState);
 		}
 		
-		if (p.isDead())
+		if (p.isDead() && p.isOnline())
 		{
 			tempStates.add(manhuntState);
 		}
 		else
 		{
-			manhuntState.restorePlayer();
+			manhuntState.restorePlayer(p);
 		}
 	}
 	
@@ -327,7 +327,7 @@ public class TeamManager
 				
 				if (p != null)
 				{
-					if (p.isDead())
+					if (p.isDead() && p.isOnline())
 					{
 						tempStates.add(state);
 					}

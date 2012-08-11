@@ -30,8 +30,6 @@ public class GameEvents
 	private Long start_timechange;
 	private Long stop_timechange;
 	
-	private Long checkTeams = null;
-	
 	private int countdown;
 	private GameStage stage;
 	private ChatColor color = ChatColor.BLUE;
@@ -70,12 +68,6 @@ public class GameEvents
 	{
 		Long time = world.getFullTime();
 		int sec = countdown*20;
-		
-		if (checkTeams != null && time >= checkTeams)
-		{
-			checkTeams = null;
-			game.checkTeamCounts(true);
-		}
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
@@ -394,11 +386,6 @@ public class GameEvents
 	{
 		game = null;
 		Bukkit.getScheduler().cancelTask(schedule);
-	}
-
-	public void checkTeamCounts()
-	{
-		checkTeams = world.getFullTime() + 20;
 	}
 
 }

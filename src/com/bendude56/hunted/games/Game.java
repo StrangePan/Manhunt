@@ -186,8 +186,7 @@ public class Game
 	public void onPlayerDie(Player p)
 	{
 		plugin.getTeams().changePlayerTeam(p, Team.SPECTATORS);
-		gameevents.checkTeamCounts();
-		gameevents.checkTeamCounts();
+		checkTeamCounts(true);
 		
 		if (plugin != null) //GAME IS NOT OVER
 		{
@@ -226,7 +225,7 @@ public class Game
 		if (player == null)
 		{
 			plugin.getTeams().deletePlayer(player_name);
-			gameevents.checkTeamCounts();
+			checkTeamCounts(true);
 		}
 		else
 		{
@@ -237,7 +236,7 @@ public class Game
 			else
 			{
 				plugin.getTeams().changePlayerTeam(Bukkit.getPlayer(player_name), Team.NONE);
-				gameevents.checkTeamCounts();
+				checkTeamCounts(true);
 			}
 		}
 		

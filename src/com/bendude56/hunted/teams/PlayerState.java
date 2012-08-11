@@ -56,7 +56,7 @@ public class PlayerState
 		//this.location = p.getLocation();
 	}
 	
-	private void restorePlayer(Player p)
+	public void restorePlayer(Player p)
 	{
 		p.setGameMode(gamemode);
 		LoadoutUtil.setPlayerInventory(p, loadout);
