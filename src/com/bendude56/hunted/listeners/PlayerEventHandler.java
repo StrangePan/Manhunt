@@ -275,6 +275,7 @@ public class PlayerEventHandler implements Listener {
 				}
 				else
 				{
+					GameUtil.makeVisible(e.getPlayer());
 					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.RED + "left" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				}
 			}
@@ -288,6 +289,7 @@ public class PlayerEventHandler implements Listener {
 				}
 				else
 				{
+					GameUtil.makeInvisible(e.getPlayer());
 					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.WHITE + " has " + ChatColor.GREEN + "joined" + ChatColor.WHITE + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				}
 			}
