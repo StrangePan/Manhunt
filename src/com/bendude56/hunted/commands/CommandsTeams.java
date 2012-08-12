@@ -296,7 +296,7 @@ public class CommandsTeams
 		}
 		
 		plugin.getTeams().changePlayerTeam(p, Team.SPECTATORS);
-		GameUtil.broadcast(ChatManager.leftborder + Team.SPECTATORS.getColor() + p.getName() + ChatColor.WHITE + " has become a " + Team.SPECTATORS.getColor() + Team.SPECTATORS.getName(true), Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+		GameUtil.broadcast(ChatManager.leftborder + Team.SPECTATORS.getColor() + p.getName() + ChatColor.WHITE + " has become a " + Team.SPECTATORS.getColor() + Team.SPECTATORS.getName(false), Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		
 	}
 
