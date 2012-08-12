@@ -42,6 +42,8 @@ public class CommandsTeams
 			msgPrey += n;
 			if (Bukkit.getPlayer(n) == null)
 				msgPrey += ChatColor.GRAY + " (offline)";
+			else if (Bukkit.getPlayer(n).getWorld() != ManhuntPlugin.getInstance().getWorld())
+				msgPrey += ChatColor.GRAY + " (missing)";
 			msgPrey += "  ";
 		}
 		String msgSpectators = "";
@@ -49,7 +51,7 @@ public class CommandsTeams
 		{
 			msgSpectators += TeamUtil.getTeamColor(Team.SPECTATORS);
 			msgSpectators += n;
-			msgSpectators += "  ";
+			msgSpectators += "   ";
 		}
 		
 		if (!msgHunters.isEmpty())

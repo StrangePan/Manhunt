@@ -156,6 +156,10 @@ public class Game
 		{
 			GameUtil.makeInvisible(p);
 		}
+		for (Player spectator : plugin.getTeams().getTeamPlayers(Team.SPECTATORS))
+		{
+			p.hidePlayer(spectator);
+		}
 		
 		timeouts.stopTimeout(p);
 		plugin.getTeams().saveOriginalPlayerState(p);

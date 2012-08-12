@@ -76,11 +76,20 @@ public class EntityEventHandler implements Listener
 			{
 				GameStage stage = plugin.getGame().getStage();
 				
-				switch (stage)
+				if (stage == GameStage.PREGAME)
 				{
-					case PREGAME: e.setCancelled(true);
-					case SETUP:	if (t != t2) e.setCancelled(true);
-					default:	break;
+					e.setCancelled(true);
+				}
+				else if (stage == GameStage.SETUP)
+				{
+					if (t != t2) e.setCancelled(true);
+				}
+				else
+				{
+					if (t != t2 && plugin.getSettings().INSTANT_DEATH.value)
+					{
+						e.setDamage(200);
+					}
 				}
 			}
 			

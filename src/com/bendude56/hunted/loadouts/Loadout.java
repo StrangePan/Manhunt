@@ -2,7 +2,8 @@ package com.bendude56.hunted.loadouts;
 
 import org.bukkit.inventory.ItemStack;
 
-public class Loadout {
+public class Loadout
+{
 	private ItemStack[] contents;
 	private ItemStack[] armor;
 
@@ -39,27 +40,61 @@ public class Loadout {
 		this.directory = null;
 		this.filename = null;
 		this.fullpath = null;
-		
-		this.contents = contents.clone();
-		this.armor = armor.clone();
+
+		setContents(contents, armor);
 	}
 
 	public void setContents(ItemStack[] contents, ItemStack[] armor)
 	{
-		this.contents = contents.clone();
-		this.armor = armor.clone();
+		this.contents = new ItemStack[contents.length];
+		this.armor = new ItemStack[armor.length];
+		
+		for (int i = 0; i < contents.length; i ++)
+		{
+			if (contents[i] != null)
+			{
+				this.contents[i] = contents[i].clone();
+			}
+		}
+		for (int i = 0; i < armor.length; i ++)
+		{
+			if (armor[i] != null)
+			{
+				this.armor[i] = armor[i].clone();
+			}
+		}
 		
 		save();
 	}
 	
 	public ItemStack[] getContents()
 	{
-		return contents.clone();
+		ItemStack[] contents = new ItemStack[this.contents.length];
+		
+		for (int i = 0; i < this.contents.length; i ++)
+		{
+			if (this.contents[i] != null)
+			{
+				contents[i] = this.contents[i].clone();
+			}
+		}
+		
+		return contents;
 	}
 	
 	public ItemStack[] getArmor()
 	{
-		return armor.clone();
+		ItemStack[] armor = new ItemStack[this.armor.length];
+		
+		for (int i = 0; i < this.armor.length; i ++)
+		{
+			if (this.armor[i] != null)
+			{
+				armor[i] = this.armor[i].clone();
+			}
+		}
+		
+		return armor;
 	}
 	
 	public void save()

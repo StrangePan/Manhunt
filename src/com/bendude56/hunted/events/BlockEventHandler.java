@@ -71,10 +71,10 @@ public class BlockEventHandler implements Listener {
 			{
 				return false;
 			}
-			if (plugin.getSettings().SPAWN_PROTECTION.value > 0
-					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_HUNTER.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
+			if (plugin.getSettings().SPAWN_PROTECTION.value > 0 && (
+					ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_HUNTER.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
 					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_PREY.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_SETUP.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value)
+					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_SETUP.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value))
 			{
 				return false;
 			}
