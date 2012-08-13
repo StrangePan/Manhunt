@@ -111,7 +111,7 @@ public class GameEvents
 				prepareAllPlayers();
 				if (game.getPlugin().getSettings().SETUP_TIME.value <= 0)
 				{
-					stage = GameStage.HUNT;
+					stage = GameStage.SETUP;
 				}
 				countdown = 10;
 			}

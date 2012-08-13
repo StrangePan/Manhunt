@@ -53,11 +53,11 @@ public class Game
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day
 		start_setup_tick += (24000 - world.getTime() < pregame_length ? 24000 : 0); //If not enough time for pregame, start setup on next day
-		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value * 1200); //Compensate for shorter setup times
+		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value > 0 ? plugin.getSettings().SETUP_TIME.value : 0 * 1200); //Compensate for shorter setup times
 		this.start_setup_tick = start_setup_tick; //Save the start_setup_tick;
 		
 		Long start_hunt_tick = start_setup_tick; //Set up the start_hunt_tick, giving it a baseline
-		start_hunt_tick += plugin.getSettings().SETUP_TIME.value * 1200;
+		start_hunt_tick += plugin.getSettings().SETUP_TIME.value > 0 ? plugin.getSettings().SETUP_TIME.value : 0 * 1200;
 		this.start_hunt_tick = start_hunt_tick; //Save the start_hunt_tick
 		
 		Long stop_hunt_tick = start_hunt_tick; //Set up the end_hunt_tick, giving it a baseline.

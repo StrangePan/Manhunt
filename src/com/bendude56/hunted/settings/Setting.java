@@ -116,7 +116,7 @@ public class Setting<Type> {
 		if (value instanceof Boolean)
 			return (((Boolean)value ? ChatColor.GREEN : ChatColor.RED) + "[" + ((Boolean)value ? "ON" : "OFF") + "]" + ChatColor.WHITE);
 		else if (value instanceof Integer)
-			return (ChatColor.GREEN + "[" + ChatColor.GRAY + ((Integer)value > 0 ? value.toString() : "OFF") + ChatColor.GREEN + "]" + ChatColor.WHITE);
+			return (ChatColor.GREEN + "[" +  ((Integer)value > 0 ? ChatColor.GRAY + value.toString() : ChatColor.RED + "OFF") + ChatColor.GREEN + "]" + ChatColor.WHITE);
 		else
 			return (ChatColor.GREEN + "[" + ChatColor.YELLOW + value+ ChatColor.GREEN + "]" + ChatColor.WHITE);
 	}
