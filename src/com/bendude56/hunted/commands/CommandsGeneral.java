@@ -28,6 +28,12 @@ public class CommandsGeneral
 			return;
 		}
 		
+		//if (plugin.getTeams().getTeamNames(Team.PREY).size() == 0 || plugin.getTeams().getTeamNames(Team.HUNTERS).size() == 0 )
+		//{
+		//	sender.sendMessage(ChatColor.RED + "There must be at least one prey and one hunter to start the game!");
+		//	return;
+		//}
+		
 		plugin.startGame();
 	}
 	
