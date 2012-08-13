@@ -165,7 +165,7 @@ public class ManhuntUtil {
 		{
 			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS)
 			{
-				if (plugin.getSettings().BOUNDARY_SETUP.value >= 0)
+				if (plugin.getSettings().BOUNDARY_SETUP.value > 0)
 				{
 					if (p.getLocation().getX() < plugin.getSettings().SPAWN_SETUP.value.getX() - plugin.getSettings().BOUNDARY_SETUP.value)
 						return false;
@@ -179,7 +179,7 @@ public class ManhuntUtil {
 			}
 			else
 			{
-				if (plugin.getSettings().BOUNDARY_WORLD.value >= 0)
+				if (plugin.getSettings().BOUNDARY_WORLD.value > 0)
 				{
 					if (p.getLocation().getX() < plugin.getSettings().SPAWN_HUNTER.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value && p.getLocation().getX() < plugin.getSettings().SPAWN_PREY.value.getX() - plugin.getSettings().BOUNDARY_WORLD.value)
 						return false;
@@ -196,7 +196,7 @@ public class ManhuntUtil {
 		{
 			if (plugin.gameIsRunning() && plugin.getGame().getStage() == GameStage.SETUP && team == Team.HUNTERS && plugin.getSettings().BOUNDARY_SETUP.value >= 0)
 			{
-				if (plugin.getSettings().BOUNDARY_SETUP.value >= 0)
+				if (plugin.getSettings().BOUNDARY_SETUP.value > 0)
 				{
 					if (getDistance(plugin.getSettings().SPAWN_SETUP.value, p.getLocation(), true) > plugin.getSettings().BOUNDARY_SETUP.value)
 						return false;
@@ -204,7 +204,7 @@ public class ManhuntUtil {
 			}
 			else
 			{
-				if (plugin.getSettings().BOUNDARY_WORLD.value >= 0)
+				if (plugin.getSettings().BOUNDARY_WORLD.value > 0)
 				{
 					Location nearestLocation = getNearestCenterPoint(p.getLocation());
 					
