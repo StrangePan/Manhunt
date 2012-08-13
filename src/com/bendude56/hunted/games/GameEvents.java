@@ -108,61 +108,11 @@ public class GameEvents
 			}
 			else if (countdown == 13 && time > start_setup_tick - sec)
 			{
-				//TELEPORT PLAYERS TO THEIR SPAWN POINTS
-				//AND SET THEIR INVENTORIES
-				//AND MAKE SPECTATORS INVISIBLE
-				//AND FILL THEIR FOOD AND HEALTH BARS
-				
-				List<Player> hunters = game.getPlugin().getTeams().getTeamPlayers(Team.HUNTERS);
-				for (Player p : hunters)
+				prepareAllPlayers();
+				if (game.getPlugin().getSettings().SETUP_TIME.value <= 0)
 				{
-					Location loc = game.getPlugin().getSettings().SPAWN_SETUP.value.clone();
-					loc = ManhuntUtil.randomLocation(loc, 2);
-					loc = ManhuntUtil.safeTeleport(loc);
-					p.teleport(loc);
-
-					GameUtil.prepareForGame(p);
+					stage = GameStage.HUNT;
 				}
-				
-				List<Player> prey = game.getPlugin().getTeams().getTeamPlayers(Team.PREY);
-				for (Player p : prey)
-				{
-					Location loc = game.getPlugin().getSettings().SPAWN_PREY.value.clone();
-					loc = ManhuntUtil.randomLocation(loc, Math.sqrt(prey.size()));
-					loc = ManhuntUtil.safeTeleport(loc);
-					p.teleport(loc);
-
-					GameUtil.prepareForGame(p);
-				}
-				
-				List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
-				for (Player p : spectators)
-				{
-					GameUtil.prepareForGame(p);
-					GameUtil.makeInvisible(p);
-				}
-				
-				for (Entity e : world.getEntities())
-				{
-					if (ManhuntUtil.isHostile(e))
-					{
-						e.remove();
-					}
-					if (ManhuntUtil.isPassive(e))
-					{
-						e.remove();
-					}
-					if (e.getType() == EntityType.DROPPED_ITEM || e.getType() == EntityType.PRIMED_TNT || e instanceof Projectile)
-					{
-						e.remove();
-					}
-				}
-				
-				game.freeze_prey = true;
-				game.freeze_hunters = true;
-				game.lockGameModes = true;
-				
-				broadcast(ChatManager.bracket1_ + color + "All players are in position" + ChatManager.bracket2_, Team.SPECTATORS);
 				countdown = 10;
 			}
 			else if (countdown == 10 && time > start_setup_tick - sec)
@@ -193,7 +143,7 @@ public class GameEvents
 			else if (countdown == 1 && time > start_setup_tick - sec)
 			{
 				broadcast(ChatManager.color + "Setup will start in " + color + "1" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				stage = game.getPlugin().getSettings().SETUP_TIME.value <= 0 ? GameStage.HUNT : GameStage.SETUP;
+				stage = GameStage.SETUP;
 				countdown = 100;
 			}
 		}
@@ -243,7 +193,7 @@ public class GameEvents
 			else if (countdown == 10 && time > start_hunt_tick - sec)
 			{
 				broadcast(ChatManager.color + "The hunt will start in " + color + "10" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 5; //SKIP TO 5
+				countdown = 9;
 			}
 			else if (countdown == 9 && time > start_hunt_tick - sec)
 			{
@@ -380,6 +330,73 @@ public class GameEvents
 	private void broadcast(String message, Team...team)
 	{
 		GameUtil.broadcast(message, team);
+	}
+
+	private void prepareAllPlayers()
+	{
+		//TELEPORT PLAYERS TO THEIR SPAWN POINTS
+		//AND SET THEIR INVENTORIES
+		//AND MAKE SPECTATORS INVISIBLE
+		//AND FILL THEIR FOOD AND HEALTH BARS
+		
+		List<Player> hunters = game.getPlugin().getTeams().getTeamPlayers(Team.HUNTERS);
+		for (Player p : hunters)
+		{
+			Location loc;
+			if (game.getPlugin().getSettings().SETUP_TIME.value > 0)
+			{
+				loc = game.getPlugin().getSettings().SPAWN_SETUP.value.clone();
+			}
+			else
+			{
+				loc = game.getPlugin().getSettings().SPAWN_HUNTER.value.clone();
+			}
+			loc = ManhuntUtil.randomLocation(loc, 2);
+			loc = ManhuntUtil.safeTeleport(loc);
+			p.teleport(loc);
+
+			GameUtil.prepareForGame(p);
+		}
+		
+		List<Player> prey = game.getPlugin().getTeams().getTeamPlayers(Team.PREY);
+		for (Player p : prey)
+		{
+			Location loc = game.getPlugin().getSettings().SPAWN_PREY.value.clone();
+			loc = ManhuntUtil.randomLocation(loc, Math.sqrt(prey.size()));
+			loc = ManhuntUtil.safeTeleport(loc);
+			p.teleport(loc);
+
+			GameUtil.prepareForGame(p);
+		}
+		
+		List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
+		for (Player p : spectators)
+		{
+			GameUtil.prepareForGame(p);
+			GameUtil.makeInvisible(p);
+		}
+		
+		for (Entity e : world.getEntities())
+		{
+			if (ManhuntUtil.isHostile(e))
+			{
+				e.remove();
+			}
+			if (ManhuntUtil.isPassive(e))
+			{
+				e.remove();
+			}
+			if (e.getType() == EntityType.DROPPED_ITEM || e.getType() == EntityType.PRIMED_TNT || e instanceof Projectile)
+			{
+				e.remove();
+			}
+		}
+		
+		game.freeze_prey = true;
+		game.freeze_hunters = true;
+		game.lockGameModes = true;
+		
+		broadcast(ChatManager.bracket1_ + color + "All players are in position" + ChatManager.bracket2_, Team.SPECTATORS);
 	}
 
 	public void close()
