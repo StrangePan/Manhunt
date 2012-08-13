@@ -49,6 +49,8 @@ public class Game
 		//Save pointer to world
 		this.world = plugin.getWorld();
 		
+		plugin.getTeams().saveTeamLists();
+		
 		//Calculate milestones ticks
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day

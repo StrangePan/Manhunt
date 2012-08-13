@@ -16,7 +16,8 @@ public class TeamManager
 {
 	ManhuntPlugin plugin;
 	
-	private HashMap<String, Team> players = new HashMap<String, Team>();
+	private HashMap<String, Team> teams = new HashMap<String, Team>();
+	private HashMap<String, Team> savedTeams = new HashMap<String, Team>();
 	private List<PlayerState> playerStates = new ArrayList<PlayerState>();
 	private List<PlayerState> tempStates = new ArrayList<PlayerState>();
 
@@ -28,7 +29,12 @@ public class TeamManager
 
 	public void refreshPlayers()
 	{
-		players.clear();
+		if (teams.equals(savedTeams))
+		{
+			return;
+		}
+		
+		teams.clear();
 		playerStates.clear();
 		
 		for (Player p : Bukkit.getOnlinePlayers())
@@ -36,10 +42,20 @@ public class TeamManager
 			addPlayer(p);
 		}
 	}
-
+	
+	public void saveTeamLists()
+	{
+		savedTeams.clear();
+		
+		for (String key : teams.keySet())
+		{
+			savedTeams.put(key, teams.get(key));
+		}
+	}
+	
 	private void putPlayerTeam(String p, Team t)
 	{
-		players.put(p, t);
+		teams.put(p, t);
 	}
 
 	/**
@@ -53,7 +69,7 @@ public class TeamManager
 	{
 		SettingsManager settings = plugin.getSettings();
 		
-		if (players.containsKey(p.getName()))
+		if (teams.containsKey(p.getName()))
 		{
 			return;
 		}
@@ -101,9 +117,9 @@ public class TeamManager
 	 */
 	public void deletePlayer(String s)
 	{
-		if (players.containsKey(s))
+		if (teams.containsKey(s))
 		{
-			players.remove(s);
+			teams.remove(s);
 		}
 	}
 
@@ -124,9 +140,9 @@ public class TeamManager
 	 */
 	public Team getTeamOf(String s)
 	{
-		if (players.containsKey(s))
+		if (teams.containsKey(s))
 		{
-			return players.get(s);
+			return teams.get(s);
 		}
 		else
 		{
@@ -143,9 +159,9 @@ public class TeamManager
 	public List<String> getTeamNames(Team team)
 	{
 		List<String> results = new ArrayList<String>();
-		for (String name : players.keySet())
+		for (String name : teams.keySet())
 		{
-			if (players.get(name) == team)
+			if (teams.get(name) == team)
 			{
 				results.add(name);
 			}
@@ -163,7 +179,7 @@ public class TeamManager
 	{
 		List<Player> results = new ArrayList<Player>();
 		
-		for (String name : players.keySet())
+		for (String name : teams.keySet())
 		{
 			Player player = Bukkit.getPlayer(name);
 			if (player != null)
