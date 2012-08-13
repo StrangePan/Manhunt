@@ -11,6 +11,7 @@ import org.bukkit.entity.Projectile;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
@@ -119,6 +120,12 @@ public class Game
 		
 		plugin.forgetGame();
 		plugin.getTeams().refreshPlayers();
+		
+		if (plugin.getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
+		{
+			plugin.startIntermission();
+		}
+		
 		close();
 	}
 
@@ -311,7 +318,7 @@ public class Game
 
 	public enum GameStage
 	{
-		PREGAME, SETUP, HUNT, DONE;
+		PREGAME, SETUP, HUNT, INTERMISSION, DONE;
 		
 		public String toString()
 		{
@@ -320,7 +327,8 @@ public class Game
 			case PREGAME:	return "pregame";
 			case SETUP:		return "setup";
 			case HUNT:		return "hunt";
-			default:		return "none";
+			case INTERMISSION: return "intermission";
+			default:		return "done";
 			}
 		}
 	}

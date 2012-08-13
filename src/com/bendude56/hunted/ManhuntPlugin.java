@@ -16,6 +16,7 @@ import com.bendude56.hunted.events.EntityEventHandler;
 import com.bendude56.hunted.events.PlayerEventHandler;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.games.Game;
+import com.bendude56.hunted.games.GameIntermission;
 import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.settings.SettingsManager;
@@ -31,6 +32,7 @@ public class ManhuntPlugin extends JavaPlugin {
 	private FinderManager	finders;
 	private Game			game;
 	private ChatManager		chat;
+	private GameIntermission intermission;
 	
 	private World 	manhuntWorld;
 	
@@ -49,6 +51,7 @@ public class ManhuntPlugin extends JavaPlugin {
 		teams =		new TeamManager(this);
 		chat =		new ChatManager(this);
 		game =		null;
+		intermission = (settings.MANHUNT_MODE.value == ManhuntMode.PUBLIC ? new GameIntermission(this) : null);
 		new CommandSwitchboard();
 		
 		//Register Events
@@ -101,6 +104,8 @@ public class ManhuntPlugin extends JavaPlugin {
 
 	public void setWorld(World world)
 	{
+		if (!gameIsRunning())
+		
 		settings.WORLD.setValue(world.getName());
 		settings.saveAll();
 		
@@ -117,8 +122,21 @@ public class ManhuntPlugin extends JavaPlugin {
 		
 		if (mode == ManhuntMode.PUBLIC)
 		{
-			startGame();
+			startIntermission();
 		}
+	}
+
+	public void startIntermission()
+	{
+		if (intermission == null)
+		{
+			intermission = new GameIntermission(this);
+		}
+	}
+	
+	public void cancelIntermission()
+	{
+		intermission.close();
 	}
 
 	public World getWorld() {
