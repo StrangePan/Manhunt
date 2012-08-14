@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.PlayerState.PlayerStateType;
 
@@ -40,6 +41,18 @@ public class TeamManager
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			addPlayer(p);
+		}
+	}
+	
+	public void randomizeTeams()
+	{
+		for (Player p : getTeamPlayers(Team.SPECTATORS))
+		{
+			if (Math.random() > 0.6)
+			{
+				changePlayerTeam(p, Team.PREY);
+				p.sendMessage(ChatManager.leftborder + )
+			}
 		}
 	}
 	
