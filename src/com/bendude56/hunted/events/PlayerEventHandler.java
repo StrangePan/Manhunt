@@ -405,11 +405,6 @@ public class PlayerEventHandler implements Listener {
 		{
 			return;
 		}
-		
-		if (plugin.getGame().lockGameModes)
-		{
-			e.setCancelled(true);
-		}
 	}
 
 	@EventHandler

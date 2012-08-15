@@ -3,8 +3,11 @@ package com.bendude56.hunted.games;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.chat.ChatManager;
+import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class GameIntermission
 {
@@ -13,6 +16,7 @@ public class GameIntermission
 	private Long restartTime;
 	
 	private Integer schedule;
+	private Integer countdown;
 	
 	public GameIntermission(ManhuntPlugin plugin)
 	{
@@ -33,11 +37,21 @@ public class GameIntermission
 	{
 		Long time = new Date().getTime();
 		
+		
+		
 		if (time > restartTime)
 		{
-			plugin.startGame();
-			
+			if (plugin.getTeams().getAllPlayers(true).size() >= plugin.getSettings().MINIMUM_PLAYERS.value)
+			{
+				plugin.startGame();
+			}
+			else
+			{
+				GameUtil.broadcast(ChatManager.bracket1_ + ChatColor.RED + "There are not enough players to start the game." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				plugin.startIntermission(true);
+			}
 			close();
+			
 		}
 	}
 	

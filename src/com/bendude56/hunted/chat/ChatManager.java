@@ -25,7 +25,7 @@ public class ChatManager {
 	public final static String bracket2 = color + "]---";
 	public final static String bracket2_ = " " + bracket2;
 	public final static String leftborder = color + "|  ";
-	public final static String divider = color + "--------------------";
+	public final static String divider = color + "----------------------------------------";
 
 	public void onPlayerchat(AsyncPlayerChatEvent e)
 	{

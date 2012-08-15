@@ -94,7 +94,19 @@ public class ManhuntPlugin extends JavaPlugin {
 	public void startGame()
 	{
 		forgetGame();
-		game = new Game(this);
+		
+		if (getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
+		{
+			if (getTeams().getAllPlayers(true).size() >= getSettings().MINIMUM_PLAYERS.value);
+			{
+				getTeams().randomizeTeams();
+				game = new Game(this);
+			}
+		}
+		else
+		{
+			game = new Game(this);
+		}
 	}
 	
 	public void forgetGame()
@@ -128,10 +140,17 @@ public class ManhuntPlugin extends JavaPlugin {
 
 	public void startIntermission()
 	{
-		if (intermission == null)
+		startIntermission(false);
+	}
+	
+	public void startIntermission(boolean CancelLast)
+	{
+		
+		if (intermission != null && CancelLast)
 		{
-			intermission = new GameIntermission(this);
+			intermission.close();
 		}
+		intermission = new GameIntermission(this);
 	}
 	
 	public void cancelIntermission()

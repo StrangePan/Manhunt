@@ -394,7 +394,6 @@ public class GameEvents
 		
 		game.freeze_prey = true;
 		game.freeze_hunters = true;
-		game.lockGameModes = true;
 		
 		broadcast(ChatManager.bracket1_ + color + "All players are in position" + ChatManager.bracket2_, Team.SPECTATORS);
 	}

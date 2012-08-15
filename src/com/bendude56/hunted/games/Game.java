@@ -40,7 +40,6 @@ public class Game
 	
 	public boolean freeze_hunters = false;
 	public boolean freeze_prey = false;
-	public boolean lockGameModes = false;
 	
 	public Game(ManhuntPlugin plugin)
 	{
@@ -113,8 +112,6 @@ public class Game
 				e.remove();
 			}
 		}
-		
-		lockGameModes = false;
 		
 		plugin.getTeams().restoreAllOriginalPlayerStates();
 		

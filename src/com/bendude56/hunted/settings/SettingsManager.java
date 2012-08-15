@@ -50,6 +50,7 @@ public class SettingsManager
 	public final Setting<Integer> DAY_LIMIT;
 	public final Setting<Integer> SETUP_TIME;
 	public final Setting<Integer> INTERMISSION;
+	public final Setting<Integer> MINIMUM_PLAYERS;
 	
 	public final Setting<Integer> BOUNDARY_WORLD;
 	public final Setting<Integer> BOUNDARY_SETUP;
@@ -92,6 +93,7 @@ public class SettingsManager
 		settings.add(DAY_LIMIT = new Setting<Integer>("dayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));
 		settings.add(SETUP_TIME = new Setting<Integer>("setupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
 		settings.add(INTERMISSION = new Setting<Integer>("intermission", 10, FILE_MAIN, "Minutes between Manhunt games.", "No intermission between games."));
+		settings.add(MINIMUM_PLAYERS = new Setting<Integer>("MinimumPlayers", 4, FILE_MAIN, "Players needed to start a public game.", "No limit to number of players."));
 		
 		settings.add(PREY_FINDER = new Setting<Boolean>("preyFinder", true, FILE_MAIN, "Hunters may use the Prey Finder.", "The compass is just a regular compass."));
 		settings.add(FINDER_COOLDOWN = new Setting<Integer>("finderCooldown", 180, FILE_MAIN, "Seconds until the PreyFinder is ready.", "The PreyFinder has no cooldown delay."));
