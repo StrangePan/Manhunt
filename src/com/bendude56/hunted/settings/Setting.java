@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 
 public class Setting<Type> {
 
@@ -92,6 +93,14 @@ public class Setting<Type> {
 			{
 				String[] input = value.split(",");
 				this.value = (Type) Location.class.cast(new Location(Bukkit.getWorld(input[0]), Double.parseDouble(input[1]), Double.parseDouble(input[2]), Double.parseDouble(input[3]), Float.parseFloat(input[4]), Float.parseFloat(input[5])));
+			}
+			else if (this.value instanceof ManhuntMode)
+			{
+				this.value = (Type) ManhuntMode.fromString(value);
+				if (this.value == null)
+				{
+					this.value = this.defaultValue;
+				}
 			}
 			else
 			{

@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.games.GameUtil;
@@ -312,7 +313,7 @@ public class PlayerEventHandler implements Listener {
 			}
 			else
 			{
-				if (plugin.getSettings().PUBLIC_MODE.value)
+				if (plugin.getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
 				{
 					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.SPECTATORS);
 				}
@@ -371,7 +372,7 @@ public class PlayerEventHandler implements Listener {
 			}
 			else
 			{
-				if (plugin.getSettings().PUBLIC_MODE.value)
+				if (plugin.getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
 				{
 					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.SPECTATORS);
 				}

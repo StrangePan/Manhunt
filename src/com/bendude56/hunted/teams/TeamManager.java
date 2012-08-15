@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.settings.SettingsManager;
 import com.bendude56.hunted.teams.PlayerState.PlayerStateType;
@@ -46,13 +47,44 @@ public class TeamManager
 	
 	public void randomizeTeams()
 	{
-		for (Player p : getTeamPlayers(Team.SPECTATORS))
+		List<Player> hunters = new ArrayList<Player>();
+		List<Player> prey = new ArrayList<Player>();
+		List<Player> spectators = getTeamPlayers(Team.SPECTATORS);
+		
+		int preyCount = spectators.size() / 4;
+		if (preyCount < 1) preyCount = 1;
+		
+		while (preyCount > 0)
 		{
-			if (Math.random() > 0.6)
+			while(true)
 			{
-				changePlayerTeam(p, Team.PREY);
-				p.sendMessage(ChatManager.leftborder + )
+				int index = (int)Math.random() * spectators.size();
+				if (!prey.contains(spectators.get(index)))
+				{
+					prey.add(spectators.get(index));
+					break;
+				}
 			}
+			preyCount--;
+		}
+		
+		for (Player p : spectators)
+		{
+			if (!prey.contains(p))
+			{
+				hunters.add(p);
+			}
+		}
+		
+		for (Player p : prey)
+		{
+			changePlayerTeam(p, Team.PREY);
+			p.sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.PREY.getColor() + Team.PREY.getName(true));
+		}
+		for (Player p : hunters)
+		{
+			changePlayerTeam(p, Team.HUNTERS);
+			p.sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.HUNTERS.getColor() + Team.HUNTERS.getName(true));
 		}
 	}
 	
@@ -97,7 +129,7 @@ public class TeamManager
 		}
 		else
 		{
-			if (settings.PUBLIC_MODE.value)
+			if (settings.MANHUNT_MODE.value == ManhuntMode.PUBLIC)
 			{
 				putPlayerTeam(p.getName(), Team.SPECTATORS);
 			}
