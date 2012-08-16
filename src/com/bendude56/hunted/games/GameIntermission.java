@@ -31,14 +31,19 @@ public class GameIntermission
 				onTick();
 			}
 		}, 0, 1);
+		
+		countdown = plugin.getSettings().INTERMISSION.value;
 	}
 	
 	private void onTick()
 	{
 		Long time = new Date().getTime();
 		
-		
-		
+		if (countdown > 0 && time > restartTime - 60000*countdown)
+		{
+			GameUtil.broadcast(ChatManager.bracket1_ + "Manhunt will begin in " + ChatColor.BLUE + countdown + " minutes." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			countdown--;
+		}
 		if (time > restartTime)
 		{
 			if (plugin.getTeams().getAllPlayers(true).size() >= plugin.getSettings().MINIMUM_PLAYERS.value)

@@ -117,15 +117,16 @@ public class ManhuntPlugin extends JavaPlugin {
 	public void setWorld(World world)
 	{
 		if (!gameIsRunning())
-		
-		settings.WORLD.setValue(world.getName());
-		settings.saveAll();
-		
-		this.manhuntWorld = world;
-		
-		settings = new SettingsManager();
-		loadouts = new LoadoutManager();
-		teams.refreshPlayers();
+		{
+			settings.WORLD.setValue(world.getName());
+			settings.saveAll();
+			
+			this.manhuntWorld = world;
+			
+			settings = new SettingsManager();
+			loadouts = new LoadoutManager();
+			teams.refreshPlayers();
+		}
 	}
 
 	public void setMode(ManhuntMode mode)
@@ -135,6 +136,10 @@ public class ManhuntPlugin extends JavaPlugin {
 		if (mode == ManhuntMode.PUBLIC)
 		{
 			startIntermission();
+		}
+		if (mode == ManhuntMode.PRIVATE)
+		{
+			cancelIntermission();
 		}
 	}
 
@@ -155,7 +160,11 @@ public class ManhuntPlugin extends JavaPlugin {
 	
 	public void cancelIntermission()
 	{
-		intermission.close();
+		if (intermission != null)
+		{
+			intermission.close();
+			intermission = null;
+		}
 	}
 
 	public World getWorld() {
