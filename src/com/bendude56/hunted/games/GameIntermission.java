@@ -22,9 +22,10 @@ public class GameIntermission
 	{
 		this.plugin = plugin;
 		
-		restartTime = new Date().getTime() + plugin.getSettings().INTERMISSION.value * 60000;
+		int minutes = plugin.getSettings().INTERMISSION.value < 1 ? 1 : plugin.getSettings().INTERMISSION.value;
+		restartTime = new Date().getTime() + minutes * 60000;
 		
-		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
+		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable()
 		{
 			public void run()
 			{
@@ -32,7 +33,7 @@ public class GameIntermission
 			}
 		}, 0, 1);
 		
-		countdown = plugin.getSettings().INTERMISSION.value;
+		countdown = minutes;
 	}
 	
 	private void onTick()
