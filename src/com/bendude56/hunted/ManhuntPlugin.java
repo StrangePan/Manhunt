@@ -116,6 +116,11 @@ public class ManhuntPlugin extends JavaPlugin {
 
 	public void setWorld(World world)
 	{
+		if (getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
+		{
+			startIntermission(true);
+		}
+		
 		if (!gameIsRunning())
 		{
 			settings.WORLD.setValue(world.getName());
@@ -136,7 +141,7 @@ public class ManhuntPlugin extends JavaPlugin {
 		if (mode == ManhuntMode.PUBLIC)
 		{
 			getTeams().refreshPlayers();
-			startIntermission();
+			startIntermission(true);
 		}
 		if (mode == ManhuntMode.PRIVATE)
 		{

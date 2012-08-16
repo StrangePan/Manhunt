@@ -54,7 +54,8 @@ public class GameIntermission
 			else
 			{
 				GameUtil.broadcast(ChatManager.bracket1_ + ChatColor.RED + "There are not enough players to start the game." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				plugin.startIntermission(true);
+				restartTime += 60000;
+				countdown = 1;
 			}
 			close();
 			
