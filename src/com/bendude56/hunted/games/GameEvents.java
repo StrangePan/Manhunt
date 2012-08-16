@@ -71,17 +71,13 @@ public class GameEvents
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
-			if (stop_timechange - time > 2400)
+			if (time < stop_timechange - 1600)
 			{
-				world.setFullTime(world.getFullTime() + 400);
+				world.setFullTime(time + 200);
 			}
-			else if (stop_timechange - time > 800)
+			else if (time < stop_timechange - 4)
 			{
-				world.setFullTime(world.getFullTime() + 40);
-			}
-			else if (stop_timechange - time > 10)
-			{
-				world.setFullTime(world.getFullTime() + 10);
+				world.setFullTime(time + ((stop_timechange - time) / 8));
 			}
 			else
 			{
@@ -247,6 +243,7 @@ public class GameEvents
 			if (countdown == 100 && time > start_hunt_tick)
 			{
 				broadcast(ChatManager.bracket1_ + color + "The hunt has started! Let the games begin!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				game.freeze_prey = false;
 				game.freeze_hunters = false;
 				countdown = 90;
 			}

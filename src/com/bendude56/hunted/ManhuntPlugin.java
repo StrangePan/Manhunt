@@ -135,6 +135,7 @@ public class ManhuntPlugin extends JavaPlugin {
 		
 		if (mode == ManhuntMode.PUBLIC)
 		{
+			getTeams().refreshPlayers();
 			startIntermission();
 		}
 		if (mode == ManhuntMode.PRIVATE)

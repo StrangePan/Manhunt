@@ -30,7 +30,8 @@ public class PlayerState
 	private final Location bed;
 	private final Location compass;
 	private final Float exhaustion;
-	private final Integer xp;
+	private final Integer level;
+	private final Float exp;
 	//private final Location location;
 	
 
@@ -52,7 +53,8 @@ public class PlayerState
 		this.bed = p.getBedSpawnLocation();
 		this.compass = p.getCompassTarget();
 		this.exhaustion = p.getExhaustion();
-		this.xp = p.getTotalExperience();
+		this.level = p.getLevel();
+		this.exp = p.getExp();
 		//this.location = p.getLocation();
 	}
 	
@@ -71,7 +73,8 @@ public class PlayerState
 		if (bed != null) p.setBedSpawnLocation(bed);
 		p.setCompassTarget(compass);
 		p.setExhaustion(exhaustion);
-		p.setTotalExperience(xp);
+		p.setLevel(level);
+		p.setExp(exp);
 		//p.teleport(location);
 	}
 	

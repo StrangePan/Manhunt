@@ -93,7 +93,14 @@ public class CommandsSettings
 		}
 		
 		if (setting.parseValue(args[2]))
+		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.BLUE + setting.label + " " + setting.formattedValue() + " " + setting.message());
+			
+			if (args[1].equalsIgnoreCase("intermission"))
+			{
+				ManhuntPlugin.getInstance().startIntermission(true);
+			}
+		}
 		else
 			sender.sendMessage(ChatColor.RED + args[2] + "is an invalid setting for \"" + setting.label + "\"");
 	}

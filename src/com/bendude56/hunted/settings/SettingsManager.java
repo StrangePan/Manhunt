@@ -66,53 +66,53 @@ public class SettingsManager
 	{
 		files.add(FILE_MAIN = new SettingsFile("Main Config", plugin_path, "Manhunt"));
 		
-		secretSettings.add(WORLD = new Setting<String>("world", "world", FILE_MAIN, "The Manhunt world.", ""));
+		secretSettings.add(WORLD = new Setting<String>("World", "world", FILE_MAIN, "The Manhunt world.", ""));
 		if (Bukkit.getWorld(WORLD.value) == null)
 		{
 			WORLD.setValue(Bukkit.getWorlds().get(0).getName());
 		}
 		
-		secretSettings.add(MANHUNT_MODE = new Setting<ManhuntMode>("gameMode", ManhuntMode.PRIVATE, FILE_MAIN, "The type of mode Manhunt is running in.", ""));
+		secretSettings.add(MANHUNT_MODE = new Setting<ManhuntMode>("GameMode", ManhuntMode.PRIVATE, FILE_MAIN, "The type of mode Manhunt is running in.", ""));
 		
-		settings.add(OP_CONTROL = new Setting<Boolean>("opControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
-		settings.add(AUTO_JOIN = new Setting<Boolean>("autoJoin", true, FILE_MAIN, "New players automatically join team Hunters.", "New players will remain spectators."));
+		settings.add(OP_CONTROL = new Setting<Boolean>("OpControl", true, FILE_MAIN, "Only ops have access to all commands.", "Non-ops have access to basic controls."));
+		settings.add(AUTO_JOIN = new Setting<Boolean>("AutoJoin", true, FILE_MAIN, "New players automatically join team Hunters.", "New players will remain spectators."));
 
-		settings.add(ALL_TALK = new Setting<Boolean>("allTalk", false, FILE_MAIN, "Teams can communicate with each other.", "Teams cannot communicate with each other."));
-		settings.add(CONTROL_CHAT = new Setting<Boolean>("chatControl", true, FILE_MAIN, "The Manhunt plugin will control chat.", "Manhunt will not touch the chat."));
-		settings.add(FRIENDLY_FIRE = new Setting<Boolean>("friendlyFire", false, FILE_MAIN, "Teammates can damage each other.", "Teammates cannot hurt each other."));
-		settings.add(INSTANT_DEATH = new Setting<Boolean>("instantDeath", false, FILE_MAIN, "Players will die in one hit.", "Players take damage like normal."));
-		settings.add(FLYING_SPECTATORS = new Setting<Boolean>("flyingSpectators", true, FILE_MAIN, "Spectators can fly in creative mode.", "Spectators are bound to the ground."));
-		settings.add(LOADOUTS = new Setting<Boolean>("loadouts", true, FILE_MAIN, "Players will recieve predefined loadouts.", "Players will start with empty inventories."));
-		settings.add(TEAM_HATS = new Setting<Boolean>("teamHats", true, FILE_MAIN, "Players get special, identifying hats.", "Players do not have special hats."));
-		settings.add(NO_BUILD = new Setting<Boolean>("noBuild", true, FILE_MAIN, "Players cannot build unless the game is running.", "Players can edit the world when the game is not running."));
+		settings.add(ALL_TALK = new Setting<Boolean>("AllTalk", false, FILE_MAIN, "Teams can communicate with each other.", "Teams cannot communicate with each other."));
+		settings.add(CONTROL_CHAT = new Setting<Boolean>("ChatControl", true, FILE_MAIN, "The Manhunt plugin will control chat.", "Manhunt will not touch the chat."));
+		settings.add(FRIENDLY_FIRE = new Setting<Boolean>("FriendlyFire", false, FILE_MAIN, "Teammates can damage each other.", "Teammates cannot hurt each other."));
+		settings.add(INSTANT_DEATH = new Setting<Boolean>("InstantDeath", false, FILE_MAIN, "Players will die in one hit.", "Players take damage like normal."));
+		settings.add(FLYING_SPECTATORS = new Setting<Boolean>("FlyingSpectators", true, FILE_MAIN, "Spectators can fly in creative mode.", "Spectators are bound to the ground."));
+		settings.add(LOADOUTS = new Setting<Boolean>("Loadouts", true, FILE_MAIN, "Players will recieve predefined loadouts.", "Players will start with empty inventories."));
+		settings.add(TEAM_HATS = new Setting<Boolean>("TeamHats", true, FILE_MAIN, "Players get special, identifying hats.", "Players do not have special hats."));
+		settings.add(NO_BUILD = new Setting<Boolean>("NoBuild", true, FILE_MAIN, "Players cannot build unless the game is running.", "Players can edit the world when the game is not running."));
 		
-		settings.add(PASSIVE_MOBS = new Setting<Boolean>("passiveMobs", true, FILE_MAIN, "Passive mobs are enabled.", "Passive mobs are disabled."));
-		settings.add(HOSTILE_MOBS = new Setting<Boolean>("hostileMobs", true, FILE_MAIN, "Hostile mobs are enabled.", "Hostile mobs are disabled."));
+		settings.add(PASSIVE_MOBS = new Setting<Boolean>("PassiveMobs", true, FILE_MAIN, "Passive mobs are enabled.", "Passive mobs are disabled."));
+		settings.add(HOSTILE_MOBS = new Setting<Boolean>("HostileMobs", true, FILE_MAIN, "Hostile mobs are enabled.", "Hostile mobs are disabled."));
 		
-		settings.add(OFFLINE_TIMEOUT = new Setting<Integer>("offlineTimeout", 60, FILE_MAIN, "Seconds until offline players disqualify.", "Offline players will not disqualify."));
-		settings.add(DAY_LIMIT = new Setting<Integer>("dayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));
-		settings.add(SETUP_TIME = new Setting<Integer>("setupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
-		settings.add(INTERMISSION = new Setting<Integer>("intermission", 10, FILE_MAIN, "Minutes between Manhunt games.", "No intermission between games."));
+		settings.add(OFFLINE_TIMEOUT = new Setting<Integer>("OfflineTimeout", 60, FILE_MAIN, "Seconds until offline players disqualify.", "Offline players will not disqualify."));
+		settings.add(DAY_LIMIT = new Setting<Integer>("DayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));
+		settings.add(SETUP_TIME = new Setting<Integer>("SetupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
+		settings.add(INTERMISSION = new Setting<Integer>("Intermission", 10, FILE_MAIN, "Minutes between Manhunt games.", "No intermission between games."));
 		settings.add(MINIMUM_PLAYERS = new Setting<Integer>("MinimumPlayers", 4, FILE_MAIN, "Players needed to start a public game.", "No limit to number of players."));
 		
-		settings.add(PREY_FINDER = new Setting<Boolean>("preyFinder", true, FILE_MAIN, "Hunters may use the Prey Finder.", "The compass is just a regular compass."));
-		settings.add(FINDER_COOLDOWN = new Setting<Integer>("finderCooldown", 180, FILE_MAIN, "Seconds until the PreyFinder is ready.", "The PreyFinder has no cooldown delay."));
-		settings.add(NORTH_COMPASS = new Setting<Boolean>("northCompass", true, FILE_MAIN, "Compasses will always point north.", "Compasses will always point towards spawn."));
+		settings.add(PREY_FINDER = new Setting<Boolean>("PreyFinder", true, FILE_MAIN, "Hunters may use the Prey Finder.", "The compass is just a regular compass."));
+		settings.add(FINDER_COOLDOWN = new Setting<Integer>("FinderCooldown", 180, FILE_MAIN, "Seconds until the PreyFinder is ready.", "The PreyFinder has no cooldown delay."));
+		settings.add(NORTH_COMPASS = new Setting<Boolean>("NorthCompass", true, FILE_MAIN, "Compasses will always point north.", "Compasses will always point towards spawn."));
 		
 		this.world_path = (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt";
 		files.add(FILE_WORLD = new SettingsFile("World Config", world_path, "Config"));
 		
-		settings.add(BOUNDARY_WORLD = new Setting<Integer>("worldBoundary", 128, FILE_WORLD, "Blocks players may roam during the hunt.", "There is no boundary around the world."));
-		settings.add(BOUNDARY_SETUP = new Setting<Integer>("setupBoundary", 16, FILE_WORLD, "Blocks Hunters are confined to.", "The hunters are not constrained during setup."));
-		settings.add(SPAWN_PROTECTION = new Setting<Integer>("spawnProtection", 24, FILE_WORLD, "The protected region around the spawns.", "The spawn points are not protected."));
-		settings.add(BOUNDARY_BOXED = new Setting<Boolean>("boxedBoundary", true, FILE_WORLD, "The world's boundary is rectangular.", "The world's shape is rounded."));
+		settings.add(BOUNDARY_WORLD = new Setting<Integer>("WorldBoundary", 128, FILE_WORLD, "Blocks players may roam during the hunt.", "There is no boundary around the world."));
+		settings.add(BOUNDARY_SETUP = new Setting<Integer>("SetupBoundary", 16, FILE_WORLD, "Blocks Hunters are confined to.", "The hunters are not constrained during setup."));
+		settings.add(SPAWN_PROTECTION = new Setting<Integer>("SpawnProtection", 24, FILE_WORLD, "The protected region around the spawns.", "The spawn points are not protected."));
+		settings.add(BOUNDARY_BOXED = new Setting<Boolean>("BoxedBoundary", true, FILE_WORLD, "The world's boundary is rectangular.", "The world's shape is rounded."));
 		
-		secretSettings.add(HUNTER_LOADOUT_CURRENT = new Setting<String>("currentHunterLoadout", "default", FILE_WORLD, "The loadout the hunter get.", ""));
-		secretSettings.add(PREY_LOADOUT_CURRENT = new Setting<String>("currentPreyLoadout", "default", FILE_WORLD, "The loadout the prey get.", ""));
+		secretSettings.add(HUNTER_LOADOUT_CURRENT = new Setting<String>("CurrentHunterLoadout", "default", FILE_WORLD, "The loadout the hunter get.", ""));
+		secretSettings.add(PREY_LOADOUT_CURRENT = new Setting<String>("CurrentPreyLoadout", "default", FILE_WORLD, "The loadout the prey get.", ""));
 		
-		secretSettings.add(SPAWN_HUNTER = new Setting<Location>("hunterSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
-		secretSettings.add(SPAWN_PREY = new Setting<Location>("preySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
-		secretSettings.add(SPAWN_SETUP = new Setting<Location>("setupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
+		secretSettings.add(SPAWN_HUNTER = new Setting<Location>("HunterSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
+		secretSettings.add(SPAWN_PREY = new Setting<Location>("PreySpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
+		secretSettings.add(SPAWN_SETUP = new Setting<Location>("SetupSpawn", Bukkit.getWorld(WORLD.value).getSpawnLocation(), FILE_WORLD, "",""));
 		
 		saveAll();
 	}

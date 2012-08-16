@@ -3,6 +3,7 @@ package com.bendude56.hunted.teams;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,7 +32,7 @@ public class TeamManager
 
 	public void refreshPlayers()
 	{
-		if (teams.equals(savedTeams))
+		if (!teams.isEmpty() && teams.equals(savedTeams))
 		{
 			return;
 		}
@@ -51,15 +52,24 @@ public class TeamManager
 		List<Player> prey = new ArrayList<Player>();
 		List<Player> spectators = getTeamPlayers(Team.SPECTATORS);
 		
+		if (spectators.size() == 0)
+		{
+			return;
+		}
+		
 		int preyCount = spectators.size() / 4;
 		if (preyCount < 1) preyCount = 1;
 		
-		while (preyCount > 0)
+		while (preyCount > 0 && spectators.size() > 0)
 		{
 			while(true)
 			{
-				int index = (int)Math.random() * spectators.size();
-				if (!prey.contains(spectators.get(index)))
+				int index = new Random().nextInt(spectators.size());
+				if (prey.contains(spectators.get(index)))
+				{
+					continue;
+				}
+				else
 				{
 					prey.add(spectators.get(index));
 					break;

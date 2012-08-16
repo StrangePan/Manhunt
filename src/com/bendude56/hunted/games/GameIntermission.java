@@ -41,7 +41,7 @@ public class GameIntermission
 		
 		if (countdown > 0 && time > restartTime - 60000*countdown)
 		{
-			GameUtil.broadcast(ChatManager.bracket1_ + "Manhunt will begin in " + ChatColor.BLUE + countdown + " minutes." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatManager.bracket1_ + "Manhunt will begin in " + ChatColor.BLUE + countdown + (countdown > 1 ? " minutes." : " minute.") + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 			countdown--;
 		}
 		if (time > restartTime)

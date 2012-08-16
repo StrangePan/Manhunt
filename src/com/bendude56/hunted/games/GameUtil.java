@@ -91,6 +91,8 @@ public class GameUtil {
 		p.setFoodLevel(20);
 		p.setSaturation(10);
 		p.setFireTicks(0);
+		p.setExp(0);
+		p.setLevel(0);
 		
 		if (plugin.getSettings().LOADOUTS.value)
 		{
