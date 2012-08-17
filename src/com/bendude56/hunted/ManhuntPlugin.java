@@ -204,6 +204,11 @@ public class ManhuntPlugin extends JavaPlugin {
 		return game;
 	}
 	
+	public GameIntermission getIntermission()
+	{
+		return intermission;
+	}
+	
 	public boolean gameIsRunning()
 	{
 		return (game != null);

@@ -196,22 +196,22 @@ public class CommandsGeneral
 		}
 		else if (spawn.equalsIgnoreCase("hunter"))
 		{
-			plugin.getSettings().SPAWN_HUNTER.setValue(p.getLocation());
+			plugin.getSettings().SPAWN_HUNTER.setValue(p.getLocation().clone());
 		}
 		else if (spawn.equalsIgnoreCase("prey"))
 		{
-			plugin.getSettings().SPAWN_PREY.setValue(p.getLocation());
+			plugin.getSettings().SPAWN_PREY.setValue(p.getLocation().clone());
 		}
 		else if (spawn.equalsIgnoreCase("setup"))
 		{
-			plugin.getSettings().SPAWN_SETUP.setValue(p.getLocation());
+			plugin.getSettings().SPAWN_SETUP.setValue(p.getLocation().clone());
 		}
 		else if (spawn.equalsIgnoreCase("all"))
 		{
 			plugin.getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
-			plugin.getSettings().SPAWN_HUNTER.setValue(p.getLocation());
-			plugin.getSettings().SPAWN_PREY.setValue(p.getLocation());
-			plugin.getSettings().SPAWN_SETUP.setValue(p.getLocation());
+			plugin.getSettings().SPAWN_HUNTER.setValue(p.getLocation().clone());
+			plugin.getSettings().SPAWN_PREY.setValue(p.getLocation().clone());
+			plugin.getSettings().SPAWN_SETUP.setValue(p.getLocation().clone());
 
 			sender.sendMessage(ChatColor.GREEN + "All spawns have been moved.");
 			return;

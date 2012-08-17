@@ -61,7 +61,12 @@ public class GameIntermission
 			
 		}
 	}
-	
+
+	public long getRestartTime()
+	{
+		return restartTime;
+	}
+
 	public void close()
 	{
 		Bukkit.getScheduler().cancelTask(schedule);
