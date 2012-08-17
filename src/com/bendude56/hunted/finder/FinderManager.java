@@ -85,12 +85,12 @@ public class FinderManager
 	 * Stops a player's finder for whatever reason.
 	 * @param p
 	 */
-	public void stopFinder(Player p)
+	public void stopFinder(Player p, boolean ignoreUsed)
 	{
 		Finder f = getFinder(p);
 		if (f != null)
 		{
-			stopFinder(f);
+			stopFinder(f, ignoreUsed);
 		}
 	}
 
@@ -98,12 +98,15 @@ public class FinderManager
 	 * Stops a finder, protected to be used only by the Finders package
 	 * @param f
 	 */
-	protected void stopFinder(Finder f)
+	protected void stopFinder(Finder f, boolean ignoreUsed)
 	{
-		f.close();
-		if (finders.contains(f))
+		if (ignoreUsed || !f.isUsed())
 		{
-			finders.remove(f);
+			f.close();
+			if (finders.contains(f))
+			{
+				finders.remove(f);
+			}
 		}
 	}
 

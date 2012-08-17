@@ -53,6 +53,11 @@ public class Finder
 	 */
 	public void onTick()
 	{
+		if (!checkValidity())
+		{
+			return;
+		}
+		
 		long time = new Date().getTime();
 		
 		if (!used && time >= activation_time) //Should I send the player the information?
@@ -67,7 +72,7 @@ public class Finder
 			}
 			else
 			{
-				manager.stopFinder(this);
+				manager.stopFinder(this, true);
 			}
 			used = true;
 		}
@@ -78,7 +83,7 @@ public class Finder
 			{
 				p.sendMessage(ChatManager.bracket1_ + "The " + ChatColor.DARK_RED + "Prey Finder" + ChatManager.color + " is fully charged." + ChatManager.bracket2_);
 			}
-			manager.stopFinder(this);
+			manager.stopFinder(this, true);
 		}
 	}
 
@@ -103,7 +108,7 @@ public class Finder
 			if (p.getItemInHand().getType() != Material.COMPASS || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.5, true))
 			{
 				FinderUtil.sendMessageFinderCancel(p);
-				manager.stopFinder(this);
+				manager.stopFinder(this, true);
 				return false;
 			}
 			else
@@ -114,7 +119,7 @@ public class Finder
 		else
 		{
 			FinderUtil.sendMessageFinderCancel(p);
-			manager.stopFinder(this);
+			manager.stopFinder(this, true);
 			return false;
 		}
 
@@ -131,8 +136,13 @@ public class Finder
 		else if (used)
 		{
 			Date time = new Date();
-			p.sendMessage(ChatManager.leftborder + "Your Prey Finder is still charging. Please wait for " + ChatColor.DARK_RED + (int) Math.ceil(((double) expire_time - (double) time.getTime())/(double) 1000) + " seconds.");
+			p.sendMessage(ChatManager.leftborder + "The Prey Finder is still charging. Wait for " + ChatColor.DARK_RED + (int) Math.ceil(((double) expire_time - (double) time.getTime())/(double) 1000) + " seconds.");
 		}
+	}
+
+	public boolean isUsed()
+	{
+		return used;
 	}
 
 	protected void close()

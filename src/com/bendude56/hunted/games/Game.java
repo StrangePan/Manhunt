@@ -180,7 +180,7 @@ public class Game
 	{
 		plugin.getTeams().saveManhuntPlayerState(p);
 		plugin.getTeams().restoreOriginalPlayerState(p);
-		finders.stopFinder(p);
+		finders.stopFinder(p, false);
 		
 		Team team = plugin.getTeams().getTeamOf(p);
 		

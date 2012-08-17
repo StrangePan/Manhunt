@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -218,15 +217,6 @@ public class PlayerEventHandler implements Listener {
 		ManhuntUtil.checkPlayerInBounds(p);
 		
 		plugin.getGame().finders.verifyFinder(p);
-	}
-
-	@EventHandler
-	public void onPlayerItemHeld(PlayerItemHeldEvent e)
-	{
-		if (plugin.gameIsRunning())
-		{
-			plugin.getGame().finders.verifyFinder(e.getPlayer());
-		}
 	}
 
 	@EventHandler

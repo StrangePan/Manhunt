@@ -82,7 +82,7 @@ public class FinderUtil {
 		
 		for (Player e : enemies)
 		{
-			double d = ManhuntUtil.getDistance(p, enemy, true);
+			double d = ManhuntUtil.getDistance(p, e, true);
 			
 			if (distance == -1 || d < distance)
 			{
@@ -136,11 +136,11 @@ public class FinderUtil {
 		if (relative_angle > 315)
 			relative_direction = "ahead of you";
 		else if (relative_angle > 225)
-			relative_direction = "to your right";
+			relative_direction = "to your left";
 		else if (relative_angle > 135)
 			relative_direction = "behind you";
 		else if (relative_angle > 45)
-			relative_direction = "to your left";
+			relative_direction = "to your right";
 		else
 			relative_direction = "ahead of you";
 		
