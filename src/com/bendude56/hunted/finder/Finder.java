@@ -44,7 +44,7 @@ public class Finder
 			{
 				onTick();
 			}
-		}, 0, 5);
+		}, 5, 5);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class Finder
 	 */
 	public void onTick()
 	{
-		Long time = (new Date()).getTime();
+		long time = new Date().getTime();
 		
 		if (!used && time >= activation_time) //Should I send the player the information?
 		{
@@ -93,7 +93,7 @@ public class Finder
 	{
 		if (used)
 		{
-			return false;
+			return true;
 		}
 
 		Player p = Bukkit.getPlayer(player_name);

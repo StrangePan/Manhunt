@@ -157,6 +157,11 @@ public class FinderUtil {
 			enemy.sendMessage(ChatColor.GOLD + "--[   " + ChatColor.RED + "A " + ChatColor.BLUE + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatColor.GOLD + "   ]---");
 			return;
 		}
+		else
+		{
+			p.sendMessage(ChatColor.RED + "Sorry... you aren't a hunter or a prey.");
+			return;
+		}
 		
 	}
 
