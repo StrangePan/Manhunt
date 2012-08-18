@@ -53,7 +53,7 @@ public class Setting<Type> {
 	
 	private String valueToString() {
 		if (value instanceof Location)
-			return ((Location) value).getWorld().getName() + "," + ((Location) value).getX() + "," + ((Location) value).getY() + "," + ((Location) value).getZ() + "," + ((Location) value).getX() + "," + ((Location) value).getPitch() + "," + ((Location) value).getYaw();
+			return ((Location) value).getWorld().getName() + "," + ((Location) value).getX() + "," + ((Location) value).getY() + "," + ((Location) value).getZ() + "," + ((Location) value).getYaw() + "," + ((Location) value).getPitch();
 		else
 			return value.toString();
 	}

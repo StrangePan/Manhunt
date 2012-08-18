@@ -41,7 +41,9 @@ public class SettingsFile extends Properties{
 			}
 		}
 		try {
-			load(new FileInputStream(file));
+			FileInputStream stream = new FileInputStream(file);
+			load(stream);
+			stream.close();
 		} catch (IOException e) {
 			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt file \"" + title + "!\"");
@@ -68,8 +70,9 @@ public class SettingsFile extends Properties{
 			}
 		}
 		try {
-			store(new FileOutputStream(file),
-					"- Manhunt " + title + " File -");
+			FileOutputStream stream = new FileOutputStream(file);
+			store(stream, "- Manhunt " + title + " File -");
+			stream.close();
 		} catch (IOException e) {
 			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt file \"" + title + "!\"");

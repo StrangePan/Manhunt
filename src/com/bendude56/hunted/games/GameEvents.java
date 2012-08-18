@@ -30,7 +30,8 @@ public class GameEvents
 	private Long start_timechange;
 	private Long stop_timechange;
 	
-	private int countdown;
+	private Integer countdown;
+	private Integer dayCount;
 	private GameStage stage;
 	private ChatColor color = ChatColor.BLUE;
 	
@@ -52,7 +53,8 @@ public class GameEvents
 		this.stop_timechange = start_setup_tick - 400; //And stop 10 seconds before the game starts
 		
 		this.stage = GameStage.PREGAME;
-		countdown = 25;
+		this.countdown = 25;
+		this.dayCount = stop_hunt_tick > 0 ? game.getPlugin().getSettings().DAY_LIMIT.value : -1;
 		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
@@ -71,13 +73,17 @@ public class GameEvents
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
-			if (time < stop_timechange - 1600)
+			if (time < start_timechange + 3000)
 			{
-				world.setFullTime(time + 200);
+				world.setFullTime((long) (time + ((time - start_timechange) * 0.1)));
+			}
+			else if (time < stop_timechange - 3000)
+			{
+				world.setFullTime(time + 300);
 			}
 			else if (time < stop_timechange - 4)
 			{
-				world.setFullTime(time + ((stop_timechange - time) / 8));
+				world.setFullTime(time + ((stop_timechange - time) / 10));
 			}
 			else
 			{
@@ -89,7 +95,7 @@ public class GameEvents
 		{
 			if (countdown == 25)
 			{
-				broadcast(ChatManager.bracket1_ + "The Manhunt game will start " + color + "soon." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				broadcast(ChatManager.bracket1_ + "The Manhunt game " + color + "is about to start!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				countdown = 20;
 			}
 			else if (countdown == 20 & time > start_setup_tick - sec)
@@ -240,79 +246,100 @@ public class GameEvents
 		}
 		else if (stage == GameStage.HUNT)
 		{
+			if (dayCount < 0) // Day limit is off, so just add up the days left
+			{
+				if (time > start_hunt_tick + (Math.abs(dayCount)*24000))
+				{
+					broadcast(ChatManager.bracket1_ + "We are " + ChatColor.BLUE + (-dayCount) + (dayCount == -1 ? " day" : " days") + ChatManager.color + " into the hunt." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					dayCount--;
+				}
+			}
+			else if (dayCount > 1)
+			{
+				if (time > stop_hunt_tick - (dayCount*24000))
+				{
+					broadcast(ChatManager.bracket1_ + "There are " + ChatColor.BLUE + dayCount + " days" + ChatManager.color + " left in the hunt." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					dayCount--;
+				}
+			}
+			
 			if (countdown == 100 && time > start_hunt_tick)
 			{
-				broadcast(ChatManager.bracket1_ + color + "The hunt has started! Let the games begin!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				broadcast(ChatManager.bracket1_ + color + "THE HUNT HAS STARTED! LET THE GAMES BEGIN!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				game.freeze_prey = false;
 				game.freeze_hunters = false;
 				countdown = 90;
 			}
-			else if (countdown == 90 && time > stop_hunt_tick - 12000) //1 day
+			else if (stop_hunt_tick > 0)
 			{
-				broadcast(ChatManager.bracket1_ + "The game will end at " + color + "SUNDOWN" + ChatManager.color + "..." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 60;
+				if (countdown == 90 && time > stop_hunt_tick - 12000) //1 day
+				{
+					broadcast(ChatManager.bracket1_ + "The game will end at " + color + "SUNDOWN" + ChatManager.color + "..." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 60;
+				}
+				else if (countdown == 60 && time > stop_hunt_tick - sec) //1 minute
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "1 minute" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 30;
+				}
+				else if (countdown == 30 && time > stop_hunt_tick - sec) //30 sec
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "30 seconds" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 10;
+				}
+				else if (countdown == 10 && time > stop_hunt_tick - sec) //10 sec
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "10" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 9;
+				}
+				else if (countdown == 9 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "9" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 8;
+				}
+				else if (countdown == 8 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "8" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 7;
+				}
+				else if (countdown == 7 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "7" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 6;
+				}
+				else if (countdown == 6 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "6" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 5;
+				}
+				else if (countdown == 5 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "5" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 4;
+				}
+				else if (countdown == 4 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "4" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 3;
+				}
+				else if (countdown == 3 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "3" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 2;
+				}
+				else if (countdown == 2 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "2" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					countdown = 1;
+				}
+				else if (countdown == 1 && time > stop_hunt_tick - sec)
+				{
+					broadcast(ChatManager.color + "The game will end in " + color + "1" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					stage = GameStage.DONE;
+					countdown = 100;
+				}
 			}
-			else if (countdown == 60 && time > stop_hunt_tick - sec) //1 minute
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "1 minute" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 30;
-			}
-			else if (countdown == 30 && time > stop_hunt_tick - sec) //30 sec
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "30 seconds" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 10;
-			}
-			else if (countdown == 10 && time > stop_hunt_tick - sec) //10 sec
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "10" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 9;
-			}
-			else if (countdown == 9 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "9" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 8;
-			}
-			else if (countdown == 8 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "8" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 7;
-			}
-			else if (countdown == 7 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "7" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 6;
-			}
-			else if (countdown == 6 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "6" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 5;
-			}
-			else if (countdown == 5 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "5" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 4;
-			}
-			else if (countdown == 4 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "4" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 3;
-			}
-			else if (countdown == 3 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "3" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 2;
-			}
-			else if (countdown == 2 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "2" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				countdown = 1;
-			}
-			else if (countdown == 1 && time > stop_hunt_tick - sec)
-			{
-				broadcast(ChatManager.color + "The game will end in " + color + "1" + ChatManager.color + "...", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				stage = GameStage.DONE;
-				countdown = 100;
-			}
+			
 		}
 		else if (stage == GameStage.DONE) //---------------- GAME IS FINISHED --------------------
 		{

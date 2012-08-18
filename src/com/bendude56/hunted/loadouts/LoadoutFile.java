@@ -100,7 +100,9 @@ public class LoadoutFile extends Properties {
 			}
 		}
 		try {
-			load(new FileInputStream(file));
+			FileInputStream stream = new FileInputStream(file);
+			load(stream);
+			stream.close();
 		} catch (IOException e) {
 			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
@@ -185,8 +187,9 @@ public class LoadoutFile extends Properties {
 			}
 		}
 		try {
-			store(new FileOutputStream(file),
-					"- Manhunt " + loadout.name + " Loadout -");
+			FileOutputStream stream = new FileOutputStream(file);
+			store(stream, "- Manhunt " + loadout.name + " Loadout -");
+			stream.close();
 		} catch (IOException e) {
 			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");

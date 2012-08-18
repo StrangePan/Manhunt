@@ -175,7 +175,7 @@ public class CommandsSettings
 		
 		plugin.setMode(mode);
 		
-		sender.sendMessage(ChatManager.bracket1_ + "Manhunt mode set to " + mode + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.bracket1_ + "Manhunt mode set to " + ChatColor.BLUE + mode + ChatManager.bracket2_);
 	}
 
 }

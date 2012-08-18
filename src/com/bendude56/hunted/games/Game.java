@@ -1,6 +1,7 @@
 package com.bendude56.hunted.games;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -38,8 +39,8 @@ public class Game
 	private Long start_hunt_tick;
 	private Long stop_hunt_tick;
 	
-	public boolean freeze_hunters = false;
-	public boolean freeze_prey = false;
+	public Boolean freeze_hunters = false;
+	public Boolean freeze_prey = false;
 	
 	public Game(ManhuntPlugin plugin)
 	{
@@ -55,15 +56,22 @@ public class Game
 		Long start_setup_tick = world.getFullTime(); //Set up the start_setup_tick, giving it a baseline
 		start_setup_tick += (24000 - world.getTime()); //Calculating. Next day
 		start_setup_tick += (24000 - world.getTime() < pregame_length ? 24000 : 0); //If not enough time for pregame, start setup on next day
-		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value > 0 ? plugin.getSettings().SETUP_TIME.value : 0 * 1200); //Compensate for shorter setup times
+		start_setup_tick += 12000 - (plugin.getSettings().SETUP_TIME.value > 0 ? plugin.getSettings().SETUP_TIME.value * 1200 : 0); //Compensate for shorter setup times
 		this.start_setup_tick = start_setup_tick; //Save the start_setup_tick;
 		
 		Long start_hunt_tick = start_setup_tick; //Set up the start_hunt_tick, giving it a baseline
-		start_hunt_tick += plugin.getSettings().SETUP_TIME.value > 0 ? plugin.getSettings().SETUP_TIME.value : 0 * 1200;
+		start_hunt_tick += plugin.getSettings().SETUP_TIME.value > 0 ? plugin.getSettings().SETUP_TIME.value * 1200 : 0;
 		this.start_hunt_tick = start_hunt_tick; //Save the start_hunt_tick
 		
 		Long stop_hunt_tick = start_hunt_tick; //Set up the end_hunt_tick, giving it a baseline.
-		stop_hunt_tick += plugin.getSettings().DAY_LIMIT.value * 24000;
+		if (plugin.getSettings().DAY_LIMIT.value > 0)
+		{
+			stop_hunt_tick += plugin.getSettings().DAY_LIMIT.value * 24000;
+		}
+		else
+		{
+			stop_hunt_tick = (long) -1;
+		}
 		this.stop_hunt_tick = stop_hunt_tick; //Save the stop_hunt_tick
 		
 		this.gameevents = new GameEvents(this);
@@ -95,7 +103,7 @@ public class Game
 		}
 		else
 		{
-			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game has been stopped." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatManager.bracket1_ + "The Manhunt game " + ChatColor.RED + "has been stopped!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
 		
 		for (Player p : Bukkit.getOnlinePlayers())
@@ -283,7 +291,7 @@ public class Game
 			return GameStage.PREGAME;
 		if (time < start_hunt_tick)
 			return GameStage.SETUP;
-		if (time < stop_hunt_tick)
+		if (time < stop_hunt_tick || stop_hunt_tick < 0)
 			return GameStage.HUNT;
 		else
 			return GameStage.DONE;
