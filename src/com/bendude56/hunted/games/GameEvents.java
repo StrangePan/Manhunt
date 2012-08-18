@@ -110,6 +110,10 @@ public class GameEvents
 			else if (countdown == 13 && time > start_setup_tick - sec)
 			{
 				game.getPlugin().getTeams().removeOfflinePlayers();
+				if (game == null)
+				{
+					return;
+				}
 				
 				prepareAllPlayers();
 				if (game.getPlugin().getSettings().SETUP_TIME.value <= 0)
@@ -181,6 +185,10 @@ public class GameEvents
 			else if (countdown == 13 && time > start_hunt_tick - sec)
 			{
 				game.getPlugin().getTeams().removeOfflinePlayers();
+				if (game == null)
+				{
+					return;
+				}
 				
 				//TELEPORT HUNTERS TO HUNTER SPAWN
 				ManhuntUtil.sendTeamToLocation(Team.HUNTERS, game.getPlugin().getSettings().SPAWN_HUNTER.value.clone());
