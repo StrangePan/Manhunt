@@ -99,8 +99,12 @@ public class PlayerEventHandler implements Listener {
 		e.setQuitMessage(null);
 		
 		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
+		
+		if (team != null)
+		{
+			GameUtil.broadcast(ChatManager.leftborder + team.getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
+		}
 		
 		if (plugin.gameIsRunning())
 		{

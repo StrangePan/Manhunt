@@ -58,7 +58,7 @@ public class TeamManager
 			return;
 		}
 		
-		int preyCount = spectators.size() / 4;
+		int preyCount = (int) (Math.floor(spectators.size() / 4) + 1);
 		if (preyCount < 1) preyCount = 1;
 		
 		while (preyCount > 0 && spectators.size() > 0)

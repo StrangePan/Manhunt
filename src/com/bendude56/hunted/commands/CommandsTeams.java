@@ -118,10 +118,12 @@ public class CommandsTeams
 			if (plugin.getSettings().OP_CONTROL.value)
 			{
 				sender.sendMessage(CommandUtil.NO_PERMISSION);
+				return;
 			}
 			else if (plugin.locked)
 			{
 				sender.sendMessage(CommandUtil.LOCKED);
+				return;
 			}
 		}
 		
@@ -186,10 +188,12 @@ public class CommandsTeams
 			if (plugin.getSettings().OP_CONTROL.value)
 			{
 				sender.sendMessage(CommandUtil.NO_PERMISSION);
+				return;
 			}
 			else if (plugin.locked)
 			{
 				sender.sendMessage(CommandUtil.LOCKED);
+				return;
 			}
 		}
 		
@@ -254,10 +258,12 @@ public class CommandsTeams
 			if (plugin.getSettings().OP_CONTROL.value)
 			{
 				sender.sendMessage(CommandUtil.NO_PERMISSION);
+				return;
 			}
 			else if (plugin.locked)
 			{
 				sender.sendMessage(CommandUtil.LOCKED);
+				return;
 			}
 		}
 		

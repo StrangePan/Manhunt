@@ -96,7 +96,7 @@ public class CommandsSettings
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.BLUE + setting.label + " " + setting.formattedValue() + " " + setting.message());
 			
-			if (args[1].equalsIgnoreCase("intermission"))
+			if (args[1].equalsIgnoreCase("intermission") && ManhuntPlugin.getInstance().getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
 			{
 				ManhuntPlugin.getInstance().startIntermission(true);
 			}
