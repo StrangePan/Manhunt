@@ -111,7 +111,7 @@ public class EntityEventHandler implements Listener
 		{
 			return;
 		}
-		if (plugin.gameIsRunning())
+		if (plugin.gameIsRunning() && plugin.getGame().getStage() != GameStage.PREGAME)
 		{
 			if (e.getTarget() instanceof Player)
 			{
