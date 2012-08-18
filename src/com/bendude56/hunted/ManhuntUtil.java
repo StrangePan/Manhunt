@@ -356,6 +356,38 @@ public class ManhuntUtil {
 				|| type == EntityType.MUSHROOM_COW);
 	}
 
+	public static void sendTeamToLocation(Team team, Location loc)
+	{
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		
+		List<Player> players = plugin.getTeams().getTeamPlayers(team);
+		
+		int width = (int) Math.ceil(Math.sqrt(players.size()));
+		int playerIndex = 0;
+		
+		for (double xOffset = -(double)width/(double)2 ; xOffset <= (double)width/2 ; xOffset++)
+		{
+			for (double zOffset = -(double)width/(double)2 ; zOffset <= (double)width/2 ; zOffset++)
+			{
+				if (playerIndex >= players.size())
+				{
+					break;
+				}
+
+				Location l = loc.clone();
+				l.setX(l.getX() + xOffset);
+				l.setZ(l.getZ() + zOffset);
+				l = safeTeleport(loc);
+
+				Player player = players.get(playerIndex);
+				
+				player.teleport(l);
+				
+				playerIndex++;
+			}
+		}
+	}
+
 	public static void sendToSpawn(Player p)
 	{
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();

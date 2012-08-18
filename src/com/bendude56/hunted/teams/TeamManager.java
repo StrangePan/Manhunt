@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -95,6 +96,25 @@ public class TeamManager
 		{
 			changePlayerTeam(p, Team.HUNTERS);
 			p.sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.HUNTERS.getColor() + Team.HUNTERS.getName(true));
+		}
+	}
+	
+	public void removeOfflinePlayers()
+	{
+		Set<String> names = teams.keySet();
+		for (String s : names)
+		{
+			if (Bukkit.getPlayer(s) == null)
+			{
+				if (plugin.gameIsRunning())
+				{
+					plugin.getGame().onPlayerForfeit(s);
+				}
+				else
+				{
+					teams.remove(s);
+				}
+			}
 		}
 	}
 	

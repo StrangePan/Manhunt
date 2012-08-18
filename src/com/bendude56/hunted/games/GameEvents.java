@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -110,6 +109,8 @@ public class GameEvents
 			}
 			else if (countdown == 13 && time > start_setup_tick - sec)
 			{
+				game.getPlugin().getTeams().removeOfflinePlayers();
+				
 				prepareAllPlayers();
 				if (game.getPlugin().getSettings().SETUP_TIME.value <= 0)
 				{
@@ -179,15 +180,10 @@ public class GameEvents
 			}
 			else if (countdown == 13 && time > start_hunt_tick - sec)
 			{
+				game.getPlugin().getTeams().removeOfflinePlayers();
+				
 				//TELEPORT HUNTERS TO HUNTER SPAWN
-				List<Player> hunters = game.getPlugin().getTeams().getTeamPlayers(Team.HUNTERS);
-				for (Player p : hunters)
-				{
-					Location loc = game.getPlugin().getSettings().SPAWN_HUNTER.value.clone();
-					loc = ManhuntUtil.randomLocation(loc, Math.sqrt(hunters.size()));
-					loc = ManhuntUtil.safeTeleport(loc);
-					p.teleport(loc);
-				}
+				ManhuntUtil.sendTeamToLocation(Team.HUNTERS, game.getPlugin().getSettings().SPAWN_HUNTER.value.clone());
 				game.freeze_hunters = true;
 				
 				countdown = 10;
@@ -246,23 +242,6 @@ public class GameEvents
 		}
 		else if (stage == GameStage.HUNT)
 		{
-			if (dayCount < 0) // Day limit is off, so just add up the days left
-			{
-				if (time > start_hunt_tick + (Math.abs(dayCount)*24000))
-				{
-					broadcast(ChatManager.bracket1_ + "We are " + ChatColor.BLUE + (-dayCount) + (dayCount == -1 ? " day" : " days") + ChatManager.color + " into the hunt." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-					dayCount--;
-				}
-			}
-			else if (dayCount > 1)
-			{
-				if (time > stop_hunt_tick - (dayCount*24000))
-				{
-					broadcast(ChatManager.bracket1_ + "There are " + ChatColor.BLUE + dayCount + " days" + ChatManager.color + " left in the hunt." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-					dayCount--;
-				}
-			}
-			
 			if (countdown == 100 && time > start_hunt_tick)
 			{
 				broadcast(ChatManager.bracket1_ + color + "THE HUNT HAS STARTED! LET THE GAMES BEGIN!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
@@ -340,6 +319,22 @@ public class GameEvents
 				}
 			}
 			
+			if (dayCount < 0) // Day limit is off, so just add up the days left
+			{
+				if (time > start_hunt_tick + (Math.abs(dayCount)*24000))
+				{
+					broadcast(ChatManager.bracket1_ + "We are " + ChatColor.BLUE + (-dayCount) + (dayCount == -1 ? " day" : " days") + ChatManager.color + " into the hunt." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					dayCount--;
+				}
+			}
+			else if (dayCount > 1)
+			{
+				if (time > stop_hunt_tick - (dayCount*24000))
+				{
+					broadcast(ChatManager.bracket1_ + "There are " + ChatColor.BLUE + dayCount + " days" + ChatManager.color + " left in the hunt." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+					dayCount--;
+				}
+			}
 		}
 		else if (stage == GameStage.DONE) //---------------- GAME IS FINISHED --------------------
 		{
@@ -366,32 +361,16 @@ public class GameEvents
 		List<Player> hunters = game.getPlugin().getTeams().getTeamPlayers(Team.HUNTERS);
 		for (Player p : hunters)
 		{
-			Location loc;
-			if (game.getPlugin().getSettings().SETUP_TIME.value > 0)
-			{
-				loc = game.getPlugin().getSettings().SPAWN_SETUP.value.clone();
-			}
-			else
-			{
-				loc = game.getPlugin().getSettings().SPAWN_HUNTER.value.clone();
-			}
-			loc = ManhuntUtil.randomLocation(loc, 2);
-			loc = ManhuntUtil.safeTeleport(loc);
-			p.teleport(loc);
-
 			GameUtil.prepareForGame(p);
 		}
+		ManhuntUtil.sendTeamToLocation(Team.HUNTERS, game.getPlugin().getSettings().SETUP_TIME.value > 0 ? game.getPlugin().getSettings().SPAWN_SETUP.value.clone() : game.getPlugin().getSettings().SPAWN_HUNTER.value.clone());
 		
 		List<Player> prey = game.getPlugin().getTeams().getTeamPlayers(Team.PREY);
 		for (Player p : prey)
 		{
-			Location loc = game.getPlugin().getSettings().SPAWN_PREY.value.clone();
-			loc = ManhuntUtil.randomLocation(loc, Math.sqrt(prey.size()));
-			loc = ManhuntUtil.safeTeleport(loc);
-			p.teleport(loc);
-
 			GameUtil.prepareForGame(p);
 		}
+		ManhuntUtil.sendTeamToLocation(Team.PREY, game.getPlugin().getSettings().SPAWN_PREY.value.clone());
 		
 		List<Player> spectators = game.getPlugin().getTeams().getTeamPlayers(Team.SPECTATORS);
 		for (Player p : spectators)
