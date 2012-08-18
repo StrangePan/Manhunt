@@ -50,14 +50,20 @@ public class GameIntermission
 			if (plugin.getTeams().getAllPlayers(true).size() >= plugin.getSettings().MINIMUM_PLAYERS.value)
 			{
 				plugin.startGame();
+				close();
+				return;
 			}
-			else
+			//Basically, if one of the teams ends up being empty when the game starts, then cancel the game.
+			else if (plugin.getTeams().getTeamNames(Team.HUNTERS).size() + plugin.getTeams().getTeamNames(Team.SPECTATORS).size() == 0 || plugin.getTeams().getTeamNames(Team.PREY).size() + plugin.getTeams().getTeamNames(Team.SPECTATORS).size() == 0 || plugin.getTeams().getTeamNames(Team.HUNTERS).size() + plugin.getTeams().getTeamNames(Team.PREY).size() + plugin.getTeams().getTeamNames(Team.SPECTATORS).size() < 2)
 			{
 				GameUtil.broadcast(ChatManager.bracket1_ + ChatColor.RED + "There are not enough players to start the game." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				restartTime += 60000;
-				countdown = 1;
+				}
+			else
+			{
+				GameUtil.broadcast(ChatManager.bracket1_ + ChatColor.RED + "At least " + plugin.getSettings().MINIMUM_PLAYERS.value + " players are needed to start the game." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 			}
-			close();
+			restartTime += 60000;
+			countdown = 1;
 			
 		}
 	}

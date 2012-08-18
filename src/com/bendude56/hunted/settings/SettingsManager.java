@@ -92,7 +92,7 @@ public class SettingsManager
 		settings.add(OFFLINE_TIMEOUT = new Setting<Integer>("OfflineTimeout", 60, FILE_MAIN, "Seconds until offline players disqualify.", "Offline players will not disqualify."));
 		settings.add(DAY_LIMIT = new Setting<Integer>("DayLimit", 3, FILE_MAIN, "How many dats the game will last.", "The manhunt game will never end."));
 		settings.add(SETUP_TIME = new Setting<Integer>("SetupTime", 10, FILE_MAIN, "How many minutes the prey have to prepare.", "The game starts immediately with no setup."));
-		settings.add(INTERMISSION = new Setting<Integer>("Intermission", 10, FILE_MAIN, "Minutes between Manhunt games.", "No intermission between games."));
+		settings.add(INTERMISSION = new Setting<Integer>("Intermission", 10, FILE_MAIN, "Minutes between Manhunt games.", "One minute intermission between games. (minimum)"));
 		settings.add(MINIMUM_PLAYERS = new Setting<Integer>("MinimumPlayers", 4, FILE_MAIN, "Players needed to start a public game.", "No limit to number of players."));
 		
 		settings.add(PREY_FINDER = new Setting<Boolean>("PreyFinder", true, FILE_MAIN, "Hunters may use the Prey Finder.", "The compass is just a regular compass."));
