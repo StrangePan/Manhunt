@@ -365,9 +365,9 @@ public class ManhuntUtil {
 		int width = (int) Math.ceil(Math.sqrt(players.size()));
 		int playerIndex = 0;
 		
-		for (double xOffset = -(double)width/(double)2 ; xOffset <= (double)width/2 ; xOffset++)
+		for (double xOffset = -(((double)width) / ((double)2)) ; xOffset <= (((double)width) / ((double)2)) ; xOffset+=1)
 		{
-			for (double zOffset = -(double)width/(double)2 ; zOffset <= (double)width/2 ; zOffset++)
+			for (double zOffset = -(((double)width) / ((double)2)) ; zOffset <= (((double)width) / ((double)2)) ; zOffset+=1)
 			{
 				if (playerIndex >= players.size())
 				{
@@ -377,7 +377,7 @@ public class ManhuntUtil {
 				Location l = loc.clone();
 				l.setX(l.getX() + xOffset);
 				l.setZ(l.getZ() + zOffset);
-				l = safeTeleport(loc);
+				l = safeTeleport(l);
 
 				Player player = players.get(playerIndex);
 				

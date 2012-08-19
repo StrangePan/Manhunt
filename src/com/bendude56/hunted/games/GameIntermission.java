@@ -23,7 +23,7 @@ public class GameIntermission
 		this.plugin = plugin;
 		
 		int minutes = plugin.getSettings().INTERMISSION.value < 1 ? 1 : plugin.getSettings().INTERMISSION.value;
-		restartTime = new Date().getTime() + minutes * 60000;
+		restartTime = new Date().getTime() + minutes * 60000 + 7000;
 		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable()
 		{

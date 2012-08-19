@@ -9,7 +9,9 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
+import com.bendude56.hunted.games.GameUtil;
 import com.bendude56.hunted.settings.Setting;
+import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class CommandsSettings
 {
@@ -175,7 +177,7 @@ public class CommandsSettings
 		
 		plugin.setMode(mode);
 		
-		sender.sendMessage(ChatManager.bracket1_ + "Manhunt mode set to " + ChatColor.BLUE + mode + ChatManager.bracket2_);
+		GameUtil.broadcast(ChatManager.bracket1_ + "Manhunt mode set to " + ChatColor.BLUE + mode + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 	}
 
 }

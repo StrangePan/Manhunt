@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,7 +57,7 @@ public class TeamManager
 			return;
 		}
 		
-		int preyCount = (int) (Math.floor(spectators.size() / 4) + 1);
+		int preyCount = (int) ((Math.floor((double)spectators.size() / (double)4) + 1));
 		if (preyCount < 1) preyCount = 1;
 		
 		while (preyCount > 0 && spectators.size() > 0)
@@ -101,18 +100,22 @@ public class TeamManager
 	
 	public void removeOfflinePlayers()
 	{
-		Set<String> names = teams.keySet();
-		for (String s : names)
+		List<String> names = new ArrayList<String>();
+		for (String s : teams.keySet())
 		{
-			if (Bukkit.getPlayer(s) == null)
+			names.add(s);
+		}
+		for (String name : names)
+		{
+			if (Bukkit.getPlayer(name) == null)
 			{
 				if (plugin.gameIsRunning())
 				{
-					plugin.getGame().onPlayerForfeit(s);
+					plugin.getGame().onPlayerForfeit(name);
 				}
 				else
 				{
-					teams.remove(s);
+					teams.remove(name);
 				}
 			}
 		}

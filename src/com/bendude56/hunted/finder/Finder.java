@@ -65,8 +65,14 @@ public class Finder
 			Player p = Bukkit.getPlayer(player_name);
 			if (p != null)
 			{
+				if (p.getFoodLevel() < 4)
+				{
+					p.sendMessage(ChatManager.leftborder + ChatColor.RED + "You don't have enough food to power the finder!");
+					manager.stopFinder(this, true);
+				}
 				if (checkValidity())
 				{
+					p.setFoodLevel(p.getFoodLevel()-4);
 					FinderUtil.sendMessageFinderResults(p);
 				}
 			}

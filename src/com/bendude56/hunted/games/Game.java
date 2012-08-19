@@ -175,6 +175,9 @@ public class Game
 			p.hidePlayer(spectator);
 		}
 		
+		p.sendMessage(ChatManager.bracket1_ + "This server is running the Manhunt plugin." + ChatManager.bracket2_);
+		p.sendMessage(ChatManager.bracket1_ + "Type " + ChatColor.BLUE + "\"/m help\"" + ChatManager.color + " for commands, and " + ChatColor.BLUE + "\"/m rules\"" + ChatManager.color + " for rules." + ChatManager.bracket2_);
+		
 		timeouts.stopTimeout(p);
 		plugin.getTeams().saveOriginalPlayerState(p);
 		plugin.getTeams().restoreManhuntPlayerState(p);

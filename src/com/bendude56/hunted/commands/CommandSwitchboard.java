@@ -77,27 +77,27 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		//LOADOUT COMMANDS
 		
-		else if (arg.equalsIgnoreCase("listinv"))
+		else if (arg.equalsIgnoreCase("listinv") || arg.equalsIgnoreCase("invlist"))
 		{
 			CommandsLoadouts.onCommandListinv(sender, args);
 		}
-		else if (arg.equalsIgnoreCase("saveloadout") || arg.equalsIgnoreCase("saveinv") || arg.equalsIgnoreCase("newloadout") || arg.equalsIgnoreCase("newinv"))
+		else if (arg.equalsIgnoreCase("saveloadout") || arg.equalsIgnoreCase("saveinv") || arg.equalsIgnoreCase("newloadout") || arg.equalsIgnoreCase("newinv") || arg.equalsIgnoreCase("invsave") || arg.equalsIgnoreCase("invnew"))
 		{
 			CommandsLoadouts.onCommandNewinv(sender, args);
 		}
-		else if (arg.equalsIgnoreCase("loadloadout") || arg.equalsIgnoreCase("loadinv"))
+		else if (arg.equalsIgnoreCase("loadloadout") || arg.equalsIgnoreCase("loadinv") || arg.equalsIgnoreCase("invload"))
 		{
 			CommandsLoadouts.onCommandLoadinv(sender, args);
 		}
-		else if (arg.equalsIgnoreCase("deleteloadout") || arg.equalsIgnoreCase("delloadout") || arg.equalsIgnoreCase("delinv") || arg.equalsIgnoreCase("deleteinv"))
+		else if (arg.equalsIgnoreCase("deleteloadout") || arg.equalsIgnoreCase("delloadout") || arg.equalsIgnoreCase("delinv") || arg.equalsIgnoreCase("deleteinv") || arg.equalsIgnoreCase("invdelete") || arg.equalsIgnoreCase("invdel"))
 		{
 			CommandsLoadouts.onCommandDelinv(sender, args);
 		}
-		else if (arg.equalsIgnoreCase("hunterloadout") || arg.equalsIgnoreCase("hunterinv"))
+		else if (arg.equalsIgnoreCase("hunterloadout") || arg.equalsIgnoreCase("hunterinv") || arg.equalsIgnoreCase("invhunter"))
 		{
 			CommandsLoadouts.onCommandHunterinv(sender, args);
 		}
-		else if (arg.equalsIgnoreCase("preyloadout") || arg.equalsIgnoreCase("preyinv"))
+		else if (arg.equalsIgnoreCase("preyloadout") || arg.equalsIgnoreCase("preyinv") || arg.equalsIgnoreCase("invprey"))
 		{
 			CommandsLoadouts.onCommandPreyinv(sender, args);
 		}
@@ -112,7 +112,7 @@ public class CommandSwitchboard implements CommandExecutor
 		{
 			CommandsTeams.onCommandPrey(sender, args);
 		}
-		else if (arg.equalsIgnoreCase("spectator"))
+		else if (arg.equalsIgnoreCase("spectator") || arg.equalsIgnoreCase("spectate"))
 		{
 			CommandsTeams.onCommandSpectate(sender, args);
 		}
