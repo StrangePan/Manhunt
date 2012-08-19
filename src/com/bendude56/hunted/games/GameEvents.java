@@ -31,6 +31,7 @@ public class GameEvents
 	
 	private Integer countdown;
 	private Integer dayCount;
+	private Integer minuteCount;
 	private GameStage stage;
 	private ChatColor color = ChatColor.BLUE;
 	
@@ -54,6 +55,8 @@ public class GameEvents
 		this.stage = GameStage.PREGAME;
 		this.countdown = 25;
 		this.dayCount = stop_hunt_tick > 0 ? game.getPlugin().getSettings().DAY_LIMIT.value : -1;
+		
+		this.minuteCount = game.getPlugin().getSettings().SETUP_TIME.value;
 		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
@@ -156,6 +159,11 @@ public class GameEvents
 		}
 		else if (stage == GameStage.SETUP) //---------------- SETUP STAGE --------------------
 		{
+			if (minuteCount > 1 && time > start_hunt_tick - minuteCount)
+			{
+				broadcast(ChatManager.bracket1_ + "The hunt will start in " + color + minuteCount + " minutes" + ChatManager.color + "." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+				minuteCount --;
+			}
 			if (countdown == 100 && time > start_setup_tick)
 			{
 				if (time < start_hunt_tick - 1200)
