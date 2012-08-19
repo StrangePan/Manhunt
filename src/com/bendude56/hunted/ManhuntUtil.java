@@ -362,12 +362,12 @@ public class ManhuntUtil {
 		
 		List<Player> players = plugin.getTeams().getTeamPlayers(team);
 		
-		int width = (int) Math.ceil(Math.sqrt(players.size()));
+		int width = (int) Math.ceil(Math.sqrt(players.size()))-1;
 		int playerIndex = 0;
 		
-		for (double xOffset = -(((double)width) / ((double)2)) ; xOffset <= (((double)width) / ((double)2)) ; xOffset+=1)
+		for (double xOffset = -(double)width / (double)2 ; xOffset <= (double)width / (double)2 ; xOffset+=1)
 		{
-			for (double zOffset = -(((double)width) / ((double)2)) ; zOffset <= (((double)width) / ((double)2)) ; zOffset+=1)
+			for (double zOffset = -(double)width / (double)2 ; zOffset <= (double)width / (double)2 ; zOffset+=1)
 			{
 				if (playerIndex >= players.size())
 				{

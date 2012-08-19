@@ -159,7 +159,7 @@ public class GameEvents
 		}
 		else if (stage == GameStage.SETUP) //---------------- SETUP STAGE --------------------
 		{
-			if (minuteCount > 1 && time > start_hunt_tick - minuteCount)
+			if (minuteCount > 1 && time > start_hunt_tick - minuteCount*1200)
 			{
 				broadcast(ChatManager.bracket1_ + "The hunt will start in " + color + minuteCount + " minutes" + ChatManager.color + "." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				minuteCount --;
