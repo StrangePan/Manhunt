@@ -87,18 +87,34 @@ public class CommandsHelp
 	
 	public static void onCommandRules(CommandSender sender)
 	{
+		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
 		String header = ChatManager.color + ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Rules" + ChatManager.color + ChatManager.bracket2_;
 		ChatColor color = ChatColor.WHITE;
 		String pre = ChatManager.leftborder + color;
-		String hunters = TeamUtil.getTeamColor(Team.HUNTERS) + TeamUtil.getTeamName(Team.HUNTERS, true) + color;
-		String prey = TeamUtil.getTeamColor(Team.PREY) + TeamUtil.getTeamName(Team.PREY, false) + color;
+		String hunters = Team.HUNTERS.getColor() + Team.HUNTERS.getName(true) + color;
+		String prey = Team.PREY.getColor() + Team.PREY.getName(true) + color;
 		
 		sender.sendMessage(header);
 		
-		sender.sendMessage(pre + "Manhunt players are divided into two teams: " + hunters + " and " + prey + ".");
-		sender.sendMessage(pre + "The rules are simple: The " + hunters + " must hunt the " + prey + ", who must survive.");
-		sender.sendMessage(pre + "The " + prey + " have until sundown to prepare for the hunt.");
-		sender.sendMessage(pre + "That's it! Type " + ChatColor.GREEN + "/m settings" + color + " for more info.");
+		sender.sendMessage(pre + "Players are divided into two teams: " + hunters + " and " + prey + ".");
+		sender.sendMessage(pre + "The " + prey + " have " + plugin.getSettings().SETUP_TIME.value + " minutes to prepare,");
+		if (plugin.getSettings().DAY_LIMIT.value > 0)
+		{
+			sender.sendMessage(pre + " and the " + hunters + " have " + ChatColor.BLUE + plugin.getSettings().DAY_LIMIT.value + " days " + color + "to kill them.");
+		}
+		else
+		{
+			sender.sendMessage(pre + " and the " + hunters + " have " + ChatColor.BLUE + " unlimited days " + color + "to kill them.");
+		}
+		if (plugin.getSettings().PREY_FINDER.value)
+		{
+			sender.sendMessage(pre + ChatColor.GREEN + "ProTip: " + color + "Right-click with a compass to find out where the nearest enemy is.");
+		}
+		if (plugin.getSettings().NORTH_COMPASS.value)
+		{
+			sender.sendMessage(pre + ChatColor.GREEN + "ProTip: " + color + "The compass always points true north.");
+		}
+		sender.sendMessage(pre + "Type " + ChatColor.GREEN + "/m settings" + color + " for detailed setting info.");
 		sender.sendMessage(ChatManager.divider);
 	}
 	
