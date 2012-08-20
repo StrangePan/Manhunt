@@ -39,7 +39,7 @@ public class CommandsHelp
 			page = max_page;
 		}
 		
-		String header = ChatManager.color + ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Command Help (page " + page + "/" + max_page + ")" + ChatManager.color + ChatManager.bracket2_;
+		String header = ChatManager.color + ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Commands (page " + page + "/" + max_page + ") " + ChatColor.UNDERLINE + "http://bit.ly/OOZJNo" + ChatColor.RESET + ChatManager.color + ChatManager.bracket2_;
 		String cmdColor = ChatManager.leftborder + ChatColor.RED;
 		String cmdDesc = ChatColor.GREEN + " ";
 		
@@ -88,7 +88,7 @@ public class CommandsHelp
 	public static void onCommandRules(CommandSender sender)
 	{
 		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
-		String header = ChatManager.color + ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Rules" + ChatManager.color + ChatManager.bracket2_;
+		String header = ChatManager.color + ChatManager.bracket1_ + ChatColor.GREEN + "Manhunt Rules " + ChatColor.UNDERLINE + "http://bit.ly/PxQPjy" + ChatColor.RESET + ChatManager.color + ChatManager.bracket2_;
 		ChatColor color = ChatColor.WHITE;
 		String pre = ChatManager.leftborder + color;
 		String hunters = Team.HUNTERS.getColor() + Team.HUNTERS.getName(true) + color;
@@ -123,6 +123,7 @@ public class CommandsHelp
 		PluginDescriptionFile desc = ManhuntPlugin.getInstance().getDescription();
 		sender.sendMessage(ChatManager.divider);
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + desc.getName() + " " + desc.getVersion() + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + "For more info, visit " + ChatColor.UNDERLINE + "http://bit.ly/Nb9sh0");
 		sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + "Written by Deaboy. " + ChatColor.UNDERLINE + "http://youtube.com/fearofmobs");
 		sender.sendMessage(ChatManager.divider);
 	}
