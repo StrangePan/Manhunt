@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
@@ -16,15 +17,22 @@ public class FinderUtil {
 	public static void sendMessageNoOnlinePrey(Player p)
 	{
 		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
+		Team t;
 		
 		if (teams.getTeamOf(p) == Team.HUNTERS)
 		{
-			p.sendMessage(ChatColor.RED + "There are no prey online! :(");
+			t = Team.PREY;
 		}
 		else if (teams.getTeamOf(p) == Team.PREY)
 		{
-			p.sendMessage(ChatColor.RED + "There are no hunters online! :(");
+			t = Team.HUNTERS;
 		}
+		else
+		{
+			return;
+		}
+		
+		p.sendMessage(ChatColor.RED + "There are no " + t.getColor() + t.getName(true) + ChatColor.RED + " online! :(");
 	}
 
 	public static void sendMessageFinderInitialize(Player p)
@@ -145,17 +153,17 @@ public class FinderUtil {
 			relative_direction = "ahead of you";
 		
 		//SEND THE ACTUAL RESULT
+		Team t1, t2;
+		
 		if (teams.getTeamOf(p) == Team.HUNTERS)
 		{
-			p.sendMessage(ChatColor.GOLD + "The nearest " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " is " + ChatColor.BLUE + direction + ChatColor.GOLD + " of you! (Somehere " + ChatColor.BLUE + relative_direction + ChatColor.GOLD + ".)");
-			enemy.sendMessage(ChatColor.GOLD + "--[   " + ChatColor.RED + "A " + ChatColor.DARK_RED + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatColor.GOLD + "   ]---");
-			return;
+			t1 = Team.HUNTERS;
+			t2 = Team.PREY;
 		}
 		else if (teams.getTeamOf(p) == Team.PREY)
 		{
-			p.sendMessage(ChatColor.GOLD + "The nearest " + ChatColor.DARK_RED + "Hunter" + ChatColor.GOLD + " is " + ChatColor.DARK_RED + direction + ChatColor.GOLD + " of you! (Somehere " + ChatColor.DARK_RED + relative_direction + ChatColor.GOLD + ".)");
-			enemy.sendMessage(ChatColor.GOLD + "--[   " + ChatColor.RED + "A " + ChatColor.BLUE + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatColor.GOLD + "   ]---");
-			return;
+			t1 = Team.PREY;
+			t2 = Team.HUNTERS;
 		}
 		else
 		{
@@ -163,6 +171,70 @@ public class FinderUtil {
 			return;
 		}
 		
+		if (p.getFoodLevel() >= 4) p.setFoodLevel(p.getFoodLevel()-4);
+		p.sendMessage(ChatManager.color + "The nearest " + t2.getColor() + t2.getName(false) + ChatManager.color + " is " + t2.getColor() + direction + ChatManager.color + " of you! (Somehere " + t2.getColor() + relative_direction + ChatManager.color + ".)");
+		enemy.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "A " + t1.getColor() + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatManager.bracket2_);
+		return;
+		
+	}
+
+	/**
+	 * Tells the player they've found the enemy and points their
+	 * compass towards the enemy. Alerts the enemy that a PreyFinder
+	 * has gotten their location.
+	 * @param p
+	 */
+	public static void findNearestEnemy(Player p)
+	{
+		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
+		Team t1, t2;
+		
+		//GET ALL ENEMIES
+		List<Player> enemies;
+		
+		if (teams.getTeamOf(p) == Team.HUNTERS)
+		{
+			t1 = Team.HUNTERS;
+			t2 = Team.PREY;
+		}
+		else if (teams.getTeamOf(p) == Team.PREY)
+		{
+			t1 = Team.PREY;
+			t2 = Team.HUNTERS;
+		}
+		else
+		{
+			return;
+		}
+		enemies = teams.getTeamPlayers(t2);
+		
+		//GET NEAREST ENEMY and the DISTANCE TO THEM
+		Player enemy = null;
+		double distance = -1;
+		
+		for (Player e : enemies)
+		{
+			double d = ManhuntUtil.getDistance(p, e, true);
+			
+			if (distance == -1 || d < distance)
+			{
+				distance = d;
+				enemy = e;
+			}
+		}
+		
+		//SEND PREEMPTIVE MESSAGES
+		if (enemy == null)
+		{
+			sendMessageNoOnlinePrey(p);
+			return;
+		}
+		else
+		{
+			p.setCompassTarget(enemy.getLocation());
+			p.sendMessage(ChatManager.bracket1_ + "The nearest " + t2.getColor() + t2.getName(false) + ChatManager.color + " has been found!" + ChatManager.bracket2_);
+			enemy.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "A " + t1.getColor() + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatManager.bracket2_);
+		}
 	}
 
 }

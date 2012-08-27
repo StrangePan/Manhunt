@@ -110,10 +110,10 @@ public class CommandsHelp
 		{
 			sender.sendMessage(pre + ChatColor.GREEN + "ProTip: " + color + "Right-click with a compass to find out where the nearest enemy is.");
 		}
-		if (plugin.getSettings().NORTH_COMPASS.value)
-		{
-			sender.sendMessage(pre + ChatColor.GREEN + "ProTip: " + color + "The compass always points true north.");
-		}
+		//if (plugin.getSettings().NORTH_COMPASS.value)
+		//{
+		//	sender.sendMessage(pre + ChatColor.GREEN + "ProTip: " + color + "The compass always points true north.");
+		//}
 		sender.sendMessage(pre + "Type " + ChatColor.GREEN + "/m settings" + color + " for detailed setting info.");
 		sender.sendMessage(ChatManager.divider);
 	}

@@ -43,7 +43,7 @@ public class SettingsManager
 	public final Setting<Boolean> PASSIVE_MOBS;
 	public final Setting<Boolean> HOSTILE_MOBS;
 	public final Setting<Boolean> PREY_FINDER;
-	public final Setting<Boolean> NORTH_COMPASS;
+	//public final Setting<Boolean> NORTH_COMPASS;
 	public final Setting<Integer> FINDER_COOLDOWN;
 	
 	public final Setting<Integer> OFFLINE_TIMEOUT;
@@ -97,7 +97,7 @@ public class SettingsManager
 		
 		settings.add(PREY_FINDER = new Setting<Boolean>("PreyFinder", true, FILE_MAIN, "Hunters may use the Prey Finder.", "The compass is just a regular compass."));
 		settings.add(FINDER_COOLDOWN = new Setting<Integer>("FinderCooldown", 180, FILE_MAIN, "Seconds until the PreyFinder is ready.", "The PreyFinder has no cooldown delay."));
-		settings.add(NORTH_COMPASS = new Setting<Boolean>("NorthCompass", true, FILE_MAIN, "Compasses will always point north.", "Compasses will always point towards spawn."));
+		//settings.add(NORTH_COMPASS = new Setting<Boolean>("NorthCompass", true, FILE_MAIN, "Compasses will always point north.", "Compasses will always point towards spawn."));
 		
 		this.world_path = (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt";
 		files.add(FILE_WORLD = new SettingsFile("World Config", world_path, "Config"));

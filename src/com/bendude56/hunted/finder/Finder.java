@@ -72,8 +72,8 @@ public class Finder
 				}
 				if (checkValidity())
 				{
-					p.setFoodLevel(p.getFoodLevel()-4);
-					FinderUtil.sendMessageFinderResults(p);
+					// FinderUtil.sendMessageFinderResults(p);
+					FinderUtil.findNearestEnemy(p);
 				}
 			}
 			else
