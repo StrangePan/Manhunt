@@ -263,6 +263,7 @@ public class GameEvents
 				broadcast(ChatManager.bracket1_ + color + "THE HUNT HAS STARTED! LET THE GAMES BEGIN!" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 				game.freeze_prey = false;
 				game.freeze_hunters = false;
+				world.setPVP(true);
 				countdown = 90;
 			}
 			else if (stop_hunt_tick > 0)
