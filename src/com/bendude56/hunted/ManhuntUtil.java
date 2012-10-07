@@ -387,6 +387,41 @@ public class ManhuntUtil {
 			}
 		}
 	}
+	
+	public static void sendAllPlayersToWorldSpawn()
+	{
+ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		
+		List<Player> players;
+		players = plugin.getTeams().getTeamPlayers(Team.HUNTERS);
+		players.addAll(plugin.getTeams().getTeamPlayers(Team.PREY));
+		players.addAll(plugin.getTeams().getTeamPlayers(Team.SPECTATORS));
+		
+		int width = (int) Math.ceil(Math.sqrt(players.size()))-1;
+		int playerIndex = 0;
+		
+		for (double xOffset = -(double)width / (double)2 ; xOffset <= (double)width / (double)2 ; xOffset+=1)
+		{
+			for (double zOffset = -(double)width / (double)2 ; zOffset <= (double)width / (double)2 ; zOffset+=1)
+			{
+				if (playerIndex >= players.size())
+				{
+					break;
+				}
+
+				Location l = ManhuntPlugin.getInstance().getWorld().getSpawnLocation();
+				l.setX(l.getX() + xOffset);
+				l.setZ(l.getZ() + zOffset);
+				l = safeTeleport(l);
+
+				Player player = players.get(playerIndex);
+				
+				player.teleport(l);
+				
+				playerIndex++;
+			}
+		}
+	}
 
 	public static void sendToSpawn(Player p)
 	{

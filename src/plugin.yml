@@ -3,6 +3,7 @@ version: 1.2
 main: com.bendude56.hunted.ManhuntPlugin
 website: github.com/BenCmd/HuntedPlugin
 author: Deaboy
+soft-depend: [Amber]
 commands:
     manhunt:
         usage:

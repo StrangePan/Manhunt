@@ -52,6 +52,7 @@ public class SettingsManager
 	public final Setting<Integer> INTERMISSION;
 	public final Setting<Integer> MINIMUM_PLAYERS;
 	
+	public final Setting<Boolean> RESTORE_WORLD;
 	public final Setting<Integer> BOUNDARY_WORLD;
 	public final Setting<Integer> BOUNDARY_SETUP;
 	public final Setting<Integer> SPAWN_PROTECTION;
@@ -102,6 +103,7 @@ public class SettingsManager
 		this.world_path = (Bukkit.getWorld(WORLD.value) == null ? Bukkit.getWorlds().get(0).getName() : WORLD.value) + "/Manhunt";
 		files.add(FILE_WORLD = new SettingsFile("World Config", world_path, "Config"));
 		
+		settings.add(RESTORE_WORLD = new Setting<Boolean>("RestoreWorld", true, FILE_WORLD, "Automatically restore the world after each game using Amber.", "Does not use the Amber plugin."));
 		settings.add(BOUNDARY_WORLD = new Setting<Integer>("WorldBoundary", 128, FILE_WORLD, "Blocks players may roam during the hunt.", "There is no boundary around the world."));
 		settings.add(BOUNDARY_SETUP = new Setting<Integer>("SetupBoundary", 16, FILE_WORLD, "Blocks Hunters are confined to.", "The hunters are not constrained during setup."));
 		settings.add(SPAWN_PROTECTION = new Setting<Integer>("SpawnProtection", 24, FILE_WORLD, "The protected region around the spawns.", "The spawn points are not protected."));

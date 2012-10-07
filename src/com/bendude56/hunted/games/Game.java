@@ -18,6 +18,7 @@ import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.timeouts.TimeoutManager;
+import com.deaboy.amber.Amber;
 
 /**
  * This class is a persistent class that manages a Manhunt game.
@@ -81,13 +82,20 @@ public class Game
 		
 		// Save the world's original pvp setting.
 		world_pvp = world.getPVP();
+		
+		// Record the World using AMBER
+		if (Bukkit.getPluginManager().isPluginEnabled("Amber") && plugin.getSettings().RESTORE_WORLD.value)
+		{
+			Amber.startRecordingWorld(world);
+		}
 	}
 
 	/**
 	 * Stops the Manhunt Game. Private, because only other in-class
 	 * public methods may stop this game.
 	 */
-	public void stopGame(boolean announceWinners) {
+	public void stopGame(boolean announceWinners)
+	{
 		if (announceWinners)
 		{
 			int hunterCount = plugin.getTeams().getTeamNames(Team.HUNTERS).size();
@@ -113,6 +121,11 @@ public class Game
 		for (Player p : Bukkit.getOnlinePlayers())
 		{
 			GameUtil.makeVisible(p);
+			
+			if (p.getWorld() == world)
+			{
+				p.teleport(world.getSpawnLocation());
+			}
 		}
 		
 
@@ -136,6 +149,13 @@ public class Game
 		}
 		
 		world.setPVP(world_pvp);
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("Amber") && plugin.getSettings().RESTORE_WORLD.value)
+		{
+			GameUtil.broadcast(ChatManager.bracket1_ + "RESTORING WORLD \'" + world.getName() + "\'..." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS, Team.NONE);
+			Amber.startRestoringWorld(world);
+		}
+		
 		close();
 	}
 

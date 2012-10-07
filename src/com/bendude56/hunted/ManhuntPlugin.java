@@ -42,7 +42,6 @@ public class ManhuntPlugin extends JavaPlugin {
 	public void onEnable()
 	{
 		//Start up all the classes.
-
 		settings =	new SettingsManager();
 		
 		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
@@ -101,6 +100,7 @@ public class ManhuntPlugin extends JavaPlugin {
 			{
 				getTeams().randomizeTeams();
 				game = new Game(this);
+				cancelIntermission();
 			}
 		}
 		else
