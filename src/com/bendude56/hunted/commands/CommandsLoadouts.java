@@ -190,7 +190,7 @@ public class CommandsLoadouts
 		
 		LoadoutUtil.clearInventory(p.getInventory());
 		p.getInventory().setContents(loadout.getContents());
-		p.getInventory().setArmorContents(loadout.getArmor());
+		p.getInventory().setArmorContents(loadout.getArmorContents());
 		p.sendMessage(ChatColor.GREEN + "Loadout \"" + loadout.name + "\" has been loaded.");
 	}
 

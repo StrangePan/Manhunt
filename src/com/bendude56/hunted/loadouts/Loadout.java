@@ -12,12 +12,21 @@ public class Loadout
 	public final String filename;
 	public final String fullpath;
 	
+	// -------- Legacy Filetype Paths -------- //
+	public final String fullpath_inv;
+	
+	
 	public Loadout(String name, String directory)
 	{
 		this.name = name;
 		this.directory = directory;
-		this.filename = name + ".inv";
+		this.filename = name + ".dat";
 		this.fullpath = this.directory + "/" + this.filename;
+		
+		this.fullpath_inv = this.directory + "/" + this.name + ".inv";
+		
+		this.contents = new ItemStack[36];
+		this.armor = new ItemStack[4];
 		
 		load();
 	}
@@ -26,8 +35,10 @@ public class Loadout
 	{
 		this.name = name;
 		this.directory = directory;
-		this.filename = name + ".inv";
+		this.filename = name + ".dat";
 		this.fullpath = this.directory + "/" + this.filename;
+
+		this.fullpath_inv = this.directory + "/" + this.name + ".inv";
 		
 		setContents(contents, armor);
 		
@@ -40,7 +51,9 @@ public class Loadout
 		this.directory = null;
 		this.filename = null;
 		this.fullpath = null;
-
+		
+		this.fullpath_inv = null;
+		
 		setContents(contents, armor);
 	}
 
@@ -82,7 +95,7 @@ public class Loadout
 		return contents;
 	}
 	
-	public ItemStack[] getArmor()
+	public ItemStack[] getArmorContents()
 	{
 		ItemStack[] armor = new ItemStack[this.armor.length];
 		
@@ -101,7 +114,7 @@ public class Loadout
 	{
 		if (name != null)
 		{
-			(new LoadoutFile(this)).save();
+			LoadoutFile.save(this);
 		}
 	}
 	
@@ -109,7 +122,7 @@ public class Loadout
 	{
 		if (name != null)
 		{
-			(new LoadoutFile(this)).load();
+			LoadoutFile.load(this);
 		}
 	}
 	
@@ -117,7 +130,7 @@ public class Loadout
 	{
 		if (name != null)
 		{
-			return (new LoadoutFile(this)).delete();
+			return LoadoutFile.delete(this);
 		}
 		else
 		{

@@ -9,7 +9,7 @@ public class LoadoutUtil {
 	public static void setPlayerInventory(Player p, Loadout l)
 	{
 		p.getInventory().setContents(l.getContents());
-		p.getInventory().setArmorContents(l.getArmor());
+		p.getInventory().setArmorContents(l.getArmorContents());
 	}
 
 	public static void clearInventory(Inventory inv)

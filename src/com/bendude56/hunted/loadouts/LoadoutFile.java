@@ -4,193 +4,179 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
+import net.minecraft.server.NBTTagCompound;
+
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+import org.jnbt.CompoundTag;
+import org.jnbt.NBTInputStream;
+import org.jnbt.NBTOutputStream;
+import org.jnbt.Tag;
+import org.jnbt.TagType;
 
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.loadouts.models.SimpleItem;
+import com.bendude56.hunted.loadouts.models.SimpleLoadout;
 
-public class LoadoutFile extends Properties {
-
-	private static final long serialVersionUID = 1007071207737225723L;
-
-	private Loadout loadout;
+public class LoadoutFile
+{
 	
-	public LoadoutFile(Loadout loadout)
+	public static void load(Loadout loadout)
 	{
-		this.loadout = loadout;
-	}
-	
-	public void load()
-	{
-		loadFile();
+		if (new File(loadout.fullpath_inv).exists())
+		{
+			OldLoadoutFile oldfile = new OldLoadoutFile(loadout);
+			oldfile.load();
+			oldfile.delete();
+			oldfile.close();
+			return;
+		}
+		
+		SimpleLoadout sloadout = loadFile(loadout);
+		
+		if (sloadout == null)
+			return;
 		
 		ItemStack[] contents = new ItemStack[36];
 		ItemStack[] armor = new ItemStack[4];
 		
-		for (Object object : keySet())
+		for (SimpleItem item : sloadout.inventory)
 		{
-			String slot = (String) object;
+			CompoundTag ctag = CompoundTag.fromObject(item);
+			NBTTagCompound nbttag = ctag.toNBTTag();
+			net.minecraft.server.ItemStack mcstack = net.minecraft.server.ItemStack.a(nbttag);
+			ItemStack stack = new CraftItemStack(mcstack);
 			
-			try
-			{
-				String property = getProperty(slot);
-				
-				String[] parts = property.split(";");
-				
-				int amount = Integer.parseInt(parts[0]);
-				int type = Integer.parseInt(parts[1]);
-				short durability = Short.parseShort(parts[2]);
-				
-				Map<Enchantment, Integer> enchantments = new HashMap<Enchantment, Integer>();
-				
-				if (parts.length > 3)
-				{
-					for (String enchantment : parts[3].split(":"))
-					{
-						enchantments.put(Enchantment.getById(Integer.parseInt(enchantment.split(",")[0])), Integer.parseInt(enchantment.split(",")[1]));
-					}
-				}
-				
-				ItemStack item = new ItemStack(Material.getMaterial(type));
-				item.setAmount(amount);
-				item.setDurability(durability);
-				item.addEnchantments(enchantments);
-				
-				try
-				{
-					if (slot.startsWith("a"))
-					{
-						armor[Integer.parseInt(slot.substring(1))] =  item;
-					}
-					else if (slot.startsWith("c"))
-					{
-						contents[Integer.parseInt(slot.substring(1))] = item;
-					}
-				}
-				catch (Exception e) {}
-				
-			}
-			catch (Exception e) {}
-			
+			contents[item.Slot] = stack;
 		}
 		
-		this.loadout.setContents(contents, armor);
+		for (SimpleItem item : sloadout.armor)
+		{
+			CompoundTag ctag = CompoundTag.fromObject(item);
+			NBTTagCompound nbttag = ctag.toNBTTag();
+			net.minecraft.server.ItemStack mcstack = net.minecraft.server.ItemStack.a(nbttag);
+			ItemStack stack = new CraftItemStack(mcstack);
+			
+			armor[item.Slot] = stack;
+		}
+		
+		loadout.setContents(contents, armor);
 	}
 	
-	private void loadFile()
+	private static SimpleLoadout loadFile(Loadout loadout)
 	{
 		File file = new File(loadout.fullpath);
 		File dir = new File(loadout.directory);
-		if (!dir.exists()) {
+		
+		if (!dir.exists())
+		{
 			dir.mkdir();
 		}
-		if (!file.exists()) {
-			try {
+		if (!file.exists())
+		{
+			try
+			{
 				file.createNewFile();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				ManhuntPlugin.getInstance().log(Level.SEVERE,
 						"Problem loading the Manhunt loadout \"" + loadout.name + "\"!");
-				return;
+				return null;
 			}
 		}
-		try {
-			FileInputStream stream = new FileInputStream(file);
-			load(stream);
+		try
+		{
+			NBTInputStream stream = new NBTInputStream(new FileInputStream(file));
+			Tag tag = stream.readTag();
 			stream.close();
-		} catch (IOException e) {
+			
+			if (tag.getTagType() != TagType.COMPOUND)
+				return null;
+			
+			SimpleLoadout l = new SimpleLoadout();
+			((CompoundTag) tag).toObject(l);
+			
+			return l;
+		}
+		catch (IOException e)
+		{
 			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
 			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
-			return;
+			return null;
 		}
 	}
 	
-	public void save()
+	public static void save(Loadout loadout)
 	{
 		ItemStack[] contents = loadout.getContents();
-		ItemStack[] armour = loadout.getArmor();
+		ItemStack[] armor = loadout.getArmorContents();
+		SimpleLoadout sloadout = new SimpleLoadout();
 		
-		clear();
-		for (Integer slot = 0; slot < contents.length; slot++)
+		for (int i = 0; i < contents.length && i < 36; i++)
 		{
-			String property = "";
+			if (contents[i] == null)
+				continue;
 			
-			try
-			{
-				property += contents[slot].getAmount();
-				property += ";";
-				property += contents[slot].getTypeId();
-				property += ";";
-				property += contents[slot].getDurability();
-				property += ";";
-				for (Enchantment enchantment : contents[slot].getEnchantments().keySet())
-				{
-					property += enchantment.getId();
-					property += ",";
-					property += contents[slot].getEnchantments().get(enchantment);
-					property += ":";
-				}
-			}
-			catch (Exception e) {}
+			NBTTagCompound nbttag = ((CraftItemStack) contents[i]).getHandle().getTag();
+			CompoundTag ctag = CompoundTag.fromNBTTag(nbttag);
+			SimpleItem sitem = new SimpleItem();
+			ctag.toObject(sitem);
+			sitem.Slot = (byte) i;
 			
-			put("c" + slot.toString(), property);
-		}
-		for (Integer slot = 0; slot < armour.length; slot++)
-		{
-			String property = "";
-			
-			try
-			{
-				property += armour[slot].getAmount();
-				property += ";";
-				property += armour[slot].getTypeId();
-				property += ";";
-				property += armour[slot].getDurability();
-				property += ";";
-				for (Enchantment enchantment : armour[slot].getEnchantments().keySet())
-				{
-					property += enchantment.getId();
-					property += ",";
-					property += armour[slot].getEnchantments().get(enchantment);
-					property += ":";
-				}
-			}
-			catch (Exception e) {}
-			
-			put("a" + slot.toString(), property);
+			sloadout.inventory.add(sitem);
 		}
 		
-		saveFile();
+		for (int i = 0; i < armor.length && i < 4; i++)
+		{
+			if (armor[i] == null)
+				continue;
+			
+			NBTTagCompound nbttag = ((CraftItemStack) armor[i]).getHandle().getTag();
+			CompoundTag ctag = CompoundTag.fromNBTTag(nbttag);
+			SimpleItem sitem = new SimpleItem();
+			ctag.toObject(sitem);
+			sitem.Slot = (byte) i;
+			
+			sloadout.inventory.add(sitem);
+		}
+		
+		saveFile(loadout, sloadout);
 	}
 	
-	private void saveFile()
+	private static void saveFile(Loadout loadout, SimpleLoadout sloadout)
 	{
 		File file = new File(loadout.fullpath);
 		File dir = new File(loadout.directory);
-		if (!dir.exists()) {
+		
+		if (!dir.exists())
+		{
 			dir.mkdir();
 		}
-		if (!file.exists()) {
-			try {
+		if (!file.exists())
+		{
+			try
+			{
 				file.createNewFile();
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 				ManhuntPlugin.getInstance().log(Level.SEVERE,
 						"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
 				ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
 				return;
 			}
 		}
-		try {
-			FileOutputStream stream = new FileOutputStream(file);
-			store(stream, "- Manhunt " + loadout.name + " Loadout -");
+		try
+		{
+			NBTOutputStream stream = new NBTOutputStream(new FileOutputStream(file));
+			stream.writeTag(CompoundTag.fromObject(sloadout));
 			stream.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			ManhuntPlugin.getInstance().log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
 			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
@@ -198,7 +184,7 @@ public class LoadoutFile extends Properties {
 		}
 	}
 	
-	public boolean delete()
+	public static boolean delete(Loadout loadout)
 	{
 		File file = new File(loadout.fullpath);
 		if (file.exists())
