@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.games.GameUtil;
+import com.bendude56.hunted.game.GameUtil;
 import com.bendude56.hunted.teams.TeamManager;
 import com.bendude56.hunted.teams.TeamManager.Team;
 import com.bendude56.hunted.teams.TeamUtil;

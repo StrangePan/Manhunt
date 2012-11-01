@@ -1,4 +1,4 @@
-package com.bendude56.hunted.games;
+package com.bendude56.hunted.game;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package com.bendude56.hunted.games;
+package com.bendude56.hunted.game;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import org.bukkit.entity.Projectile;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.games.Game.GameStage;
+import com.bendude56.hunted.game.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class GameEvents

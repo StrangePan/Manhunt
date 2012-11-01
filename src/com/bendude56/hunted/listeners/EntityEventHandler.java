@@ -1,4 +1,4 @@
-package com.bendude56.hunted.events;
+package com.bendude56.hunted.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.games.Game.GameStage;
+import com.bendude56.hunted.game.Game.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class EntityEventHandler implements Listener

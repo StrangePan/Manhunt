@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.games.Game;
+import com.bendude56.hunted.game.Game;
 
 public class FinderManager
 {
