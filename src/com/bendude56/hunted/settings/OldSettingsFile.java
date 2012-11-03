@@ -9,14 +9,14 @@ import java.util.logging.Level;
 
 import com.bendude56.hunted.ManhuntPlugin;
 
-public class SettingsFile extends Properties{
+public class OldSettingsFile extends Properties{
 
 	private static final long serialVersionUID = -1911970219353417406L;
 	private final String title;
 	private final String directory;
 	private final String filename;
 	
-	public SettingsFile(String title, String directory, String name)
+	public OldSettingsFile(String title, String directory, String name)
 	{
 		this.title = title;
 		this.directory = directory;

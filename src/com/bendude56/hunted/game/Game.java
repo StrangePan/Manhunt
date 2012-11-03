@@ -42,7 +42,6 @@ public class Game
 	
 	public Boolean freeze_hunters = false;
 	public Boolean freeze_prey = false;
-	public Boolean world_pvp;
 	
 	public Game(ManhuntPlugin plugin)
 	{
@@ -79,9 +78,6 @@ public class Game
 		this.gameevents = new GameEvents(this);
 		this.timeouts = new TimeoutManager(this);
 		this.finders = new FinderManager(this);
-		
-		// Save the world's original pvp setting.
-		world_pvp = world.getPVP();
 		
 		// Record the World using AMBER
 		if (Bukkit.getPluginManager().isPluginEnabled("Amber") && plugin.getSettings().RESTORE_WORLD.value)
@@ -147,8 +143,6 @@ public class Game
 		{
 			plugin.startIntermission();
 		}
-		
-		world.setPVP(world_pvp);
 		
 		if (Bukkit.getPluginManager().isPluginEnabled("Amber") && plugin.getSettings().RESTORE_WORLD.value)
 		{

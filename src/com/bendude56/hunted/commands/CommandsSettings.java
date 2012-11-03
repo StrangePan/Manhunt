@@ -10,14 +10,14 @@ import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.game.GameUtil;
-import com.bendude56.hunted.settings.Setting;
+import com.bendude56.hunted.settings.OldSetting;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class CommandsSettings
 {
 	public static void onCommandSettings(CommandSender sender, String[] args)
 	{
-		List<Setting<?>> settings = ManhuntPlugin.getInstance().getSettings().getAllSettings();
+		List<OldSetting<?>> settings = ManhuntPlugin.getInstance().getSettings().getAllSettings();
 		
 		String SYNTAX = ChatColor.RED + "Proper syntax is: /m settings [page]";
 		
@@ -56,7 +56,7 @@ public class CommandsSettings
 		
 		settings = settings.subList((page-1) * per_page, page * per_page > settings.size() ? settings.size() : page * per_page);
 		
-		for (Setting<?> setting : settings)
+		for (OldSetting<?> setting : settings)
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.BLUE + setting.label + " " + setting.formattedValue() + ChatColor.WHITE + ": " + setting.message());
 		}
@@ -86,7 +86,7 @@ public class CommandsSettings
 			return;
 		}
 		
-		Setting<?> setting = ManhuntPlugin.getInstance().getSettings().getSetting(args[1]);
+		OldSetting<?> setting = ManhuntPlugin.getInstance().getSettings().getSetting(args[1]);
 		
 		if (setting == null)
 		{

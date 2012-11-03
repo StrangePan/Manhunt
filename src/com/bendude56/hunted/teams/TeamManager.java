@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.settings.SettingsManager;
+import com.bendude56.hunted.settings.OldSettingsManager;
 import com.bendude56.hunted.teams.PlayerState.PlayerStateType;
 
 public class TeamManager
@@ -145,7 +145,7 @@ public class TeamManager
 	 */
 	public void addPlayer(Player p)
 	{
-		SettingsManager settings = plugin.getSettings();
+		OldSettingsManager settings = plugin.getSettings();
 		
 		if (teams.containsKey(p.getName()))
 		{

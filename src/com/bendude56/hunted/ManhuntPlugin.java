@@ -19,14 +19,15 @@ import com.bendude56.hunted.listeners.BlockEventHandler;
 import com.bendude56.hunted.listeners.EntityEventHandler;
 import com.bendude56.hunted.listeners.PlayerEventHandler;
 import com.bendude56.hunted.loadouts.LoadoutManager;
-import com.bendude56.hunted.settings.SettingsManager;
+import com.bendude56.hunted.settings.OldSettingsManager;
 import com.bendude56.hunted.teams.TeamManager;
 
-public class ManhuntPlugin extends JavaPlugin {
+public class ManhuntPlugin extends JavaPlugin
+{
 
 	private Logger log = Logger.getLogger("Minecraft");
 	
-	private SettingsManager	settings;
+	private OldSettingsManager	settings;
 	private LoadoutManager	loadouts;
 	private TeamManager		teams;
 	private FinderManager	finders;
@@ -42,7 +43,7 @@ public class ManhuntPlugin extends JavaPlugin {
 	public void onEnable()
 	{
 		//Start up all the classes.
-		settings =	new SettingsManager();
+		settings =	new OldSettingsManager();
 		
 		manhuntWorld = Bukkit.getWorld(settings.WORLD.value);
 		
@@ -128,7 +129,7 @@ public class ManhuntPlugin extends JavaPlugin {
 			
 			this.manhuntWorld = world;
 			
-			settings = new SettingsManager();
+			settings = new OldSettingsManager();
 			loadouts = new LoadoutManager();
 			teams.refreshPlayers();
 		}
@@ -178,7 +179,7 @@ public class ManhuntPlugin extends JavaPlugin {
 		return manhuntWorld;
 	}
 
-	public SettingsManager getSettings() {
+	public OldSettingsManager getSettings() {
 		return settings;
 	}
 	

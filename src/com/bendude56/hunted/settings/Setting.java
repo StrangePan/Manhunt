@@ -1,147 +1,81 @@
 package com.bendude56.hunted.settings;
 
-import java.util.logging.Level;
+import java.util.List;
+import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+public abstract class Setting<Type> implements ISetting
+{
 
-import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
+	private final String label;
+	private final List<String> description;
 
-public class Setting<Type> {
-
-	public final String label;
-	public Type value;
-	public final Type defaultValue;
+	private final Object value_default;
+	private final Class<?> value_class;
 	
-	public final SettingsFile file;
-	private final String onMessage;
-	private final String offMessage;
+	private Object value;
 	
-	public Setting(String label, Type defaultValue, SettingsFile file, String onMessage, String offMessage){
+	public Setting(String label, Type defaultValue, String ... descriptions)
+	{
 		this.label = label;
+		this.description = new ArrayList<String>(descriptions.length);
+		
+		this.value_default = defaultValue;
+		this.value_class = defaultValue.getClass();
+		
 		this.value = defaultValue;
-		this.defaultValue = defaultValue;
-		this.file = file;
-		this.onMessage = onMessage;
-		this.offMessage = offMessage;
 		
-		load();
-		save(false);
-	}
-	
-	public void load()
-	{
-		String value = file.getProperty(label);
-		if (value == null)
+		for (int i = 0; i < descriptions.length; i++)
 		{
-			this.value = defaultValue;
-			return;
+			this.description.set(i, descriptions[i]);
 		}
-		
-		if(!parseValue(value))
-			reset(true);
 	}
 	
-	public void save(boolean write)
+	@Override
+	public String getLabel()
 	{
-		file.put(this.label, this.valueToString());
-		if (write)
-			file.saveFile();
-	}
-	
-	private String valueToString() {
-		if (value instanceof Location)
-			return ((Location) value).getWorld().getName() + "," + ((Location) value).getX() + "," + ((Location) value).getY() + "," + ((Location) value).getZ() + "," + ((Location) value).getYaw() + "," + ((Location) value).getPitch();
-		else
-			return value.toString();
+		return label;
 	}
 
-	public void setValue(Type value)
+	@Override
+	public void setValue(Object value) throws IllegalArgumentException
 	{
-		this.value = value;
-		save(true);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public boolean parseValue(String value)
-	{
-		try
+		if (value == null || value.getClass() == this.value_class)
 		{
-			if (this.value instanceof Boolean)
-			{
-				value = (value.equalsIgnoreCase("on") ? "true" : value);
-				this.value = (Type) Boolean.class.cast(Boolean.parseBoolean(value));
-			}
-			else if (this.value instanceof Integer)
-			{
-				if (value.equalsIgnoreCase("off"))
-				{
-					this.value = (Type) Integer.class.cast(-1);
-				}
-				else
-				{
-					this.value = (Type) Integer.class.cast(Integer.parseInt(value));
-				}
-			}
-			else if (this.value instanceof String)
-			{
-				this.value = (Type) value;
-			}
-			else if (this.value instanceof Location)
-			{
-				String[] input = value.split(",");
-				this.value = (Type) Location.class.cast(new Location(Bukkit.getWorld(input[0]), Double.parseDouble(input[1]), Double.parseDouble(input[2]), Double.parseDouble(input[3]), Float.parseFloat(input[4]), Float.parseFloat(input[5])));
-			}
-			else if (this.value instanceof ManhuntMode)
-			{
-				this.value = (Type) ManhuntMode.fromString(value);
-				if (this.value == null)
-				{
-					this.value = this.defaultValue;
-				}
-			}
-			else
-			{
-				ManhuntPlugin.getInstance().log(Level.SEVERE, "Unknown value type for setting \"" + label + "\"");
-				return false;
-			}
-			save(true);
-			return true;
-		} catch (Exception e) {
-			return false;
+			this.value = value;
+		}
+		else
+		{
+			throw new IllegalArgumentException("Argument must be of type " + this.value_class.toString());
 		}
 	}
 
-	public void reset(boolean write)
+	@Override
+	public void setValue(String value) throws IllegalArgumentException
+	{ }
+
+	@Override
+	public Object getValue()
 	{
-		this.value = this.defaultValue;
-		save(write);
+		return this.value;
 	}
 
-	public String formattedValue()
+	@Override
+	public Object getValueDefault()
 	{
-		if (value instanceof Boolean)
-			return (((Boolean)value ? ChatColor.GREEN : ChatColor.RED) + "[" + ((Boolean)value ? "ON" : "OFF") + "]" + ChatColor.WHITE);
-		else if (value instanceof Integer)
-			return (ChatColor.GREEN + "[" +  ((Integer)value > 0 ? ChatColor.GRAY + value.toString() : ChatColor.RED + "OFF") + ChatColor.GREEN + "]" + ChatColor.WHITE);
-		else
-			return (ChatColor.GREEN + "[" + ChatColor.YELLOW + value+ ChatColor.GREEN + "]" + ChatColor.WHITE);
+		return this.value_default;
 	}
 
-	public String message()
+	@Override
+	public String getDescription()
 	{
-		if (value instanceof Boolean)
-			return ((Boolean)value ? onMessage : offMessage);
-		else if (value instanceof Integer)
-			return ((Integer)value > 0 ? onMessage : offMessage);
-		else
-			return onMessage;
+		return null;
 	}
 	
-	public String toString()
+	protected List<String> getDescriptions()
 	{
-		return value.toString();
+		return this.description;
 	}
+	
+	
+
 }

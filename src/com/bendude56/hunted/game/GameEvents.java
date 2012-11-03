@@ -64,32 +64,32 @@ public class GameEvents
 			{
 				onTick();
 			}
-		}, 0, 1);
+		}, 0, 0);
 		
 	}
 	
 	private void onTick()
 	{
-		Long time = world.getFullTime();
+		Long time = this.getFullTime();
 		int sec = countdown*20;
 		
 		if (time > start_timechange && time < stop_timechange)
 		{
 			if (time < start_timechange + 3000)
 			{
-				world.setFullTime((long) (time + ((time - start_timechange) * 0.1)));
+				setFullTime((long) (time + ((time - start_timechange) * 0.1)));
 			}
 			else if (time < stop_timechange - 3000)
 			{
-				world.setFullTime(time + 300);
+				setFullTime(time + 300);
 			}
 			else if (time < stop_timechange - 4)
 			{
-				world.setFullTime(time + ((stop_timechange - time) / 10));
+				setFullTime(time + ((stop_timechange - time) / 10));
 			}
 			else
 			{
-				world.setFullTime(stop_timechange);
+				setFullTime(stop_timechange);
 			}
 		}
 		
@@ -102,7 +102,7 @@ public class GameEvents
 			}
 			else if (countdown == 20 & time > start_setup_tick - sec)
 			{
-				world.setFullTime(start_setup_tick - 400);
+				setFullTime(start_setup_tick - 400);
 				countdown = 17;
 			}
 			else if (countdown == 17 && time > start_setup_tick - sec)
@@ -418,6 +418,16 @@ public class GameEvents
 		broadcast(ChatManager.bracket1_ + color + "All players are in position" + ChatManager.bracket2_, Team.SPECTATORS);
 	}
 
+	private void setFullTime(long time)
+	{
+		world.setFullTime(time);
+	}
+	
+	private long getFullTime()
+	{
+		return world.getFullTime();
+	}
+	
 	public void close()
 	{
 		game = null;

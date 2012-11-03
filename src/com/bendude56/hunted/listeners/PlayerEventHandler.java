@@ -201,14 +201,24 @@ public class PlayerEventHandler implements Listener {
 		
 		if (team == Team.HUNTERS && plugin.getGame().freeze_hunters)
 		{
-			e.setCancelled(true);
-			p.teleport(e.getFrom());
+			if (e.getFrom().getX() != e.getTo().getX()
+					|| e.getFrom().getY() != e.getTo().getY()
+					|| e.getFrom().getZ() != e.getTo().getZ())
+			{
+				e.setCancelled(true);
+				p.teleport(e.getFrom());
+			}
 			return;
 		}
 		if (team == Team.PREY && plugin.getGame().freeze_prey)
 		{
-			e.setCancelled(true);
-			p.teleport(e.getFrom());
+			if (e.getFrom().getX() != e.getTo().getX()
+					|| e.getFrom().getY() != e.getTo().getY()
+					|| e.getFrom().getZ() != e.getTo().getZ())
+			{
+				e.setCancelled(true);
+				p.teleport(e.getFrom());
+			}
 			return;
 		}
 		
