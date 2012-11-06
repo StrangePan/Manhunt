@@ -1,6 +1,6 @@
 package com.bendude56.hunted.settings;
 
-public class SettingString extends Setting<String> implements ISetting
+public class SettingString extends SettingBase<String> implements Setting
 {
 
 	public SettingString(String label, String defaultValue, String description)

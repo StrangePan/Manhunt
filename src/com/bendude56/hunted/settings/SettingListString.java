@@ -2,7 +2,7 @@ package com.bendude56.hunted.settings;
 
 import java.util.ArrayList;
 
-public class SettingListString extends Setting<ArrayList<String>> implements ISetting
+public class SettingListString extends SettingBase<ArrayList<String>> implements Setting
 {
 
 	public SettingListString(String label, ArrayList<String> defaultValue, String description)
@@ -42,6 +42,21 @@ public class SettingListString extends Setting<ArrayList<String>> implements ISe
 	public String getDescription()
 	{
 		return super.getDescriptions().get(0);
+	}
+	
+	@Override
+	public String toString()
+	{
+		int i;
+		String string = new String();
+		ArrayList<String> list = getValue();
+		
+		for (i = 0; i < list.size(); i++)
+		{
+			string += list.get(i) + ",";
+		}
+		
+		return string;
 	}
 	
 }

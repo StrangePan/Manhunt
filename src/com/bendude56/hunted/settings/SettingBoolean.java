@@ -1,6 +1,6 @@
 package com.bendude56.hunted.settings;
 
-public class SettingBoolean extends Setting<Boolean> implements ISetting
+public class SettingBoolean extends SettingBase<Boolean> implements Setting
 {
 	
 	public SettingBoolean(String label, Boolean defaultValue, String onMessage, String offMessage)

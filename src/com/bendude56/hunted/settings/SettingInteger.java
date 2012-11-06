@@ -1,6 +1,6 @@
 package com.bendude56.hunted.settings;
 
-public class SettingInteger extends Setting<Integer> implements ISetting
+public class SettingInteger extends SettingBase<Integer> implements Setting
 {
 	
 	public SettingInteger(String label, Integer defaultValue, String onDescription, String offDescription)
