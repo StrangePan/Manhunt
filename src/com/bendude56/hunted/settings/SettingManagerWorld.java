@@ -12,6 +12,10 @@ public class SettingManagerWorld extends SettingManagerBase implements SettingMa
 	public final SettingLocation SPAWN_SETUP;
 	public final SettingLocation SPAWN_LOBBY;
 	
+	public final SettingInteger SPAWN_RANGE_HUNTER;
+	public final SettingInteger SPAWN_RANGE_PREY;
+	public final SettingInteger SPAWN_RANGE_LOBBY;
+	
 	public final SettingLocation BOUNDARY_WORLD1;
 	public final SettingLocation BOUNDARY_WORLD2;
 	public final SettingLocation BOUNDARY_SETUP1;
@@ -34,6 +38,10 @@ public class SettingManagerWorld extends SettingManagerBase implements SettingMa
 		addSetting(SPAWN_PREY =		new SettingLocation("preyspawn", world.getSpawnLocation()), true);
 		addSetting(SPAWN_SETUP =	new SettingLocation("setupspawn", world.getSpawnLocation()), true);
 		addSetting(SPAWN_LOBBY =	new SettingLocation("lobbyspawn", world.getSpawnLocation()), true);
+		
+		addSetting(SPAWN_RANGE_HUNTER =	new SettingInteger("hunterspawnrange", 0, "The range around which the hunters can spawn.", "The hunters will spawn exactly on the point."), true);
+		addSetting(SPAWN_RANGE_PREY =	new SettingInteger("preyspawnrange", 0, "The range around which the prey can spawn.", "The prey will spawn exactly on the point."), true);
+		addSetting(SPAWN_RANGE_LOBBY =	new SettingInteger("lobbyspawnrange", 0, "The range around which the players will spawn.", "The prey will spawn exactly on the point."), true);
 		
 		addSetting(BOUNDARY_WORLD1 =new SettingLocation("worldboundary1", world.getSpawnLocation()), true);
 		addSetting(BOUNDARY_WORLD2 =new SettingLocation("worldboundary2", world.getSpawnLocation()), true);

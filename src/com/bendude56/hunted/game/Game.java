@@ -84,6 +84,8 @@ public class Game
 		{
 			Amber.startRecordingWorld(world);
 		}
+		
+		world.setPVP(true);
 	}
 
 	/**
@@ -149,6 +151,8 @@ public class Game
 			GameUtil.broadcast(ChatManager.bracket1_ + "RESTORING WORLD \'" + world.getName() + "\'..." + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS, Team.NONE);
 			Amber.startRestoringWorld(world);
 		}
+		
+		world.setPVP(false);
 		
 		close();
 	}

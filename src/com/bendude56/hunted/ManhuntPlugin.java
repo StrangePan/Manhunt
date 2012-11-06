@@ -64,6 +64,8 @@ public class ManhuntPlugin extends JavaPlugin
 			p.sendMessage(ChatColor.DARK_RED + getDescription().getName()
 					+ ChatColor.GREEN + " has been enabled.");
 		}
+		
+		manhuntWorld.setPVP(false);
 	}
 
 	@Override

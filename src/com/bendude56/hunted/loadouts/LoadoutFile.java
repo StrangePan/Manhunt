@@ -118,9 +118,13 @@ public class LoadoutFile
 		for (int i = 0; i < contents.length && i < 36; i++)
 		{
 			if (contents[i] == null)
-				continue;
+				return;
 			
-			NBTTagCompound nbttag = ((CraftItemStack) contents[i]).getHandle().getTag();
+			NBTTagCompound nbttag = (new CraftItemStack(contents[i])).getHandle().getTag();
+			
+			if (nbttag == null)
+				return;
+			
 			CompoundTag ctag = CompoundTag.fromNBTTag(nbttag);
 			SimpleItem sitem = new SimpleItem();
 			ctag.toObject(sitem);
@@ -131,10 +135,14 @@ public class LoadoutFile
 		
 		for (int i = 0; i < armor.length && i < 4; i++)
 		{
-			if (armor[i] == null)
-				continue;
+			if (contents[i] == null)
+				return;
 			
-			NBTTagCompound nbttag = ((CraftItemStack) armor[i]).getHandle().getTag();
+			NBTTagCompound nbttag = (new CraftItemStack(armor[i])).getHandle().getTag();
+
+			if (nbttag == null)
+				return;
+			
 			CompoundTag ctag = CompoundTag.fromNBTTag(nbttag);
 			SimpleItem sitem = new SimpleItem();
 			ctag.toObject(sitem);

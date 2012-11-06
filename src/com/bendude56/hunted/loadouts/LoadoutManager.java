@@ -16,7 +16,7 @@ public class LoadoutManager {
 	//private HashMap<String, Loadout> tempLoadouts = new HashMap<String, Loadout>();
 
 	private final String loadouts_directory = "plugins/Manhunt";
-	private final String world_loadouts_directory = ManhuntPlugin.getInstance().getWorld().getName() + "/Manhunt";
+	private final String world_loadouts_directory = loadouts_directory;
 
 	public final Loadout DEFAULT_HUNTER_LOADOUT;
 	public final Loadout DEFAULT_PREY_LOADOUT;

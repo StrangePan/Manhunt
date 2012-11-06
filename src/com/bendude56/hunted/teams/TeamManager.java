@@ -52,6 +52,23 @@ public class TeamManager
 		List<Player> prey = new ArrayList<Player>();
 		List<Player> spectators = getTeamPlayers(Team.SPECTATORS);
 		
+		while (spectators.size() > 0)
+		{
+			Player p = spectators.get(new Random().nextInt(spectators.size()));
+			
+			if (prey.size() == 0 || (double) hunters.size() / (double) prey.size() > 2.5)
+			{
+				prey.add(p);
+			}
+			else
+			{
+				hunters.add(p);
+			}
+			
+			spectators.remove(p);
+		}
+		
+		/*
 		if (spectators.size() == 0)
 		{
 			return;
@@ -85,6 +102,7 @@ public class TeamManager
 				hunters.add(p);
 			}
 		}
+		*/
 		
 		for (Player p : prey)
 		{
