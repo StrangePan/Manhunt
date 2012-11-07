@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 public interface Lobby
 {
 	public World getWorld();
-	public String getName();
 	
 	public void addPlayer(OfflinePlayer p, Team t);
 	public void removePlayer(OfflinePlayer p);
@@ -17,6 +16,10 @@ public interface Lobby
 	public void setPlayerTeam(OfflinePlayer p, Team t) throws Exception;
 	public Team getPlayerTeam(OfflinePlayer p);
 	
-	public List<Player> getPlayers(Team ... teams);
-	public void messageTeams(Team ... teams);
+	public List<Player> 		getPlayers(Team ... teams);
+	public List<OfflinePlayer> getOfflinePlayers(Team ... teams);
+	
+	public void messageTeams(String mesage, Team ... teams);
+	
+	public void clear();
 }

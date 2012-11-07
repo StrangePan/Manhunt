@@ -2,7 +2,7 @@ package com.bendude56.hunted.settings;
 
 import org.bukkit.World;
 
-public class SettingManagerWorld extends SettingManagerBase implements SettingManager
+public class WorldSettings extends SettingManagerBase implements SettingManager
 {
 
 	private static final long serialVersionUID = -6482647767320807514L;
@@ -30,7 +30,7 @@ public class SettingManagerWorld extends SettingManagerBase implements SettingMa
 	public final SettingLocation PROTECTION_LOBBY1;
 	public final SettingLocation PROTECTION_LOBBY2;
 	
-	public SettingManagerWorld( World world )
+	public WorldSettings( World world )
 	{
 		super( world.getWorldFolder().getPath() + "/manhunt.config" );
 		

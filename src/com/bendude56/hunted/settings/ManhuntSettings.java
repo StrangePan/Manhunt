@@ -1,6 +1,6 @@
 package com.bendude56.hunted.settings;
 
-public class SettingManagerManhunt extends SettingManagerBase implements SettingManager
+public class ManhuntSettings extends SettingManagerBase implements SettingManager
 {
 	private static final long serialVersionUID = -2749093656484939858L;
 	
@@ -19,7 +19,7 @@ public class SettingManagerManhunt extends SettingManagerBase implements Setting
 	public final SettingInteger TIME_INTERMISSION;
 	public final SettingInteger TIME_SETUP;  
 	
-	public SettingManagerManhunt( String filepath )
+	public ManhuntSettings( String filepath )
 	{
 		super( filepath );
 		

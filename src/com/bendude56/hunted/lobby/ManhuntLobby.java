@@ -1,5 +1,6 @@
 package com.bendude56.hunted.lobby;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,28 +12,21 @@ public class ManhuntLobby implements Lobby
 {
 
 	private final World world;
-	private final String name;
 	
 	private HashMap<OfflinePlayer, Team> players;
 	
-	public ManhuntLobby(World world, String name)
+	public ManhuntLobby(World world)
 	{
 		this.world = world;
-		this.name = name;
 		
 		this.players = new HashMap<OfflinePlayer, Team>();
 	}
 	
+
 	@Override
 	public World getWorld()
 	{
 		return world;
-	}
-
-	@Override
-	public String getName()
-	{
-		return name;
 	}
 
 	@Override
@@ -75,16 +69,61 @@ public class ManhuntLobby implements Lobby
 	}
 
 	@Override
-	public List<Player> getPlayers(Team... teams)
+	public List<Player> getPlayers(Team ... teams)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List<Player> players = new ArrayList<Player>();
+		
+		for (OfflinePlayer p : this.players.keySet())
+		{
+			if (!p.isOnline())
+				continue;
+			
+			for (Team t: teams)
+			{
+				if (this.players.get(p) == t)
+				{
+					players.add(p.getPlayer());
+					break;
+				}
+			}
+		}
+		
+		return players;
 	}
 
 	@Override
-	public void messageTeams(Team... teams) {
-		// TODO Auto-generated method stub
+	public List<OfflinePlayer> getOfflinePlayers(Team ... teams)
+	{
+		List<OfflinePlayer> players = new ArrayList<OfflinePlayer>();
+		
+		for (OfflinePlayer p : this.players.keySet())
+		{
+			for (Team t: teams)
+			{
+				if (this.players.get(p) == t)
+				{
+					players.add(p);
+					break;
+				}
+			}
+		}
+		
+		return players;
+	}
 
+	@Override
+	public void messageTeams(String message, Team ... teams)
+	{
+		for (Player p : getPlayers(teams))
+		{
+			p.sendMessage(message);
+		}
+	}
+
+	@Override
+	public void clear()
+	{
+		this.players.clear();
 	}
 
 }
