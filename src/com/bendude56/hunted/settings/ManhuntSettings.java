@@ -1,10 +1,14 @@
 package com.bendude56.hunted.settings;
 
+import org.bukkit.Bukkit;
+
 public class ManhuntSettings extends SettingManagerBase implements SettingManager
 {
 	private static final long serialVersionUID = -2749093656484939858L;
 	
 	public final SettingInteger MODE;
+	
+	public final SettingListString WORLDS;
 
 	public final SettingBoolean HANDLE_CHAT;
 	public final SettingBoolean ALL_TALK;
@@ -24,6 +28,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		super( filepath );
 		
 		addSetting(MODE =		new SettingInteger("mode", 0, "The mode the plugin is running in.", ""), false);
+		
+		addSetting(WORLDS =		new SettingListString("worlds", "The list of Worlds Manhunt will run in.", Bukkit.getWorlds().get(0).getName()), false);
 		
 		addSetting(HANDLE_CHAT =	new SettingBoolean("handlechat", true, "Manhunt will handle chat events.", "Manhunt will ignore chat events."), true);
 		addSetting(ALL_TALK =		new SettingBoolean("alltalk", false, "Teams can communicate with each other.", "Teams cannot see each other's chat."), true);

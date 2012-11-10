@@ -2,12 +2,18 @@ package com.bendude56.hunted.settings;
 
 import java.util.ArrayList;
 
-public class SettingListString extends SettingBase<ArrayList<String>> implements Setting
+public class SettingListString extends SettingBase<ArrayList<String>> implements Setting, SettingList
 {
 
-	public SettingListString(String label, ArrayList<String> defaultValue, String description)
+	public SettingListString(String label, String description, String...defaultValues)
 	{
-		super(label, defaultValue, description);
+		super(label, new ArrayList<String>(), description);
+		
+		ArrayList<String> list = new ArrayList<String>();
+		for (String value : defaultValues)
+			list.add(value);
+		
+		super.setValue(list);
 	}
 	
 	@Override
@@ -36,6 +42,67 @@ public class SettingListString extends SettingBase<ArrayList<String>> implements
 	public ArrayList<String> getValueDefault()
 	{
 		return (ArrayList<String>) super.getValueDefault();
+	}
+	
+	@Override
+	public void add(Object o) throws IllegalArgumentException
+	{
+		if (!(o instanceof String))
+		{
+			throw new IllegalArgumentException("Argument must be of type String");
+		}
+		
+		ArrayList<String> list = getValue();
+		list.add((String) o);
+		setValue(list);
+	}
+	
+	@Override
+	public void add(Object o, int i) throws IllegalArgumentException
+	{
+		if (!(o instanceof String))
+		{
+			throw new IllegalArgumentException("Argument must be of type String");
+		}
+		
+		ArrayList<String> list = getValue();
+		list.set(i, (String) o);
+		setValue(list);
+	}
+	
+	@Override
+	public void remove(Object o) throws IllegalArgumentException
+	{
+		if (!(o instanceof String))
+		{
+			throw new IllegalArgumentException("Argument must be of type String");
+		}
+		
+		ArrayList<String> list = getValue();
+		if (!list.contains((String) o))
+		{
+			return;
+		}
+		list.remove((String) o);
+		setValue(list);
+	}
+	
+	@Override
+	public void remove(int i)
+	{
+		ArrayList<String> list = getValue();
+		if (list.size() <= i)
+		{
+			return;
+		}
+		list.remove(i);
+		setValue(list);
+	}
+	
+	@Override
+	public void clear()
+	{
+		setValue(new ArrayList<String>());
 	}
 	
 	@Override

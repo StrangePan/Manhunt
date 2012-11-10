@@ -1,8 +1,12 @@
 package com.bendude56.hunted;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 import com.bendude56.hunted.lobby.Lobby;
 import com.bendude56.hunted.lobby.ManhuntLobby;
@@ -36,7 +40,7 @@ public class Manhunt
 	
 	
 	
-	//-------- Methods --------//
+	//-------- Constructor --------//
 	
 	public Manhunt()
 	{
@@ -44,18 +48,23 @@ public class Manhunt
 		this.settings = new ManhuntSettings(path_settings);
 		
 		instance = this;
+		
+		loadLobbies();
 	}
+	
+	
+	//-------- Public static methods --------//
 	
 	public static ManhuntSettings getSettings()
 	{
-		return instance.settings;
+		return getInstance().settings;
 	}
 	
 	public static Lobby getLobby(World w)
 	{
-		if (instance.lobbies.containsKey(w))
+		if (getInstance().lobbies.containsKey(w))
 		{
-			return instance.lobbies.get(w);
+			return getInstance().lobbies.get(w);
 		}
 		else
 		{
@@ -65,10 +74,69 @@ public class Manhunt
 	
 	public static void createLobby(World w)
 	{
-		if (instance.lobbies.containsKey(w))
+		if (getInstance().lobbies.containsKey(w))
 			return;
 		
-		instance.lobbies.put(w, new ManhuntLobby(w));
+		getInstance().lobbies.put(w, new ManhuntLobby(w));
 	}
+	
+	private static Manhunt getInstance()
+	{
+		return instance;
+	}
+	
+	
+	//-------- Private methods --------//
+	
+	private void loadLobbies()
+	{
+		List<String> worlds = settings.WORLDS.getValue();
+		World world;
+		File file;
+		
+		for (String s : worlds)
+		{
+			world = Bukkit.getWorld(s);
+			
+			if (Bukkit.getWorld(s) == null)
+			{
+				file = new File(s);
+				if (file.exists() && file.isDirectory())
+				{
+					world = Bukkit.createWorld(WorldCreator.name(s));
+				}
+				else
+				{
+					continue;
+				}
+			}
+			
+			this.lobbies.put(world, new ManhuntLobby(world));
+		}
+	}
+	
+	
+	private void openLobby(World world)
+	{
+		if (lobbies.containsKey(world))
+			return;
+		
+		lobbies.put(world, new ManhuntLobby(world));
+	}
+	
+	
+	private void closeLobby(World world)
+	{
+		if (lobbies.containsKey(world))
+			return;
+		
+		lobbies.remove(world);
+	}
+	
+	
+	//-------- Public Interface Methods --------//
+	
+	
+	
 	
 }
