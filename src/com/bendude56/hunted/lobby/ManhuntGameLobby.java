@@ -8,18 +8,25 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-public class ManhuntLobby implements Lobby
+import com.bendude56.hunted.settings.WorldSettings;
+
+public class ManhuntGameLobby implements GameLobby
 {
 
 	private final World world;
 	
-	private HashMap<OfflinePlayer, Team> players;
+	private WorldSettings settings;
 	
-	public ManhuntLobby(World world)
+	private HashMap<Player, Team> players;
+	
+	
+	public ManhuntGameLobby(World world)
 	{
 		this.world = world;
 		
-		this.players = new HashMap<OfflinePlayer, Team>();
+		this.settings = new WorldSettings(world);
+		
+		this.players = new HashMap<Player, Team>();
 	}
 	
 
@@ -30,20 +37,20 @@ public class ManhuntLobby implements Lobby
 	}
 
 	@Override
-	public void addPlayer(OfflinePlayer p, Team t)
+	public void addPlayer(Player p, Team t)
 	{
 		this.players.put(p, t);
 	}
 
 	@Override
-	public void removePlayer(OfflinePlayer p)
+	public void removePlayer(Player p)
 	{
 		if (this.players.containsKey(p))
 			this.players.remove(p);
 	}
 
 	@Override
-	public void setPlayerTeam(OfflinePlayer p, Team t) throws Exception
+	public void setPlayerTeam(Player p, Team t) throws Exception
 	{
 		if (this.players.containsKey(p))
 		{
@@ -56,7 +63,7 @@ public class ManhuntLobby implements Lobby
 	}
 
 	@Override
-	public Team getPlayerTeam(OfflinePlayer p)
+	public Team getPlayerTeam(Player p)
 	{
 		if (this.players.containsKey(p))
 		{
@@ -73,7 +80,7 @@ public class ManhuntLobby implements Lobby
 	{
 		List<Player> players = new ArrayList<Player>();
 		
-		for (OfflinePlayer p : this.players.keySet())
+		for (Player p : this.players.keySet())
 		{
 			if (!p.isOnline())
 				continue;
@@ -96,13 +103,13 @@ public class ManhuntLobby implements Lobby
 	{
 		List<OfflinePlayer> players = new ArrayList<OfflinePlayer>();
 		
-		for (OfflinePlayer p : this.players.keySet())
+		for (Player p : this.players.keySet())
 		{
 			for (Team t: teams)
 			{
 				if (this.players.get(p) == t)
 				{
-					players.add(p);
+					players.add((OfflinePlayer) p);
 					break;
 				}
 			}
@@ -112,18 +119,44 @@ public class ManhuntLobby implements Lobby
 	}
 
 	@Override
-	public void messageTeams(String message, Team ... teams)
+	public void messagePlayers(String message, Team ... teams)
 	{
 		for (Player p : getPlayers(teams))
 		{
-			p.sendMessage(message);
+			if (p.isOnline())
+				p.sendMessage(message);
+		}
+	}
+	
+	@Override
+	public void messagePlayers(String message)
+	{
+		for (Player p : players.keySet())
+		{
+			if (p.isOnline())
+				p.sendMessage(message);
 		}
 	}
 
 	@Override
-	public void clear()
+	public void clearPlayers()
 	{
 		this.players.clear();
 	}
-
+	
+	@Override
+	public void close()
+	{
+		
+	}
+	
+	@Override
+	public WorldSettings getSettings()
+	{
+		return settings;
+	}
+	
+	
+	
+	
 }
