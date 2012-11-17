@@ -4,159 +4,198 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.OfflinePlayer;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.map.ManhuntSpawn;
+import com.bendude56.hunted.map.Spawn;
+import com.bendude56.hunted.map.Map;
 import com.bendude56.hunted.settings.WorldSettings;
 
 public class ManhuntGameLobby implements GameLobby
 {
-
-	private final World world;
 	
+	//---------------- Properties ----------------//
+	private Spawn spawn;
+	private HashMap<Player, Team> players;
+	private boolean enabled;
+	
+	private List<Map> maps;
 	private WorldSettings settings;
 	
-	private HashMap<Player, Team> players;
 	
-	
+	//---------------- Constructors ----------------//
 	public ManhuntGameLobby(World world)
 	{
-		this.world = world;
-		
-		this.settings = new WorldSettings(world);
-		
-		this.players = new HashMap<Player, Team>();
+		this(world.getSpawnLocation());
 	}
 	
-
-	@Override
+	public ManhuntGameLobby(Location loc)
+	{
+		spawn = new ManhuntSpawn(loc);
+		players = new HashMap<Player, Team>();
+		enabled = true;
+		
+		maps = new ArrayList<Map>();
+		settings = new WorldSettings(loc.getWorld());
+	}
+	
+	
+	//---------------- Public Methods ----------------//
+	
+	//------------ Getters ------------//
+	public Spawn getSpawn()
+	{
+		return spawn;
+	}
+	
 	public World getWorld()
 	{
-		return world;
-	}
-
-	@Override
-	public void addPlayer(Player p, Team t)
-	{
-		this.players.put(p, t);
-	}
-
-	@Override
-	public void removePlayer(Player p)
-	{
-		if (this.players.containsKey(p))
-			this.players.remove(p);
-	}
-
-	@Override
-	public void setPlayerTeam(Player p, Team t) throws Exception
-	{
-		if (this.players.containsKey(p))
-		{
-			this.players.put(p, t);
-		}
-		else
-		{
-			throw new Exception("OfflinePlayer not found.");
-		}
-	}
-
-	@Override
-	public Team getPlayerTeam(Player p)
-	{
-		if (this.players.containsKey(p))
-		{
-			return this.players.get(p);
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	@Override
-	public List<Player> getPlayers(Team ... teams)
-	{
-		List<Player> players = new ArrayList<Player>();
-		
-		for (Player p : this.players.keySet())
-		{
-			if (!p.isOnline())
-				continue;
-			
-			for (Team t: teams)
-			{
-				if (this.players.get(p) == t)
-				{
-					players.add(p.getPlayer());
-					break;
-				}
-			}
-		}
-		
-		return players;
-	}
-
-	@Override
-	public List<OfflinePlayer> getOfflinePlayers(Team ... teams)
-	{
-		List<OfflinePlayer> players = new ArrayList<OfflinePlayer>();
-		
-		for (Player p : this.players.keySet())
-		{
-			for (Team t: teams)
-			{
-				if (this.players.get(p) == t)
-				{
-					players.add((OfflinePlayer) p);
-					break;
-				}
-			}
-		}
-		
-		return players;
-	}
-
-	@Override
-	public void messagePlayers(String message, Team ... teams)
-	{
-		for (Player p : getPlayers(teams))
-		{
-			if (p.isOnline())
-				p.sendMessage(message);
-		}
+		return spawn.getWorld();
 	}
 	
-	@Override
-	public void messagePlayers(String message)
+	public List<World> getWorlds()
 	{
+		List<World> worlds = new ArrayList<World>();
+		for (Map map : getMaps())
+		{
+			if (!worlds.contains(map.getWorld()))
+				worlds.add(map.getWorld());
+		}
+		return worlds;
+	}
+	
+	public List<Map> getMaps()
+	{
+		return maps;
+	}
+	
+	public Location getLocation()
+	{
+		return spawn.getLocation();
+	}
+	
+	public List<Player> getPlayers()
+	{
+		return new ArrayList<Player>(players.keySet());
+	}
+	
+	public List<Player> getPlayers(Team...teams)
+	{
+		List<Player> plrs = new ArrayList<Player>();
 		for (Player p : players.keySet())
 		{
-			if (p.isOnline())
-				p.sendMessage(message);
+			for (Team t : teams)
+			{
+				if (players.get(p) == t)
+				{
+					plrs.add(p);
+					break;
+				}
+			}
 		}
-	}
-
-	@Override
-	public void clearPlayers()
-	{
-		this.players.clear();
+		return plrs;
 	}
 	
-	@Override
-	public void close()
+	public Team getPlayerTeam(Player p)
 	{
-		
+		if (players.containsKey(p))
+			return players.get(p);
+		else
+			return null;
 	}
 	
-	@Override
 	public WorldSettings getSettings()
 	{
 		return settings;
 	}
 	
+	public boolean isEnabled()
+	{
+		return enabled;
+	}
 	
 	
+	//------------ Setters ------------//
+	public void addPlayer(Player p)
+	{
+		// TODO Finish
+	}
+	
+	public void addPlayer(Player p, Team t)
+	{
+		if (!players.containsKey(p))
+		{
+			players.put(p, t);
+		}
+	}
+	
+	public void setPlayerTeam(Player p, Team t)
+	{
+		if (players.containsKey(p))
+		{
+			players.put(p, t);
+		}
+	}
+	
+	public void setAllPlayerTeam(Team t)
+	{
+		for (Player p : players.keySet())
+		{
+			players.put(p, t);
+		}
+	}
+	
+	public void removePlayer(Player p)
+	{
+		if (players.containsKey(p))
+		{
+			players.remove(p);
+		}
+	}
+	
+	
+	//------------ Other ------------//
+	public void broadcast(String message)
+	{
+		for (Player p : players.keySet())
+		{
+			if (p.isOnline())
+			{
+				p.sendMessage(message);
+			}
+		}
+	}
+	
+	public void broadcast(String message, Team...teams)
+	{
+		for (Player p : players.keySet())
+		{
+			if (p.isOnline())
+			{
+				for (Team t : teams)
+				{
+					if (players.get(p) == t)
+						p.sendMessage(message);
+				}
+			}
+		}
+	}
+	
+	public void clearPlayers()
+	{
+		players.clear();
+	}
+	
+	public void enable()
+	{
+		enabled = true;
+	}
+	
+	public void disable()
+	{
+		enabled = false;
+	}
 	
 }

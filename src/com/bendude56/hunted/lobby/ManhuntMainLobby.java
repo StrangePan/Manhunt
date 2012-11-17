@@ -7,87 +7,120 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-public class ManhuntMainLobby implements Lobby
+import com.bendude56.hunted.map.ManhuntSpawn;
+import com.bendude56.hunted.map.Spawn;
+
+/**
+ * The main, central lobby for new Manhunt players, simply
+ * keeps track of players and the main spawn point.
+ * @author Deaboy
+ *
+ */
+public class ManhuntMainLobby implements MainLobby
 {
-	//-------- Properties --------//
 	
+	//---------------- Properties ----------------//
 	private List<Player> players;
-	private Location spawnpoint;
+	private Spawn spawn;
+	private boolean enabled;
 	
-	
-	
-	//-------- Constructors --------//
-	
-	public ManhuntMainLobby()
+	//---------------- Constructors ----------------//
+	public ManhuntMainLobby(Location loc)
 	{
-		this.players = new ArrayList<Player>();
+		this(new ManhuntSpawn(loc));
+	}
+	
+	public ManhuntMainLobby(Spawn spawn)
+	{
+		this.spawn = spawn;
+		
+		players = new ArrayList<Player>();
+		
+		this.enabled = true;
 	}
 	
 	
+	//---------------- Public Methods ----------------//
 	
-	//-------- Public Methods --------//
-	
+	//------------ Getters ------------//
 	@Override
-	public void addPlayer(Player p)
+	public Spawn getSpawn()
 	{
-		if (!this.players.contains(p))
-		{
-			this.players.add(p);
-		}
+		return spawn;
 	}
-
-	@Override
-	public void removePlayer(Player p)
-	{
-		if (this.players.contains(p))
-		{
-			this.players.remove(p);
-		}
-	}
-
-	@Override
-	public List<Player> getPlayers()
-	{
-		return this.players;
-	}
-
+	
 	@Override
 	public World getWorld()
 	{
-		return this.spawnpoint.getWorld();
+		return spawn.getLocation().getWorld();
 	}
-
+	
 	@Override
 	public Location getLocation()
 	{
-		return this.spawnpoint.clone();
+		return spawn.getLocation();
 	}
-
+	
 	@Override
-	public void setLocation(Location location)
+	public List<Player> getPlayers()
 	{
-		this.spawnpoint = location.clone();
+		return players;
 	}
-
+	
 	@Override
-	public void messagePlayers(String message)
+	public boolean isEnabled()
 	{
-		for (Player p : this.players)
+		return enabled;
+	}
+	
+	//------------ Setters ------------//
+	@Override
+	public void addPlayer(Player p)
+	{
+		if (!players.contains(p))
 		{
-			p.sendMessage(message);
+			players.add(p);
 		}
 	}
-
+	
+	@Override
+	public void removePlayer(Player p)
+	{
+		if (players.contains(p))
+		{
+			players.remove(p);
+		}
+	}
+	
+	
+	//------------ Public Methods ------------//
+	@Override
+	public void broadcast(String message)
+	{
+		for (Player p : getPlayers())
+		{
+			if (p.isOnline())
+				p.sendMessage(message);
+		}
+	}
+	
 	@Override
 	public void clearPlayers()
 	{
-		this.players.clear();
+		players.clear();
 	}
-
+	
 	@Override
-	public void close()
+	public void enable()
 	{
-		clearPlayers();
+		enabled = true;
 	}
+	
+	@Override
+	public void disable()
+	{
+		enabled = false;
+	}
+	
 
 }
