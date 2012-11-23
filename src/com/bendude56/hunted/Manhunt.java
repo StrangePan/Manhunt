@@ -1,6 +1,7 @@
 package com.bendude56.hunted;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
 import com.bendude56.hunted.lobby.GameLobby;
+import com.bendude56.hunted.lobby.MainLobby;
 import com.bendude56.hunted.lobby.ManhuntGameLobby;
 import com.bendude56.hunted.settings.ManhuntSettings;
 
@@ -34,7 +36,8 @@ public class Manhunt
 	
 	//-------- Local variables ---------//
 	
-	private HashMap<World, GameLobby> lobbies;
+	private MainLobby mainlobby;
+	private HashMap<String, GameLobby> lobbies;
 	private ManhuntSettings settings;
 	private static Manhunt instance;
 	
@@ -44,7 +47,7 @@ public class Manhunt
 	
 	public Manhunt()
 	{
-		this.lobbies = new HashMap<World, GameLobby>();
+		this.lobbies = new HashMap<String, GameLobby>();
 		this.settings = new ManhuntSettings(path_settings);
 		
 		instance = this;
@@ -54,30 +57,43 @@ public class Manhunt
 	
 	
 	//-------- Public static methods --------//
-	
 	public static ManhuntSettings getSettings()
 	{
 		return getInstance().settings;
 	}
 	
-	public static GameLobby getLobby(World w)
+	public static GameLobby getLobby(String label)
 	{
-		if (getInstance().lobbies.containsKey(w))
+		if (getInstance().lobbies.containsKey(label))
 		{
-			return getInstance().lobbies.get(w);
+			return getInstance().lobbies.get(label);
 		}
 		else
 		{
 			return null;
 		}
+		
 	}
 	
-	public static void createLobby(World w)
+	public static GameLobby getLobby(World world)
 	{
-		if (getInstance().lobbies.containsKey(w))
+		for (GameLobby lobby : getInstance().lobbies.values())
+		{
+			if (lobby.getWorlds().contains(world))
+			{
+				return lobby;
+			}
+		}
+		return null;
+		
+	}
+	
+	public static void createLobby(String label, World w)
+	{
+		if (getInstance().lobbies.containsKey(label))
 			return;
 		
-		getInstance().lobbies.put(w, new ManhuntGameLobby(w));
+		getInstance().lobbies.put(label, new ManhuntGameLobby(w));
 	}
 	
 	private static Manhunt getInstance()
@@ -90,52 +106,20 @@ public class Manhunt
 	
 	private void loadLobbiesFromFile()
 	{
-		List<String> worlds = settings.WORLDS.getValue();
-		World world;
-		File file;
-		
-		for (String s : worlds)
-		{
-			world = Bukkit.getWorld(s);
-			
-			if (Bukkit.getWorld(s) == null)
-			{
-				file = new File(s);
-				if (file.exists() && file.isDirectory())
-				{
-					world = Bukkit.createWorld(WorldCreator.name(s));
-				}
-				else
-				{
-					continue;
-				}
-			}
-			
-			this.lobbies.put(world, new ManhuntGameLobby(world));
-		}
+		// TODO Finish this method
 	}
 	
 	
 	private GameLobby openLobby(World world)
 	{
-		if (lobbies.containsKey(world) || world == null)
-			return null;
-		
-		GameLobby lobby = new ManhuntGameLobby(world);
-		
-		lobbies.put(world, lobby);
-		return lobby;
+		// TODO Finish this method
+		return null;
 	}
 	
 	
 	private void closeLobby(World world)
 	{
-		if (lobbies.containsKey(world) || world == null)
-			return;
-		
-		getLobby(world).close();
-		
-		lobbies.remove(world);
+		// TODO Finish this method
 	}
 	
 	
@@ -144,28 +128,14 @@ public class Manhunt
 	
 	public static GameLobby addLobby(World world)
 	{
-		GameLobby lobby = getInstance().openLobby(world);
-		
-		if (lobby != null)
-		{
-			if (!getSettings().WORLDS.getValue().contains(world.getName()))
-			{
-				getSettings().WORLDS.add(world.getName());
-			}
-		}
-		
-		return lobby;
+		// TODO Finish this method
+		return null;
 	}
 	
 	
 	public static void removeLobby(World world)
 	{
-		if (getSettings().WORLDS.getValue().contains(world.getName()))
-		{
-			getSettings().WORLDS.remove(world.getName());
-		}
-		
-		getInstance().closeLobby(world);
+		// TODO Finish this method
 	}
 	
 	
