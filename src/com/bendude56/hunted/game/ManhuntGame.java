@@ -2,6 +2,7 @@ package com.bendude56.hunted.game;
 
 import org.bukkit.World;
 
+import com.bendude56.hunted.game.events.GameTimeline;
 import com.bendude56.hunted.game.events.Timeline;
 import com.bendude56.hunted.map.Map;
 
@@ -20,9 +21,9 @@ public class ManhuntGame implements Game
 	
 	
 	//---------------- Private Methods ----------------//
-	private static void createTimeline()
+	private void createTimeline()
 	{
-		
+		timeline = new GameTimeline();
 	}
 	
 	
