@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.game.Game;
+import com.bendude56.hunted.game.ManhuntGame;
 
 /**
  * This class handles all player timeouts, including
@@ -14,11 +14,11 @@ import com.bendude56.hunted.game.Game;
  *
  */
 public class TimeoutManager {
-	private Game game;
+	private ManhuntGame game;
 	
 	private List<Timeout> timeouts = new ArrayList<Timeout>();
 	
-	public TimeoutManager(Game game)
+	public TimeoutManager(ManhuntGame game)
 	{
 		this.game = game;
 	}
@@ -107,7 +107,7 @@ public class TimeoutManager {
 		timeouts.clear();
 	}
 	
-	public Game getGame()
+	public ManhuntGame getGame()
 	{
 		return game;
 	}

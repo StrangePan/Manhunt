@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.commands.CommandSwitchboard;
 import com.bendude56.hunted.finder.FinderManager;
-import com.bendude56.hunted.game.Game;
+import com.bendude56.hunted.game.ManhuntGame;
 import com.bendude56.hunted.game.GameIntermission;
 import com.bendude56.hunted.game.GameUtil;
 import com.bendude56.hunted.listeners.BlockEventHandler;
@@ -31,7 +31,7 @@ public class ManhuntPlugin extends JavaPlugin
 	private LoadoutManager	loadouts;
 	private TeamManager		teams;
 	private FinderManager	finders;
-	private Game			game;
+	private ManhuntGame			game;
 	private ChatManager		chat;
 	private GameIntermission intermission;
 	
@@ -102,13 +102,13 @@ public class ManhuntPlugin extends JavaPlugin
 			if (getTeams().getAllPlayers(true).size() >= getSettings().MINIMUM_PLAYERS.value);
 			{
 				getTeams().randomizeTeams();
-				game = new Game(this);
+				game = new ManhuntGame(this);
 				cancelIntermission();
 			}
 		}
 		else
 		{
-			game = new Game(this);
+			game = new ManhuntGame(this);
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class ManhuntPlugin extends JavaPlugin
 		return finders;
 	}
 
-	public Game getGame() {
+	public ManhuntGame getGame() {
 		return game;
 	}
 	

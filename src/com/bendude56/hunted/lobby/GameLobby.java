@@ -13,12 +13,20 @@ public interface GameLobby extends Lobby
 	
 	//---------------- Getters ----------------//
 	/**
+	 * Gets the name of this lobby.
+	 * @return Name of this lobby.
+	 */
+	public String getName();
+	
+	/**
 	 * Gets the a list of Worlds this Lobby may spawn. Each
 	 * lobby may spawn multiple maps, so this method returns
 	 * what worlds it spawns.
 	 * @return ArrayList of Worlds in this Lobby
 	 */
 	public List<World> getWorlds();
+	
+	
 	
 	/**
 	 * Gets the maps currently loaded by the Lobby
@@ -47,6 +55,12 @@ public interface GameLobby extends Lobby
 	public WorldSettings getSettings();
 	
 	//---------------- Setters ----------------//
+	/**
+	 * Sets this lobby's name.
+	 * @param name The new name.
+	 */
+	public void setName(String name);
+	
 	/**
 	 * Adds a player to the Lobby and to the given team.
 	 * @param p The Player to add

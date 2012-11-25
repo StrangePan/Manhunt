@@ -7,12 +7,15 @@ public class NewManhuntPlugin extends JavaPlugin
 	//---------------- Declarations ----------------//
 	
 	private static NewManhuntPlugin instance;
+	private static Manhunt manhunt;
 	
 	
 	@Override
 	public void onEnable()
 	{
 		instance = this;
+		
+		manhunt = new Manhunt();
 	}
 	
 	@Override
@@ -24,5 +27,10 @@ public class NewManhuntPlugin extends JavaPlugin
 	public static NewManhuntPlugin getInstance()
 	{
 		return instance;
+	}
+	
+	public static Manhunt getManhuntInstance()
+	{
+		return manhunt;
 	}
 }

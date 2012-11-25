@@ -7,7 +7,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.game.GameUtil;
-import com.bendude56.hunted.game.Game.GameStage;
+import com.bendude56.hunted.game.ManhuntGame.GameStage;
 import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 

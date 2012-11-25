@@ -31,7 +31,7 @@ import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.game.GameUtil;
-import com.bendude56.hunted.game.Game.GameStage;
+import com.bendude56.hunted.game.ManhuntGame.GameStage;
 import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 

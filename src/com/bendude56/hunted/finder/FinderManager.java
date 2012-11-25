@@ -5,15 +5,15 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.game.Game;
+import com.bendude56.hunted.game.ManhuntGame;
 
 public class FinderManager
 {
-	private Game game;
+	private ManhuntGame game;
 
 	List<Finder> finders = new ArrayList<Finder>();
 
-	public FinderManager(Game game)
+	public FinderManager(ManhuntGame game)
 	{
 		this.game = game;
 	}
@@ -110,7 +110,7 @@ public class FinderManager
 		}
 	}
 
-	public Game getGame()
+	public ManhuntGame getGame()
 	{
 		return game;
 	}

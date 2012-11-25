@@ -17,6 +17,8 @@ public class ManhuntGameLobby implements GameLobby
 {
 	
 	//---------------- Properties ----------------//
+	String name;
+	
 	private Spawn spawn;
 	private HashMap<Player, Team> players;
 	private boolean enabled;
@@ -26,13 +28,15 @@ public class ManhuntGameLobby implements GameLobby
 	
 	
 	//---------------- Constructors ----------------//
-	public ManhuntGameLobby(World world)
+	public ManhuntGameLobby(String name, World world)
 	{
-		this(world.getSpawnLocation());
+		this(name, world.getSpawnLocation());
 	}
 	
-	public ManhuntGameLobby(Location loc)
+	public ManhuntGameLobby(String name, Location loc)
 	{
+		this.name = name;
+		
 		spawn = new ManhuntSpawn(loc);
 		players = new HashMap<Player, Team>();
 		enabled = true;
@@ -45,6 +49,11 @@ public class ManhuntGameLobby implements GameLobby
 	//---------------- Public Methods ----------------//
 	
 	//------------ Getters ------------//
+	public String getName()
+	{
+		return name;
+	}
+	
 	public Spawn getSpawn()
 	{
 		return spawn;
@@ -118,6 +127,11 @@ public class ManhuntGameLobby implements GameLobby
 	
 	
 	//------------ Setters ------------//
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
 	public void addPlayer(Player p)
 	{
 		// TODO Finish

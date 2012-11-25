@@ -10,7 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.game.Game.GameStage;
+import com.bendude56.hunted.game.ManhuntGame.GameStage;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class ManhuntUtil {
