@@ -1,5 +1,7 @@
 package com.bendude56.hunted.settings;
 
+import org.jnbt.ByteTag;
+
 public class SettingBoolean extends SettingBase<Boolean> implements Setting
 {
 	
@@ -44,6 +46,12 @@ public class SettingBoolean extends SettingBase<Boolean> implements Setting
 		{
 			return super.getDescriptions().get(1);
 		}
+	}
+	
+	@Override
+	public ByteTag getNBT()
+	{
+		return new ByteTag(getLabel(), getValue() ? (byte) 1 : (byte) 0);
 	}
 
 }

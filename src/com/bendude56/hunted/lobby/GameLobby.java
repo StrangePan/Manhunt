@@ -6,7 +6,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.map.Map;
-import com.bendude56.hunted.settings.WorldSettings;
+import com.bendude56.hunted.settings.LobbySettings;
 
 public interface GameLobby extends Lobby
 {
@@ -56,7 +56,7 @@ public interface GameLobby extends Lobby
 	 * Gets the WorldSettings for this Lobby.
 	 * @return The WorldSettings of this Lobby.
 	 */
-	public WorldSettings getSettings();
+	public LobbySettings getSettings();
 	
 	
 	//---------------- Setters ----------------//

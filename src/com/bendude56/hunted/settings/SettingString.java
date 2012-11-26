@@ -1,5 +1,7 @@
 package com.bendude56.hunted.settings;
 
+import org.jnbt.StringTag;
+
 public class SettingString extends SettingBase<String> implements Setting
 {
 
@@ -30,6 +32,12 @@ public class SettingString extends SettingBase<String> implements Setting
 	public String getDescription()
 	{
 		return super.getDescriptions().get(0);
+	}
+	
+	@Override
+	public StringTag getNBT()
+	{
+		return new StringTag(getLabel(), getValue());
 	}
 
 }

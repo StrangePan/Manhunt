@@ -1,8 +1,15 @@
 package com.bendude56.hunted.settings;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jnbt.CompoundTag;
+import org.jnbt.DoubleTag;
+import org.jnbt.FloatTag;
+import org.jnbt.Tag;
 
 public class SettingLocation extends SettingBase<Location> implements Setting
 {
@@ -76,6 +83,19 @@ public class SettingLocation extends SettingBase<Location> implements Setting
 	public String getDescription()
 	{
 		return null;
+	}
+	
+	@Override
+	public CompoundTag getNBT()
+	{
+		Map<String, Tag> tags = new HashMap<String, Tag>();
+		tags.put("x", new DoubleTag("x", getValue().getX()));
+		tags.put("y", new DoubleTag("y", getValue().getY()));
+		tags.put("z", new DoubleTag("z", getValue().getZ()));
+		tags.put("yaw", new FloatTag("yaw", getValue().getYaw()));
+		tags.put("pitch", new FloatTag("yaw", getValue().getPitch()));
+		
+		return new CompoundTag(getLabel(), tags);
 	}
 
 }

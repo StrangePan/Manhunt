@@ -1,6 +1,11 @@
 package com.bendude56.hunted.settings;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.jnbt.ListTag;
+import org.jnbt.StringTag;
+import org.jnbt.Tag;
 
 public class SettingListString extends SettingBase<ArrayList<String>> implements Setting, SettingList
 {
@@ -124,6 +129,19 @@ public class SettingListString extends SettingBase<ArrayList<String>> implements
 		}
 		
 		return string;
+	}
+	
+	@Override
+	public ListTag getNBT()
+	{
+		List<Tag> tags = new ArrayList<Tag>();
+		
+		for (String string : getValue())
+		{
+			tags.add(new StringTag("", string));
+		}
+		
+		return new ListTag(getLabel(), StringTag.class, tags);
 	}
 	
 }

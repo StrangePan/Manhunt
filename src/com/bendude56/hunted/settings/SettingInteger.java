@@ -1,5 +1,7 @@
 package com.bendude56.hunted.settings;
 
+import org.jnbt.IntTag;
+
 public class SettingInteger extends SettingBase<Integer> implements Setting
 {
 	
@@ -51,6 +53,12 @@ public class SettingInteger extends SettingBase<Integer> implements Setting
 		{
 			return super.getDescriptions().get(0);
 		}
+	}
+	
+	@Override
+	public IntTag getNBT()
+	{
+		return new IntTag(getLabel(), getValue());
 	}
 
 }
