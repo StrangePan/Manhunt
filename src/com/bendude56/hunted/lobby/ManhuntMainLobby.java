@@ -16,15 +16,19 @@ import com.bendude56.hunted.map.Spawn;
  * @author Deaboy
  *
  */
-public class ManhuntMainLobby implements MainLobby
+public class ManhuntMainLobby extends ManhuntLobby implements MainLobby
 {
 	
 	//---------------- Properties ----------------//
 	private List<Player> players;
-	private Spawn spawn;
-	private boolean enabled;
+	
 	
 	//---------------- Constructors ----------------//
+	public ManhuntMainLobby(World world)
+	{
+		this(world.getSpawnLocation());
+	}
+	
 	public ManhuntMainLobby(Location loc)
 	{
 		this(new ManhuntSpawn(loc));
@@ -32,11 +36,10 @@ public class ManhuntMainLobby implements MainLobby
 	
 	public ManhuntMainLobby(Spawn spawn)
 	{
-		this.spawn = spawn;
+		super(spawn);
 		
 		players = new ArrayList<Player>();
 		
-		this.enabled = true;
 	}
 	
 	
@@ -44,34 +47,11 @@ public class ManhuntMainLobby implements MainLobby
 	
 	//------------ Getters ------------//
 	@Override
-	public Spawn getSpawn()
-	{
-		return spawn;
-	}
-	
-	@Override
-	public World getWorld()
-	{
-		return spawn.getLocation().getWorld();
-	}
-	
-	@Override
-	public Location getLocation()
-	{
-		return spawn.getLocation();
-	}
-	
-	@Override
 	public List<Player> getPlayers()
 	{
 		return players;
 	}
 	
-	@Override
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
 	
 	//------------ Setters ------------//
 	@Override
@@ -110,17 +90,5 @@ public class ManhuntMainLobby implements MainLobby
 		players.clear();
 	}
 	
-	@Override
-	public void enable()
-	{
-		enabled = true;
-	}
 	
-	@Override
-	public void disable()
-	{
-		enabled = false;
-	}
-	
-
 }

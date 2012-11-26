@@ -34,11 +34,6 @@ public class ManhuntWorldEvent extends ManhuntEvent implements WorldEvent
 	
 	
 	//---------------- Public Methods ----------------//
-	@Override
-	public boolean isReady()
-	{
-		return world.getFullTime() >= getTriggerTime();
-	}
 	
 
 }

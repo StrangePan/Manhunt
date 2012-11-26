@@ -6,16 +6,7 @@ import org.bukkit.World;
 
 public interface Timeline
 {
-	
-	//---------------- Setters ----------------//
-	/**
-	 * Sets the world for the current timeline. Only works if
-	 * the timeline is not running.
-	 * @param world The new world.
-	 */
-	public void setWorld(World world);
-	
-	
+
 	//---------------- Getters ----------------//
 	/**
 	 * Gets the current world for the timeline.
@@ -28,6 +19,22 @@ public interface Timeline
 	 * @return List of registered events.
 	 */
 	public List<Event> getRegisteredEvents();
+	
+	/**
+	 * Returns whether or not the timeline is currently
+	 * running or not.
+	 * @return True if the timeline is running, false if not.
+	 */
+	public boolean isRunning();
+	
+	
+	//---------------- Setters ----------------//
+	/**
+	 * Sets the world for the current timeline. Only works if
+	 * the timeline is not running.
+	 * @param world The new world.
+	 */
+	public void setWorld(World world);
 	
 	
 	//---------------- Public Methods ----------------//

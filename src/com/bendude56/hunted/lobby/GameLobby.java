@@ -26,7 +26,11 @@ public interface GameLobby extends Lobby
 	 */
 	public List<World> getWorlds();
 	
-	
+	/**
+	 * Gets the current map of this lobby.
+	 * @return
+	 */
+	public Map getCurrentMap();
 	
 	/**
 	 * Gets the maps currently loaded by the Lobby
@@ -53,6 +57,7 @@ public interface GameLobby extends Lobby
 	 * @return The WorldSettings of this Lobby.
 	 */
 	public WorldSettings getSettings();
+	
 	
 	//---------------- Setters ----------------//
 	/**
@@ -88,5 +93,15 @@ public interface GameLobby extends Lobby
 	 * @param teams The team(s) to broadcast to.
 	 */
 	public void broadcast(String message, Team ... teams);
+	
+	/**
+	 * Starts the game for this lobby.
+	 */
+	public void startGame();
+	
+	/**
+	 * Stops the Manhunt game
+	 */
+	public void stopGame();
 	
 }

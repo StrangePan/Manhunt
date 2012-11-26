@@ -58,6 +58,19 @@ public class Manhunt
 		return getInstance().settings;
 	}
 	
+	public static GameLobby getLobby(long id)
+	{
+		for (GameLobby lobby: getInstance().lobbies)
+		{
+			if (lobby.getId() == id)
+			{
+				return lobby;
+			}
+		}
+		return null;
+		
+	}
+	
 	public static GameLobby getLobby(String name)
 	{
 		for (GameLobby lobby : getInstance().lobbies)

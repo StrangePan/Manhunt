@@ -57,12 +57,6 @@ public interface Event
 	public void execute();
 	
 	/**
-	 * Checks to see if the event is ready to execute.
-	 * @return True if the event is ready, false if not.
-	 */
-	public boolean isReady();
-	
-	/**
 	 * Returns whether or not this event has expired.
 	 * @return True if this event has executed, false if not.
 	 */

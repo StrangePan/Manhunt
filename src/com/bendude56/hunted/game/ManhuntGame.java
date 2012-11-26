@@ -2,7 +2,7 @@ package com.bendude56.hunted.game;
 
 import org.bukkit.World;
 
-import com.bendude56.hunted.game.events.GameTimeline;
+import com.bendude56.hunted.game.events.ManhuntTimeline;
 import com.bendude56.hunted.game.events.Timeline;
 import com.bendude56.hunted.map.Map;
 
@@ -11,11 +11,13 @@ public class ManhuntGame implements Game
 	//---------------- Properties ----------------//
 	private Map map;
 	private Timeline timeline;
+	private final long lobby_id;
 	
 	
 	//---------------- Constructors ----------------//
-	public ManhuntGame()
+	public ManhuntGame(long lobby_id)
 	{
+		this.lobby_id = lobby_id; 
 		createTimeline();
 	}
 	
@@ -23,7 +25,7 @@ public class ManhuntGame implements Game
 	//---------------- Private Methods ----------------//
 	private void createTimeline()
 	{
-		timeline = new GameTimeline();
+		timeline = ManhuntTimeline.newStandardTimeline(lobby_id);
 	}
 	
 	

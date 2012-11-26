@@ -13,6 +13,12 @@ public interface Lobby
 	
 	//---------------- Getters ----------------//
 	/**
+	 * Gets the long ID of this lobby.
+	 * @return This lobby's ID.
+	 */
+	public long getId();
+	
+	/**
 	 * Gets this Lobby's Spawn object.
 	 * @return This Lobby's Spawn.
 	 */

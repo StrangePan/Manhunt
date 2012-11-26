@@ -13,16 +13,15 @@ import com.bendude56.hunted.map.Spawn;
 import com.bendude56.hunted.map.Map;
 import com.bendude56.hunted.settings.WorldSettings;
 
-public class ManhuntGameLobby implements GameLobby
+public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 {
 	
 	//---------------- Properties ----------------//
 	String name;
 	
-	private Spawn spawn;
 	private HashMap<Player, Team> players;
-	private boolean enabled;
 	
+	private Map current_map;
 	private List<Map> maps;
 	private WorldSettings settings;
 	
@@ -35,35 +34,30 @@ public class ManhuntGameLobby implements GameLobby
 	
 	public ManhuntGameLobby(String name, Location loc)
 	{
+		this(name, new ManhuntSpawn(loc));
+	}
+	
+	public ManhuntGameLobby(String name, Spawn spawn)
+	{
+		super(spawn);
+		
 		this.name = name;
 		
-		spawn = new ManhuntSpawn(loc);
 		players = new HashMap<Player, Team>();
-		enabled = true;
 		
 		maps = new ArrayList<Map>();
-		settings = new WorldSettings(loc.getWorld());
+		settings = new WorldSettings(spawn.getWorld());
 	}
 	
 	
-	//---------------- Public Methods ----------------//
-	
-	//------------ Getters ------------//
+	//---------------- Getters ----------------//
+	@Override
 	public String getName()
 	{
 		return name;
 	}
-	
-	public Spawn getSpawn()
-	{
-		return spawn;
-	}
-	
-	public World getWorld()
-	{
-		return spawn.getWorld();
-	}
-	
+
+	@Override
 	public List<World> getWorlds()
 	{
 		List<World> worlds = new ArrayList<World>();
@@ -75,21 +69,25 @@ public class ManhuntGameLobby implements GameLobby
 		return worlds;
 	}
 	
+	@Override
+	public Map getCurrentMap()
+	{
+		return current_map;
+	}
+
+	@Override
 	public List<Map> getMaps()
 	{
 		return maps;
 	}
-	
-	public Location getLocation()
-	{
-		return spawn.getLocation();
-	}
-	
+
+	@Override
 	public List<Player> getPlayers()
 	{
 		return new ArrayList<Player>(players.keySet());
 	}
-	
+
+	@Override
 	public List<Player> getPlayers(Team...teams)
 	{
 		List<Player> plrs = new ArrayList<Player>();
@@ -106,7 +104,8 @@ public class ManhuntGameLobby implements GameLobby
 		}
 		return plrs;
 	}
-	
+
+	@Override
 	public Team getPlayerTeam(Player p)
 	{
 		if (players.containsKey(p))
@@ -114,29 +113,28 @@ public class ManhuntGameLobby implements GameLobby
 		else
 			return null;
 	}
-	
+
+	@Override
 	public WorldSettings getSettings()
 	{
 		return settings;
 	}
 	
-	public boolean isEnabled()
-	{
-		return enabled;
-	}
 	
-	
-	//------------ Setters ------------//
+	//---------------- Setters ----------------//
+	@Override
 	public void setName(String name)
 	{
 		this.name = name;
 	}
-	
+
+	@Override
 	public void addPlayer(Player p)
 	{
-		// TODO Finish
+		setPlayerTeam(p, Team.SPECTATORS);
 	}
-	
+
+	@Override
 	public void addPlayer(Player p, Team t)
 	{
 		if (!players.containsKey(p))
@@ -144,7 +142,8 @@ public class ManhuntGameLobby implements GameLobby
 			players.put(p, t);
 		}
 	}
-	
+
+	@Override
 	public void setPlayerTeam(Player p, Team t)
 	{
 		if (players.containsKey(p))
@@ -152,7 +151,8 @@ public class ManhuntGameLobby implements GameLobby
 			players.put(p, t);
 		}
 	}
-	
+
+	@Override
 	public void setAllPlayerTeam(Team t)
 	{
 		for (Player p : players.keySet())
@@ -160,7 +160,8 @@ public class ManhuntGameLobby implements GameLobby
 			players.put(p, t);
 		}
 	}
-	
+
+	@Override
 	public void removePlayer(Player p)
 	{
 		if (players.containsKey(p))
@@ -170,7 +171,8 @@ public class ManhuntGameLobby implements GameLobby
 	}
 	
 	
-	//------------ Other ------------//
+	//---------------- Public Methods ----------------//
+	@Override
 	public void broadcast(String message)
 	{
 		for (Player p : players.keySet())
@@ -181,7 +183,8 @@ public class ManhuntGameLobby implements GameLobby
 			}
 		}
 	}
-	
+
+	@Override
 	public void broadcast(String message, Team...teams)
 	{
 		for (Player p : players.keySet())
@@ -196,20 +199,23 @@ public class ManhuntGameLobby implements GameLobby
 			}
 		}
 	}
-	
+
+	@Override
 	public void clearPlayers()
 	{
 		players.clear();
 	}
 	
-	public void enable()
+	@Override
+	public void startGame()
 	{
-		enabled = true;
+		current_map = maps.get(((int) Math.random()) % maps.size());
 	}
 	
-	public void disable()
+	@Override
+	public void stopGame()
 	{
-		enabled = false;
+		current_map = null;
 	}
 	
 }

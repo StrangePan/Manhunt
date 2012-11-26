@@ -1,7 +1,6 @@
 package com.bendude56.hunted.game.events;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ManhuntEvent implements Event
@@ -79,12 +78,6 @@ public class ManhuntEvent implements Event
 			action.execute();
 		}
 		expired = true;
-	}
-	
-	@Override
-	public boolean isReady()
-	{
-		return new Date().getTime() >= time;
 	}
 	
 	@Override
