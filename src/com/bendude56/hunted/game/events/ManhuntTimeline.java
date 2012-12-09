@@ -148,50 +148,123 @@ public class ManhuntTimeline implements Timeline
 		// Create the new timeline and placeholder event
 		ManhuntTimeline timeline = new ManhuntTimeline();
 		Event event;
+		long time = 0L;
 		
 		
 		// Start defining events and actions
-		event = new ManhuntEvent(1000L);
+		event = new ManhuntEvent(time += 1000);
 		event.addAction(new BroadcastAction(lobby_id, "Prepapre for Teleport!", Team.PREY, Team.HUNTERS));
 		timeline.registerEvent(event);
+		
 		/*
 		 * 
 		 */
-		event = new ManhuntEvent(5000L);
+		
+		event = new ManhuntEvent(time += 5000);
 		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, Manhunt.getLobby(lobby_id).getCurrentMap().getPreySpawns()));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getHunterSpawns()));
 		timeline.registerEvent(event);
+		
 		/*
 		 * 
 		 * 
 		 * 
 		 */
-		event = new ManhuntEvent(8000L);
-		event.addAction(new BroadcastAction(lobby_id, "Stup begins in 5...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		
+		event = new ManhuntEvent(time += 3000);
+		event.addAction(new BroadcastAction(lobby_id, "Setup begins in 5...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
 		timeline.registerEvent(event);
 		
-		event = new ManhuntEvent(9000L);
+		event = new ManhuntEvent(time += 1000);
 		event.addAction(new BroadcastAction(lobby_id, "4...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
 		timeline.registerEvent(event);
 
-		event = new ManhuntEvent(10000L);
+		event = new ManhuntEvent(time += 1000);
 		event.addAction(new BroadcastAction(lobby_id, "3...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
 		timeline.registerEvent(event);
 
-		event = new ManhuntEvent(11000L);
+		event = new ManhuntEvent(time += 1000);
 		event.addAction(new BroadcastAction(lobby_id, "2...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
 		timeline.registerEvent(event);
 
-		event = new ManhuntEvent(12000L);
+		event = new ManhuntEvent(time += 1000);
 		event.addAction(new BroadcastAction(lobby_id, "1...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
 		timeline.registerEvent(event);
 
-		event = new ManhuntEvent(13000L);
+		event = new ManhuntEvent(time += 1000);
 		event.addAction(new BroadcastAction(lobby_id, "The game has begun!", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
 		event.addAction(new LogAction(Level.INFO, "A Manhunt game was started in lobby " + Manhunt.getLobby(lobby_id).getName()));
 		timeline.registerEvent(event);
 		
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
 		
+		event = new ManhuntEvent(time += Manhunt.getSettings().TIME_SETUP.getValue() * 60000 - 20 * 60000);
+		event.addAction(new BroadcastAction(lobby_id, "Only one day left in the hunt!", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+		
+		/*
+		 * 
+		 */
+		
+		event = new ManhuntEvent(time += 15 * 60000);
+		event.addAction(new BroadcastAction(lobby_id, "5 minutes left in the hunt!", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+		
+		/*
+		 */
+		
+		event = new ManhuntEvent(time += 4 * 60000);
+		event.addAction(new BroadcastAction(lobby_id, "1 minute left in the hunt!", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+		
+		event = new ManhuntEvent(time += 30000);
+		event.addAction(new BroadcastAction(lobby_id, "30 seconds left!", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+		
+		event = new ManhuntEvent(time += 20000);
+		event.addAction(new BroadcastAction(lobby_id, "10...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+		
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "9...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "8...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "7...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "6...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "5...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "4...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "3...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "2...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
+
+		event = new ManhuntEvent(time += 1000);
+		event.addAction(new BroadcastAction(lobby_id, "1...", Team.PREY, Team.HUNTERS, Team.SPECTATORS));
+		timeline.registerEvent(event);
 		
 		
 		

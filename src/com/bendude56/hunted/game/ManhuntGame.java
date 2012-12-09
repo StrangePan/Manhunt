@@ -12,6 +12,7 @@ public class ManhuntGame implements Game
 	private Map map;
 	private Timeline timeline;
 	private final long lobby_id;
+	private GameStage stage;
 	
 	
 	//---------------- Constructors ----------------//
@@ -19,6 +20,7 @@ public class ManhuntGame implements Game
 	{
 		this.lobby_id = lobby_id; 
 		createTimeline();
+		stage = GameStage.INTERMISSION;
 	}
 	
 	
@@ -40,10 +42,34 @@ public class ManhuntGame implements Game
 		return map;
 	}
 	
+	public boolean isRunning()
+	{
+		switch (stage)
+		{
+		case PREGAME:
+		case SETUP:
+		case HUNT:
+			return true;
+		case INTERMISSION:
+		default:
+			return false;
+		}
+	}
+	
+	public GameStage getStage()
+	{
+		return stage;
+	}
+	
 	//---------------- Setters ----------------//
 	public void setMap(Map map)
 	{
 		this.map = map;
+	}
+	
+	public void setStage(GameStage stage)
+	{
+		this.stage = stage;
 	}
 	
 	
