@@ -1,5 +1,9 @@
 package com.bendude56.hunted.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,32 +30,58 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.game.GameUtil;
-import com.bendude56.hunted.game.ManhuntGame.GameStage;
+import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.teams.TeamUtil;
 import com.bendude56.hunted.teams.TeamManager.Team;
 
-public class PlayerEventHandler implements Listener {
-	
-	private ManhuntPlugin plugin;
+public class PlayerEventHandler implements Listener
+{
 	
 	public PlayerEventHandler(ManhuntPlugin plugin)
 	{
-		this.plugin = plugin;
 	}
 	
+	/**
+	 * Handles Manhunt chat events.
+	 * UPDATED: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onAsynchPlayerChat(AsyncPlayerChatEvent e)
 	{
-		if (e.isCancelled() || !plugin.getSettings().CONTROL_CHAT.value)
-		{
+		if (Manhunt.getSettings().HANDLE_CHAT.getValue())
 			return;
+		
+		Set<Player> recipients = e.getRecipients();
+		GameLobby lobby;
+		recipients.clear();
+		
+		if (Manhunt.getMainLobby().getPlayers().contains(e.getPlayer()))
+		{
+			recipients.addAll(Manhunt.getMainLobby().getPlayers());
 		}
-		plugin.getChat().onPlayerchat(e);
+		else
+		{
+			lobby = Manhunt.getLobby(e.getPlayer().getWorld());
+			if (lobby == null)
+			{
+				recipients.addAll(e.getPlayer().getWorld().getPlayers());
+			}
+			else if (lobby.getSettings().ALL_TALK.getValue() || lobby.getGame().isRunning())
+			{
+				recipients.addAll(lobby.getPlayers());
+			}
+			else
+			{
+				recipients.addAll(lobby.getPlayers(lobby.getPlayerTeam(e.getPlayer())));
+			}
+		}
 	}
 
 	@EventHandler

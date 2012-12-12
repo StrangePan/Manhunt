@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.game.Game;
 import com.bendude56.hunted.map.Map;
 import com.bendude56.hunted.settings.LobbySettings;
 
@@ -57,6 +58,13 @@ public interface GameLobby extends Lobby
 	 * @return The WorldSettings of this Lobby.
 	 */
 	public LobbySettings getSettings();
+	
+	/**
+	 * Gets the game of this lobby. This includes access to various
+	 * things, such as the game stage.
+	 * @return
+	 */
+	public Game getGame();
 	
 	
 	//---------------- Setters ----------------//

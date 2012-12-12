@@ -11,7 +11,6 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	public final SettingListString WORLDS;
 
 	public final SettingBoolean HANDLE_CHAT;
-	public final SettingBoolean ALL_TALK;
 	public final SettingBoolean FRIENDLY_FIRE;
 	public final SettingBoolean INSTANT_DEATH;
 	public final SettingBoolean TEAM_HATS;
@@ -32,7 +31,6 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		addSetting(WORLDS =		new SettingListString("worlds", "The list of Worlds Manhunt will run in.", Bukkit.getWorlds().get(0).getName()), false);
 		
 		addSetting(HANDLE_CHAT =	new SettingBoolean("handlechat", true, "Manhunt will handle chat events.", "Manhunt will ignore chat events."), true);
-		addSetting(ALL_TALK =		new SettingBoolean("alltalk", false, "Teams can communicate with each other.", "Teams cannot see each other's chat."), true);
 		addSetting(FRIENDLY_FIRE =	new SettingBoolean("friendlyfire", false, "Teammates can damage each other.", "Teammates cannot kill each other."), true);
 		addSetting(INSTANT_DEATH =	new SettingBoolean("insantdeath", false, "Every attack is a one-hit-kill.", "Attack damage is normal."), true);
 		addSetting(TEAM_HATS =		new SettingBoolean("teamhats", true, "Teams will have identifying hats.", "Teams do not have identifying hats."), true);

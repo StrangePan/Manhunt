@@ -29,6 +29,8 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingLocation PROTECTION_SETUP2;
 	public final SettingLocation PROTECTION_LOBBY1;
 	public final SettingLocation PROTECTION_LOBBY2;
+
+	public final SettingBoolean ALL_TALK;
 	
 	public LobbySettings( World world )
 	{
@@ -56,6 +58,8 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		addSetting(PROTECTION_SETUP2 =	new SettingLocation("seutpprotection2", world.getSpawnLocation()), true);
 		addSetting(PROTECTION_LOBBY1 =	new SettingLocation("lobbyprotection1", world.getSpawnLocation()), true);
 		addSetting(PROTECTION_LOBBY2 =	new SettingLocation("lobbyprotection2", world.getSpawnLocation()), true);
+		
+		addSetting(ALL_TALK =		new SettingBoolean("alltalk", false, "Teams can communicate with each other.", "Teams cannot see each other's chat."), true);
 		
 	}
 	

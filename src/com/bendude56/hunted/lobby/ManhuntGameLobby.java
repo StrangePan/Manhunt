@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.game.Game;
+import com.bendude56.hunted.game.ManhuntGame;
 import com.bendude56.hunted.map.ManhuntSpawn;
 import com.bendude56.hunted.map.Spawn;
 import com.bendude56.hunted.map.Map;
@@ -24,6 +26,8 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	private Map current_map;
 	private List<Map> maps;
 	private LobbySettings settings;
+	
+	private Game game;
 	
 	
 	//---------------- Constructors ----------------//
@@ -47,6 +51,8 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 		
 		maps = new ArrayList<Map>();
 		settings = new LobbySettings(spawn.getWorld());
+		
+		this.game = new ManhuntGame(this.getId());
 	}
 	
 	
@@ -118,6 +124,12 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	public LobbySettings getSettings()
 	{
 		return settings;
+	}
+	
+	@Override
+	public Game getGame()
+	{
+		return game;
 	}
 	
 	
