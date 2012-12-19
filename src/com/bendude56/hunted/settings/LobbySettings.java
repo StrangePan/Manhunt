@@ -30,7 +30,10 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingLocation PROTECTION_LOBBY1;
 	public final SettingLocation PROTECTION_LOBBY2;
 
+	public final SettingInteger OFFLINE_TIMEOUT;
 	public final SettingBoolean ALL_TALK;
+	public final SettingBoolean TEAM_HATS;
+	public final SettingBoolean PREY_FINDER;
 	
 	public LobbySettings( World world )
 	{
@@ -59,7 +62,10 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		addSetting(PROTECTION_LOBBY1 =	new SettingLocation("lobbyprotection1", world.getSpawnLocation()), true);
 		addSetting(PROTECTION_LOBBY2 =	new SettingLocation("lobbyprotection2", world.getSpawnLocation()), true);
 		
+		addSetting(OFFLINE_TIMEOUT =	new SettingInteger("timeout", 30, "Seconds before players are disqualified.", "Players will be immediately disqualified."), true);
 		addSetting(ALL_TALK =		new SettingBoolean("alltalk", false, "Teams can communicate with each other.", "Teams cannot see each other's chat."), true);
+		addSetting(TEAM_HATS =		new SettingBoolean("teamhats", true, "Teams will have identifying hats.", "Teams do not have identifying hats."), true);
+		addSetting(PREY_FINDER =	new SettingBoolean("preyfinder", true, "Players can use the PreyFinder.", "The PreyFinder is disabled."), true);
 		
 	}
 	

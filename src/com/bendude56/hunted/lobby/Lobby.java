@@ -43,6 +43,12 @@ public interface Lobby
 	public List<Player> getPlayers();
 	
 	/**
+	 * Gets a list of this Lobby's players' names.
+	 * @return ArrayList of Strings of players' names in this lobby.
+	 */
+	public List<String> getPlayerNames();
+	
+	/**
 	 * Checks to see if the Lobby is currently enabled.
 	 * @return True if the Lobby is enabled, false if not.
 	 */
@@ -51,16 +57,16 @@ public interface Lobby
 	
 	//---------------- Setters ----------------//
 	/**
-	 * Adds a Player to the Lobby.
+	 * Adds a player to the Lobby via their name.
 	 * @param p The Player to add.
 	 */
-	public void addPlayer(Player p);
+	public void addPlayer(String name);
 	
 	/**
-	 * Removes a Player from the lobby.
+	 * Removes a Player from the lobby via their name.
 	 * @param p The Player to remove.
 	 */
-	public void removePlayer(Player p);
+	public void removePlayer(String name);
 	
 	
 	//---------------- Public Methods ----------------//

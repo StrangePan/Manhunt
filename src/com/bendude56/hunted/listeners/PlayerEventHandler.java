@@ -1,21 +1,15 @@
 package com.bendude56.hunted.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -32,13 +26,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
-import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.game.GameUtil;
 import com.bendude56.hunted.lobby.GameLobby;
-import com.bendude56.hunted.teams.TeamUtil;
-import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.lobby.Team;
 
 public class PlayerEventHandler implements Listener
 {
@@ -49,7 +39,7 @@ public class PlayerEventHandler implements Listener
 	
 	/**
 	 * Handles Manhunt chat events.
-	 * UPDATED: 1.3
+	 * Updated: 1.3
 	 * @param e
 	 */
 	@EventHandler
@@ -84,80 +74,113 @@ public class PlayerEventHandler implements Listener
 		}
 	}
 
+	/**
+	 * Handles player joining events. Sends them to the main lobby
+	 * or broadcasts a return message to the players in the game.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		e.setJoinMessage(null);
-
-		if (plugin.gameIsRunning())
+		
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
+		
+		// Check if a player is meant to be in the lobby. If not, reset the player.
+		if (lobby == null)
 		{
-			plugin.getGame().onPlayerJoin(e.getPlayer());
+			resetPlayer(e.getPlayer());
+			e.getPlayer().teleport(Manhunt.getMainLobby().getLocation());
 		}
+		// Player is meant to be in the given lobby. Do nothing.
 		else
 		{
-			plugin.getTeams().addPlayer(e.getPlayer());
+			Team team = lobby.getPlayerTeam(e.getPlayer());
+			lobby.broadcast(ChatManager.leftborder + team.getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " is back in the game.");
 		}
-		
-		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.GREEN + "joined" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has joined the game", Team.NONE);
 	}
-
+	
+	/**
+	 * Handles player kick events. Sends them to the main lobby
+	 * and removes them from their current lobby (because they
+	 * were kicked!)
+	 * Updated 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent e)
 	{
 		e.setLeaveMessage(null);
 		
-		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
-		GameUtil.broadcast(ChatManager.leftborder + TeamUtil.getTeamColor(team) + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-		GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
 		
-		if (plugin.gameIsRunning())
+		if (lobby == null)
 		{
-			plugin.getGame().onPlayerLeave(e.getPlayer());
+			for (Player p : e.getPlayer().getWorld().getPlayers())
+			{
+				p.sendMessage( ChatColor.YELLOW + e.getPlayer().getName() + " has left the game.");
+			}
 		}
 		else
 		{
-			plugin.getTeams().deletePlayer(e.getPlayer().getName());
+			lobby.removePlayer(e.getPlayer());
+			resetPlayer(e.getPlayer());
 		}
 	}
 
+	/**
+	 * Handles player quit events. Will initiate a timeout
+	 * countdown for that player.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
 		e.setQuitMessage(null);
 		
-		Team team = plugin.getTeams().getTeamOf(e.getPlayer());
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
 		
-		if (team != null)
+		if (lobby == null)
 		{
-			GameUtil.broadcast(ChatManager.leftborder + team.getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-			GameUtil.broadcast(ChatColor.YELLOW + e.getPlayer().getName() + " has left the game", Team.NONE);
-		}
-		
-		if (plugin.gameIsRunning())
-		{
-			plugin.getGame().onPlayerLeave(e.getPlayer());
+			for (Player p : e.getPlayer().getWorld().getPlayers())
+			{
+				p.sendMessage( ChatColor.YELLOW + e.getPlayer().getName() + " has left the game.");
+			} 
 		}
 		else
 		{
-			plugin.getTeams().deletePlayer(e.getPlayer().getName());
+			Manhunt.newTimeout(e.getPlayer(), lobby, lobby.getSettings().OFFLINE_TIMEOUT.getValue());
 		}
 	}
-
+	
+	/**
+	 * Handles player deaths. Broadcasts messages and determines if
+	 * the game should end.
+	 * Updated 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e)
 	{
+		GameLobby lobby;
 		Player p = e.getEntity();
 		Player p2 = null;
 		Team t = null;
 		Team t2 = null;
 		
-		if (p.getWorld() != plugin.getWorld())
+		int preysize;
+		int huntersize;
+		
+		
+		lobby = Manhunt.getLobby(p);
+		
+		if (lobby == null)
 		{
 			return;
 		}
-		if (!plugin.gameIsRunning())
+		if (!lobby.getGame().isRunning())
 		{
 			return;
 		}
@@ -174,351 +197,233 @@ public class PlayerEventHandler implements Listener
 			}
 		}
 		
-		t = plugin.getTeams().getTeamOf(p);
-		if (p2 != null) t2 = plugin.getTeams().getTeamOf(p2);
+		t = lobby.getPlayerTeam(p);
+		if (p2 != null) t2 = lobby.getPlayerTeam(p2);
 		
 		if (p2 == null) //Player died from the environment
 		{
-			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " has died and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			lobby.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " has died and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
 		else //Player dies from another player
 		{
-			GameUtil.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " was killed by " + t2.getColor() + p2.getName() + ChatColor.WHITE + " and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
+			lobby.broadcast(ChatManager.bracket1_ + t.getColor() + p.getName() + ChatColor.WHITE + " was killed by " + t2.getColor() + p2.getName() + ChatColor.WHITE + " and is " + ChatColor.RED + "ELIMINATED" + ChatManager.bracket2_, Team.HUNTERS, Team.PREY, Team.SPECTATORS);
 		}
 		
-		GameUtil.broadcast(e.getDeathMessage(), Team.NONE);
 		e.setDeathMessage(null);
 		
-		plugin.getGame().onPlayerDie(p);
+		//---------------
+		lobby.setPlayerTeam(p, Team.SPECTATORS);
 		
-		if (!plugin.gameIsRunning())
+		preysize = lobby.getPlayers(Team.PREY).size();
+		huntersize = lobby.getPlayers(Team.HUNTERS).size();
+		
+		if (preysize == 0 || huntersize == 0)
 		{
-			e.setDroppedExp(0);
-			e.getDrops().clear();
+			if (preysize == 0)
+			{
+				// Hunter win-specific action
+				
+				lobby.broadcast("The HUNTERS have won!");
+			}
+			else
+			{
+				// Prey win-specific action
+				
+				lobby.broadcast("The PREY have won!");
+			}
+			
+			// Team-independent win action
+			
+			for (Player player : lobby.getPlayers())
+			{
+				player.teleport(lobby.getLocation());
+				lobby.setPlayerTeam(player, Team.NONE);
+			}
 		}
+		else
+		{
+			// Just-another-death action
+			
+			p.teleport(lobby.getLocation());
+			resetPlayer(p);
+			lobby.setPlayerTeam(p, Team.SPECTATORS);
+		}
+		
 	}
 
+	/**
+	 * Handles player respawns. Teleports them to their lobby's spawn
+	 * point.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e)
 	{
-		if (plugin.gameIsRunning())
-		{
-			plugin.getGame().onPlayerRespawn(e.getPlayer());
-		}
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
 		
-		plugin.getTeams().restoreTemporaryState(e.getPlayer());
+		e.getPlayer().teleport(lobby.getLocation());
 	}
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e)
 	{
-		if (e.getPlayer().getWorld() != plugin.getWorld())
-		{
-			return;
-		}
-		if (!plugin.gameIsRunning())
-		{
-			return;
-		}
+		// TODO Check if the player is not where they're supposed to be
 		
-		Player p = e.getPlayer();
-		Team team = plugin.getTeams().getTeamOf(p);
-		
-		if (team != Team.HUNTERS && team != Team.PREY)
-		{
-			return;
-		}
-		
-		if (team == Team.HUNTERS && plugin.getGame().freeze_hunters)
-		{
-			if (e.getFrom().getX() != e.getTo().getX()
-					|| e.getFrom().getY() != e.getTo().getY()
-					|| e.getFrom().getZ() != e.getTo().getZ())
-			{
-				e.setCancelled(true);
-				p.teleport(e.getFrom());
-			}
-			return;
-		}
-		if (team == Team.PREY && plugin.getGame().freeze_prey)
-		{
-			if (e.getFrom().getX() != e.getTo().getX()
-					|| e.getFrom().getY() != e.getTo().getY()
-					|| e.getFrom().getZ() != e.getTo().getZ())
-			{
-				e.setCancelled(true);
-				p.teleport(e.getFrom());
-			}
-			return;
-		}
-		
-		//if (plugin.getSettings().NORTH_COMPASS.value)
-		//{
-		//	p.setCompassTarget(new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ() - 2000));
-		//}
-		
-		ManhuntUtil.checkPlayerInBounds(p);
-		
-		plugin.getGame().finders.verifyFinder(p);
+		// TODO Check if the player's prey finder should be cancelled
 	}
 
+	/**
+	 * Handles player interaction events. Cancels events not meant to
+	 * occur because the player is a spectator or if other conditions
+	 * are met.
+	 * Updated 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e)
 	{
-		Player p = e.getPlayer();
-
-		if (p.getWorld() != plugin.getWorld())
-		{
-			return;
-		}
-		if (!plugin.gameIsRunning())
-		{
-			return;
-		}
-		if (plugin.locked && !p.isOp())
-		{
-			e.setCancelled(true);
-			return;
-		}
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
 		
-		Team team = plugin.getTeams().getTeamOf(p);
-		
-		if (team == Team.SPECTATORS)
+		if (lobby == null)
 		{
-			e.setCancelled(true);
 			return;
 		}
-		else if (team == Team.HUNTERS || team == Team.PREY)
+		else
 		{
-			if (e.getAction() == Action.RIGHT_CLICK_BLOCK
-					|| e.getAction() == Action.RIGHT_CLICK_AIR
-					|| e.getAction() == Action.LEFT_CLICK_BLOCK
-					|| e.getAction() == Action.LEFT_CLICK_AIR)
+			Team team = lobby.getPlayerTeam(e.getPlayer());
+			if (lobby.getGame().isRunning() && team != Team.HUNTERS && team != Team.PREY)
 			{
-				if (plugin.getGame().getStage() == GameStage.HUNT && plugin.getSettings().PREY_FINDER.value && p.getItemInHand().getType() == Material.COMPASS)
-				{
-					plugin.getGame().finders.startFinder(p);
-				}
+				e.setCancelled(true);
 			}
 		}
+			
 	}
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent e)
 	{
-		if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
-		{
-			if (plugin.gameIsRunning())
-			{
-				plugin.getGame().onPlayerLeave(e.getPlayer());
-				
-				if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.SPECTATORS)
-				{
-					e.getPlayer().sendMessage(ChatManager.bracket1_ + ChatColor.RED + "You have left the Manhunt world!" + ChatManager.bracket2_);
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the Manhunt world!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-				else
-				{
-					GameUtil.makeVisible(e.getPlayer());
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-			}
-			else
-			{
-				plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.NONE);
-			}
-		}
-		else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
-		{
-			if (plugin.gameIsRunning())
-			{
-				plugin.getGame().onPlayerJoin(e.getPlayer());
-				
-				if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.SPECTATORS)
-				{
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.GREEN + "returned" + ChatColor.YELLOW + " to the Manhunt world!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-				else
-				{
-					GameUtil.makeInvisible(e.getPlayer());
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.GREEN + "joined" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-			}
-			else
-			{
-				if (plugin.getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
-				{
-					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.SPECTATORS);
-				}
-				else if (plugin.getSettings().AUTO_JOIN.value)
-				{
-					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.HUNTERS);
-				}
-				else
-				{
-					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.SPECTATORS);
-				}
-			}
-		}	
+		
 	}
 
 	@EventHandler
 	public void onPlayerPortal(PlayerPortalEvent e)
 	{
-		if (e.getFrom().getWorld() == plugin.getWorld() && e.getTo().getWorld() != plugin.getWorld())
-		{
-			if (plugin.gameIsRunning())
-			{
-				plugin.getGame().onPlayerLeave(e.getPlayer());
-				
-				if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.SPECTATORS)
-				{
-					e.getPlayer().sendMessage(ChatManager.bracket1_ + ChatColor.RED + "You have left the Manhunt world!" + ChatManager.bracket2_);
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the Manhunt world!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-				else
-				{
-					GameUtil.makeVisible(e.getPlayer());
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.RED + "left" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-			}
-			else
-			{
-				plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.NONE);
-			}
-		}
-		else if (e.getFrom().getWorld() != plugin.getWorld() && e.getTo().getWorld() == plugin.getWorld())
-		{
-			if (plugin.gameIsRunning())
-			{
-				plugin.getGame().onPlayerJoin(e.getPlayer());
-				
-				if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.SPECTATORS)
-				{
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.GREEN + "returned" + ChatColor.YELLOW + " to the Manhunt world!", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-				else
-				{
-					GameUtil.makeInvisible(e.getPlayer());
-					GameUtil.broadcast(ChatManager.leftborder + plugin.getTeams().getTeamOf(e.getPlayer()).getColor() + e.getPlayer().getName() + ChatColor.YELLOW + " has " + ChatColor.GREEN + "joined" + ChatColor.YELLOW + " the game.", Team.HUNTERS, Team.PREY, Team.SPECTATORS);
-				}
-			}
-			else
-			{
-				if (plugin.getSettings().MANHUNT_MODE.value == ManhuntMode.PUBLIC)
-				{
-					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.SPECTATORS);
-				}
-				else if (plugin.getSettings().AUTO_JOIN.value)
-				{
-					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.HUNTERS);
-				}
-				else
-				{
-					plugin.getTeams().changePlayerTeam(e.getPlayer(), Team.SPECTATORS);
-				}
-			}
-		}
+		
 	}
 
-	//@EventHandler
+	/**
+	 * Handles players changing game modes. Cancels the event if a the
+	 * player is a hunter or a prey while a game is running.
+	 * Updated: 1.3
+	 * @param e
+	 */
+	@EventHandler
 	public void onPlayerGameModeChange(PlayerGameModeChangeEvent e)
 	{
-		if (e.getPlayer().getWorld() != plugin.getWorld())
-		{
-			return;
-		}
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
 		
-		if (!plugin.gameIsRunning())
+		if (lobby.getGame().isRunning() &&
+				(lobby.getPlayerTeam(e.getPlayer()) == Team.HUNTERS || lobby.getPlayerTeam(e.getPlayer()) == Team.PREY))
 		{
-			return;
-		}
-		
-		if (plugin.getTeams().getTeamOf(e.getPlayer()) != Team.HUNTERS && plugin.getTeams().getTeamOf(e.getPlayer()) != Team.PREY)
-		{
-			return;
+			e.setCancelled(true);
 		}
 	}
 
+	/**
+	 * Handles player pickup item events. Stops spectators from picking
+	 * up items when they shouldn't.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e)
 	{
-		if (e.getPlayer().getWorld() != plugin.getWorld())
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
+		
+		if (lobby == null)
 		{
 			return;
 		}
-		
-		if (plugin.gameIsRunning())
-		{
-			if (plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
-			{
-				e.setCancelled(true);
-			}
-			if (plugin.getGame().getStage() == GameStage.PREGAME)
-			{
-				e.setCancelled(true);
-			}
-		}
 		else
 		{
-			if (plugin.locked && e.getPlayer().isOp())
+			Team team = lobby.getPlayerTeam(e.getPlayer());
+			if (lobby.getGame().isRunning() && team != Team.HUNTERS && team != Team.PREY)
 			{
 				e.setCancelled(true);
-				return;
 			}
 		}
 	}
 
+	/**
+	 * Handles player drop item events. Stops spectators from droping
+	 * items onto the playing field.
+	 * Updated 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e)
 	{
-		if (e.getPlayer().getWorld() != plugin.getWorld())
+		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
+		
+		if (lobby == null)
 		{
 			return;
 		}
-		
-		if (plugin.gameIsRunning())
-		{
-			if (plugin.getTeams().getTeamOf(e.getPlayer()) == Team.SPECTATORS)
-			{
-				e.setCancelled(true);
-			}
-			if (plugin.getGame().getStage() == GameStage.PREGAME)
-			{
-				e.setCancelled(true);
-			}
-		}
 		else
 		{
-			if (plugin.locked && e.getPlayer().isOp())
+			Team team = lobby.getPlayerTeam(e.getPlayer());
+			if (lobby.getGame().isRunning() && team != Team.HUNTERS && team != Team.PREY)
 			{
 				e.setCancelled(true);
-				return;
 			}
 		}
 	}
 
+	/**
+	 * Handles inventory click events. This prevents players from taking
+	 * their team hats off during a game.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e)
 	{
-		if (!plugin.gameIsRunning())
+		GameLobby lobby;
+		Team team;
+		
+		lobby = Manhunt.getLobby((Player) e.getWhoClicked());
+		
+		if (lobby == null)
 		{
 			return;
 		}
-		if (!plugin.getSettings().TEAM_HATS.value)
+		else
 		{
-			return;
+			team = lobby.getPlayerTeam((Player) e.getWhoClicked());
+			if (lobby.getGame().isRunning() && lobby.getSettings().TEAM_HATS.getValue() && (team == Team.HUNTERS || team == Team.PREY))
+			{
+				e.setCancelled(true);
+			}
 		}
-		if (e.getSlotType() != SlotType.ARMOR)
-		{
-			return;
-		}
-		if (e.getSlot() == 39)
-		{
-			e.setCancelled(true);
-			e.setResult(Result.DENY);
-			return;
-		}
+	}
+	
+	
+	/**
+	 * Resets a player's inventory, stats, and location so that they spawn
+	 * with a clean slate.
+	 * Updated 1.3
+	 * @param p
+	 */
+	private void resetPlayer(Player p)
+	{
+		p.getInventory().clear();
+		p.setHealth(20);
+		p.setFoodLevel(20);
+		p.setSaturation(20f);
+		p.setLevel(0);
+		p.setExp(0f);
+		p.setExhaustion(0f);
 	}
 
 }

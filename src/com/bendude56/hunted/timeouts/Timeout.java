@@ -4,24 +4,25 @@ import java.util.Date;
 
 import org.bukkit.Bukkit;
 
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.lobby.GameLobby;
 
-public class Timeout {
+public class Timeout
+{
 	public final String player_name;
 	public final Long boot_time;
 	private final int schedule;
-	
-	private TimeoutManager manager;
+	private final long lobby_id;
 
-	public Timeout(String player_name, TimeoutManager manager)
+	public Timeout(String player_name, long lobby, long time)
 	{
 		this.player_name = player_name;
-		this.boot_time = (new Date()).getTime() + manager.getGame().getPlugin().getSettings().OFFLINE_TIMEOUT.value * 1000;
-		
-		this.manager = manager;
+		this.boot_time = time;
+		this.lobby_id = lobby;
 		
 		//Start the scheduler
-		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
+		this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{
@@ -32,7 +33,7 @@ public class Timeout {
 	
 	public void onTick()
 	{
-		if ((new Date()).getTime() >= boot_time)
+		if (new Date().getTime() >= boot_time)
 		{
 			forfeitPlayer();
 		}
@@ -40,23 +41,19 @@ public class Timeout {
 	
 	private void forfeitPlayer()
 	{
-		//Cancel the tick scheduler
-		Bukkit.getScheduler().cancelTask(schedule);
+		GameLobby lobby = Manhunt.getLobby(lobby_id);
 		
-		//Forfeit the player from the game
-		manager.getGame().onPlayerForfeit(player_name);
+		// TODO Remove the player from the game
 		
-		//Delete the Timeout from the TimeoutManager
-		if (manager != null)
-		{
-			manager.stopTimeout(this);
-		}
+		stop();
 	}
 	
-	protected void close()
+	protected void stop()
 	{
+		// TODO Delete the Timeout from the TimeoutManager
+		
 		Bukkit.getScheduler().cancelTask(schedule);
-		manager = null;
+		
 	}
 	
 }

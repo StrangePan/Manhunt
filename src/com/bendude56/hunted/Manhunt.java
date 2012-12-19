@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.lobby.MainLobby;
 import com.bendude56.hunted.lobby.ManhuntGameLobby;
 import com.bendude56.hunted.settings.ManhuntSettings;
+import com.bendude56.hunted.timeouts.TimeoutManager;
 
 public class Manhunt
 {
@@ -34,7 +36,8 @@ public class Manhunt
 	
 	private MainLobby mainlobby;
 	private List<GameLobby> lobbies;
-	private ManhuntSettings settings;	
+	private ManhuntSettings settings;
+	private TimeoutManager timeouts;
 	
 	
 	//-------- Constructor --------//
@@ -42,6 +45,8 @@ public class Manhunt
 	{
 		this.lobbies = new ArrayList<GameLobby>();
 		this.settings = new ManhuntSettings(path_settings);
+		// TODO Rework the timeout manager
+		// this.timeouts = new TimeoutManager();
 		
 		loadLobbiesFromFile();
 	}
@@ -97,9 +102,22 @@ public class Manhunt
 		
 	}
 	
-	private static Manhunt getInstance()
+	public static GameLobby getLobby(Player player)
 	{
-		return NewManhuntPlugin.getManhuntInstance();
+		for (GameLobby lobby : getInstance().lobbies)
+		{
+			if (lobby.getPlayers().contains(player))
+			{
+				return lobby;
+			}
+		}
+		return null;
+	}
+	
+	public static void newTimeout(Player player, GameLobby lobby, long time)
+	{
+		// TODO Instantiate a new Timeout object for the given player in the
+		// given lobby, for the given time.
 	}
 	
 	
@@ -107,6 +125,11 @@ public class Manhunt
 	private void loadLobbiesFromFile()
 	{
 		// TODO Finish this method
+	}
+	
+	private static Manhunt getInstance()
+	{
+		return NewManhuntPlugin.getManhuntInstance();
 	}
 	
 	

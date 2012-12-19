@@ -1,11 +1,12 @@
 package com.bendude56.hunted.timeouts;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.game.ManhuntGame;
+import com.bendude56.hunted.Manhunt;
 
 /**
  * This class handles all player timeouts, including
@@ -13,22 +14,19 @@ import com.bendude56.hunted.game.ManhuntGame;
  * @author Deaboy
  *
  */
-public class TimeoutManager {
-	private ManhuntGame game;
-	
+public class TimeoutManager
+{
 	private List<Timeout> timeouts = new ArrayList<Timeout>();
-	
-	public TimeoutManager(ManhuntGame game)
-	{
-		this.game = game;
-	}
 	
 	/**
 	 * This method starts a timeout countdown for the player.
-	 * Time is automatically set by the value in the settings file.
-	 * @param p
+	 * Time given is measured in milliseconds and is set at
+	 * the current system time + the given time.
+	 * @param p The player to start the timeout for.
+	 * @param time The milliseconds from the current time
+	 * to eject the player.
 	 */
-	public Timeout startTimeout(Player p)
+	public Timeout startTimeout(Player p, long time)
 	{
 		Timeout timeout = getTimeout(p.getName());
 		
@@ -37,7 +35,7 @@ public class TimeoutManager {
 			stopTimeout(timeout);
 		}
 		
-		timeout = new Timeout(p.getName(), this);
+		timeout = new Timeout(p.getName(), Manhunt.getLobby(p).getId(), new Date().getTime() + time);
 		timeouts.add(timeout);
 		
 		return timeout;
@@ -71,11 +69,11 @@ public class TimeoutManager {
 	
 	/**
 	 * Cancels a player's timeout if it exists.
-	 * @param p
+	 * @param name
 	 */
-	public void stopTimeout(String p)
+	public void stopTimeout(String name)
 	{
-		Timeout t = getTimeout(p);
+		Timeout t = getTimeout(name);
 		if (t != null)
 		{
 			stopTimeout(t);
@@ -88,7 +86,8 @@ public class TimeoutManager {
 	 */
 	protected void stopTimeout(Timeout t)
 	{
-		t.close();
+		t.stop();
+		
 		if (timeouts.contains(t));
 		{
 			timeouts.remove(t);
@@ -102,20 +101,9 @@ public class TimeoutManager {
 	{
 		for (Timeout t : timeouts)
 		{
-			t.close();
+			t.stop();
 		}
 		timeouts.clear();
-	}
-	
-	public ManhuntGame getGame()
-	{
-		return game;
-	}
-
-	public void close()
-	{
-		game = null;
-		stopAllTimeouts();
 	}
 
 }

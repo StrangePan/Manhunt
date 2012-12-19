@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	//---------------- Properties ----------------//
 	String name;
 	
-	private HashMap<Player, Team> players;
+	private HashMap<String, Team> players;
 	
 	private Map current_map;
 	private List<Map> maps;
@@ -47,7 +48,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 		
 		this.name = name;
 		
-		players = new HashMap<Player, Team>();
+		players = new HashMap<String, Team>();
 		
 		maps = new ArrayList<Map>();
 		settings = new LobbySettings(spawn.getWorld());
@@ -90,7 +91,23 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public List<Player> getPlayers()
 	{
-		return new ArrayList<Player>(players.keySet());
+		List<Player> players = new ArrayList<Player>();
+		Player p;
+		
+		for (String name : this.players.keySet());
+		{
+			p = Bukkit.getPlayer(name);
+			if (p == null)
+				players.add(p);
+		}
+		
+		return players;
+	}
+	
+	@Override
+	public List<String> getPlayerNames()
+	{
+		return new ArrayList<String>(players.keySet());
 	}
 
 	@Override

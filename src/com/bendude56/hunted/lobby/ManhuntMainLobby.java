@@ -3,6 +3,7 @@ package com.bendude56.hunted.lobby;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ public class ManhuntMainLobby extends ManhuntLobby implements MainLobby
 {
 	
 	//---------------- Properties ----------------//
-	private List<Player> players;
+	private List<String> players;
 	
 	
 	//---------------- Constructors ----------------//
@@ -38,7 +39,7 @@ public class ManhuntMainLobby extends ManhuntLobby implements MainLobby
 	{
 		super(spawn);
 		
-		players = new ArrayList<Player>();
+		players = new ArrayList<String>();
 		
 	}
 	
@@ -49,26 +50,42 @@ public class ManhuntMainLobby extends ManhuntLobby implements MainLobby
 	@Override
 	public List<Player> getPlayers()
 	{
+		List<Player> players = new ArrayList<Player>();
+		Player p;
+		
+		for (String name : this.players)
+		{
+			p = Bukkit.getPlayer(name);
+			if (p != null)
+				players.add(p);
+		}
+		
+		return players;
+	}
+	
+	@Override
+	public List<String> getPlayerNames()
+	{
 		return players;
 	}
 	
 	
 	//------------ Setters ------------//
 	@Override
-	public void addPlayer(Player p)
+	public void addPlayer(String name)
 	{
-		if (!players.contains(p))
+		if (!players.contains(name))
 		{
-			players.add(p);
+			players.add(name);
 		}
 	}
 	
 	@Override
-	public void removePlayer(Player p)
+	public void removePlayer(String name)
 	{
-		if (players.contains(p))
+		if (players.contains(name))
 		{
-			players.remove(p);
+			players.remove(name);
 		}
 	}
 	
