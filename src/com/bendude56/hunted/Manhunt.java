@@ -45,8 +45,7 @@ public class Manhunt
 	{
 		this.lobbies = new ArrayList<GameLobby>();
 		this.settings = new ManhuntSettings(path_settings);
-		// TODO Rework the timeout manager
-		// this.timeouts = new TimeoutManager();
+		this.timeouts = new TimeoutManager();
 		
 		loadLobbiesFromFile();
 	}
@@ -112,6 +111,11 @@ public class Manhunt
 			}
 		}
 		return null;
+	}
+	
+	public static TimeoutManager getTimeoutManager()
+	{
+		return getInstance().timeouts;
 	}
 	
 	public static void newTimeout(Player player, GameLobby lobby, long time)

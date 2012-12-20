@@ -94,7 +94,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 		List<Player> players = new ArrayList<Player>();
 		Player p;
 		
-		for (String name : this.players.keySet());
+		for (String name : this.players.keySet())
 		{
 			p = Bukkit.getPlayer(name);
 			if (p == null)
@@ -113,8 +113,8 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public List<Player> getPlayers(Team...teams)
 	{
-		List<Player> plrs = new ArrayList<Player>();
-		for (Player p : players.keySet())
+		List<Player> plrs = getPlayers();
+		for (Player p : getPlayers())
 		{
 			for (Team t : teams)
 			{
@@ -158,44 +158,44 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	}
 
 	@Override
-	public void addPlayer(Player p)
+	public void addPlayer(String name)
 	{
-		setPlayerTeam(p, Team.SPECTATORS);
+		setPlayerTeam(name, Team.SPECTATORS);
 	}
 
 	@Override
-	public void addPlayer(Player p, Team t)
+	public void addPlayer(String name, Team t)
 	{
-		if (!players.containsKey(p))
+		if (!players.containsKey(name))
 		{
-			players.put(p, t);
+			players.put(name, t);
 		}
 	}
 
 	@Override
-	public void setPlayerTeam(Player p, Team t)
+	public void setPlayerTeam(String name, Team t)
 	{
-		if (players.containsKey(p))
+		if (players.containsKey(name))
 		{
-			players.put(p, t);
+			players.put(name, t);
 		}
 	}
 
 	@Override
 	public void setAllPlayerTeam(Team t)
 	{
-		for (Player p : players.keySet())
+		for (String name : players.keySet())
 		{
-			players.put(p, t);
+			players.put(name, t);
 		}
 	}
 
 	@Override
-	public void removePlayer(Player p)
+	public void removePlayer(String name)
 	{
-		if (players.containsKey(p))
+		if (players.containsKey(name))
 		{
-			players.remove(p);
+			players.remove(name);
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public void broadcast(String message)
 	{
-		for (Player p : players.keySet())
+		for (Player p : getPlayers())
 		{
 			if (p.isOnline())
 			{
@@ -216,13 +216,13 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public void broadcast(String message, Team...teams)
 	{
-		for (Player p : players.keySet())
+		for (Player p : getPlayers())
 		{
 			if (p.isOnline())
 			{
 				for (Team t : teams)
 				{
-					if (players.get(p) == t)
+					if (players.get(p.getName()) == t)
 						p.sendMessage(message);
 				}
 			}

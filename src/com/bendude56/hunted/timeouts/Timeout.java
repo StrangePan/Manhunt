@@ -3,6 +3,7 @@ package com.bendude56.hunted.timeouts;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
@@ -43,7 +44,12 @@ public class Timeout
 	{
 		GameLobby lobby = Manhunt.getLobby(lobby_id);
 		
-		// TODO Remove the player from the game
+		Player p = Bukkit.getPlayer(player_name);
+		
+		if (p == null || p.getWorld() != lobby.getCurrentMap().getWorld())
+		{
+			Manhunt.getTimeoutManager().stopTimeout(this);
+		}
 		
 		stop();
 	}

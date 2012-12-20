@@ -76,17 +76,17 @@ public interface GameLobby extends Lobby
 	
 	/**
 	 * Adds a player to the Lobby and to the given team.
-	 * @param p The Player to add
+	 * @param name The name of the player to add.
 	 * @param t The Team to put the Player on
 	 */
-	public void addPlayer(Player p, Team t);
+	public void addPlayer(String name, Team t);
 	
 	/**
 	 * Changes the given Player's Team.
-	 * @param p The Player whose team to change.
+	 * @param name The name of the player to change teams.
 	 * @param t The Team to put the Player in.
 	 */
-	public void setPlayerTeam(Player p, Team t);
+	public void setPlayerTeam(String name, Team t);
 	
 	/**
 	 * Sets the team of all players in the lobby.
