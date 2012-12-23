@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.lobby.MainLobby;
 import com.bendude56.hunted.lobby.ManhuntGameLobby;
@@ -38,6 +39,7 @@ public class Manhunt
 	private List<GameLobby> lobbies;
 	private ManhuntSettings settings;
 	private TimeoutManager timeouts;
+	private FinderManager finders;
 	
 	
 	//-------- Constructor --------//
@@ -46,12 +48,14 @@ public class Manhunt
 		this.lobbies = new ArrayList<GameLobby>();
 		this.settings = new ManhuntSettings(path_settings);
 		this.timeouts = new TimeoutManager();
+		this.finders = new FinderManager();
 		
 		loadLobbiesFromFile();
 	}
 	
 	
-	//-------- Public static methods --------//
+	//---------------- Public static methods ----------------//
+	//------------ Getters ------------//
 	public static MainLobby getMainLobby()
 	{
 		return getInstance().mainlobby;
@@ -118,10 +122,45 @@ public class Manhunt
 		return getInstance().timeouts;
 	}
 	
-	public static void newTimeout(Player player, GameLobby lobby, long time)
+	/**
+	 * Initializes a new Timeout object that will keep a timer
+	 * and disqualify a player if they do not log in on time.
+	 * @param player The player to start a timeout for.
+	 * @param lobby The lobby that the player is in.
+	 * @param time The the number of seconds until the player is disqualified.
+	 */
+	public static void startTimeout(Player player, GameLobby lobby, long time)
 	{
 		// TODO Instantiate a new Timeout object for the given player in the
 		// given lobby, for the given time.
+	}
+	
+	public static FinderManager getFinders()
+	{
+		return getInstance().finders;
+	}
+	
+	/**
+	 * Initializes a new Finder object for the given player.
+	 * This object will periodically check its validity
+	 * and will cancel if it is no longer valid. Conditions for
+	 * cancellation include
+	 *    the player moving, or
+	 *    the Player no longer holding a compass.
+	 * 
+	 * Once the charge time has passed, the Finder will cause
+	 * the player's compass to point towards the nearest prey's
+	 * last known location.
+	 * 
+	 * After a litle while longer, the finder will self-destruct,
+	 * allowing a new finder to be created for the player.
+	 * 
+	 * 
+	 * @param player The player to start a finder for.
+	 */
+	public static void startFinder(Player player)
+	{
+		// TODO Instantiate a new finder object for the given player.
 	}
 	
 	

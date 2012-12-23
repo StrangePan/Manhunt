@@ -25,6 +25,12 @@ public interface Map
 	public Location getLocation();
 	
 	/**
+	 * Ges an array of the various Setup Spawns.
+	 * @return Array of the Setup Spawns
+	 */
+	public Spawn[] getSetupSpawns();
+	
+	/**
 	 * Gets an array of the various Hunter Spawns.
 	 * @return Array of the Hunter Spawns.
 	 */
@@ -37,17 +43,53 @@ public interface Map
 	public Spawn[] getPreySpawns();
 	
 	/**
-	 * Adds a new Hunter Spawn to the map at the given index.
-	 * @param spawn The Spawn to add.
+	 * Gets one of the map's boundary corners.
+	 * @param index Which corner to return, either 1 or 2.
+	 * @return
+	 */
+	public Location getMapBoundary(int index);
+	
+	/**
+	 * Gets one of the map's setup boundary corners.
+	 * @param index Which corner to return, either 1 or 2.
+	 * @return
+	 */
+	public Location getSetupBoundary(int index);
+	
+	
+	
+	/**
+	 * Replaces the Setup Spawn to the map at the given index.
+	 * @param index The index of the spawn. Must be 0-4.
+	 * @param spawn The Spawn to set.
+	 */
+	public void setSetupSpawn(int index, Spawn spawn);
+	
+	/**
+	 * Replaces the Hunter Spawn to the map at the given index.
+	 * @param index The index of the spawn. Must be 0-4.
+	 * @param spawn The Spawn to set.
 	 */
 	public void setHunterSpawn(int index, Spawn spawn);
 	
 	/**
-	 * Adds a new Prey Spawn to the map at the given index.
-	 * @param index The index to set the Spawn.
-	 * @param spawn The Spawn to add.
+	 * Replaces the Prey Spawn at the given index.
+	 * @param index The index to set the Spawn. Must be 0.4.
+	 * @param spawn The Spawn to set.
 	 */
 	public void setPreySpawn(int index, Spawn spawn);
 	
+	/**
+	 * Replaces the map boundary at the given index.
+	 * @param index The index to replace. Must be 1 or 2.
+	 * @param loc
+	 */
+	public void setMapBoundary(int index, Location loc);
 	
+	/**
+	 * Replaces the map boundary at the given index.
+	 * @param index The index to replace. Must be 1 or 2.
+	 * @param loc
+	 */
+	public void setSetupBoundary(int index, Location loc);
 }

@@ -1,5 +1,6 @@
 package com.bendude56.hunted.timeouts;
 
+import java.io.Closeable;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
@@ -9,7 +10,7 @@ import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.lobby.GameLobby;
 
-public class Timeout
+public class Timeout implements Closeable
 {
 	public final String player_name;
 	public final Long boot_time;
@@ -50,16 +51,12 @@ public class Timeout
 		{
 			Manhunt.getTimeoutManager().stopTimeout(this);
 		}
-		
-		stop();
 	}
 	
-	protected void stop()
+	@Override
+	public void close()
 	{
-		// TODO Delete the Timeout from the TimeoutManager
-		
 		Bukkit.getScheduler().cancelTask(schedule);
-		
 	}
 	
 }

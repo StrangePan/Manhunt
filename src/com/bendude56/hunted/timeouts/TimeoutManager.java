@@ -86,7 +86,7 @@ public class TimeoutManager
 	 */
 	protected void stopTimeout(Timeout t)
 	{
-		t.stop();
+		t.close();
 		
 		if (timeouts.contains(t));
 		{
@@ -101,7 +101,7 @@ public class TimeoutManager
 	{
 		for (Timeout t : timeouts)
 		{
-			t.stop();
+			t.close();
 		}
 		timeouts.clear();
 	}

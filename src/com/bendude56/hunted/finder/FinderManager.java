@@ -1,22 +1,14 @@
 package com.bendude56.hunted.finder;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.game.ManhuntGame;
-
-public class FinderManager
+public class FinderManager implements Closeable
 {
-	private ManhuntGame game;
-
 	List<Finder> finders = new ArrayList<Finder>();
-
-	public FinderManager(ManhuntGame game)
-	{
-		this.game = game;
-	}
 
 	/**
 	 * Initializes a new finder for the given player if one isn't already initialized.
@@ -26,11 +18,7 @@ public class FinderManager
 	{
 		if (getFinder(p) == null)
 		{
-			finders.add(new Finder(p, this));
-		}
-		else
-		{
-			getFinder(p).sendTimeLeft();
+			finders.add(new Finder(p));
 		}
 	}
 
@@ -61,7 +49,7 @@ public class FinderManager
 	{
 		for (Finder f : finders)
 		{
-			if (f.player_name == p.getName())
+			if (f.getPlayerName() == p.getName())
 			{
 				return f;
 			}
@@ -110,18 +98,12 @@ public class FinderManager
 		}
 	}
 
-	public ManhuntGame getGame()
-	{
-		return game;
-	}
-
 	/**
 	 * Closes the class.
 	 */
 	public void close()
 	{
 		stopAllFinders();
-		game = null;
 	}
 
 }

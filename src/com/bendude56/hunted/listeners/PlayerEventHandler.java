@@ -38,7 +38,8 @@ public class PlayerEventHandler implements Listener
 	}
 	
 	/**
-	 * Handles Manhunt chat events.
+	 * Handles Manhunt chat events. Handles team-exclusive chat
+	 * and name colors.
 	 * Updated: 1.3
 	 * @param e
 	 */
@@ -124,7 +125,7 @@ public class PlayerEventHandler implements Listener
 		}
 		else
 		{
-			lobby.removePlayer(e.getPlayer());
+			lobby.removePlayer(e.getPlayer().getName());
 			resetPlayer(e.getPlayer());
 		}
 	}
@@ -151,7 +152,7 @@ public class PlayerEventHandler implements Listener
 		}
 		else
 		{
-			Manhunt.newTimeout(e.getPlayer(), lobby, lobby.getSettings().OFFLINE_TIMEOUT.getValue());
+			Manhunt.startTimeout(e.getPlayer(), lobby, lobby.getSettings().OFFLINE_TIMEOUT.getValue());
 		}
 	}
 	
@@ -212,7 +213,7 @@ public class PlayerEventHandler implements Listener
 		e.setDeathMessage(null);
 		
 		//---------------
-		lobby.setPlayerTeam(p, Team.SPECTATORS);
+		lobby.setPlayerTeam(p.getName(), Team.SPECTATORS);
 		
 		preysize = lobby.getPlayers(Team.PREY).size();
 		huntersize = lobby.getPlayers(Team.HUNTERS).size();
@@ -237,7 +238,7 @@ public class PlayerEventHandler implements Listener
 			for (Player player : lobby.getPlayers())
 			{
 				player.teleport(lobby.getLocation());
-				lobby.setPlayerTeam(player, Team.NONE);
+				lobby.setPlayerTeam(player.getName(), Team.NONE);
 			}
 		}
 		else
@@ -246,7 +247,7 @@ public class PlayerEventHandler implements Listener
 			
 			p.teleport(lobby.getLocation());
 			resetPlayer(p);
-			lobby.setPlayerTeam(p, Team.SPECTATORS);
+			lobby.setPlayerTeam(p.getName(), Team.SPECTATORS);
 		}
 		
 	}
@@ -268,6 +269,20 @@ public class PlayerEventHandler implements Listener
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e)
 	{
+		
+		GameLobby lobby;
+		
+		lobby = Manhunt.getLobby(e.getPlayer());
+		
+		if (lobby == null)
+			return;
+		
+		if (e.getPlayer().getWorld() != lobby.getWorld())
+			return;
+		
+		
+		
+		
 		// TODO Check if the player is not where they're supposed to be
 		
 		// TODO Check if the player's prey finder should be cancelled

@@ -8,35 +8,38 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 
 public class Finder
 {
-	private FinderManager manager;
-
-	public final String player_name;
-	public final Location location;
-	public final Long activation_time; //REAL-LIFE TIME to SEND FINDER INFORMATION
-	public final Long expire_time; //REAL-LIFE TIME to SELF-DESTRUCT
+	private static final int CHARGE_TIME = 8000; // Milliseconds
+	
+	private final long lobby_id;
+	
+	private final String player_name;
+	private final Location location;
+	private final Long activation_time; //REAL-LIFE TIME to ACTIVATE
+	private final Long expire_time; //REAL-LIFE TIME to SELF-DESTRUCT
 
 	private boolean used = false; //Whether or not the finder has sent the nearest enemy.
 
 	private int schedule;
 
-	public Finder(Player player, FinderManager manager)
+	public Finder(Player player)
 	{
-		this.manager = manager;
-
+		this.lobby_id = Manhunt.getLobby(player).getId();
+		
 		this.player_name = player.getName();
 		this.location = player.getLocation();
 
 		Date time = new Date();
-		this.activation_time = time.getTime() + 8000;
-		this.expire_time = activation_time + (1000*manager.getGame().getPlugin().getSettings().FINDER_COOLDOWN.value);
+		this.activation_time = time.getTime() + CHARGE_TIME;
+		this.expire_time = activation_time + (1000*Manhunt.getLobby(lobby_id).getSettings().FINDER_COOLDOWN.getValue());
 		
-		player.sendMessage(ChatManager.bracket1_ + "Finding nearest enemy. Stand still for " + ChatColor.DARK_RED + "8 seconds." + ChatManager.bracket2_);
+		player.sendMessage(ChatManager.bracket1_ + "Finding nearest enemy. Stand still for " + ChatColor.DARK_RED + CHARGE_TIME / 1000 + " seconds." + ChatManager.bracket2_);
 		
 		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
@@ -45,6 +48,18 @@ public class Finder
 				onTick();
 			}
 		}, 5, 5);
+	}
+	
+	
+	//---------------- Getters ----------------//
+	/**
+	 * Gets the name of the player that this finder
+	 * is assigned to.
+	 * @return
+	 */
+	public String getPlayerName()
+	{
+		return player_name;
 	}
 
 	/**
@@ -68,7 +83,7 @@ public class Finder
 				if (p.getFoodLevel() < 4)
 				{
 					p.sendMessage(ChatManager.leftborder + ChatColor.RED + "You don't have enough food to power the finder!");
-					manager.stopFinder(this, true);
+					Manhunt.getFinders().stopFinder(this, true);
 				}
 				if (checkValidity())
 				{
@@ -78,7 +93,7 @@ public class Finder
 			}
 			else
 			{
-				manager.stopFinder(this, true);
+				Manhunt.getFinders().stopFinder(this, true);
 			}
 			used = true;
 		}
@@ -89,7 +104,7 @@ public class Finder
 			{
 				p.sendMessage(ChatManager.bracket1_ + "The " + ChatColor.DARK_RED + "Prey Finder" + ChatManager.color + " is fully charged." + ChatManager.bracket2_);
 			}
-			manager.stopFinder(this, true);
+			Manhunt.getFinders().stopFinder(this, true);
 		}
 	}
 
@@ -114,7 +129,7 @@ public class Finder
 			if (p.getItemInHand().getType() != Material.COMPASS || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.5, true))
 			{
 				FinderUtil.sendMessageFinderCancel(p);
-				manager.stopFinder(this, true);
+				Manhunt.getFinders().stopFinder(this, true);
 				return false;
 			}
 			else
@@ -125,7 +140,7 @@ public class Finder
 		else
 		{
 			FinderUtil.sendMessageFinderCancel(p);
-			manager.stopFinder(this, true);
+			Manhunt.getFinders().stopFinder(this, true);
 			return false;
 		}
 
@@ -154,7 +169,6 @@ public class Finder
 	protected void close()
 	{
 		Bukkit.getScheduler().cancelTask(schedule);
-		manager = null;
 	}
 
 
