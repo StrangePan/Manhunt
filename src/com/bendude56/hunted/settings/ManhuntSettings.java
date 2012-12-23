@@ -6,14 +6,9 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 {
 	private static final long serialVersionUID = -2749093656484939858L;
 	
-	public final SettingInteger MODE;
-	
 	public final SettingListString WORLDS;
 
 	public final SettingBoolean HANDLE_CHAT;
-	public final SettingBoolean FRIENDLY_FIRE;
-	public final SettingBoolean INSTANT_DEATH;
-	public final SettingBoolean USE_AMBER;
 	
 	public final SettingInteger TIME_LIMIT;
 	public final SettingInteger TIME_INTERMISSION;
@@ -23,14 +18,9 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	{
 		super( filepath );
 		
-		addSetting(MODE =		new SettingInteger("mode", 0, "The mode the plugin is running in.", ""), false);
-		
 		addSetting(WORLDS =		new SettingListString("worlds", "The list of Worlds Manhunt will run in.", Bukkit.getWorlds().get(0).getName()), false);
 		
 		addSetting(HANDLE_CHAT =	new SettingBoolean("handlechat", true, "Manhunt will handle chat events.", "Manhunt will ignore chat events."), true);
-		addSetting(FRIENDLY_FIRE =	new SettingBoolean("friendlyfire", false, "Teammates can damage each other.", "Teammates cannot kill each other."), true);
-		addSetting(INSTANT_DEATH =	new SettingBoolean("insantdeath", false, "Every attack is a one-hit-kill.", "Attack damage is normal."), true);
-		addSetting(USE_AMBER =		new SettingBoolean("useamber", true, "Manhunt will record/restore the world with Amber.", "Manhunt will not restore the world."), true);
 		
 		addSetting(TIME_LIMIT =			new SettingInteger("timelimit", 60, "Minutes that the hunt will last.", "The game will never end."), true );
 		addSetting(TIME_INTERMISSION =	new SettingInteger("intermission", 3, "Minutes between Manhunt games.", ""), true);

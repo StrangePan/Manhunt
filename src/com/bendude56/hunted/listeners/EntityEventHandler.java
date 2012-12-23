@@ -10,10 +10,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.game.ManhuntGame.GameStage;
-import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.game.GameStage;
+import com.bendude56.hunted.lobby.Team;
+import com.bendude56.hunted.lobby.GameLobby;
 
 public class EntityEventHandler implements Listener
 {
@@ -24,15 +26,25 @@ public class EntityEventHandler implements Listener
 		this.plugin = plugin;
 	}
 	
+	/**
+	 * Handles entity damage events. Prevents PvP and
+	 * implements insta-kills.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e)
 	{
-		if (e.getEntity().getWorld() != plugin.getWorld())
-		{
-			return;
-		}
 		
-		if (plugin.gameIsRunning() && plugin.getGame().getStage() != GameStage.PREGAME)
+		GameLobby lobby;
+		
+		lobby = Manhunt.getLobby(e.getEntity().getWorld());
+		
+		
+		if (lobby == null)
+			return;
+		
+		if (lobby.getGame().isRunning() && lobby.getGame().getStage() != GameStage.PREGAME)
 		{
 			Player p = null;
 			Player p2 = null;
@@ -60,19 +72,36 @@ public class EntityEventHandler implements Listener
 			}
 			
 			if (p != null)
-				t = plugin.getTeams().getTeamOf(p);
+				t = lobby.getPlayerTeam(p);
 			if (p2 != null)
-				t2 = plugin.getTeams().getTeamOf(p2);
+				t2 = lobby.getPlayerTeam(p2);
 			
+			// Either player was a spectator.
 			if (t == Team.SPECTATORS || t2 == Team.SPECTATORS)
 			{
 				e.setCancelled(true);
+				
+				// Move damagee aside if the projectile was shot at them.
+				//   This *may* help with invisible spectators blocking shots.
+				if (t == Team.SPECTATORS && (t2 == Team.HUNTERS || t2 == Team.PREY))
+				{
+					if (((EntityDamageByEntityEvent) e).getDamager() instanceof Projectile)
+					{
+						Projectile projectile = (Projectile) ((EntityDamageByEntityEvent) e).getDamager();
+						
+						projectile.setBounce(false);
+					}
+				}
 			}
-			if (t == t2 && p != null && p2 != null && !plugin.getSettings().FRIENDLY_FIRE.value)
+			
+			// A player attacked a team mate.
+			if (t == t2 && p != null && p2 != null && lobby.getSettings().FRIENDLY_FIRE.getValue())
 			{
 				e.setCancelled(true);
 			}
-			if (p != null && p2 != null) //Player damaged by other player
+			
+			// Player was damaged by another player.
+			if (p != null && p2 != null)
 			{
 				GameStage stage = plugin.getGame().getStage();
 				
@@ -88,7 +117,7 @@ public class EntityEventHandler implements Listener
 				{
 					if (t != t2 && plugin.getSettings().INSTANT_DEATH.value)
 					{
-						e.setDamage(200);
+						p.setHealth(0);
 					}
 				}
 			}
@@ -103,26 +132,36 @@ public class EntityEventHandler implements Listener
 			}
 		}
 	}
-
+	
+	/**
+	 * Handles Entity Target events. Ensures that mobs do not harass players
+	 * when they shouldn't.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onEntityTarget(EntityTargetEvent e)
 	{
-		if (e.getEntity().getWorld() != plugin.getWorld())
-		{
+		
+		GameLobby lobby;
+		
+		lobby = Manhunt.getLobby(e.getEntity().getWorld());
+		
+		if (lobby == null)
 			return;
-		}
-		if (plugin.gameIsRunning() && plugin.getGame().getStage() != GameStage.PREGAME)
+		
+		if (lobby.getGame().isRunning() && lobby.getGame().getStage() != GameStage.PREGAME)
 		{
 			if (e.getTarget() instanceof Player)
 			{
 				Player p = (Player) e.getTarget();
-				Team t = plugin.getTeams().getTeamOf(p);
+				Team t = lobby.getPlayerTeam(p);
 				
-				if (plugin.getGame().getStage() == GameStage.PREGAME)
+				if (plugin.getGame().getStage() == GameStage.SETUP && t != Team.PREY)
 				{
 					e.setCancelled(true);
 				}
-				if (t != Team.HUNTERS && t != Team.PREY)
+				else if (t != Team.HUNTERS && t != Team.PREY)
 				{
 					e.setCancelled(true);
 				}
@@ -134,24 +173,32 @@ public class EntityEventHandler implements Listener
 		}
 	}
 
+	/**
+	 * Handles Creature Spawning events. Stops hostile and passive mobs from
+	 * appearing if the lobby does not allow it.
+	 * Updated: 1.3
+	 * @param e
+	 */
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent e)
 	{
-		if (e.getLocation().getWorld() != plugin.getWorld())
-		{
-			return;
-		}
-		if (e.isCancelled())
-		{
-			return;
-		}
 		
-		if (!plugin.getSettings().HOSTILE_MOBS.value && ManhuntUtil.isHostile(e.getEntity()))
+		GameLobby lobby;
+		
+		lobby = Manhunt.getLobby(e.getLocation().getWorld());
+		
+		if (lobby == null)
+			return;
+		
+		if (e.isCancelled())
+			return;
+		
+		if (!lobby.getSettings().HOSTILE_MOBS.getValue() && ManhuntUtil.isHostile(e.getEntity()))
 		{
 			e.setCancelled(true);
 		}
 		
-		if (!plugin.getSettings().PASSIVE_MOBS.value && ManhuntUtil.isPassive(e.getEntity()))
+		if (!lobby.getSettings().PASSIVE_MOBS.getValue() && ManhuntUtil.isPassive(e.getEntity()))
 		{
 			e.setCancelled(true);
 		}
