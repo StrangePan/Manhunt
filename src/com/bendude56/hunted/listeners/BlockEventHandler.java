@@ -9,19 +9,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
-import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.Manhunt;
+import com.bendude56.hunted.lobby.GameLobby;
+import com.bendude56.hunted.lobby.Team;
 
-public class BlockEventHandler implements Listener {
-
-	private ManhuntPlugin plugin;
+public class BlockEventHandler implements Listener
+{
 	
-	public BlockEventHandler(ManhuntPlugin plugin)
-	{
-		this.plugin = plugin;
-	}
-
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e)
 	{
@@ -60,30 +54,24 @@ public class BlockEventHandler implements Listener {
 	
 	private boolean canBuildHere(Player p, Block b)
 	{
-		if (p.getWorld() != plugin.getWorld())
-		{
+		GameLobby lobby;
+		
+		lobby = Manhunt.getLobby(p.getWorld());
+		
+		if (lobby == null)
 			return true;
-		}
-
-		if (plugin.gameIsRunning())
+		
+		if (lobby.getGame().isRunning())
 		{
-			if (plugin.getTeams().getTeamOf(p) == Team.SPECTATORS)
+			if (lobby.getPlayerTeam(p) == Team.SPECTATORS)
 			{
 				return false;
 			}
-			if (plugin.getSettings().SPAWN_PROTECTION.value > 0 && (
-					ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_HUNTER.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_PREY.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value
-					|| ManhuntUtil.getDistance(b.getLocation(), plugin.getSettings().SPAWN_SETUP.value, true) <= plugin.getSettings().SPAWN_PROTECTION.value))
-			{
-				return false;
-			}
+			
+			// TODO Makes sure players don't build within the various spawn protections.
+			
 		}
-		else if (plugin.getSettings().NO_BUILD.value && !p.isOp())
-		{
-			return false;
-		}
-		else if (plugin.locked)
+		else
 		{
 			return false;
 		}

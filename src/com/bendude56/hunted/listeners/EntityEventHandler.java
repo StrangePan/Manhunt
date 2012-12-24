@@ -11,7 +11,6 @@ import org.bukkit.event.entity.EntityTargetEvent;
 
 
 import com.bendude56.hunted.Manhunt;
-import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.game.GameStage;
 import com.bendude56.hunted.lobby.Team;
@@ -19,13 +18,6 @@ import com.bendude56.hunted.lobby.GameLobby;
 
 public class EntityEventHandler implements Listener
 {
-	private ManhuntPlugin plugin;
-
-	public EntityEventHandler(ManhuntPlugin plugin)
-	{
-		this.plugin = plugin;
-	}
-	
 	/**
 	 * Handles entity damage events. Prevents PvP and
 	 * implements insta-kills.
@@ -103,7 +95,7 @@ public class EntityEventHandler implements Listener
 			// Player was damaged by another player.
 			if (p != null && p2 != null)
 			{
-				GameStage stage = plugin.getGame().getStage();
+				GameStage stage = lobby.getGame().getStage();
 				
 				if (stage == GameStage.PREGAME)
 				{
@@ -115,7 +107,7 @@ public class EntityEventHandler implements Listener
 				}
 				else
 				{
-					if (t != t2 && plugin.getSettings().INSTANT_DEATH.value)
+					if (t != t2 && lobby.getSettings().INSTANT_DEATH.getValue())
 					{
 						p.setHealth(0);
 					}
@@ -157,7 +149,7 @@ public class EntityEventHandler implements Listener
 				Player p = (Player) e.getTarget();
 				Team t = lobby.getPlayerTeam(p);
 				
-				if (plugin.getGame().getStage() == GameStage.SETUP && t != Team.PREY)
+				if (lobby.getGame().getStage() == GameStage.SETUP && t != Team.PREY)
 				{
 					e.setCancelled(true);
 				}

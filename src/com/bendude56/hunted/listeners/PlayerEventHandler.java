@@ -25,17 +25,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 
 import com.bendude56.hunted.Manhunt;
-import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.lobby.Team;
 
 public class PlayerEventHandler implements Listener
 {
-	
-	public PlayerEventHandler(ManhuntPlugin plugin)
-	{
-	}
 	
 	/**
 	 * Handles Manhunt chat events. Handles team-exclusive chat

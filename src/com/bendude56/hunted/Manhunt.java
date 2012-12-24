@@ -35,6 +35,7 @@ public class Manhunt
 	
 	//-------- Local variables ---------//
 	
+	private static Manhunt instance;
 	private MainLobby mainlobby;
 	private List<GameLobby> lobbies;
 	private ManhuntSettings settings;
@@ -45,12 +46,11 @@ public class Manhunt
 	//-------- Constructor --------//
 	public Manhunt()
 	{
+		instance = this;
 		this.lobbies = new ArrayList<GameLobby>();
 		this.settings = new ManhuntSettings(path_settings);
 		this.timeouts = new TimeoutManager();
 		this.finders = new FinderManager();
-		
-		loadLobbiesFromFile();
 	}
 	
 	
@@ -122,58 +122,19 @@ public class Manhunt
 		return getInstance().timeouts;
 	}
 	
-	/**
-	 * Initializes a new Timeout object that will keep a timer
-	 * and disqualify a player if they do not log in on time.
-	 * @param player The player to start a timeout for.
-	 * @param lobby The lobby that the player is in.
-	 * @param time The the number of seconds until the player is disqualified.
-	 */
-	public static void startTimeout(Player player, GameLobby lobby, long time)
-	{
-		// TODO Instantiate a new Timeout object for the given player in the
-		// given lobby, for the given time.
-	}
-	
 	public static FinderManager getFinders()
 	{
 		return getInstance().finders;
 	}
 	
-	/**
-	 * Initializes a new Finder object for the given player.
-	 * This object will periodically check its validity
-	 * and will cancel if it is no longer valid. Conditions for
-	 * cancellation include
-	 *    the player moving, or
-	 *    the Player no longer holding a compass.
-	 * 
-	 * Once the charge time has passed, the Finder will cause
-	 * the player's compass to point towards the nearest prey's
-	 * last known location.
-	 * 
-	 * After a litle while longer, the finder will self-destruct,
-	 * allowing a new finder to be created for the player.
-	 * 
-	 * 
-	 * @param player The player to start a finder for.
-	 */
-	public static void startFinder(Player player)
-	{
-		// TODO Instantiate a new finder object for the given player.
-	}
 	
 	
-	//-------- Private methods --------//
-	private void loadLobbiesFromFile()
-	{
-		// TODO Finish this method
-	}
-	
+	//-------- Private Methods (none) --------//
 	private static Manhunt getInstance()
 	{
-		return NewManhuntPlugin.getManhuntInstance();
+		return instance;
 	}
+	
 	
 	
 	//-------- Public Interface Methods --------//
@@ -201,15 +162,48 @@ public class Manhunt
 	
 	public static void destroyLobby(GameLobby lobby)
 	{
-		if (!getInstance().lobbies.contains(lobby))
+		if (getInstance().lobbies.contains(lobby))
 		{
-			return;
+			getInstance().lobbies.remove(lobby);
 		}
 		
-		getInstance().lobbies.remove(lobby);
-		
+	}
+
+	/**
+	 * Initializes a new Timeout object that will keep a timer
+	 * and disqualify a player if they do not log in on time.
+	 * @param player The player to start a timeout for.
+	 * @param lobby The lobby that the player is in.
+	 * @param time The the number of seconds until the player is disqualified.
+	 */
+	public static void startTimeout(Player player, GameLobby lobby, long time)
+	{
+		// TODO Instantiate a new Timeout object for the given player in the
+		// given lobby, for the given time.
 	}
 	
+	/**
+	 * Initializes a new Finder object for the given player.
+	 * This object will periodically check its validity
+	 * and will cancel if it is no longer valid. Conditions for
+	 * cancellation include
+	 *    the player moving, or
+	 *    the Player no longer holding a compass.
+	 * 
+	 * Once the charge time has passed, the Finder will cause
+	 * the player's compass to point towards the nearest prey's
+	 * last known location.
+	 * 
+	 * After a litle while longer, the finder will self-destruct,
+	 * allowing a new finder to be created for the player.
+	 * 
+	 * 
+	 * @param player The player to start a finder for.
+	 */
+	public static void startFinder(Player player)
+	{
+		// TODO Instantiate a new finder object for the given player.
+	}
 	
 	
 	

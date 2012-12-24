@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.Manhunt;
-import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.NewManhuntPlugin;
 import com.bendude56.hunted.lobby.GameLobby;
 
 public class Timeout implements Closeable
@@ -24,7 +24,7 @@ public class Timeout implements Closeable
 		this.lobby_id = lobby;
 		
 		//Start the scheduler
-		this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
+		this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(NewManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{
