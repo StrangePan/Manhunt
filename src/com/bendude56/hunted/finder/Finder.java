@@ -9,7 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.Manhunt;
-import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.NewManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
 import com.bendude56.hunted.chat.ChatManager;
 
@@ -41,7 +41,7 @@ public class Finder
 		
 		player.sendMessage(ChatManager.bracket1_ + "Finding nearest enemy. Stand still for " + ChatColor.DARK_RED + CHARGE_TIME / 1000 + " seconds." + ChatManager.bracket2_);
 		
-		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
+		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(NewManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{

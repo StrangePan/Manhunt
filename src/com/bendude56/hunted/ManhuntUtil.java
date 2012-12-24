@@ -59,6 +59,23 @@ public class ManhuntUtil {
 		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getZ(), loc2.getZ(), ignoreY);
 	}
 	
+	/**
+	 * Compares two locations, returning whether or not they are an acceptable distance apart.
+	 * @param loc1 The first location to compare.
+	 * @param loc2 The second location to compare
+	 * @param tolerance The acceptable distance between the two locations.
+	 * @param ignoreY True if you want the calculation to ignore the Y-coordinate.
+	 * @return True if the two locations are within <CODE>tolerance</CODE> apart and are inside the same world.
+	 * 			False if the locations are farther than <CODE>tolerance</CODE> apart or are in different worlds. 
+	 */
+	public static boolean areEqualLocations(Location loc1, Location loc2, double tolerance, boolean ignoreY)
+	{
+		if (loc1.getWorld() != loc2.getWorld())
+			return false;
+		else
+			return (getDistance(loc1, loc2, ignoreY) <= tolerance);
+	}
+	
 	public static boolean isHostile(Entity entity)
 	{
 		switch (entity.getType())

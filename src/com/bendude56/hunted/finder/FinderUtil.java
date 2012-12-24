@@ -1,29 +1,28 @@
 package com.bendude56.hunted.finder;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
-
-import com.bendude56.hunted.ManhuntPlugin;
-import com.bendude56.hunted.ManhuntUtil;
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.teams.TeamManager;
-import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.lobby.GameLobby;
+import com.bendude56.hunted.lobby.Team;
 
-public class FinderUtil {
+public class FinderUtil
+{
 
 	public static void sendMessageNoOnlinePrey(Player p)
 	{
-		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
+		GameLobby lobby;
 		Team t;
 		
-		if (teams.getTeamOf(p) == Team.HUNTERS)
+		lobby = Manhunt.getLobby(p);
+		
+		if (lobby.getPlayerTeam(p) == Team.HUNTERS)
 		{
 			t = Team.PREY;
 		}
-		else if (teams.getTeamOf(p) == Team.PREY)
+		else if (lobby.getPlayerTeam(p) == Team.PREY)
 		{
 			t = Team.HUNTERS;
 		}
@@ -47,16 +46,24 @@ public class FinderUtil {
 
 	private static void sendMessageFinderResultsNearby(Player p)
 	{
-		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
+		GameLobby lobby;
+		Team t;
 		
-		if (teams.getTeamOf(p) == Team.HUNTERS)
+		lobby = Manhunt.getLobby(p);
+		
+		if (lobby.getPlayerTeam(p) == Team.HUNTERS)
 		{
-			p.sendMessage(ChatColor.GOLD + "The nearest " + ChatColor.BLUE + "Prey" + ChatColor.GOLD + " is " + ChatColor.BLUE + "very close by" + ChatColor.GOLD + "!");
+			t = Team.PREY;
 		}
-		else if (teams.getTeamOf(p) == Team.PREY)
+		else if (lobby.getPlayerTeam(p) == Team.PREY)
 		{
-			p.sendMessage(ChatColor.GOLD + "The nearest " + ChatColor.DARK_RED + "Hunter" + ChatColor.GOLD + " is " + ChatColor.DARK_RED + "very close by" + ChatColor.GOLD + "!");
+			t = Team.HUNTERS;
 		}
+		else
+		{
+			return;
+		}
+		p.sendMessage(ChatManager.color + "The nearest " + t.getColor() + t.getName(false) + ChatManager.color + " is " + t.getColor() + "very close by" + ChatManager.color + "!");
 	}
 
 	/**
@@ -66,7 +73,7 @@ public class FinderUtil {
 	 */
 	public static void sendMessageFinderResults(Player p)
 	{
-		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
+		/*
 		
 		//GET ALL ENEMIES
 		List<Player> enemies;
@@ -175,7 +182,7 @@ public class FinderUtil {
 		p.sendMessage(ChatManager.color + "The nearest " + t2.getColor() + t2.getName(false) + ChatManager.color + " is " + t2.getColor() + direction + ChatManager.color + " of you! (Somehere " + t2.getColor() + relative_direction + ChatManager.color + ".)");
 		enemy.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "A " + t1.getColor() + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatManager.bracket2_);
 		return;
-		
+		*/
 	}
 
 	/**
@@ -186,6 +193,7 @@ public class FinderUtil {
 	 */
 	public static void findNearestEnemy(Player p)
 	{
+		/*
 		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
 		Team t1, t2;
 		
@@ -235,6 +243,7 @@ public class FinderUtil {
 			p.sendMessage(ChatManager.bracket1_ + "The nearest " + t2.getColor() + t2.getName(false) + ChatManager.color + " has been found!" + ChatManager.bracket2_);
 			enemy.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "A " + t1.getColor() + "Prey Finder 9000" + ChatColor.RED + " has gotten your location!" + ChatManager.bracket2_);
 		}
+		*/
 	}
 
 }
