@@ -4,18 +4,18 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.NBTBase;
-import net.minecraft.server.NBTTagByte;
-import net.minecraft.server.NBTTagByteArray;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagDouble;
-import net.minecraft.server.NBTTagEnd;
-import net.minecraft.server.NBTTagFloat;
-import net.minecraft.server.NBTTagInt;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagLong;
-import net.minecraft.server.NBTTagShort;
-import net.minecraft.server.NBTTagString;
+import net.minecraft.server.v1_4_6.NBTBase;
+import net.minecraft.server.v1_4_6.NBTTagByte;
+import net.minecraft.server.v1_4_6.NBTTagByteArray;
+import net.minecraft.server.v1_4_6.NBTTagCompound;
+import net.minecraft.server.v1_4_6.NBTTagDouble;
+import net.minecraft.server.v1_4_6.NBTTagEnd;
+import net.minecraft.server.v1_4_6.NBTTagFloat;
+import net.minecraft.server.v1_4_6.NBTTagInt;
+import net.minecraft.server.v1_4_6.NBTTagList;
+import net.minecraft.server.v1_4_6.NBTTagLong;
+import net.minecraft.server.v1_4_6.NBTTagShort;
+import net.minecraft.server.v1_4_6.NBTTagString;
 
 import org.bukkit.craftbukkit.libs.org.ibex.nestedvm.util.Seekable.ByteArray;
 

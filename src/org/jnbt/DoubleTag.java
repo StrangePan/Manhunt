@@ -1,6 +1,6 @@
 package org.jnbt;
 
-import net.minecraft.server.NBTTagDouble;
+import net.minecraft.server.v1_4_6.NBTTagDouble;
 
 /*
  * JNBT License
