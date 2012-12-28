@@ -6,9 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.NewManhuntPlugin;
 import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.teams.TeamManager.Team;
 
 public class CommandsGeneral
 {
@@ -20,7 +19,7 @@ public class CommandsGeneral
 			return;
 		}
 		
-		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		NewManhuntPlugin plugin = NewManhuntPlugin.getInstance();
 		
 		if (plugin.gameIsRunning())
 		{

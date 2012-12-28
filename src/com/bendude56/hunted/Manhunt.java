@@ -2,7 +2,9 @@ package com.bendude56.hunted;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -205,6 +207,14 @@ public class Manhunt
 		// TODO Instantiate a new finder object for the given player.
 	}
 	
+	public static void log(String message)
+	{
+		log(Level.INFO, message);
+	}
 	
+	public static void log(Level level, String message)
+	{
+		Bukkit.getLogger().log(level, "[Manhunt]  " + message);
+	}
 	
 }

@@ -6,9 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.v1_4_6.NBTTagCompound;
 
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTInputStream;
@@ -16,7 +16,7 @@ import org.jnbt.NBTOutputStream;
 import org.jnbt.Tag;
 import org.jnbt.TagType;
 
-import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.loadouts.models.SimpleItem;
 import com.bendude56.hunted.loadouts.models.SimpleLoadout;
 
@@ -46,8 +46,8 @@ public class LoadoutFile
 		{
 			CompoundTag ctag = CompoundTag.fromObject(item);
 			NBTTagCompound nbttag = ctag.toNBTTag();
-			net.minecraft.server.ItemStack mcstack = net.minecraft.server.ItemStack.a(nbttag);
-			ItemStack stack = new CraftItemStack(mcstack);
+			net.minecraft.server.v1_4_6.ItemStack mcstack = net.minecraft.server.v1_4_6.ItemStack.a(nbttag);
+			ItemStack stack = CraftItemStack.asBukkitCopy(mcstack);
 			
 			contents[item.Slot] = stack;
 		}
@@ -56,8 +56,8 @@ public class LoadoutFile
 		{
 			CompoundTag ctag = CompoundTag.fromObject(item);
 			NBTTagCompound nbttag = ctag.toNBTTag();
-			net.minecraft.server.ItemStack mcstack = net.minecraft.server.ItemStack.a(nbttag);
-			ItemStack stack = new CraftItemStack(mcstack);
+			net.minecraft.server.v1_4_6.ItemStack mcstack = net.minecraft.server.v1_4_6.ItemStack.a(nbttag);
+			ItemStack stack = CraftItemStack.asBukkitCopy(mcstack);
 			
 			armor[item.Slot] = stack;
 		}
@@ -81,7 +81,7 @@ public class LoadoutFile
 				file.createNewFile();
 			} catch (IOException e)
 			{
-				ManhuntPlugin.getInstance().log(Level.SEVERE,
+				Manhunt.log(Level.SEVERE,
 						"Problem loading the Manhunt loadout \"" + loadout.name + "\"!");
 				return null;
 			}
@@ -102,9 +102,9 @@ public class LoadoutFile
 		}
 		catch (IOException e)
 		{
-			ManhuntPlugin.getInstance().log(Level.SEVERE,
+			Manhunt.log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
-			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			Manhunt.log(Level.SEVERE, e.getMessage());
 			return null;
 		}
 	}
@@ -120,7 +120,7 @@ public class LoadoutFile
 			if (contents[i] == null)
 				return;
 			
-			NBTTagCompound nbttag = (new CraftItemStack(contents[i])).getHandle().getTag();
+			NBTTagCompound nbttag = (CraftItemStack.asNMSCopy(contents[i])).getTag();
 			
 			if (nbttag == null)
 				return;
@@ -137,8 +137,8 @@ public class LoadoutFile
 		{
 			if (contents[i] == null)
 				return;
-			
-			NBTTagCompound nbttag = (new CraftItemStack(armor[i])).getHandle().getTag();
+
+			NBTTagCompound nbttag = (CraftItemStack.asNMSCopy(contents[i])).getTag();
 
 			if (nbttag == null)
 				return;
@@ -171,9 +171,9 @@ public class LoadoutFile
 			}
 			catch (IOException e)
 			{
-				ManhuntPlugin.getInstance().log(Level.SEVERE,
+				Manhunt.log(Level.SEVERE,
 						"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
-				ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+				Manhunt.log(Level.SEVERE, e.getMessage());
 				return;
 			}
 		}
@@ -185,9 +185,9 @@ public class LoadoutFile
 		}
 		catch (IOException e)
 		{
-			ManhuntPlugin.getInstance().log(Level.SEVERE,
+			Manhunt.log(Level.SEVERE,
 					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
-			ManhuntPlugin.getInstance().log(Level.SEVERE, e.getMessage());
+			Manhunt.log(Level.SEVERE, e.getMessage());
 			return;
 		}
 	}
