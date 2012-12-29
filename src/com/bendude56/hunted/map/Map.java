@@ -5,6 +5,12 @@ import org.bukkit.World;
 
 public interface Map
 {
+	//---------------- Setters ----------------//
+	/**
+	 * Gets the name of this map.
+	 * @return
+	 */
+	public String getName();
 	
 	/**
 	 * Gets the main spawn point for the Map.
@@ -57,6 +63,13 @@ public interface Map
 	public Location getSetupBoundary(int index);
 	
 	
+	
+	//---------------- Getters ----------------//
+	/**
+	 * Chanegs the name of the map.
+	 * @param name
+	 */
+	public void setName(String name);
 	
 	/**
 	 * Replaces the Setup Spawn to the map at the given index.

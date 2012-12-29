@@ -11,6 +11,7 @@ public class ManhuntMap implements Map
 	private static final int MAX_PREY = 5;
 	
 	//-------------------- Properties --------------------//
+	private String name;
 	private Spawn spawn;
 	private Spawn[] setup;
 	private Spawn[] hunter;
@@ -26,26 +27,27 @@ public class ManhuntMap implements Map
 	 * Initializes a new ManhuntMap at the given World's spawn location.
 	 * @param world The World of the new Map.
 	 */
-	public ManhuntMap(World world)
+	public ManhuntMap(String name, World world)
 	{
-		this(new ManhuntSpawn(world.getSpawnLocation()));
+		this(name, new ManhuntSpawn(world.getSpawnLocation()));
 	}
 	
 	/**
 	 * Initializes a new MahuntMap at the given Location.
 	 * @param loc The Location of the new Map.
 	 */
-	public ManhuntMap(Location loc)
+	public ManhuntMap(String name, Location loc)
 	{
-		this(new ManhuntSpawn(loc));
+		this(name, new ManhuntSpawn(loc));
 	}
 	
 	/**
 	 * Initializes a new ManhuntMap with the given Spawn.
 	 * @param spawn The Spawn of the new Map.
 	 */
-	public ManhuntMap(Spawn spawn)
+	public ManhuntMap(String name, Spawn spawn)
 	{
+		this.name = name;
 		this.spawn = spawn;
 		this.setup = new Spawn[MAX_SETUP];
 		this.hunter = new Spawn[MAX_HUNTERS];
@@ -56,6 +58,12 @@ public class ManhuntMap implements Map
 	//-------------------- Public Methods --------------------//
 	
 	//---------------- Getters ----------------//
+	@Override
+	public String getName()
+	{
+		return name;
+	}
+	
 	@Override
 	public Spawn getSpawn()
 	{
@@ -116,6 +124,12 @@ public class ManhuntMap implements Map
 	
 	
 	//---------------- Setters ----------------//
+	@Override
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
 	@Override
 	public void setSetupSpawn(int index, Spawn spawn)
 	{
