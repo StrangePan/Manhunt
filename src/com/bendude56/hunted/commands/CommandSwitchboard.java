@@ -1,10 +1,16 @@
 package com.bendude56.hunted.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+
+import com.bendude56.hunted.Manhunt;
+import com.bendude56.hunted.lobby.GameLobby;
+import com.bendude56.hunted.map.Map;
+import com.bendude56.hunted.map.World;
 
 /**
  * This class takes the Manhunt command and determines where it should be redirected.
@@ -18,8 +24,72 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("m").setExecutor(this);
 	}
 	
-	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] args)
+	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
 	{
+		//-------- Declarations --------//
+		Arguments args;
+		GameLobby lobby;
+		Map map;
+		World world;
+		
+		
+		
+		//-------- Assignmnets --------//
+		args = Arguments.fromStringArray(arguments);
+		
+		
+		
+		// Check for lobby selection
+		if (args.contains("lobby"))
+		{
+			lobby = Manhunt.getLobby(args.getString("lobby"));
+			if (lobby == null && args.getLong("lobby") != null)
+			{
+				lobby = Manhunt.getLobby(args.getLong("lobby"));
+			}
+			
+			if (lobby != null)
+			{
+				Manhunt.getCommandHelper().setSelectedLobby(sender, lobby);
+			}
+			else
+			{
+				sender.sendMessage("The lobby " + args.getString("lobby") + " was not found.");
+				return true;
+			}
+		}
+		
+		// Check for map selection
+		if (args.contains("map"))
+		{
+			if (sender instanceof ConsoleCommandSender)
+			{
+				sender.sendMessage("The console cannot select maps.");
+				return true;
+			}
+			else
+			{
+				world = Manhunt.getWorld(((Player) sender).getWorld());
+				if (world == null)
+				{
+					sender.sendMessage("You must be in a world with a map.");
+					return true;
+				}
+				
+				map = world.getMap(args.getString("map"));
+				if (map == null)
+				{
+					sender.sendMessage("The map " + args.getString("map") + " in world " + world.getName() + " was not found.");
+					return true;
+				}
+				
+				Manhunt.getCommandHelper().setSelectedMap(sender, map);
+			}
+		}
+			
+		
+		
+		/*
 		String arg;
 		
 		if (args.length > 0)
@@ -157,8 +227,10 @@ public class CommandSwitchboard implements CommandExecutor
 		{
 			sender.sendMessage(ChatColor.RED + "Unknown Manhunt command. Type /m help for a list of available commands.");
 		}
+		*/
 		
 		return true;
+		
 	}
 	
 }

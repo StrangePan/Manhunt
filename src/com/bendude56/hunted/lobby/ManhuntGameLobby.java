@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.game.Game;
@@ -14,6 +13,7 @@ import com.bendude56.hunted.game.ManhuntGame;
 import com.bendude56.hunted.map.ManhuntSpawn;
 import com.bendude56.hunted.map.Spawn;
 import com.bendude56.hunted.map.Map;
+import com.bendude56.hunted.map.World;
 import com.bendude56.hunted.settings.LobbySettings;
 
 public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
@@ -25,14 +25,14 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	private HashMap<String, Team> players;
 	
 	private Map current_map;
-	private List<Map> maps;
+	private List<World> worlds;
 	private LobbySettings settings;
 	
 	private Game game;
 	
 	
 	//---------------- Constructors ----------------//
-	public ManhuntGameLobby(String name, World world)
+	public ManhuntGameLobby(String name, org.bukkit.World world)
 	{
 		this(name, world.getSpawnLocation());
 	}
@@ -50,7 +50,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 		
 		players = new HashMap<String, Team>();
 		
-		maps = new ArrayList<Map>();
+		worlds = new ArrayList<World>();
 		settings = new LobbySettings(spawn.getWorld());
 		
 		this.game = new ManhuntGame(this.getId());
@@ -67,12 +67,6 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public List<World> getWorlds()
 	{
-		List<World> worlds = new ArrayList<World>();
-		for (Map map : getMaps())
-		{
-			if (!worlds.contains(map.getWorld()))
-				worlds.add(map.getWorld());
-		}
 		return worlds;
 	}
 	
@@ -85,6 +79,13 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public List<Map> getMaps()
 	{
+		List<Map> maps = new ArrayList<Map>();
+		
+		for (World world : worlds)
+		{
+			maps.addAll(world.getMaps());
+		}
+		
 		return maps;
 	}
 
@@ -238,6 +239,8 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	@Override
 	public void startGame()
 	{
+		List<Map> maps = getMaps();
+		
 		current_map = maps.get(((int) Math.random()) % maps.size());
 	}
 	

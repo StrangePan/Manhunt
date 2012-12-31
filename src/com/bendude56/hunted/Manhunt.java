@@ -2,14 +2,17 @@ package com.bendude56.hunted;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
-import org.bukkit.World;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.bendude56.hunted.commands.CommandHelper;
 import com.bendude56.hunted.finder.FinderManager;
 import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.lobby.MainLobby;
 import com.bendude56.hunted.lobby.ManhuntGameLobby;
+import com.bendude56.hunted.map.World;
 import com.bendude56.hunted.settings.ManhuntSettings;
 import com.bendude56.hunted.timeouts.TimeoutManager;
 
@@ -38,9 +41,12 @@ public class Manhunt
 	private static Manhunt instance;
 	private MainLobby mainlobby;
 	private List<GameLobby> lobbies;
+	private List<World> worlds;
 	private ManhuntSettings settings;
 	private TimeoutManager timeouts;
 	private FinderManager finders;
+	private CommandHelper command_helper;
+	
 	
 	
 	//-------- Constructor --------//
@@ -48,9 +54,11 @@ public class Manhunt
 	{
 		instance = this;
 		this.lobbies = new ArrayList<GameLobby>();
+		this.worlds = new ArrayList<World>();
 		this.settings = new ManhuntSettings(path_settings);
 		this.timeouts = new TimeoutManager();
 		this.finders = new FinderManager();
+		this.command_helper = new CommandHelper();
 	}
 	
 	
@@ -92,7 +100,7 @@ public class Manhunt
 		
 	}
 	
-	public static GameLobby getLobby(World world)
+	public static GameLobby getLobby(org.bukkit.World world)
 	{
 		for (GameLobby lobby : getInstance().lobbies)
 		{
@@ -117,6 +125,31 @@ public class Manhunt
 		return null;
 	}
 	
+	public static List<World> getWorlds()
+	{
+		return getInstance().worlds;
+	}
+	
+	public static World getWorld(org.bukkit.World world)
+	{
+		for (World w : getWorlds())
+		{
+			if (w.getWorld() == world)
+				return w;
+		}
+		return null;
+	}
+	
+	public static World getWorld(String name)
+	{
+		for (World w : getWorlds())
+		{
+			if (w.getWorld().getName().equals(name))
+				return w;
+		}
+		return null;
+	}
+	
 	public static TimeoutManager getTimeoutManager()
 	{
 		return getInstance().timeouts;
@@ -125,6 +158,11 @@ public class Manhunt
 	public static FinderManager getFinders()
 	{
 		return getInstance().finders;
+	}
+	
+	public static CommandHelper getCommandHelper()
+	{
+		return getInstance().command_helper;
 	}
 	
 	
@@ -138,7 +176,7 @@ public class Manhunt
 	
 	
 	//-------- Public Interface Methods --------//
-	public static GameLobby createLobby(String name, World world)
+	public static GameLobby createLobby(String name, org.bukkit.World world)
 	{
 		GameLobby lobby = null;
 		
@@ -178,7 +216,7 @@ public class Manhunt
 	 */
 	public static void startTimeout(Player player, GameLobby lobby, long time)
 	{
-		// TODO Instantiate a new Timeout object for the given player in the
+		// TODO Initiate a new Timeout object for the given player in the
 		// given lobby, for the given time.
 	}
 	
@@ -205,6 +243,14 @@ public class Manhunt
 		// TODO Instantiate a new finder object for the given player.
 	}
 	
+	public static void log(String message)
+	{
+		log(Level.INFO, message);
+	}
 	
+	public static void log(Level level, String message)
+	{
+		Bukkit.getLogger().log(level, "[Manhunt]  " + message);
+	}
 	
 }

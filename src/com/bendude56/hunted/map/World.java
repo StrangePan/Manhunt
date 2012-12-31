@@ -6,17 +6,23 @@ public interface World
 {
 	//---------------- Getters ----------------//
 	/**
+	 * Gets this world's name.
+	 * @return The name of this world.
+	 */
+	public String getName();
+	
+	/**
 	 * Gets this world's Bukkit world.
 	 * @return This world's linked world.
 	 */
 	public org.bukkit.World getWorld();
 	
 	/**
-	 * Gets this world's lobby spawn data. If there is no lobby spawn set up in
-	 * this world, it will return default data.
+	 * Gets this world's main spawn. If there is no spawn set up in
+	 * this world, it will return the world's default spawn.
 	 * @return This world's spawn data.
 	 */
-	public Spawn getLobbySpawn();
+	public Spawn getSpawn();
 	
 	/**
 	 * Gets all the maps set up in the world.

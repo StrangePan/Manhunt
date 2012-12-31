@@ -115,6 +115,7 @@ public class ManhuntMap implements Map
 	}
 	
 	
+	
 	//---------------- Setters ----------------//
 	@Override
 	public void setSetupSpawn(int index, Spawn spawn)

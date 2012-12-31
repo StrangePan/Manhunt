@@ -2,11 +2,11 @@ package com.bendude56.hunted.lobby;
 
 import java.util.List;
 
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.game.Game;
 import com.bendude56.hunted.map.Map;
+import com.bendude56.hunted.map.World;
 import com.bendude56.hunted.settings.LobbySettings;
 
 public interface GameLobby extends Lobby
@@ -65,6 +65,7 @@ public interface GameLobby extends Lobby
 	 * @return
 	 */
 	public Game getGame();
+	
 	
 	
 	//---------------- Setters ----------------//

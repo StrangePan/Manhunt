@@ -2,64 +2,84 @@ package com.bendude56.hunted.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.ManhuntUtil;
-import com.bendude56.hunted.teams.TeamManager.Team;
+import com.bendude56.hunted.lobby.GameLobby;
+import com.bendude56.hunted.lobby.Team;
 
 public class CommandsGeneral
 {
-	public static void onCommandStartgame(CommandSender sender, String args[])
+	public static void onCommandStartgame(CommandSender sender, Arguments args)
 	{
+		GameLobby lobby;
+		
+		lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+		
 		if (!sender.isOp())
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return;
 		}
 		
-		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		if (lobby == null)
+		{
+			sender.sendMessage("You must first select a lobby to start!");
+			return;
+		}
 		
-		if (plugin.gameIsRunning())
+		if (lobby.getGame().isRunning())
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
 			return;
 		}
 		
-		if (plugin.getTeams().getTeamNames(Team.PREY).size() == 0 || plugin.getTeams().getTeamNames(Team.HUNTERS).size() == 0 )
+		if (lobby.getPlayers(Team.PREY).size() == 0 || lobby.getPlayers(Team.HUNTERS).size() == 0 )
 		{
 			sender.sendMessage(ChatColor.RED + "There must be at least one prey and one hunter to start the game!");
 			return;
 		}
 		
-		plugin.startGame();
+		lobby.getGame().startGame();
 	}
 	
-	public static void onCommandStopgame(CommandSender sender, String args[])
+	public static void onCommandStopgame(CommandSender sender, Arguments args)
 	{
+		GameLobby lobby;
+		
+		lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+		
 		if (!sender.isOp())
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return;
 		}
 		
-		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		if (lobby == null)
+		{
+			sender.sendMessage("You must first select a lobby!");
+			return;
+		}
 		
-		if (!plugin.gameIsRunning())
+		if (!lobby.getGame().isRunning())
 		{
 			sender.sendMessage(CommandUtil.NO_GAME_RUNNING);
 			return;
 		}
 		
-		plugin.getGame().stopGame(false);
+		lobby.getGame().stopGame();
 	}
 
 	public static void onCommandSpawn(CommandSender sender, String[] args)
 	{
 		String SYNTAX = ChatColor.RED + "Proper syntax is: /m spawn [spawn] [player]";
-		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
+		
+		GameLobby lobby;
+		
+		lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+		
 		Player p;
 		Player p2;
 		
@@ -73,156 +93,53 @@ public class CommandsGeneral
 			return;
 		}
 		
-		if (plugin.getSettings().OP_CONTROL.value && !sender.isOp())
+		if (Manhunt.getSettings().OP_CONTROL.getValue() && !sender.isOp())
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return;
 		}
 		
-		if (plugin.gameIsRunning() && (plugin.getTeams().getTeamOf(p) == Team.HUNTERS || plugin.getTeams().getTeamOf(p) == Team.PREY))
+		if (lobby == null)
+		{
+			sender.sendMessage("You must first select a lobby!");
+			return;
+		}
+		
+		if (lobby.getGame().isRunning() && (lobby.getPlayerTeam(p) == Team.HUNTERS || lobby.getPlayerTeam(p) == Team.PREY))
 		{
 			sender.sendMessage(CommandUtil.GAME_RUNNING);
 		}
 		
-		Location loc;
-		String spawn;
+		
 		
 		if (args.length == 1)
 		{
-			spawn = "world";
+			p2 = Bukkit.getPlayer(args[0]);
+		}
+		else if (args.length == 0)
+		{
 			p2 = null;
 		}
 		else
 		{
-			if (args.length == 2)
-			{
-				spawn = args[1];
-				p2 = Bukkit.getPlayer(args[1]);
-			}
-			else if (args.length == 3)
-			{
-				spawn = args[1];
-				p2 = Bukkit.getPlayer(args[2]);
-			}
-			else
-			{
-				sender.sendMessage(SYNTAX);
-				return;
-			}
-		}
-		
-		if (spawn.equalsIgnoreCase("world"))
-		{
-			loc = plugin.getWorld().getSpawnLocation();
-		}
-		else if (spawn.equalsIgnoreCase("hunter"))
-		{
-			loc = plugin.getSettings().SPAWN_HUNTER.value;
-		}
-		else if (spawn.equalsIgnoreCase("prey"))
-		{
-			loc = plugin.getSettings().SPAWN_PREY.value;
-		}
-		else if (spawn.equalsIgnoreCase("setup"))
-		{
-			loc = plugin.getSettings().SPAWN_SETUP.value;
-		}
-		else
-		{
-			if (p2 != null)
-			{
-				loc = plugin.getWorld().getSpawnLocation();
-			}
-			else
-			{
-				sender.sendMessage(ChatColor.RED + "'" + spawn + "'" + " is not a valid spawn location.");
-				return;
-			}
+			sender.sendMessage(SYNTAX);
+			return;
 		}
 		
 		if (p2 != null)
 		{
-			p2.teleport(ManhuntUtil.safeTeleport(loc));
-			p2.sendMessage(ChatColor.GREEN + "You have been teleported to the " + spawn + " spawn.");
-			p.sendMessage(ChatColor.GREEN + p2.getName() + " has teleported to the " + spawn + " spawn.");
+			p2.teleport(ManhuntUtil.safeTeleport(lobby.getLocation()));
+			p2.sendMessage(ChatColor.GREEN + "You have been teleported to the " + lobby.getName() + " spawn.");
+			p.sendMessage(ChatColor.GREEN + p2.getName() + " has teleported to the " + lobby.getName() + " spawn.");
 		}
 		else
 		{
-			p.teleport(ManhuntUtil.safeTeleport(loc));
-			p.sendMessage(ChatColor.GREEN + "You have teleported to the " + spawn + " spawn.");
+			p.teleport(ManhuntUtil.safeTeleport(lobby.getLocation()));
+			p.sendMessage(ChatColor.GREEN + "You have teleported to the " + lobby.getName() + " spawn.");
 		}
 		
 	}
 
-	public static void onCommandSetspawn(CommandSender sender, String[] args)
-	{
-		String SYNTAX = ChatColor.RED + "Proper syntax is: /m setspawn <spawn>";
-		ManhuntPlugin plugin = ManhuntPlugin.getInstance();
-		Player p;
-		
-		if (sender instanceof Player)
-		{
-			p = (Player) sender;
-		}
-		else
-		{
-			sender.sendMessage(CommandUtil.IS_SERVER);
-			return;
-		}
-		
-		if (!sender.isOp())
-		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return;
-		}
-		
-		if (plugin.gameIsRunning())
-		{
-			sender.sendMessage(CommandUtil.GAME_RUNNING);
-		}
-		
-		String spawn;
-		
-		if (args.length != 2)
-		{
-			sender.sendMessage(SYNTAX);
-		}
-		
-		spawn = args[1];
-		
-		if (spawn.equalsIgnoreCase("world"))
-		{
-			plugin.getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
-		}
-		else if (spawn.equalsIgnoreCase("hunter"))
-		{
-			plugin.getSettings().SPAWN_HUNTER.setValue(p.getLocation().clone());
-		}
-		else if (spawn.equalsIgnoreCase("prey"))
-		{
-			plugin.getSettings().SPAWN_PREY.setValue(p.getLocation().clone());
-		}
-		else if (spawn.equalsIgnoreCase("setup"))
-		{
-			plugin.getSettings().SPAWN_SETUP.setValue(p.getLocation().clone());
-		}
-		else if (spawn.equalsIgnoreCase("all"))
-		{
-			plugin.getWorld().setSpawnLocation(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
-			plugin.getSettings().SPAWN_HUNTER.setValue(p.getLocation().clone());
-			plugin.getSettings().SPAWN_PREY.setValue(p.getLocation().clone());
-			plugin.getSettings().SPAWN_SETUP.setValue(p.getLocation().clone());
-
-			sender.sendMessage(ChatColor.GREEN + "All spawns have been moved.");
-			return;
-		}
-		else
-		{
-			sender.sendMessage(ChatColor.RED + "'" + spawn + "'" + " is not a valid spawn location.");
-			return;
-		}
-		
-		sender.sendMessage(ChatColor.GREEN + "The " + spawn + " has been moved.");
-	}
+	
 
 }

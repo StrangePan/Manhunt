@@ -5,7 +5,7 @@ import org.bukkit.World;
 
 public interface Map
 {
-	
+	//---------------- Getters ----------------//
 	/**
 	 * Gets the main spawn point for the Map.
 	 * @return The Spawn for this Map.
@@ -58,6 +58,7 @@ public interface Map
 	
 	
 	
+	//---------------- Setters ----------------//
 	/**
 	 * Replaces the Setup Spawn to the map at the given index.
 	 * @param index The index of the spawn. Must be 0-4.

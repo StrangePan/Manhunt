@@ -30,13 +30,19 @@ public class ManhuntWorld implements World
 	
 	//---------------- Getters ----------------//
 	@Override
+	public String getName()
+	{
+		return getWorld().getName();
+	}
+	
+	@Override
 	public org.bukkit.World getWorld()
 	{
 		return world;
 	}
 	
 	@Override
-	public Spawn getLobbySpawn()
+	public Spawn getSpawn()
 	{
 		return spawn;
 	}

@@ -48,8 +48,8 @@ public class NewManhuntPlugin extends JavaPlugin
 	
 
 	//-------- Public Interface Methods --------//
-	public static void log(String message)
-	{
-		Bukkit.getLogger().log(Level.INFO, "[Manhunt]  " + message);
-	}
+	
+	
+	
+	
 }

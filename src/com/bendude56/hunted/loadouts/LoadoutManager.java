@@ -8,8 +8,6 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import com.bendude56.hunted.ManhuntPlugin;
-
 public class LoadoutManager {
 
 	private HashMap<String, Loadout> loadouts = new HashMap<String, Loadout>();
@@ -78,22 +76,6 @@ public class LoadoutManager {
 			}
 		}
 			
-	}
-
-	public Loadout getHunterLoadout()
-	{
-		if (getLoadout(ManhuntPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value) == null)
-			return DEFAULT_HUNTER_LOADOUT;
-		else
-			return getLoadout(ManhuntPlugin.getInstance().getSettings().HUNTER_LOADOUT_CURRENT.value);
-	}
-	
-	public Loadout getPreyLoadout()
-	{
-		if (getLoadout(ManhuntPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value) == null)
-			return DEFAULT_PREY_LOADOUT;
-		else
-			return getLoadout(ManhuntPlugin.getInstance().getSettings().PREY_LOADOUT_CURRENT.value);
 	}
 	
 	public void addLoadout(String name, ItemStack[] contents, ItemStack[] armour)
