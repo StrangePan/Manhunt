@@ -12,6 +12,13 @@ public interface World
 	public String getName();
 	
 	/**
+	 * Gets the file location of this world's
+	 * data file.
+	 * @return The path and file location relative to the server's root directory.
+	 */
+	public String getFileLocation();
+	
+	/**
 	 * Gets this world's Bukkit world.
 	 * @return This world's linked world.
 	 */
@@ -39,6 +46,7 @@ public interface World
 	public Map getMap(String label);
 	
 	
+	
 	//---------------- Setters ----------------//
 	/**
 	 * Adds a map to this world.
@@ -47,9 +55,16 @@ public interface World
 	public void addMap(String label, Map map);
 	
 	/**
+	 * Removes a map from this world.
+	 * @param map
+	 */
+	public void removeMap(String label);
+	
+	/**
 	 * Removes all maps from this world.
 	 */
 	public void clearMaps();
+	
 	
 	
 	//---------------- Public Methods ----------------//
@@ -62,4 +77,7 @@ public interface World
 	 * Loads this world from file.
 	 */
 	public void load();
+	
+	
+	
 }
