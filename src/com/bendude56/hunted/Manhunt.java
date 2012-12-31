@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.bendude56.hunted.commands.CommandHelper;
 import com.bendude56.hunted.finder.FinderManager;
+import com.bendude56.hunted.loadouts.LoadoutManager;
 import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.lobby.MainLobby;
 import com.bendude56.hunted.lobby.ManhuntGameLobby;
@@ -47,14 +48,15 @@ public class Manhunt
 	
 	//-------- Local variables ---------//
 	
-	private static Manhunt instance;
-	private MainLobby mainlobby;
-	private List<GameLobby> lobbies;
-	private List<World> worlds;
-	private ManhuntSettings settings;
-	private TimeoutManager timeouts;
-	private FinderManager finders;
-	private CommandHelper command_helper;
+	private static	Manhunt				instance;
+	private 		MainLobby			mainlobby;
+	private 		List<GameLobby>		lobbies;
+	private 		List<World>			worlds;
+	private 		ManhuntSettings		settings;
+	private 		TimeoutManager		timeouts;
+	private 		FinderManager		finders;
+	private 		CommandHelper		command_helper;
+	private 		LoadoutManager		loadouts;
 	
 	
 	
@@ -62,12 +64,13 @@ public class Manhunt
 	public Manhunt()
 	{
 		instance = this;
-		this.lobbies = new ArrayList<GameLobby>();
-		this.worlds = new ArrayList<World>();
-		this.settings = new ManhuntSettings(path_settings);
-		this.timeouts = new TimeoutManager();
-		this.finders = new FinderManager();
-		this.command_helper = new CommandHelper();
+		this.lobbies =			new ArrayList<GameLobby>();
+		this.worlds =			new ArrayList<World>();
+		this.settings =			new ManhuntSettings(path_settings);
+		this.timeouts =			new TimeoutManager();
+		this.finders =			new FinderManager();
+		this.command_helper =	new CommandHelper();
+		this.loadouts =			new LoadoutManager();
 	}
 	
 	
@@ -172,6 +175,11 @@ public class Manhunt
 	public static CommandHelper getCommandHelper()
 	{
 		return getInstance().command_helper;
+	}
+	
+	public static LoadoutManager getLoadouts()
+	{
+		return getInstance().loadouts;
 	}
 	
 	

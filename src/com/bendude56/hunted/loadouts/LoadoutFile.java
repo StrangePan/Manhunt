@@ -13,6 +13,7 @@ import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.jnbt.CompoundTag;
+import org.jnbt.DoubleTag;
 import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 import org.jnbt.NBTOutputStream;
@@ -32,6 +33,8 @@ public class LoadoutFile
 	private static final String tag_contents = "Contents";
 	private static final String tag_armor = "Armor";
 	private static final String tag_effects = "Effects";
+	private static final String tag_randoms = "Random";
+	private static final String tag_chance = "Chance";
 	
 	
 	public static void load(Loadout loadout)
@@ -41,6 +44,7 @@ public class LoadoutFile
 		ItemStack[] contents;
 		ItemStack[] armor;
 		List<PotionEffect> effects;
+		List<RandomStack> randoms;
 		@SuppressWarnings("unused")
 		String version;
 		
@@ -56,6 +60,7 @@ public class LoadoutFile
 		contents = new ItemStack[36];
 		armor = new ItemStack[4];
 		effects = new ArrayList<PotionEffect>();
+		randoms = new ArrayList<RandomStack>();
 		
 		
 		// Read in important tags
@@ -100,7 +105,7 @@ public class LoadoutFile
 					
 					if (((CompoundTag) tag).getValue().containsKey("Slot") && ((CompoundTag) tag).getValue().get("Slot").getTagType() == TagType.BYTE)
 					{
-						contents[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue() - 100] = stack;
+						armor[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue() - 100] = stack;
 					}
 				}
 			}
@@ -123,8 +128,29 @@ public class LoadoutFile
 			}
 		}
 		
+		//Read in random items
+		if (main_tag.getValue().containsKey(tag_randoms)
+				&& main_tag.getValue().get(tag_randoms).getTagType() == TagType.LIST
+				&& ((ListTag) main_tag.getValue().get(tag_randoms)).getDataType() == CompoundTag.class)
+		{
+			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_randoms)).getValue())
+			{
+				if (tag.getTagType() == TagType.COMPOUND)
+				{
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_4_6.ItemStack.a(((CompoundTag) tag).toNBTTag()));
+					
+					if (((CompoundTag) tag).getValue().containsKey(tag_chance) && ((CompoundTag) tag).getValue().get(tag_chance).getTagType() == TagType.DOUBLE)
+					{
+						randoms.add(new RandomStack(stack, ((DoubleTag) ((CompoundTag) tag).getValue().get(tag_chance)).getValue()));
+					}
+				}
+			}
+		}
+				
+		
 		loadout.setContents(contents, armor);
 		loadout.setPotionEffects(effects);
+		loadout.setRandomItemStack(randoms);
 	}
 	
 	private static CompoundTag loadLoadoutFile(String filename)
@@ -172,6 +198,7 @@ public class LoadoutFile
 		List<Tag> contents;
 		List<Tag> armor;
 		List<Tag> effects;
+		List<Tag> randoms;
 		
 		
 		// Initialize main tag
@@ -193,7 +220,7 @@ public class LoadoutFile
 		armor = new ArrayList<Tag>();
 		for (ItemStack stack : loadout.getArmorContents())
 		{
-			contents.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).getTag()));
+			armor.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).getTag()));
 		}
 		
 		effects = new ArrayList<Tag>();
@@ -204,11 +231,21 @@ public class LoadoutFile
 			effects.add(CompoundTag.fromObject(SimpleEffect.fromPotionEffect(effect)));
 		}
 		
+		randoms = new ArrayList<Tag>();
+		for (RandomStack random : loadout.getAllRandomItemStacks())
+		{
+			CompoundTag tag = CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(random.getItemStack()).getTag());
+			tag.getValue().put(tag_chance, new DoubleTag(tag_chance, random.getChance()));
+			
+			randoms.add(tag);
+		}
+		
 		
 		// Insert lists into main tag
-		main_tag.getValue().put(tag_contents, new ListTag("contents", CompoundTag.class, contents));
-		main_tag.getValue().put(tag_armor, new ListTag("armor", CompoundTag.class, armor));
-		main_tag.getValue().put(tag_effects, new ListTag("effects", CompoundTag.class, effects));
+		main_tag.getValue().put(tag_contents, new ListTag(tag_contents, CompoundTag.class, contents));
+		main_tag.getValue().put(tag_armor, new ListTag(tag_armor, CompoundTag.class, armor));
+		main_tag.getValue().put(tag_effects, new ListTag(tag_effects, CompoundTag.class, effects));
+		main_tag.getValue().put(tag_randoms, new ListTag(tag_randoms, CompoundTag.class, randoms));
 		
 		
 		// Save the constructed tag to disk

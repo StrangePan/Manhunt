@@ -1,8 +1,5 @@
 package com.bendude56.hunted;
 
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class NewManhuntPlugin extends JavaPlugin
@@ -40,6 +37,7 @@ public class NewManhuntPlugin extends JavaPlugin
 	
 	
 	//-------- Private Methods --------//
+	@SuppressWarnings("unused")
 	private static Manhunt getManhuntInstance()
 	{
 		return manhunt;

@@ -3,6 +3,7 @@ package com.bendude56.hunted.loadouts;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -13,6 +14,7 @@ public class Loadout
 	private ItemStack[] armor;
 	
 	private List<PotionEffect> effects;
+	private List<RandomStack> randoms;
 
 	private String name;
 	private final String filename;
@@ -38,7 +40,7 @@ public class Loadout
 		
 		this.effects = effects;
 	}
-
+	
 	
 	
 	//---------------- Setters ----------------//
@@ -126,6 +128,39 @@ public class Loadout
 		this.effects.clear();
 	}
 	
+	public void setRandomItemStack(List<RandomStack> randoms)
+	{
+		this.randoms = new ArrayList<RandomStack>(randoms);
+	}
+	
+	/**
+	 * Adds a new random item stack to this loadout. When the loadout
+	 * is being applied to players, each item has a random chance of
+	 * appearing in each player's inventory.
+	 * @param item The ItemStack to randomly include.
+	 * @param chance The random chance that the item will appear. Must be between 0.0 and 1.0 inclusive.
+	 * 0.0 means that it will never appear, and 1.0 means that it will always appear.
+	 */
+	public void addRandomItemStack(ItemStack item, double chance)
+	{
+		if (chance < 0.0 || chance > 1.0)
+			throw new IllegalArgumentException("Chance must be between 0.0 and 1.0 inclusive.");
+		
+		
+		randoms.add(new RandomStack(item, chance));
+	}
+	
+	/**
+	 * Removes a random item stack from this loadout based on the index at
+	 * which it resides.
+	 * @param index
+	 */
+	public void removeRandomItemStack(int index)
+	{
+		if (index >= 0 && index < randoms.size())
+			randoms.remove(index);
+	}
+	
 	
 	
 	//---------------- Getters ----------------//
@@ -174,6 +209,19 @@ public class Loadout
 		return effects;
 	}
 	
+	public RandomStack getRandomStack(int index)
+	{
+		if (index < randoms.size() && index >= 0)
+			return randoms.get(index);
+		else
+			return null;
+	}
+	
+	public List<RandomStack> getAllRandomItemStacks()
+	{
+		return randoms;
+	}
+	
 	
 	
 	//---------------- Public Methods ----------------//
@@ -203,6 +251,25 @@ public class Loadout
 		{
 			return false;
 		}
+	}
+	
+	/**
+	 * Dumps the contents of this loadout into a player. This includes applying
+	 * potion effects and randomly placing the random item stacks of this loadout
+	 * into the player.
+	 * @param player The player to dump this loadout into.
+	 */
+	public void applyToPlayer(Player player)
+	{
+		player.getInventory().setContents(getContents());
+		player.getInventory().setArmorContents(getArmorContents());
+		
+		for (PotionEffect effect : effects)
+			player.addPotionEffect(effect);
+		
+		for (RandomStack random : randoms)
+			if (random.tryChance())
+				player.getInventory().addItem(random.getItemStack());
 	}
 	
 	
