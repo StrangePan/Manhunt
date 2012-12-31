@@ -4,98 +4,162 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
-
-import net.minecraft.server.v1_4_6.NBTTagCompound;
 
 import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.jnbt.CompoundTag;
+import org.jnbt.ListTag;
 import org.jnbt.NBTInputStream;
 import org.jnbt.NBTOutputStream;
+import org.jnbt.StringTag;
 import org.jnbt.Tag;
+import org.jnbt.ByteTag;
 import org.jnbt.TagType;
 
 import com.bendude56.hunted.Manhunt;
-import com.bendude56.hunted.loadouts.models.SimpleItem;
-import com.bendude56.hunted.loadouts.models.SimpleLoadout;
+import com.bendude56.hunted.NewManhuntPlugin;
+import com.bendude56.hunted.loadouts.models.SimpleEffect;
 
 public class LoadoutFile
 {
+	private static final String tag_name = "Name";
+	private static final String tag_version = "Version";
+	private static final String tag_contents = "Contents";
+	private static final String tag_armor = "Armor";
+	private static final String tag_effects = "Effects";
+	
 	
 	public static void load(Loadout loadout)
 	{
+		// Allocate memory
+		CompoundTag main_tag;
+		ItemStack[] contents;
+		ItemStack[] armor;
+		List<PotionEffect> effects;
+		@SuppressWarnings("unused")
+		String version;
 		
-		SimpleLoadout sloadout = loadFile(loadout);
 		
-		if (sloadout == null)
+		// Read tag from disk
+		main_tag = loadLoadoutFile(loadout.getFilename());
+		
+		if (main_tag == null)
 			return;
 		
-		ItemStack[] contents = new ItemStack[36];
-		ItemStack[] armor = new ItemStack[4];
 		
-		for (SimpleItem item : sloadout.inventory)
+		// Initialize arrays and lists
+		contents = new ItemStack[36];
+		armor = new ItemStack[4];
+		effects = new ArrayList<PotionEffect>();
+		
+		
+		// Read in important tags
+		if (main_tag.getValue().containsKey(tag_version) && main_tag.getValue().get(tag_version).getTagType() == TagType.STRING)
 		{
-			CompoundTag ctag = CompoundTag.fromObject(item);
-			NBTTagCompound nbttag = ctag.toNBTTag();
-			net.minecraft.server.v1_4_6.ItemStack mcstack = net.minecraft.server.v1_4_6.ItemStack.a(nbttag);
-			ItemStack stack = CraftItemStack.asBukkitCopy(mcstack);
-			
-			contents[item.Slot] = stack;
+			version = (String) main_tag.getValue().get(tag_version).getValue();
+		}
+		if (main_tag.getValue().containsKey(tag_name) && main_tag.getValue().get(tag_name).getTagType() == TagType.STRING)
+		{
+			loadout.setName((String) main_tag.getValue().get(tag_name).getValue());
 		}
 		
-		for (SimpleItem item : sloadout.armor)
+		
+		// Read in items and potion effects
+		if (main_tag.getValue().containsKey(tag_contents)
+				&& main_tag.getValue().get(tag_contents).getTagType() == TagType.LIST
+				&& ((ListTag) main_tag.getValue().get(tag_contents)).getDataType() == CompoundTag.class)
 		{
-			CompoundTag ctag = CompoundTag.fromObject(item);
-			NBTTagCompound nbttag = ctag.toNBTTag();
-			net.minecraft.server.v1_4_6.ItemStack mcstack = net.minecraft.server.v1_4_6.ItemStack.a(nbttag);
-			ItemStack stack = CraftItemStack.asBukkitCopy(mcstack);
-			
-			armor[item.Slot] = stack;
+			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_contents)).getValue())
+			{
+				if (tag.getTagType() == TagType.COMPOUND)
+				{
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_4_6.ItemStack.a(((CompoundTag) tag).toNBTTag()));
+					
+					if (((CompoundTag) tag).getValue().containsKey("Slot") && ((CompoundTag) tag).getValue().get("Slot").getTagType() == TagType.BYTE)
+					{
+						contents[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue()] = stack;
+					}
+				}
+			}
+		}
+
+		if (main_tag.getValue().containsKey(tag_armor)
+				&& main_tag.getValue().get(tag_armor).getTagType() == TagType.LIST
+				&& ((ListTag) main_tag.getValue().get(tag_armor)).getDataType() == CompoundTag.class)
+		{
+			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_armor)).getValue())
+			{
+				if (tag.getTagType() == TagType.COMPOUND)
+				{
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_4_6.ItemStack.a(((CompoundTag) tag).toNBTTag()));
+					
+					if (((CompoundTag) tag).getValue().containsKey("Slot") && ((CompoundTag) tag).getValue().get("Slot").getTagType() == TagType.BYTE)
+					{
+						contents[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue() - 100] = stack;
+					}
+				}
+			}
+		}
+
+		if (main_tag.getValue().containsKey(tag_effects)
+				&& main_tag.getValue().get(tag_effects).getTagType() == TagType.LIST
+				&& ((ListTag) main_tag.getValue().get(tag_effects)).getDataType() == CompoundTag.class)
+		{
+			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_effects)).getValue())
+			{
+				if (tag.getTagType() == TagType.COMPOUND)
+				{
+					SimpleEffect effect = new SimpleEffect();
+					
+					((CompoundTag) tag).toObject(effect);
+					
+					effects.add(effect.toPotionEffect());
+				}
+			}
 		}
 		
 		loadout.setContents(contents, armor);
+		loadout.setPotionEffects(effects);
 	}
 	
-	private static SimpleLoadout loadFile(Loadout loadout)
+	private static CompoundTag loadLoadoutFile(String filename)
 	{
-		File file = new File(loadout.fullpath);
-		File dir = new File(loadout.directory);
+		File file = new File(Manhunt.dirname_loadouts + "/" + filename + Manhunt.extension_loadouts);
+		File dir = new File(Manhunt.dirname_loadouts);
 		
 		if (!dir.exists())
 		{
-			dir.mkdir();
+			Manhunt.log(Level.SEVERE,
+					"Problem loading the Manhunt loadout file \"" + filename + Manhunt.extension_loadouts + "\"!");
+			return null;
 		}
 		if (!file.exists())
 		{
-			try
-			{
-				file.createNewFile();
-			} catch (IOException e)
-			{
-				Manhunt.log(Level.SEVERE,
-						"Problem loading the Manhunt loadout \"" + loadout.name + "\"!");
-				return null;
-			}
+			Manhunt.log(Level.SEVERE,
+					"Problem loading the Manhunt loadout file \"" + filename + Manhunt.extension_loadouts + "\"!");
+			return null;
 		}
+		
 		try
 		{
 			NBTInputStream stream = new NBTInputStream(new FileInputStream(file));
 			Tag tag = stream.readTag();
 			stream.close();
 			
-			if (tag.getTagType() != TagType.COMPOUND)
+			if (tag.getTagType() == TagType.COMPOUND)
+				return (CompoundTag) tag;
+			else
 				return null;
-			
-			SimpleLoadout l = new SimpleLoadout();
-			((CompoundTag) tag).toObject(l);
-			
-			return l;
 		}
 		catch (IOException e)
 		{
 			Manhunt.log(Level.SEVERE,
-					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
+					"Problem loading the Manhunt loadout file \"" + filename + Manhunt.extension_loadouts + "\"!");
 			Manhunt.log(Level.SEVERE, e.getMessage());
 			return null;
 		}
@@ -103,57 +167,62 @@ public class LoadoutFile
 	
 	public static void save(Loadout loadout)
 	{
-		ItemStack[] contents = loadout.getContents();
-		ItemStack[] armor = loadout.getArmorContents();
-		SimpleLoadout sloadout = new SimpleLoadout();
+		// Allocate Memory
+		CompoundTag main_tag;
+		List<Tag> contents;
+		List<Tag> armor;
+		List<Tag> effects;
 		
-		for (int i = 0; i < contents.length && i < 36; i++)
+		
+		// Initialize main tag
+		main_tag = new CompoundTag("", new HashMap<String, Tag>());
+		
+		
+		// Insert essential values
+		main_tag.getValue().put(tag_version, new StringTag("version", NewManhuntPlugin.getInstance().getDescription().getVersion()));
+		main_tag.getValue().put(tag_name, new StringTag("name", loadout.getName()));
+		
+		
+		// Build item and effect lists
+		contents = new ArrayList<Tag>();
+		for (ItemStack stack : loadout.getContents())
 		{
-			if (contents[i] == null)
-				return;
-			
-			NBTTagCompound nbttag = (CraftItemStack.asNMSCopy(contents[i])).getTag();
-			
-			if (nbttag == null)
-				return;
-			
-			CompoundTag ctag = CompoundTag.fromNBTTag(nbttag);
-			SimpleItem sitem = new SimpleItem();
-			ctag.toObject(sitem);
-			sitem.Slot = (byte) i;
-			
-			sloadout.inventory.add(sitem);
+			contents.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).getTag()));
 		}
 		
-		for (int i = 0; i < armor.length && i < 4; i++)
+		armor = new ArrayList<Tag>();
+		for (ItemStack stack : loadout.getArmorContents())
 		{
-			if (contents[i] == null)
-				return;
-
-			NBTTagCompound nbttag = (CraftItemStack.asNMSCopy(contents[i])).getTag();
-
-			if (nbttag == null)
-				return;
-			
-			CompoundTag ctag = CompoundTag.fromNBTTag(nbttag);
-			SimpleItem sitem = new SimpleItem();
-			ctag.toObject(sitem);
-			sitem.Slot = (byte) i;
-			
-			sloadout.inventory.add(sitem);
+			contents.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).getTag()));
 		}
 		
-		saveFile(loadout, sloadout);
+		effects = new ArrayList<Tag>();
+		for (PotionEffect effect : loadout.getEffects())
+		{
+			// Uses the "simple effect" object because there are no built-in
+			//		craftbukkit methods for serializing potion effects into tags.
+			effects.add(CompoundTag.fromObject(SimpleEffect.fromPotionEffect(effect)));
+		}
+		
+		
+		// Insert lists into main tag
+		main_tag.getValue().put(tag_contents, new ListTag("contents", CompoundTag.class, contents));
+		main_tag.getValue().put(tag_armor, new ListTag("armor", CompoundTag.class, armor));
+		main_tag.getValue().put(tag_effects, new ListTag("effects", CompoundTag.class, effects));
+		
+		
+		// Save the constructed tag to disk
+		saveFile(loadout, main_tag);
 	}
 	
-	private static void saveFile(Loadout loadout, SimpleLoadout sloadout)
+	private static void saveFile(Loadout loadout, CompoundTag tag)
 	{
-		File file = new File(loadout.fullpath);
-		File dir = new File(loadout.directory);
+		File file = new File(Manhunt.dirname_loadouts + "/" + loadout.getFilename() + Manhunt.extension_loadouts);
+		File dir = new File(Manhunt.dirname_loadouts);
 		
 		if (!dir.exists())
 		{
-			dir.mkdir();
+			dir.mkdirs();
 		}
 		if (!file.exists())
 		{
@@ -164,7 +233,7 @@ public class LoadoutFile
 			catch (IOException e)
 			{
 				Manhunt.log(Level.SEVERE,
-						"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
+						"Problem loading the Manhunt loadout \"" + loadout.getName() + "!\"");
 				Manhunt.log(Level.SEVERE, e.getMessage());
 				return;
 			}
@@ -172,13 +241,13 @@ public class LoadoutFile
 		try
 		{
 			NBTOutputStream stream = new NBTOutputStream(new FileOutputStream(file));
-			stream.writeTag(CompoundTag.fromObject(sloadout));
+			stream.writeTag(tag);
 			stream.close();
 		}
 		catch (IOException e)
 		{
 			Manhunt.log(Level.SEVERE,
-					"Problem loading the Manhunt loadout \"" + loadout.name + "!\"");
+					"Problem loading the Manhunt loadout \"" + loadout.getName() + "!\"");
 			Manhunt.log(Level.SEVERE, e.getMessage());
 			return;
 		}
@@ -186,7 +255,7 @@ public class LoadoutFile
 	
 	public static boolean delete(Loadout loadout)
 	{
-		File file = new File(loadout.fullpath);
+		File file = new File(Manhunt.dirname_loadouts + "/" + loadout.getFilename() + Manhunt.extension_loadouts);
 		if (file.exists())
 		{
 			return file.delete();

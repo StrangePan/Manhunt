@@ -20,20 +20,29 @@ public class Manhunt
 {
 	
 	//-------- Constants --------//
-	
+	/** The extension to use for property files */
 	public static final String extension_properties = ".properties";
-	public static final String extension_loadout = ".dat";
+	/** The extension to use for loadout files */
+	public static final String extension_loadouts = ".dat";
 	
+	/** The filename to use for the basic config property file */
 	public static final String filename_settings = "config"; 
 	
+	/** The directory name for the server's plugins */
 	public static final String dirname_plugins = "plugins";
-	public static final String dirname_main = "Manhunt";
+	/** The directory name for this plugin, nested within <CODE>dirname_plugins</CODE> */
+	public static final String dirname_root = "Manhunt";
+	/** The directory name for this plugin's loadouts, nested within <CODE>dirname_main</CODE> */
 	public static final String dirname_loadouts = "loadouts";
+	/** The directory name for the world data files stored in each Minecraft world's folder. */
 	public static final String dirname_world = "Manhunt";
 	
-	public static final String path_maindir = dirname_plugins + "/" + dirname_main;
-	public static final String path_settings = path_maindir + "/" + filename_settings + extension_properties;
-	public static final String path_loadouts = path_maindir + "/" + dirname_loadouts;
+	/** The directory path for this plugin's root directory, relative to the server's running directory */
+	public static final String path_rootdir = dirname_plugins + "/" + dirname_root;
+	/** The path for this plugin's main config file, relative to the server's running directory */
+	public static final String path_settings = path_rootdir + "/" + filename_settings + extension_properties;
+	/** The directory path for the loadouts folder, relative to the server's running directory */
+	public static final String path_loadouts = path_rootdir + "/" + dirname_loadouts;
 	
 	
 	//-------- Local variables ---------//
