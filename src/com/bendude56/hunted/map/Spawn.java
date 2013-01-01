@@ -5,6 +5,7 @@ import org.bukkit.World;
 
 public interface Spawn
 {
+	//---------------- Getters ----------------//
 	/**
 	 * Gets the spawn point for this Spawn.
 	 * @return The spawn point.
@@ -24,21 +25,32 @@ public interface Spawn
 	public int getRange();
 	
 	/**
-	 * Gets a corner of the protection boundary around the spawn.
-	 * @param corner The corner to get, either 0 or 1.
-	 * @return The corner of the protection boundary around the spawn.
+	 * Gets the spawn's first protection corner location.
+	 * @return The location of the protection boundary around the spawn.
 	 */
-	public Location getProtectionCorner(int corner);
+	public Location getProtectionCorner1();
 	
 	/**
-	 * Gets a corner of the border around spawn.
-	 * The border confines players to a given area around spawn.
-	 * @param corner The corner to get, either 0 or 1.
-	 * @return The corner of the border around spawn.
+	 * Gets the spawn's second protection corner location.
+	 * @return The location of the protection boundary around the spawn.
 	 */
-	public Location getBorderCorner(int corner);
+	public Location getProtectionCorner2();
+	
+	/**
+	 * Gets the spawn's first boundary corner location.
+	 * @return The location of the boundary around the spawn.
+	 */
+	public Location getBoundaryCorner1();
+	
+	/**
+	 * Gets the spawn's second boundary corner location.
+	 * @return The location of the boundary around the spawn.
+	 */
+	public Location getBoundaryCorner2();
 	
 	
+	
+	//---------------- Setters ----------------//
 	/**
 	 * Sets the spawn's location.
 	 * @param loc The location to change the spawn's location to.
@@ -52,18 +64,28 @@ public interface Spawn
 	public void setRange(int range);
 	
 	/**
-	 * Sets the specified protection boundary corner to the given location.
-	 * @param corner The corner to change.
+	 * Sets the spawn's first protection corner to the given location.
 	 * @param loc The corner's new location.
 	 */
-	public void setProtectionCorner(int corner, Location loc);
+	public void setProtectionCorner1(Location loc);
 	
 	/**
-	 * Sets the specified border corner to the given location.
-	 * @param corner The corner to change.
+	 * Sets the spawn's second protection corner to the given location.
 	 * @param loc The corner's new location.
 	 */
-	public void setBorderCorner(int corner, Location loc);
+	public void setProtectionCorner2(Location loc);
+	
+	/**
+	 * Sets the spawn's first boundary corner to the given location.
+	 * @param loc The corner's new location.
+	 */
+	public void setBoundaryCorner1(Location loc);
+	
+	/**
+	 * Sets the spawn's second boundary corner to the given location.
+	 * @param loc The corner's new location.
+	 */
+	public void setBoundaryCorner2(Location loc);
 	
 	
 }

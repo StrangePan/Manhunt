@@ -21,13 +21,14 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 	
 	private static final String header = "Manhnt settings file";
 	
+	
 	public SettingManagerBase(String filepath)
 	{
 		this.file = new File(filepath);
 		this.settings = new ArrayList<Setting>();
 		this.settings_visible = new ArrayList<Setting>();
 		
-		addSetting(new SettingString("version", NewManhuntPlugin.getInstance().getDescription().getVersion(), ""), false);
+		addSetting(new SettingString("version", NewManhuntPlugin.getVersion(), ""), false);
 	}
 	
 	public void addSetting(Setting setting, boolean visible)

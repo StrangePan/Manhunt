@@ -1,5 +1,7 @@
 package com.bendude56.hunted.map;
 
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -16,7 +18,7 @@ public interface Map
 	 * Gets the main spawn point for the Map.
 	 * @return The Spawn for this Map.
 	 */
-	public Spawn getSpawn();
+	public Location getSpawnLocation();
 	
 	/**
 	 * Gets the main World of this Map.
@@ -25,84 +27,121 @@ public interface Map
 	public World getWorld();
 	
 	/**
-	 * Gets the main spawn Location of this Map.
-	 * @return The spawn point of this Map.
-	 */
-	public Location getLocation();
-	
-	/**
-	 * Ges an array of the various Setup Spawns.
+	 * Gets a list of the various Setup Spawns.
 	 * @return Array of the Setup Spawns
 	 */
-	public Spawn[] getSetupSpawns();
+	public List<Spawn> getSetupSpawns();
 	
 	/**
-	 * Gets an array of the various Hunter Spawns.
+	 * Gets a list of the various Hunter Spawns.
 	 * @return Array of the Hunter Spawns.
 	 */
-	public Spawn[] getHunterSpawns();
+	public List<Spawn> getHunterSpawns();
 	
 	/**
-	 * Gets an array of the various Prey Spawns.
+	 * Gets a list of the various Prey Spawns.
 	 * @return Array of the Prey Spawns.
 	 */
-	public Spawn[] getPreySpawns();
+	public List<Spawn> getPreySpawns();
 	
 	/**
 	 * Gets one of the map's boundary corners.
-	 * @param index Which corner to return, either 1 or 2.
 	 * @return
 	 */
-	public Location getMapBoundary(int index);
+	public Location getMapBoundary1();
+	
+	/**
+	 * Gets one of the map's boundary corners.
+	 * @return
+	 */
+	public Location getMapBoundary2();
 	
 	/**
 	 * Gets one of the map's setup boundary corners.
-	 * @param index Which corner to return, either 1 or 2.
 	 * @return
 	 */
-	public Location getSetupBoundary(int index);
+	public Location getSetupBoundary1();
+	
+	/**
+	 * Gets one of the map's setup boundary corners.
+	 * @return
+	 */
+	public Location getSetupBoundary2();
 	
 	
 	
 	//---------------- Setters ----------------//
 	/**
-	 * Chanegs the name of the map.
+	 * Changes the name of the map.
 	 * @param name
 	 */
 	public void setName(String name);
 	
 	/**
-	 * Replaces the Setup Spawn to the map at the given index.
-	 * @param index The index of the spawn. Must be 0-4.
-	 * @param spawn The Spawn to set.
-	 */
-	public void setSetupSpawn(int index, Spawn spawn);
-	
-	/**
-	 * Replaces the Hunter Spawn to the map at the given index.
-	 * @param index The index of the spawn. Must be 0-4.
-	 * @param spawn The Spawn to set.
-	 */
-	public void setHunterSpawn(int index, Spawn spawn);
-	
-	/**
-	 * Replaces the Prey Spawn at the given index.
-	 * @param index The index to set the Spawn. Must be 0.4.
-	 * @param spawn The Spawn to set.
-	 */
-	public void setPreySpawn(int index, Spawn spawn);
-	
-	/**
-	 * Replaces the map boundary at the given index.
-	 * @param index The index to replace. Must be 1 or 2.
+	 * Changes the spawn location of this map.
 	 * @param loc
 	 */
-	public void setMapBoundary(int index, Location loc);
+	public void setSpawn(Location loc);
 	
 	/**
-	 * Replaces the map boundary at the given index.
-	 * @param index The index to replace. Must be 1 or 2.
+	 * Adds a setup spawn to the map.
+	 * @param spawn The Spawn to set.
+	 */
+	public void addSetupSpawn(Spawn spawn);
+	
+	/**
+	 * Adds a hunter spawn to the map.
+	 * @param spawn The Spawn to set.
+	 */
+	public void addHunterSpawn(Spawn spawn);
+	
+	/**
+	 * Adds a prey spawn to the map.
+	 * @param spawn The Spawn to set.
+	 */
+	public void addPreySpawn(Spawn spawn);
+	
+	/**
+	 * Removes a setup spawn from the map.
+	 * @param spawn
+	 */
+	public void removeSetupSpawn(Spawn spawn);
+	
+	/**
+	 * Removes a hunter spawn from the map.
+	 * @param spawn
+	 */
+	public void removeHunterSpawn(Spawn spawn);
+	
+	/**
+	 * Removes a prey spawn from the map.
+	 * @param spawn
+	 */
+	public void removePreySpawn(Spawn spawn);
+	
+	/**
+	 * Sets the map's first boundary corner.
 	 * @param loc
 	 */
-	public void setSetupBoundary(int index, Location loc);
+	public void setMapBoundary1(Location loc);
+	
+	/**
+	 * Sets the map's second boundary corner.
+	 * @param loc
+	 */
+	public void setMapBoundary2(Location loc);
+	
+	/**
+	 * Sets the map's first setup boundary.
+	 * @param loc
+	 */
+	public void setSetupBoundary1(Location loc);
+	
+	/**
+	 * Sets the map's second setup boundary.
+	 * @param loc
+	 */
+	public void setSetupBoundary2(Location loc);
+	
+	
 }

@@ -11,11 +11,10 @@ public class ManhuntSpawn implements Spawn
 	private Location location;
 	private int range;
 	
-	private Location[] protection;
-	private Location[] border;
-	
-	private static final int max_protections = 2;
-	private static final int max_borders = 2;
+	private Location boundary1;
+	private Location boundary2;
+	private Location protection1;
+	private Location protection2;
 	
 	
 	
@@ -35,27 +34,26 @@ public class ManhuntSpawn implements Spawn
 		this(loc, range, protect_c1, protect_c2, null, null);
 	}
 	
-	public ManhuntSpawn(Location loc, int range, Location protect_c1, Location protect_c2, Location border_c1, Location border_c2)
+	public ManhuntSpawn(Location loc, int range, Location protect_c1, Location protect_c2, Location boundary_c1, Location boundary_c2)
 	{
 		if (loc == null)
 			throw new IllegalArgumentException("Spawn's Location cannot be null");
 		
 		if ((protect_c1 != null && protect_c1.getWorld() != loc.getWorld())
 				|| (protect_c2 != null && protect_c2.getWorld() != loc.getWorld())
-				|| (border_c1 != null && border_c1.getWorld() != loc.getWorld())
-				|| (border_c2 != null && border_c2.getWorld() != loc.getWorld()))
+				|| (boundary_c1 != null && boundary_c1.getWorld() != loc.getWorld())
+				|| (boundary_c2 != null && boundary_c2.getWorld() != loc.getWorld()))
 			throw new IllegalArgumentException("All locations must be in the same world.");
 		
 		this.location = loc;
 		this.range = range;
 		
-		this.protection = new Location[max_protections];
-		this.protection[0] = protect_c1;
-		this.protection[1] = protect_c2;
+		this.protection1 = protect_c1;
+		this.protection2 = protect_c2;
 		
-		this.border = new Location[max_borders];
-		this.border[0] = border_c1;
-		this.border[1] = border_c2;
+		this.boundary1 = boundary_c1;
+		this.boundary2 = boundary_c2;
+		
 	}
 	
 	
@@ -82,21 +80,27 @@ public class ManhuntSpawn implements Spawn
 	}
 	
 	@Override
-	public Location getProtectionCorner(int corner)
+	public Location getProtectionCorner1()
 	{
-		if (corner < 0 || corner >= max_protections)
-			return null;
-		
-		return protection[corner].clone();
+		return protection1;
+	}
+	
+	@Override
+	public Location getProtectionCorner2()
+	{
+		return protection2;
 	}
 	
 	@Override 
-	public Location getBorderCorner(int corner)
+	public Location getBoundaryCorner1()
 	{
-		if (corner < 0 || corner >= max_borders)
-			return null;
-		
-		return border[corner].clone();
+		return boundary1;
+	}
+	
+	@Override 
+	public Location getBoundaryCorner2()
+	{
+		return boundary2;
 	}
 	
 	//------------ Setters ------------//
@@ -118,27 +122,39 @@ public class ManhuntSpawn implements Spawn
 	}
 	
 	@Override
-	public void setProtectionCorner(int index, Location loc)
+	public void setProtectionCorner1(Location loc)
 	{
-		if (loc.getWorld() != location.getWorld())
+		if (loc != null && loc.getWorld() != location.getWorld())
 			throw new IllegalArgumentException("Location must be in the same world");
 		
-		if (index < 0 || index >= max_protections)
-			throw new IllegalArgumentException("Index must be either 0 or 1");
-		
-		this.protection[index] = loc == null ? null : loc.clone();
+		this.protection1 = loc == null ? null : loc.clone();
 	}
 	
 	@Override
-	public void setBorderCorner(int index, Location loc)
+	public void setProtectionCorner2(Location loc)
 	{
-		if (loc.getWorld() != location.getWorld())
+		if (loc != null && loc.getWorld() != location.getWorld())
 			throw new IllegalArgumentException("Location must be in the same world");
 		
-		if (index < 0 || index >= max_borders)
-			throw new IllegalArgumentException("Index must be either 0 or 1");
+		this.protection2 = loc == null ? null : loc.clone();
+	}
+	
+	@Override
+	public void setBoundaryCorner1(Location loc)
+	{
+		if (loc != null && loc.getWorld() != location.getWorld())
+			throw new IllegalArgumentException("Location must be in the same world");
 		
-		this.border[index] = loc == null ? null : loc.clone();
+		this.boundary1 = loc == null ? null : loc.clone();
+	}
+	
+	@Override
+	public void setBoundaryCorner2(Location loc)
+	{
+		if (loc != null && loc.getWorld() != location.getWorld())
+			throw new IllegalArgumentException("Location must be in the same world");
+		
+		this.boundary2 = loc == null ? null : loc.clone();
 	}
 	
 	

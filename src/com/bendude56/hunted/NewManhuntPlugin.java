@@ -46,7 +46,10 @@ public class NewManhuntPlugin extends JavaPlugin
 	
 
 	//-------- Public Interface Methods --------//
-	
+	public static String getVersion()
+	{
+		return getInstance().getDescription().getVersion();
+	}
 	
 	
 	

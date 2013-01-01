@@ -25,9 +25,13 @@ public class Manhunt
 	public static final String extension_properties = ".properties";
 	/** The extension to use for loadout files */
 	public static final String extension_loadouts = ".dat";
+	/** The extension to use for the world data files */
+	public static final String extension_worldprops = ".dat";
 	
 	/** The filename to use for the basic config property file */
-	public static final String filename_settings = "config"; 
+	public static final String filename_settings = "config";
+	/** The filename to use for manhunt world data files. */
+	public static final String filename_worldprops = "world";
 	
 	/** The directory name for the server's plugins */
 	public static final String dirname_plugins = "plugins";
@@ -37,6 +41,8 @@ public class Manhunt
 	public static final String dirname_loadouts = "loadouts";
 	/** The directory name for the world data files stored in each Minecraft world's folder. */
 	public static final String dirname_world = "Manhunt";
+	/** The directory name for the lobby data files. These files will hold each lobby's individual settings. */
+	public static final String dirname_lobbies = "lobbies";
 	
 	/** The directory path for this plugin's root directory, relative to the server's running directory */
 	public static final String path_rootdir = dirname_plugins + "/" + dirname_root;
@@ -44,6 +50,10 @@ public class Manhunt
 	public static final String path_settings = path_rootdir + "/" + filename_settings + extension_properties;
 	/** The directory path for the loadouts folder, relative to the server's running directory */
 	public static final String path_loadouts = path_rootdir + "/" + dirname_loadouts;
+	/** The directory path for the lobbies folder, relative to the server's running directory */
+	public static final String path_lobbies = path_rootdir + "/" + dirname_lobbies;
+	
+	
 	
 	
 	//-------- Local variables ---------//

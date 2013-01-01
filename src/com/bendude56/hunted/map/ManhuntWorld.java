@@ -15,13 +15,12 @@ import org.jnbt.Tag;
 import org.jnbt.TagType;
 
 import com.bendude56.hunted.Manhunt;
-import com.bendude56.hunted.map.models.ModelWorld;
+import com.bendude56.hunted.map.models.SimpleWorld;
 
 public class ManhuntWorld implements World
 {
 
 	//---------------- Constants ----------------//
-	private final String file_location ;
 	private final org.bukkit.World world;
 	private Spawn spawn;
 	private HashMap<String, Map> maps;
@@ -35,7 +34,6 @@ public class ManhuntWorld implements World
 			throw new IllegalArgumentException("Argument cannor be null.");
 		}
 		
-		this.file_location = file_location;
 		this.world = world;
 		this.spawn = new ManhuntSpawn(world.getSpawnLocation());
 		this.maps = new HashMap<String, Map>();
@@ -48,7 +46,7 @@ public class ManhuntWorld implements World
 	@Override
 	public String getFileLocation()
 	{
-		return file_location;
+		return world.getWorldFolder() + "/" + Manhunt.dirname_world + "/" + Manhunt.filename_worldprops + Manhunt.extension_worldprops;
 	}
 	
 	@Override
@@ -118,32 +116,16 @@ public class ManhuntWorld implements World
 	
 	
 	//---------------- Private Methods ----------------//
-	/**
-	 * Pulls world data out of the given ModelWorld object.
-	 * @param model The ModelWorld object to pull from.
-	 */
-	private void load(ModelWorld model)
-	{
-		// TODO
-	}
 	
-	/**
-	 * Shoves this world data into a ModelWorld object.
-	 * @param model The MomdelWorld object to save to.
-	 */
-	private void save(ModelWorld model)
-	{
-		// TODO
-	}
 	
 	
 	//---------------- Public Methods ----------------//
 	@Override
 	public void save()
 	{
-		File file = new File(file_location);
+		File file = new File(getFileLocation());
 		NBTOutputStream output;
-		ModelWorld model = new ModelWorld();
+		SimpleWorld model = new SimpleWorld();
 		
 		try
 		{
@@ -175,7 +157,7 @@ public class ManhuntWorld implements World
 	@Override
 	public void load()
 	{
-		File file = new File(file_location);
+		File file = new File(getFileLocation());
 		Tag tag;
 		NBTInputStream input;
 		
@@ -191,7 +173,7 @@ public class ManhuntWorld implements World
 				input = new NBTInputStream(new FileInputStream(file));
 				
 				tag = input.readTag();
-				ModelWorld model = new ModelWorld();
+				SimpleWorld model = new SimpleWorld();
 				
 				if (tag.getTagType() == TagType.COMPOUND && tag.getName().equals(""))
 				{
