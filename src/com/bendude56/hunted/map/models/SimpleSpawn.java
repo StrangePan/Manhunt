@@ -9,15 +9,12 @@ import com.bendude56.hunted.map.Spawn;
 public class SimpleSpawn
 {
 	//---------------- Properties ----------------//
+	public String Version;
+	
 	public SimpleLocation Location;
 	public Integer Range;
 	
-	public SimpleLocation Boundary1;
-	public SimpleLocation Boundary2;
-	public SimpleLocation Protection1;
-	public SimpleLocation Protection2;
 	
-	public String Version;
 	
 	//---------------- Constructors ----------------//
 	public SimpleSpawn()
@@ -33,10 +30,6 @@ public class SimpleSpawn
 		Spawn spawn = new ManhuntSpawn(Location.toLocation(world));
 		
 		spawn.setRange(Range);
-		spawn.setBoundaryCorner1(Boundary1.toLocation(world));
-		spawn.setBoundaryCorner2(Boundary2.toLocation(world));
-		spawn.setProtectionCorner1(Protection1.toLocation(world));
-		spawn.setProtectionCorner2(Protection2.toLocation(world));
 		
 		return spawn;
 	}
@@ -50,11 +43,6 @@ public class SimpleSpawn
 		
 		model.Location = SimpleLocation.fromLocation(spawn.getLocation());
 		model.Range = spawn.getRange();
-		
-		model.Boundary1 = SimpleLocation.fromLocation(spawn.getBoundaryCorner1());
-		model.Boundary2 = SimpleLocation.fromLocation(spawn.getBoundaryCorner2());
-		model.Protection1 = SimpleLocation.fromLocation(spawn.getProtectionCorner1());
-		model.Protection2 = SimpleLocation.fromLocation(spawn.getProtectionCorner2());
 		
 		return model;
 	}

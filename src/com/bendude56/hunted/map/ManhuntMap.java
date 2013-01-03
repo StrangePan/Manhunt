@@ -13,10 +13,7 @@ public class ManhuntMap implements Map
 	private List<Spawn> setup;
 	private List<Spawn> hunter;
 	private List<Spawn> prey;
-	private Location boundary_world1;
-	private Location boundary_world2;
-	private Location boundary_setup1;
-	private Location boundary_setup2;
+	private List<Zone> zones;
 	
 	
 	//-------------------- Constructors --------------------//
@@ -83,27 +80,27 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public Location getMapBoundary1()
+	public List<Zone> getZones()
 	{
-		return boundary_world1.clone();
+		return this.zones;
 	}
 	
 	@Override
-	public Location getMapBoundary2()
+	public List<Zone> getZones(ZoneType ... types)
 	{
-		return boundary_world2.clone();
-	}
-	
-	@Override
-	public Location getSetupBoundary1()
-	{
-		return boundary_setup1.clone();
-	}
-	
-	@Override
-	public Location getSetupBoundary2()
-	{
-		return boundary_setup2.clone();
+		List<Zone> zones = new ArrayList<Zone>();
+		for (Zone zone : this.zones)
+		{
+			for (ZoneType type : types)
+			{
+				if (zone.getType() == type)
+				{
+					zones.add(zone);
+					break;
+				}
+			}
+		}
+		return zones;
 	}
 	
 	
@@ -165,32 +162,39 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public void setMapBoundary1(Location loc)
+	public void clearSetupSpawns()
 	{
-		if (loc != null && loc.getWorld() == getWorld())
-			this.boundary_world1 = loc.clone();
+		this.setup.clear();
 	}
 	
 	@Override
-	public void setMapBoundary2(Location loc)
+	public void clearHunterSpawns()
 	{
-		if (loc != null && loc.getWorld() == getWorld())
-			this.boundary_world2 = loc.clone();
+		this.hunter.clear();
 	}
 	
 	@Override
-	public void setSetupBoundary1(Location loc)
+	public void clearPreySpawns()
 	{
-		if (loc != null && loc.getWorld() == getWorld())
-			this.boundary_setup1 = loc.clone();
+		this.prey.clear();
 	}
 	
 	@Override
-	public void setSetupBoundary2(Location loc)
+	public void addZone(Zone zone)
 	{
-		if (loc != null && loc.getWorld() == getWorld())
-			this.boundary_setup2 = loc.clone();
+		if (zone.getWorld() == getWorld() && !zones.contains(zone))
+			zones.add(zone);
 	}
+	
+	@Override
+	public void removeZone(Zone zone)
+	{
+		if (zones.contains(zone))
+			zones.remove(zone);
+	}
+	
+	
+	
 	
 	
 }

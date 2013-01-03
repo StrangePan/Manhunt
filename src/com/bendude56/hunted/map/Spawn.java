@@ -24,30 +24,6 @@ public interface Spawn
 	 */
 	public int getRange();
 	
-	/**
-	 * Gets the spawn's first protection corner location.
-	 * @return The location of the protection boundary around the spawn.
-	 */
-	public Location getProtectionCorner1();
-	
-	/**
-	 * Gets the spawn's second protection corner location.
-	 * @return The location of the protection boundary around the spawn.
-	 */
-	public Location getProtectionCorner2();
-	
-	/**
-	 * Gets the spawn's first boundary corner location.
-	 * @return The location of the boundary around the spawn.
-	 */
-	public Location getBoundaryCorner1();
-	
-	/**
-	 * Gets the spawn's second boundary corner location.
-	 * @return The location of the boundary around the spawn.
-	 */
-	public Location getBoundaryCorner2();
-	
 	
 	
 	//---------------- Setters ----------------//
@@ -63,29 +39,13 @@ public interface Spawn
 	 */
 	public void setRange(int range);
 	
+	
+	
+	//---------------- Public Methods ----------------//
 	/**
-	 * Sets the spawn's first protection corner to the given location.
-	 * @param loc The corner's new location.
+	 * Generates a random location within a circular area around the center
+	 * of the spawn.
+	 * @return
 	 */
-	public void setProtectionCorner1(Location loc);
-	
-	/**
-	 * Sets the spawn's second protection corner to the given location.
-	 * @param loc The corner's new location.
-	 */
-	public void setProtectionCorner2(Location loc);
-	
-	/**
-	 * Sets the spawn's first boundary corner to the given location.
-	 * @param loc The corner's new location.
-	 */
-	public void setBoundaryCorner1(Location loc);
-	
-	/**
-	 * Sets the spawn's second boundary corner to the given location.
-	 * @param loc The corner's new location.
-	 */
-	public void setBoundaryCorner2(Location loc);
-	
-	
+	public Location getRandomLocation();
 }

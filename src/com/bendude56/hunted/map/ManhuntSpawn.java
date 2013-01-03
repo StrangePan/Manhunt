@@ -5,16 +5,9 @@ import org.bukkit.World;
 
 public class ManhuntSpawn implements Spawn
 {
-	
-	
 	//---------------- Properties ----------------//
 	private Location location;
 	private int range;
-	
-	private Location boundary1;
-	private Location boundary2;
-	private Location protection1;
-	private Location protection2;
 	
 	
 	
@@ -48,19 +41,11 @@ public class ManhuntSpawn implements Spawn
 		this.location = loc;
 		this.range = range;
 		
-		this.protection1 = protect_c1;
-		this.protection2 = protect_c2;
-		
-		this.boundary1 = boundary_c1;
-		this.boundary2 = boundary_c2;
-		
 	}
 	
 	
 	
-	//---------------- Public Methods ----------------//
-	
-	//------------ Getters ------------//
+	//---------------- Getters ----------------//
 	@Override
 	public Location getLocation()
 	{
@@ -79,31 +64,7 @@ public class ManhuntSpawn implements Spawn
 		return range;
 	}
 	
-	@Override
-	public Location getProtectionCorner1()
-	{
-		return protection1;
-	}
-	
-	@Override
-	public Location getProtectionCorner2()
-	{
-		return protection2;
-	}
-	
-	@Override 
-	public Location getBoundaryCorner1()
-	{
-		return boundary1;
-	}
-	
-	@Override 
-	public Location getBoundaryCorner2()
-	{
-		return boundary2;
-	}
-	
-	//------------ Setters ------------//
+	//---------------- Setters ----------------//
 	@Override
 	public void setLocation(Location loc)
 	{
@@ -121,41 +82,27 @@ public class ManhuntSpawn implements Spawn
 		this.range = range;
 	}
 	
+	
+	
+	//---------------- Public Methods ----------------//
 	@Override
-	public void setProtectionCorner1(Location loc)
+	public Location getRandomLocation()
 	{
-		if (loc != null && loc.getWorld() != location.getWorld())
-			throw new IllegalArgumentException("Location must be in the same world");
-		
-		this.protection1 = loc == null ? null : loc.clone();
+		if (range == 0)
+			return location.clone();
+		else
+		{
+			Location loc = location.clone();
+			double angle = Math.random() * 2 * Math.PI;
+			double distance = Math.random() * range;
+			
+			loc.setX(Math.cos(angle) * distance);
+			loc.setZ(Math.sin(angle) * distance);
+			
+			return loc;
+		}
 	}
 	
-	@Override
-	public void setProtectionCorner2(Location loc)
-	{
-		if (loc != null && loc.getWorld() != location.getWorld())
-			throw new IllegalArgumentException("Location must be in the same world");
-		
-		this.protection2 = loc == null ? null : loc.clone();
-	}
-	
-	@Override
-	public void setBoundaryCorner1(Location loc)
-	{
-		if (loc != null && loc.getWorld() != location.getWorld())
-			throw new IllegalArgumentException("Location must be in the same world");
-		
-		this.boundary1 = loc == null ? null : loc.clone();
-	}
-	
-	@Override
-	public void setBoundaryCorner2(Location loc)
-	{
-		if (loc != null && loc.getWorld() != location.getWorld())
-			throw new IllegalArgumentException("Location must be in the same world");
-		
-		this.boundary2 = loc == null ? null : loc.clone();
-	}
 	
 	
 }

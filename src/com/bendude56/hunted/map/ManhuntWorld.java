@@ -42,13 +42,8 @@ public class ManhuntWorld implements World
 	}
 	
 	
-	//---------------- Getters ----------------//
-	@Override
-	public String getFileLocation()
-	{
-		return world.getWorldFolder() + "/" + Manhunt.dirname_world + "/" + Manhunt.filename_worldprops + Manhunt.extension_worldprops;
-	}
 	
+	//---------------- Getters ----------------//
 	@Override
 	public String getName()
 	{
@@ -86,7 +81,7 @@ public class ManhuntWorld implements World
 		}
 	}
 	
-
+	
 	
 	//---------------- Setters----------------//
 	@Override
@@ -115,17 +110,13 @@ public class ManhuntWorld implements World
 	
 	
 	
-	//---------------- Private Methods ----------------//
-	
-	
-	
 	//---------------- Public Methods ----------------//
 	@Override
 	public void save()
 	{
-		File file = new File(getFileLocation());
+		File file = new File(getWorld().getWorldFolder() + "/" + Manhunt.dirname_world + "/" + Manhunt.filename_worldprops + Manhunt.extension_worldprops);
 		NBTOutputStream output;
-		SimpleWorld model = new SimpleWorld();
+		SimpleWorld model = SimpleWorld.fromManhuntWorld(this);
 		
 		try
 		{
@@ -136,8 +127,6 @@ public class ManhuntWorld implements World
 			}
 			
 			output = new NBTOutputStream(new FileOutputStream(file));
-			
-			save(model);
 			
 			output.writeTag(CompoundTag.fromObject(model));
 			
@@ -157,7 +146,7 @@ public class ManhuntWorld implements World
 	@Override
 	public void load()
 	{
-		File file = new File(getFileLocation());
+		File file = new File(getWorld().getWorldFolder() + "/" + Manhunt.dirname_world + "/" + Manhunt.filename_worldprops + Manhunt.extension_worldprops);
 		Tag tag;
 		NBTInputStream input;
 		
@@ -178,7 +167,7 @@ public class ManhuntWorld implements World
 				if (tag.getTagType() == TagType.COMPOUND && tag.getName().equals(""))
 				{
 					((CompoundTag) tag).toObject(model);
-					load(model);
+					model.toManhuntWorld(this);
 				}
 				else
 				{
@@ -200,5 +189,7 @@ public class ManhuntWorld implements World
 			
 		}
 	}
-
+	
+	
+	
 }

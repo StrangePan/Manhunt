@@ -12,13 +12,6 @@ public interface World
 	public String getName();
 	
 	/**
-	 * Gets the file location of this world's
-	 * data file.
-	 * @return The path and file location relative to the server's root directory.
-	 */
-	public String getFileLocation();
-	
-	/**
 	 * Gets this world's Bukkit world.
 	 * @return This world's linked world.
 	 */

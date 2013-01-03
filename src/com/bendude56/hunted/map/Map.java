@@ -45,28 +45,18 @@ public interface Map
 	public List<Spawn> getPreySpawns();
 	
 	/**
-	 * Gets one of the map's boundary corners.
+	 * Gets a list of all zones associated with this map.
 	 * @return
 	 */
-	public Location getMapBoundary1();
+	public List<Zone> getZones();
 	
 	/**
-	 * Gets one of the map's boundary corners.
+	 * Gets a list of the specified type(s) of zones associated
+	 * with this maps.
+	 * @param types The different types of zone(s) desired.
 	 * @return
 	 */
-	public Location getMapBoundary2();
-	
-	/**
-	 * Gets one of the map's setup boundary corners.
-	 * @return
-	 */
-	public Location getSetupBoundary1();
-	
-	/**
-	 * Gets one of the map's setup boundary corners.
-	 * @return
-	 */
-	public Location getSetupBoundary2();
+	public List<Zone> getZones(ZoneType ... types);
 	
 	
 	
@@ -120,28 +110,32 @@ public interface Map
 	public void removePreySpawn(Spawn spawn);
 	
 	/**
-	 * Sets the map's first boundary corner.
-	 * @param loc
+	 * Removes all setup spawns from the map.
 	 */
-	public void setMapBoundary1(Location loc);
+	public void clearSetupSpawns();
 	
 	/**
-	 * Sets the map's second boundary corner.
-	 * @param loc
+	 * Removes all hunter spawns from the map.
 	 */
-	public void setMapBoundary2(Location loc);
+	public void clearHunterSpawns();
 	
 	/**
-	 * Sets the map's first setup boundary.
-	 * @param loc
+	 * Removes all prey spawns from the map.
 	 */
-	public void setSetupBoundary1(Location loc);
+	public void clearPreySpawns();
 	
 	/**
-	 * Sets the map's second setup boundary.
-	 * @param loc
+	 * Adds a new zone to the map.
+	 * @param zone The zone to add.
 	 */
-	public void setSetupBoundary2(Location loc);
+	public void addZone(Zone zone);
+	
+	/**
+	 * Removes a zone from the map.
+	 * @param zone The zone to remove.
+	 */
+	public void removeZone(Zone zone);
+	
 	
 	
 }
