@@ -52,31 +52,31 @@ public class ManhuntMap implements Map
 	@Override
 	public Location getSpawnLocation()
 	{
-		return spawn;
+		return spawn.clone();
 	}
 
 	@Override
 	public World getWorld()
 	{
-		return getSpawnLocation().getWorld();
+		return spawn.getWorld();
 	}
 	
 	@Override
 	public List<Spawn> getSetupSpawns()
 	{
-		return setup;
+		return this.setup;
 	}
 	
 	@Override
 	public List<Spawn> getHunterSpawns()
 	{
-		return hunter;
+		return this.hunter;
 	}
 	
 	@Override
 	public List<Spawn> getPreySpawns()
 	{
-		return prey;
+		return this.prey;
 	}
 	
 	@Override
@@ -182,7 +182,9 @@ public class ManhuntMap implements Map
 	@Override
 	public void addZone(Zone zone)
 	{
-		if (zone.getWorld() == getWorld() && !zones.contains(zone))
+		if (zone.getWorld() != getWorld())
+			throw new IllegalArgumentException("The zone must be in the same world as the map.");
+		if (!zones.contains(zone))
 			zones.add(zone);
 	}
 	
@@ -191,6 +193,12 @@ public class ManhuntMap implements Map
 	{
 		if (zones.contains(zone))
 			zones.remove(zone);
+	}
+	
+	@Override
+	public void clearZones()
+	{
+		this.zones.clear();
 	}
 	
 	

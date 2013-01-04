@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Location;
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTInputStream;
 import org.jnbt.NBTOutputStream;
@@ -27,11 +28,11 @@ public class ManhuntWorld implements World
 	
 	
 	//---------------- Constructors ----------------//
-	public ManhuntWorld(org.bukkit.World world, String file_location)
+	public ManhuntWorld(org.bukkit.World world)
 	{
 		if (world == null)
 		{
-			throw new IllegalArgumentException("Argument cannor be null.");
+			throw new IllegalArgumentException("Argument cannot be null.");
 		}
 		
 		this.world = world;
@@ -61,6 +62,12 @@ public class ManhuntWorld implements World
 	{
 		return spawn;
 	}
+	
+	@Override
+	public Location getSpawnLocation()
+	{
+		return spawn.getLocation();
+	}
 
 	@Override
 	public List<Map> getMaps()
@@ -87,7 +94,7 @@ public class ManhuntWorld implements World
 	@Override
 	public void addMap(String label, Map map)
 	{
-		if (!maps.containsKey(label))
+		if (!maps.containsKey(label) && !maps.containsValue(map))
 		{
 			maps.put(label, map);
 		}
@@ -116,7 +123,7 @@ public class ManhuntWorld implements World
 	{
 		File file = new File(getWorld().getWorldFolder() + "/" + Manhunt.dirname_world + "/" + Manhunt.filename_worldprops + Manhunt.extension_worldprops);
 		NBTOutputStream output;
-		SimpleWorld model = SimpleWorld.fromManhuntWorld(this);
+		SimpleWorld model = SimpleWorld.fromWorld(this);
 		
 		try
 		{
@@ -167,7 +174,7 @@ public class ManhuntWorld implements World
 				if (tag.getTagType() == TagType.COMPOUND && tag.getName().equals(""))
 				{
 					((CompoundTag) tag).toObject(model);
-					model.toManhuntWorld(this);
+					model.toWorld(this);
 				}
 				else
 				{

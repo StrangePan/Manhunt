@@ -15,8 +15,10 @@ public abstract class Zone
 	//---------------- Constructors ----------------//
 	public Zone(ZoneType type, Location corner1, Location corner2, boolean ignoreY)
 	{
+		if (corner1 == null || corner1 == null)
+			throw new IllegalArgumentException("Both locations must not be null.");
 		if (corner1.getWorld() != corner2.getWorld())
-			throw new IllegalArgumentException("Both corners must be in the same world.");
+			throw new IllegalArgumentException("Both locations must be in the same world.");
 		
 		this.type = type;
 		this.corner1 = corner1;
@@ -85,7 +87,6 @@ public abstract class Zone
 	{
 		if (corner1 == null)
 			throw new IllegalArgumentException("The location cannot be null.");
-		
 		if (corner1.getWorld() != getWorld())
 			throw new IllegalArgumentException("The location must be in the same world as the zone.");
 		
@@ -101,7 +102,6 @@ public abstract class Zone
 	{
 		if (corner2 == null)
 			throw new IllegalArgumentException("The location cannot be null.");
-		
 		if (corner2.getWorld() != getWorld())
 			throw new IllegalArgumentException("The location must be in the same world as the zone.");
 		

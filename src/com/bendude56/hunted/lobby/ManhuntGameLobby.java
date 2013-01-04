@@ -151,6 +151,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 	}
 	
 	
+	
 	//---------------- Setters ----------------//
 	@Override
 	public void setName(String name)
@@ -199,6 +200,7 @@ public class ManhuntGameLobby extends ManhuntLobby implements GameLobby
 			players.remove(name);
 		}
 	}
+	
 	
 	
 	//---------------- Public Methods ----------------//

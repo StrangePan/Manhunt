@@ -10,14 +10,14 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Loadout
 {
+	private String name;
+	private final String filename;
+	
 	private ItemStack[] contents;
 	private ItemStack[] armor;
 	
 	private List<PotionEffect> effects;
 	private List<RandomStack> randoms;
-
-	private String name;
-	private final String filename;
 	
 	
 	//---------------- Constructors ----------------//

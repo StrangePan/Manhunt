@@ -19,28 +19,11 @@ public class ManhuntSpawn implements Spawn
 	
 	public ManhuntSpawn(Location loc, int range)
 	{
-		this(loc, range, null, null);
-	}
-	
-	public ManhuntSpawn(Location loc, int range, Location protect_c1, Location protect_c2)
-	{
-		this(loc, range, protect_c1, protect_c2, null, null);
-	}
-	
-	public ManhuntSpawn(Location loc, int range, Location protect_c1, Location protect_c2, Location boundary_c1, Location boundary_c2)
-	{
-		if (loc == null)
-			throw new IllegalArgumentException("Spawn's Location cannot be null");
-		
-		if ((protect_c1 != null && protect_c1.getWorld() != loc.getWorld())
-				|| (protect_c2 != null && protect_c2.getWorld() != loc.getWorld())
-				|| (boundary_c1 != null && boundary_c1.getWorld() != loc.getWorld())
-				|| (boundary_c2 != null && boundary_c2.getWorld() != loc.getWorld()))
-			throw new IllegalArgumentException("All locations must be in the same world.");
-		
-		this.location = loc;
-		this.range = range;
-		
+		this.location = loc.clone();
+		if (range < 0)
+			this.range = 0;
+		else
+			this.range = range;
 	}
 	
 	
@@ -64,22 +47,27 @@ public class ManhuntSpawn implements Spawn
 		return range;
 	}
 	
+	
+	
 	//---------------- Setters ----------------//
 	@Override
 	public void setLocation(Location loc)
 	{
 		if (loc == null)
-			throw new IllegalArgumentException("Location cannot be null");
+			throw new IllegalArgumentException("Location cannot be null.");
 		if (loc.getWorld() != location.getWorld())
-			throw new IllegalArgumentException("New location must be in the same world");
+			throw new IllegalArgumentException("New location must be in the same world.");
 		
-		this.location = loc == null ? null : loc.clone();
+		this.location = loc.clone();
 	}
 	
 	@Override
 	public void setRange(int range)
 	{
-		this.range = range;
+		if (range < 0)
+			this.range = 0;
+		else
+			this.range = range;
 	}
 	
 	

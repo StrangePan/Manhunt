@@ -128,13 +128,13 @@ public class CommandsGeneral
 		
 		if (p2 != null)
 		{
-			p2.teleport(ManhuntUtil.safeTeleport(lobby.getLocation()));
+			p2.teleport(ManhuntUtil.safeTeleport(lobby.getSpawnLocation()));
 			p2.sendMessage(ChatColor.GREEN + "You have been teleported to the " + lobby.getName() + " spawn.");
 			p.sendMessage(ChatColor.GREEN + p2.getName() + " has teleported to the " + lobby.getName() + " spawn.");
 		}
 		else
 		{
-			p.teleport(ManhuntUtil.safeTeleport(lobby.getLocation()));
+			p.teleport(ManhuntUtil.safeTeleport(lobby.getSpawnLocation()));
 			p.sendMessage(ChatColor.GREEN + "You have teleported to the " + lobby.getName() + " spawn.");
 		}
 		

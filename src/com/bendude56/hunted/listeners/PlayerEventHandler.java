@@ -87,7 +87,7 @@ public class PlayerEventHandler implements Listener
 		if (lobby == null)
 		{
 			resetPlayer(e.getPlayer());
-			e.getPlayer().teleport(Manhunt.getMainLobby().getLocation());
+			e.getPlayer().teleport(Manhunt.getMainLobby().getSpawnLocation());
 		}
 		// Player is meant to be in the given lobby. Do nothing.
 		else
@@ -232,7 +232,7 @@ public class PlayerEventHandler implements Listener
 			
 			for (Player player : lobby.getPlayers())
 			{
-				player.teleport(lobby.getLocation());
+				player.teleport(lobby.getSpawnLocation());
 				lobby.setPlayerTeam(player.getName(), Team.NONE);
 			}
 		}
@@ -240,7 +240,7 @@ public class PlayerEventHandler implements Listener
 		{
 			// Just-another-death action
 			
-			p.teleport(lobby.getLocation());
+			p.teleport(lobby.getSpawnLocation());
 			resetPlayer(p);
 			lobby.setPlayerTeam(p.getName(), Team.SPECTATORS);
 		}
@@ -258,7 +258,7 @@ public class PlayerEventHandler implements Listener
 	{
 		GameLobby lobby = Manhunt.getLobby(e.getPlayer());
 		
-		e.getPlayer().teleport(lobby.getLocation());
+		e.getPlayer().teleport(lobby.getSpawnLocation());
 	}
 
 	@EventHandler

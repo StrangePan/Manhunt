@@ -34,7 +34,7 @@ public interface Lobby
 	 * Get this Lobby's main spawn point.
 	 * @return This Lobby's spawn location
 	 */
-	public Location getLocation();
+	public Location getSpawnLocation();
 	
 	/**
 	 * Gets a list of this Lobby's Players.

@@ -40,7 +40,7 @@ public abstract class ManhuntLobby implements Lobby
 	}
 
 	@Override
-	public Location getLocation()
+	public Location getSpawnLocation()
 	{
 		return spawn.getLocation();
 	}

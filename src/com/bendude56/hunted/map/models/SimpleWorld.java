@@ -27,7 +27,7 @@ public class SimpleWorld
 	
 	
 	//---------------- Public Methods ----------------//
-	public void toManhuntWorld(World world)
+	public void toWorld(World world)
 	{
 		Spawn spawn = Spawn.toSpawn(world.getWorld());
 		world.getSpawn().setLocation(spawn.getLocation());
@@ -45,7 +45,7 @@ public class SimpleWorld
 	
 	
 	//---------------- Public Static Methods ----------------//
-	public static SimpleWorld fromManhuntWorld(World world)
+	public static SimpleWorld fromWorld(World world)
 	{
 		SimpleWorld model = new SimpleWorld();
 		

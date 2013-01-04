@@ -136,6 +136,12 @@ public interface Map
 	 */
 	public void removeZone(Zone zone);
 	
+	/**
+	 * Clears all zones from this map.
+	 */
+	public void clearZones();
+	
+	
 	
 	
 }

@@ -2,6 +2,8 @@ package com.bendude56.hunted.map;
 
 import java.util.List;
 
+import org.bukkit.Location;
+
 public interface World
 {
 	//---------------- Getters ----------------//
@@ -23,6 +25,12 @@ public interface World
 	 * @return This world's spawn data.
 	 */
 	public Spawn getSpawn();
+	
+	/**
+	 * Gets the spawn location of this world.
+	 * @return
+	 */
+	public Location getSpawnLocation();
 	
 	/**
 	 * Gets all the maps set up in the world.

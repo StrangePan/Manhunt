@@ -13,22 +13,22 @@ public class LoadoutManager
 	
 	
 	//---------------- Properties ----------------//
-	private HashMap<Long, Loadout> loadouts;
+	private HashMap<String, Loadout> loadouts;
 	
 	
 	
 	//---------------- Constructors ----------------//
 	public LoadoutManager()
 	{
-		loadouts = new HashMap<Long, Loadout>();
+		loadouts = new HashMap<String, Loadout>();
 	}
 	
 	
 	
 	//---------------- Getters ----------------//
-	public Loadout getLoadout(Long id)
+	public Loadout getLoadout(String name)
 	{
-		return loadouts.get(id);
+		return loadouts.get(name);
 	}
 	
 	public List<Loadout> getAllLoadouts()
@@ -44,20 +44,16 @@ public class LoadoutManager
 	//---------------- Setters ----------------//
 	public void addLoadout(Loadout loadout)
 	{
-		long id = 0;
-		
-		while (loadouts.containsKey(id))
-			id++;
-		
-		loadouts.put(id, loadout);
+		if (!loadouts.containsKey(loadout.getName()) && !loadouts.containsValue(loadout))
+			loadouts.put(loadout.getName(), loadout);
 	}
 	
-	public boolean deleteLoadout(long id)
+	public boolean deleteLoadout(String name)
 	{
-		if (loadouts.containsKey(id))
+		if (loadouts.containsKey(name))
 		{
-			Loadout loadout = getLoadout(id);
-			loadouts.remove(id);
+			Loadout loadout = getLoadout(name);
+			loadouts.remove(name);
 			return loadout.delete();
 		}
 		else
