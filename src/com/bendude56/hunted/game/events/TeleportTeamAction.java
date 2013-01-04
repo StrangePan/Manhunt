@@ -1,5 +1,8 @@
 package com.bendude56.hunted.game.events;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -12,24 +15,17 @@ public class TeleportTeamAction implements Action
 
 	private final long lobby_id;
 	private final Team team;
-	private final Location[] locations;
+	private final List<Location> locations;
 	
-	public TeleportTeamAction(long lobby_id, Team team, Spawn...spawns)
+	public TeleportTeamAction(long lobby_id, Team team, List<Spawn> spawns)
 	{
-		this(lobby_id, team, new Location[spawns.length]);
+		this.locations = new ArrayList<Location>();
 		
-		for (int i = 0; i < spawns.length; i++)
-		{
-			locations[i] = spawns[i].getLocation();
-		}
-		
-	}
-	
-	public TeleportTeamAction(long lobby_id, Team team, Location...locations)
-	{
 		this.lobby_id = lobby_id;
 		this.team = team;
-		this.locations = locations;
+		for (Spawn spawn : spawns)
+			this.locations.add(spawn.getLocation());
+		
 	}
 	
 	@Override
@@ -39,7 +35,7 @@ public class TeleportTeamAction implements Action
 		{
 			if (p.isOnline())
 			{
-				p.teleport(locations[((int) Math.random()) % locations.length]);
+				p.teleport(locations.get(((int) Math.random()) % locations.size()));
 			}
 		}
 	}

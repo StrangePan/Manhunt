@@ -7,6 +7,7 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	private static final long serialVersionUID = -2749093656484939858L;
 	
 	public final SettingListString WORLDS;
+	public final SettingBoolean HANDLE_WORLDS;
 	public final SettingBoolean HANDLE_CHAT;
 	
 	public final SettingBoolean OP_CONTROL;
@@ -19,6 +20,7 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		super( filepath );
 		
 		addSetting(WORLDS =		new SettingListString("worlds", "The list of Worlds Manhunt will run in.", Bukkit.getWorlds().get(0).getName()), false);
+		addSetting(HANDLE_WORLDS =	new SettingBoolean("handleworlds", false, "Manhunt will handle multi-world features.", "Another plugin must handle multi-world."), true);
 		addSetting(HANDLE_CHAT =	new SettingBoolean("handlechat", true, "Manhunt will handle chat events.", "Manhunt will ignore chat events."), true);
 		
 		addSetting(OP_CONTROL = new SettingBoolean("opcontrol", true, "Only ops have access to basic commands.", "Non-ops have access to basic, non-harmful commands."), true);
