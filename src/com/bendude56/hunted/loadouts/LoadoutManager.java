@@ -1,8 +1,12 @@
 package com.bendude56.hunted.loadouts;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+
+import com.bendude56.hunted.Manhunt;
 
 public class LoadoutManager
 {
@@ -61,6 +65,55 @@ public class LoadoutManager
 			return true;
 		}
 	}
+	
+	
+	
+	//---------------- Public Methods ----------------//
+	public void loadLoadoutFiles()
+	{
+		File file = new File(Manhunt.path_loadouts);
+		
+		if (!file.exists())
+		{
+			file.mkdirs();
+		}
+		
+		if (!file.isDirectory())
+			Manhunt.log(Level.SEVERE, "There was a problem loading the Manhunt loadouts.");
+		
+		for (File f : file.listFiles())
+		{
+			if (f.getName().endsWith(Manhunt.extension_loadouts))
+			{
+				Loadout loadout = new Loadout("", f.getName());
+				loadout.load();
+				loadout.setName(loadout.getName().replaceAll(" ", "_"));
+				
+				if (this.loadouts.containsKey(loadout.getName()))
+				{
+					int i = 2;
+					while (loadouts.containsKey(loadout.getName() + "_" + i))
+						i++;
+					
+					Manhunt.log(Level.SEVERE, "A loadout with the name \"" + loadout.getName() + "\" already exists.\n" +
+							"Renaming loadout in file \"" + file.getName() + "\" to \"" + loadout.getName() + "_" + i + "\"");
+					
+					loadout.setName(loadout.getName() + "_" + i);
+				}
+				
+				addLoadout(loadout);
+			}
+		}
+	}
+	
+	
+	
+	public void saveAllLoadouts()
+	{
+		for (Loadout loadout : getAllLoadouts())
+			loadout.save();
+	}
+	
 	
 	
 }

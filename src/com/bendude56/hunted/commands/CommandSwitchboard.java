@@ -19,6 +19,12 @@ import com.bendude56.hunted.map.World;
  */
 public class CommandSwitchboard implements CommandExecutor
 {
+	private final Argument arg_list = new Argument("list", "ls");
+	private final Argument arg_lobby = new Argument("lobby", "lob", "lb");
+	private final Argument arg_name = new Argument("name", "n");
+	
+	
+	
 	public CommandSwitchboard() {
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 		Bukkit.getPluginCommand("m").setExecutor(this);
