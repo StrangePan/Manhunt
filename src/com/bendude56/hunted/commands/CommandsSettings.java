@@ -12,6 +12,7 @@ import com.bendude56.hunted.ManhuntPlugin;
 import com.bendude56.hunted.ManhuntPlugin.ManhuntMode;
 import com.bendude56.hunted.chat.ChatManager;
 import com.bendude56.hunted.game.GameUtil;
+import com.bendude56.hunted.lobby.GameLobby;
 import com.bendude56.hunted.lobby.Lobby;
 import com.bendude56.hunted.settings.OldSetting;
 import com.bendude56.hunted.settings.Setting;
@@ -21,21 +22,94 @@ public class CommandsSettings
 {
 	public static void onCommandSettings(CommandSender sender, Arguments args)
 	{
-		Lobby lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+		Argument list = new Argument("list", "ls");
+		Argument page = new Argument("page", "pg", "p");
 		
-		if (args.contains("list") || args.contains("ls"))
+		Lobby lobby;
+		List<Setting> settings;
+		int pg;
+		int max_per_pg = 8;
+		
+		
+		lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+		
+		if (args.contains(list))
 		{
-			List<Setting> settings= new ArrayList<Setting>();
+			settings = new ArrayList<Setting>();
 			
-			if (lobby == null)
+			settings.addAll(Manhunt.getSettings().getVisibleSettings());
+			
+			if (lobby == null || !(lobby instanceof GameLobby))
 			{
 				// TODO Tell sender to select a lobby to see it's settings
 			}
 			else
 			{
-				// TODO FIGURE OUT SETTINGS GOD DANG IT
+				settings.addAll(((GameLobby) lobby).getSettings().getVisibleSettings());
+			}
+			
+			if (args.contains(page))
+				pg = args.getInteger(page);
+			else
+				pg = 1;
+			
+			pg--;
+			
+			if (pg != 0 && (pg < 0 || pg > settings.size() / max_per_pg))
+			{
+				// TODO Tell sender that their pages are out of range.
+			}
+			else
+			{
+				settings = settings.subList(pg * max_per_pg, Math.min((pg + 1) * max_per_pg, settings.size() - 1));
+			}
+			
+			
+			
+			for (Setting setting : settings)
+			{
+				// TODO Send player info on each setting.
+			}
+			
+			
+			
+		}
+		
+		
+		
+		for (Setting setting : settings)
+		{
+			if (args.contains(setting.getLabel()))
+			{
+				Object value;
+				
+				switch (setting.getType())
+				{
+				case INTEGER:
+					value = args.getInteger(setting.getLabel());
+					break;
+				case BOOLEAN:
+					value = args.getBoolean(setting.getLabel());
+					break;
+				case STRING:
+					value = args.getString(setting.getLabel());
+					break;
+				default:
+					break;
+				}
+				
+				if (value == null)
+				{
+					// TODO Tell sender about invalid value
+				}
+				else
+				{
+					setting.setValue(value);
+					// TODO Tell sender about confirmed change
+				}
 			}
 		}
+		
 		
 	}
 
