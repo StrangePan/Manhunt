@@ -7,7 +7,7 @@ public class SettingString extends SettingBase<String> implements Setting
 
 	public SettingString(String label, String defaultValue, String description)
 	{
-		super( label, defaultValue, description );
+		super( label, defaultValue, SettingType.STRING, description );
 	}
 
 	@Override

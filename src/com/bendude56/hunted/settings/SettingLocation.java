@@ -16,7 +16,7 @@ public class SettingLocation extends SettingBase<Location> implements Setting
 	
 	public SettingLocation(String label, Location defaultValue)
 	{
-		super(label, defaultValue);
+		super(label, defaultValue, SettingType.LOCATION);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ public class SettingInteger extends SettingBase<Integer> implements Setting
 	
 	public SettingInteger(String label, Integer defaultValue, String onDescription, String offDescription)
 	{
-		super( label, defaultValue, onDescription, offDescription );
+		super( label, defaultValue, SettingType.INTEGER, onDescription, offDescription );
 	}
 
 	@Override

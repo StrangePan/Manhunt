@@ -12,15 +12,19 @@ public abstract class SettingBase<Type> implements Setting
 	private final Object value_default;
 	private final Class<?> value_class;
 	
+	private final SettingType type;
+	
 	private Object value;
 	
-	public SettingBase(String label, Type defaultValue, String ... descriptions)
+	public SettingBase(String label, Type defaultValue, SettingType type, String ... descriptions)
 	{
 		this.label = label;
 		this.description = new ArrayList<String>(descriptions.length);
 		
 		this.value_default = defaultValue;
 		this.value_class = defaultValue.getClass();
+		
+		this.type = type;
 		
 		this.value = defaultValue;
 		
@@ -63,6 +67,12 @@ public abstract class SettingBase<Type> implements Setting
 	public Object getValueDefault()
 	{
 		return this.value_default;
+	}
+	
+	@Override
+	public SettingType getType()
+	{
+		return this.type;
 	}
 
 	@Override

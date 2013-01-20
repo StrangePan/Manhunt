@@ -12,7 +12,7 @@ public class SettingListString extends SettingBase<ArrayList<String>> implements
 
 	public SettingListString(String label, String description, String...defaultValues)
 	{
-		super(label, new ArrayList<String>(), description);
+		super(label, new ArrayList<String>(), SettingType.LIST_STRING, description);
 		
 		ArrayList<String> list = new ArrayList<String>();
 		for (String value : defaultValues)

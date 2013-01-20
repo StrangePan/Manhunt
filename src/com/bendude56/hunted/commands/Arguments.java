@@ -1,11 +1,14 @@
 package com.bendude56.hunted.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Arguments
 {
 	//---------------- Properties ----------------// 
 	private HashMap<String, String> arguments = new HashMap<String, String>();
+	private String[] args;
 	
 	
 	
@@ -17,6 +20,7 @@ public class Arguments
 
 	private Arguments(String[] string)
 	{
+		this.args = string;
 		this.arguments = parseArgs(string);
 	}
 	
@@ -267,9 +271,19 @@ public class Arguments
 		return count == 0 ? false : true;
 	}
 	
+	public List<String> getArguments()
+	{
+		return new ArrayList<String>(this.arguments.keySet());
+	}
+	
+	public String[] getRawArgs()
+	{
+		return this.args;
+	}
 	
 	
-	//---------------- Public Methods ----------------//
+	
+	//---------------- Private Methods ----------------//
 	private static HashMap<String, String> parseArgs(String[] a)
 	{
 		HashMap<String, String> args = new HashMap<String, String>();

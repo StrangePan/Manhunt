@@ -7,7 +7,7 @@ public class SettingBoolean extends SettingBase<Boolean> implements Setting
 	
 	public SettingBoolean(String label, Boolean defaultValue, String onMessage, String offMessage)
 	{
-		super(label, defaultValue, onMessage, offMessage);
+		super(label, defaultValue, SettingType.BOOLEAN, onMessage, offMessage);
 	}
 
 	@Override

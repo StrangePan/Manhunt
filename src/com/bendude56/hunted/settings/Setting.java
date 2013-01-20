@@ -40,6 +40,8 @@ public interface Setting
 	 */
 	public Object getValueDefault();
 	
+	public SettingType getType();
+	
 	/**
 	 * Gets the String representation of the setting's value.
 	 * @return The toString() representation of the setting's value.
