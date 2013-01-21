@@ -1,5 +1,6 @@
 package com.bendude56.hunted.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -8,60 +9,72 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bendude56.hunted.ManhuntPlugin;
+import com.bendude56.hunted.Manhunt;
 import com.bendude56.hunted.chat.ChatManager;
-import com.bendude56.hunted.game.GameUtil;
-import com.bendude56.hunted.teams.TeamManager;
-import com.bendude56.hunted.teams.TeamManager.Team;
-import com.bendude56.hunted.teams.TeamUtil;
+import com.bendude56.hunted.lobby.Lobby;
 
 public class CommandsTeams
 {
-	public static void onCommandList(CommandSender sender, String[] args)
+	private static final Argument context_game = new Argument("game", "g", "gm", "this", "lobby", "l");
+	private static final Argument context_all = new Argument("all", "server", "ser", "a", "s");
+	
+	
+	public static void onCommandList(CommandSender sender, Arguments args)
 	{
-		TeamManager teams = ManhuntPlugin.getInstance().getTeams();
-		List<String> hunters = teams.getTeamNames(Team.HUNTERS);
-		List<String> prey = teams.getTeamNames(Team.PREY);
-		List<String> spectators = teams.getTeamNames(Team.SPECTATORS);
+		Lobby lobby;
+		List<Player> players;
+		boolean context;
 		
-		sender.sendMessage(ChatManager.bracket1_ + TeamUtil.getTeamColor(Team.HUNTERS) + hunters.size() + " " + TeamUtil.getTeamName(Team.HUNTERS, true) + "  " + TeamUtil.getTeamColor(Team.PREY) + prey.size() + " " + TeamUtil.getTeamName(Team.PREY, true) + "  " + TeamUtil.getTeamColor(Team.SPECTATORS) + spectators.size() + " " + TeamUtil.getTeamName(Team.SPECTATORS, true) + ChatManager.bracket2_);
-		
-		String msgHunters = "";
-		for (String n : hunters)
+		if (args.contains(context_game))
 		{
-			msgHunters += TeamUtil.getTeamColor(Team.HUNTERS);
-			msgHunters += n;
-			if (Bukkit.getPlayer(n) == null)
-				msgHunters += ChatColor.GRAY + " (offline)";
-			msgHunters += "  ";
+			context = true;
+			
+			if (args.getString(context_game) == null)
+				lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+			else if (Manhunt.getLobby(args.getString(context_game)) == null)
+				{return;} // TODO Tell player they didn't select a valid lobby
+			else
+				lobby = Manhunt.getLobby(args.getString(context_game));
 		}
-		String msgPrey = "";
-		for (String n : prey)
+		else if (args.contains(context_all))
 		{
-			msgPrey += TeamUtil.getTeamColor(Team.PREY);
-			msgPrey += n;
-			if (Bukkit.getPlayer(n) == null)
-				msgPrey += ChatColor.GRAY + " (offline)";
-			else if (Bukkit.getPlayer(n).getWorld() != ManhuntPlugin.getInstance().getWorld())
-				msgPrey += ChatColor.GRAY + " (missing)";
-			msgPrey += "  ";
+			context = false;
+			lobby = null;
 		}
-		String msgSpectators = "";
-		for (String n : spectators)
+		else
 		{
-			msgSpectators += TeamUtil.getTeamColor(Team.SPECTATORS);
-			msgSpectators += n;
-			msgSpectators += "   ";
+			context = Manhunt.getSettings().CONTEXT_LIST.getValue();
+			if (context)
+				lobby = Manhunt.getCommandHelper().getSelectedLobby(sender);
+			else
+				lobby = null;
 		}
 		
-		if (!msgHunters.isEmpty())
-			sender.sendMessage(msgHunters);
-		if (!msgPrey.isEmpty())
-			sender.sendMessage(msgPrey);
-		if (!msgSpectators.isEmpty())
-			sender.sendMessage(msgSpectators);
 		
-		sender.sendMessage(ChatManager.divider);
+		if (lobby == null)
+		{
+			players = new ArrayList<Player>();
+			for (Player p : Bukkit.getOnlinePlayers())
+				players.add(p);
+		}
+		else
+		{
+			players = lobby.getPlayers();
+		}
+		
+		
+		// List the players in the list "players"
+		for (Player p : players)
+		{
+			// TODO Send a list of player names using
+			p.getDisplayName();
+		}
+		
+		
+		
+		
+		
+		
 	}
 
 	public static void onCommandQuit(CommandSender sender, String[] args)
