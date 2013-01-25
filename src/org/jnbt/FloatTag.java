@@ -1,6 +1,6 @@
 package org.jnbt;
 
-import net.minecraft.server.v1_4_6.NBTTagFloat;
+import net.minecraft.server.v1_4_R1.NBTTagFloat;
 
 /*
  * JNBT License

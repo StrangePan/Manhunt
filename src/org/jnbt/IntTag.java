@@ -1,6 +1,6 @@
 package org.jnbt;
 
-import net.minecraft.server.v1_4_6.NBTTagInt;
+import net.minecraft.server.v1_4_R1.NBTTagInt;
 
 /*
  * JNBT License
