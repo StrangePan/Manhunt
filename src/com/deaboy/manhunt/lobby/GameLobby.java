@@ -31,7 +31,7 @@ public class GameLobby extends Lobby
 	}
 	
 	@Override
-	public void randomizeTeams()
+	public void distributeTeams()
 	{
 		List<String> hunters = new ArrayList<String>();
 		List<String> prey = new ArrayList<String>();

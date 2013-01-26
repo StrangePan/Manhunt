@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.map.*;
 import com.deaboy.manhunt.settings.LobbySettings;
@@ -19,7 +18,7 @@ public abstract class Lobby implements Closeable
 	//---------------- Properties ----------------//
 	private final long id;
 	private String name;
-	private final String world_name;
+	private final World world;
 	private final LobbyType type;
 	
 	private HashMap<String, Team> teams;
@@ -37,7 +36,7 @@ public abstract class Lobby implements Closeable
 	{
 		this.id = id;
 		this.name = name;
-		this.world_name = world.getName();
+		this.world = world;
 		this.type = type;
 		
 		this.teams = new HashMap<String, Team>();
@@ -45,8 +44,14 @@ public abstract class Lobby implements Closeable
 		this.current_map = null;
 		this.enabled = true;
 		
-		// TODO Get class for game, then instantiate it
+		
+		this.worlds.put(world.getName(), world);
+		
+		
 		this.settings = new LobbySettings(world);
+		
+		
+		// TODO Get class for game, then instantiate it
 	}
 	
 	
@@ -76,7 +81,7 @@ public abstract class Lobby implements Closeable
 	 */
 	public Spawn getSpawn()
 	{
-		return Manhunt.getWorld(world_name).getSpawn();
+		return world.getSpawn();
 	}
 	
 	/**
@@ -85,7 +90,7 @@ public abstract class Lobby implements Closeable
 	 */
 	public World getWorld()
 	{
-		return Manhunt.getWorld(world_name);
+		return world;
 	}
 	
 	/**
@@ -117,7 +122,7 @@ public abstract class Lobby implements Closeable
 	 */
 	public Location getSpawnLocation()
 	{
-		return Manhunt.getWorld(world_name).getSpawnLocation();
+		return world.getSpawnLocation();
 	}
 	
 	/**
@@ -224,6 +229,7 @@ public abstract class Lobby implements Closeable
 	{
 		return type;
 	}
+	
 	
 	
 	//---------------- Setters ----------------//
@@ -379,7 +385,7 @@ public abstract class Lobby implements Closeable
 	
 	
 	//---------------- Public ABSTRACT Methods ----------------//
-	public abstract void randomizeTeams();
+	public abstract void distributeTeams();
 	
 	public abstract void startGame();
 	

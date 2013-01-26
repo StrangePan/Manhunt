@@ -11,7 +11,7 @@ import com.deaboy.manhunt.commands.CommandHelper;
 import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.GameLobby;
-import com.deaboy.manhunt.lobby.MainLobby;
+import com.deaboy.manhunt.lobby.HubLobby;
 import com.deaboy.manhunt.lobby.ManhuntGameLobby;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
@@ -59,7 +59,7 @@ public class Manhunt
 	//-------- Local variables ---------//
 	
 	private static	Manhunt				instance;
-	private 		MainLobby			mainlobby;
+	private 		HubLobby			mainlobby;
 	private 		List<GameLobby>		lobbies;
 	private 		List<World>			worlds;
 	private 		ManhuntSettings		settings;
@@ -86,7 +86,7 @@ public class Manhunt
 	
 	//---------------- Public static methods ----------------//
 	//------------ Getters ------------//
-	public static MainLobby getMainLobby()
+	public static HubLobby getMainLobby()
 	{
 		return getInstance().mainlobby;
 	}
