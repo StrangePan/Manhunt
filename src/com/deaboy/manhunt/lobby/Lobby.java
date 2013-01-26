@@ -24,7 +24,7 @@ public abstract class Lobby implements Closeable
 	
 	private HashMap<String, Team> teams;
 	private HashMap<String, World> worlds;
-	private String current_map;
+	private Map current_map;
 	private boolean enabled;
 	
 	private Game game;
@@ -95,6 +95,11 @@ public abstract class Lobby implements Closeable
 	public List<World> getWorlds()
 	{
 		return new ArrayList<World>(worlds.values());
+	}
+	
+	public Map getCurrentMap()
+	{
+		return current_map;
 	}
 	
 	/**
@@ -289,6 +294,23 @@ public abstract class Lobby implements Closeable
 		for (String key : teams.keySet())
 			teams.put(key, team);
 	}
+
+	/**
+	 * Sets the current map for the lobby. If the map is
+	 * not in a valid world, will return false and not make the assignment.
+	 * @param map
+	 * @return
+	 */
+	public boolean setCurrentMap(Map map)
+	{
+		if (!worlds.containsValue(Manhunt.getWorld(map.getWorld())))
+			return false;
+		else if (!Manhunt.getWorld(map.getWorld()).getMaps().contains(map))
+			return false;
+		else
+			current_map = map;
+		return true;
+	}
 	
 	
 	
@@ -332,9 +354,9 @@ public abstract class Lobby implements Closeable
 	
 	
 	//---------------- Public ABSTRACT Methods ----------------//
-	public abstract void bootPlayer(Player player);
+	public abstract void randomizeTeams();
 	
-	public abstract void bootPlayer(String name);
+	public abstract void startGame();
 	
 	
 	
