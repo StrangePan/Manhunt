@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 public enum Team
 {
-	HUNTERS, PREY, SPECTATORS, NONE;
+	HUNTERS, PREY, SPECTATORS, STANDBY, NONE;
 	
 	public Team fromString(String team)
 	{
@@ -14,6 +14,8 @@ public enum Team
 			return PREY;
 		if (team.equalsIgnoreCase("spectator") || team.equalsIgnoreCase("spectators"))
 			return SPECTATORS;
+		if (team.equalsIgnoreCase("standby"))
+			return STANDBY;
 		if (team.equalsIgnoreCase("none") || team.equalsIgnoreCase("null"))
 			return NONE;
 		return null;
@@ -26,6 +28,7 @@ public enum Team
 		case HUNTERS:	return ChatColor.DARK_RED;
 		case PREY:		return ChatColor.BLUE;
 		case SPECTATORS:return ChatColor.YELLOW;
+		case STANDBY:	return ChatColor.WHITE;
 		default:		return ChatColor.WHITE;
 		}
 	}
@@ -37,6 +40,7 @@ public enum Team
 		case HUNTERS:	return (plural ? "Hunters" : "Hunter");
 		case PREY:		return (plural ? "Prey" : "Prey");
 		case SPECTATORS:return (plural ? "Spectators" : "Spectator");
+		case STANDBY:	return (plural ? "Standbies" : "Standby");
 		default:		return "";
 		}
 	}

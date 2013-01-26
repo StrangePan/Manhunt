@@ -4,6 +4,7 @@ public enum SettingType
 {
 	BOOLEAN,
 	INTEGER,
+	DOUBLE,
 	LIST_STRING,
 	LOCATION,
 	STRING;
@@ -16,6 +17,8 @@ public enum SettingType
 			return "boolean";
 		case INTEGER:
 			return "integer";
+		case DOUBLE:
+			return "double";
 		case LIST_STRING:
 			return "list_string";
 		case LOCATION:
@@ -35,19 +38,21 @@ public enum SettingType
 			return 0;
 		case INTEGER:
 			return 1;
-		case LIST_STRING:
+		case DOUBLE:
 			return 2;
-		case LOCATION:
+		case LIST_STRING:
 			return 3;
-		case STRING:
+		case LOCATION:
 			return 4;
+		case STRING:
+			return 5;
 		default:
 			return -1;
 		}
 	}
 	
 	/**
-	 * Matches a SettingTyp ewith the string, returning the matching type.
+	 * Matches a SettingType with the string, returning the matching type.
 	 * Returns null if there is no match.
 	 * @param name
 	 * @return
@@ -66,6 +71,9 @@ public enum SettingType
 		case "Int":
 		case "int":
 			return SettingType.INTEGER;
+		case "Double":
+		case "double":
+			return SettingType.DOUBLE;
 		case "List_String":
 		case "list_string":
 		case "String_List":

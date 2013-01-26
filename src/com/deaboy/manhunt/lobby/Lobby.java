@@ -236,11 +236,21 @@ public abstract class Lobby implements Closeable
 		this.name = name;
 	}
 	
+	//////// ABSTRACT
 	/**
 	 * Adds a player to the Lobby via their name.
 	 * @param p The Player to add.
 	 */
-	public abstract void addPlayer(String name);
+	public abstract boolean addPlayer(String name);
+	
+	protected boolean addPlayer(String name, Team team)
+	{
+		if (teams.containsKey(name))
+			return false;
+		else
+			teams.put(name, team);
+		return true;
+	}
 	
 	/**
 	 * Removes a Player from the lobby via their name.
@@ -294,7 +304,15 @@ public abstract class Lobby implements Closeable
 		for (String key : teams.keySet())
 			teams.put(key, team);
 	}
-
+	
+	public boolean gameIsRunning()
+	{
+		if (game == null)
+			return false;
+		else
+			return game.isRunning();
+	}
+	
 	/**
 	 * Sets the current map for the lobby. If the map is
 	 * not in a valid world, will return false and not make the assignment.
@@ -303,9 +321,9 @@ public abstract class Lobby implements Closeable
 	 */
 	public boolean setCurrentMap(Map map)
 	{
-		if (!worlds.containsValue(Manhunt.getWorld(map.getWorld())))
+		if (!worlds.containsValue(map.getWorld()))
 			return false;
-		else if (!Manhunt.getWorld(map.getWorld()).getMaps().contains(map))
+		else if (!map.getWorld().getMaps().contains(map))
 			return false;
 		else
 			current_map = map;
@@ -351,12 +369,21 @@ public abstract class Lobby implements Closeable
 		this.enabled = false;
 	}
 	
+	@Override
+	public void close()
+	{
+		clearPlayers();
+		current_map = null;
+	}
+	
 	
 	
 	//---------------- Public ABSTRACT Methods ----------------//
 	public abstract void randomizeTeams();
 	
 	public abstract void startGame();
+	
+	public abstract void stopGame();
 	
 	
 	

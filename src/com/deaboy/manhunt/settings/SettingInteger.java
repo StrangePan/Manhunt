@@ -11,7 +11,7 @@ public class SettingInteger extends SettingBase<Integer> implements Setting
 	}
 
 	@Override
-	public void setValue(String value) throws IllegalArgumentException
+	public void setValue(String value)
 	{
 		if (value.equals("null"))
 		{

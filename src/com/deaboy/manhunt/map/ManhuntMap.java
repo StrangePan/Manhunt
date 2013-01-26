@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 
 public class ManhuntMap implements Map
 {//-------------------- Properties --------------------//
 	private String name;
+	private World world;
 	private Location spawn;
 	private List<Spawn> setup;
 	private List<Spawn> hunter;
@@ -58,7 +58,7 @@ public class ManhuntMap implements Map
 	@Override
 	public World getWorld()
 	{
-		return spawn.getWorld();
+		return world;
 	}
 	
 	@Override

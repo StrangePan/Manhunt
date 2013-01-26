@@ -10,6 +10,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingInteger MODE;
 	public final SettingBoolean USE_AMBER;
 
+	public final SettingDouble	TEAM_RATIO;
 	public final SettingInteger OFFLINE_TIMEOUT;
 	public final SettingInteger FINDER_COOLDOWN;
 	public final SettingBoolean ALL_TALK;
@@ -28,6 +29,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		addSetting(MODE =		new SettingInteger("mode", 0, "The mode the plugin is running in.", ""), false);
 		addSetting(USE_AMBER =		new SettingBoolean("useamber", true, "Manhunt will record/restore the world with Amber.", "Manhunt will not restore the world."), true);
 		
+		addSetting(TEAM_RATIO =		new SettingDouble("teamratio", 3.0, "The ratio of Hunters to Prey"), true);
 		addSetting(OFFLINE_TIMEOUT =	new SettingInteger("timeout", 30, "Seconds before players are disqualified.", "Players will be immediately disqualified."), true);
 		addSetting(FINDER_COOLDOWN =	new SettingInteger("findercooldown", 60, "Seconds until the Prey Finder is recharged.", "The Prey Finder has no cooldown."), true);
 		addSetting(ALL_TALK =		new SettingBoolean("alltalk", false, "Teams can communicate with each other.", "Teams cannot see each other's chat."), true);

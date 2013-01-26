@@ -3,7 +3,6 @@ package com.deaboy.manhunt.map;
 import java.util.List;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 
 public interface Map
 {
