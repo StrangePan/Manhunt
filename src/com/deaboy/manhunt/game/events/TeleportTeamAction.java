@@ -31,7 +31,7 @@ public class TeleportTeamAction implements Action
 	@Override
 	public void execute()
 	{
-		for (Player p : Manhunt.getLobby(lobby_id).getPlayers(team))
+		for (Player p : Manhunt.getLobby(lobby_id).getOnlinePlayers(team))
 		{
 			if (p.isOnline())
 			{

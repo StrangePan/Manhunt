@@ -29,14 +29,14 @@ public class SimpleWorld
 	//---------------- Public Methods ----------------//
 	public void toWorld(World world)
 	{
-		Spawn spawn = Spawn.toSpawn(world.getWorld());
+		Spawn spawn = Spawn.toSpawn(world);
 		world.getSpawn().setLocation(spawn.getLocation());
 		world.getSpawn().setRange(spawn.getRange());
 		
 		world.clearMaps();
 		for (SimpleMap map : Maps)
 		{
-			Map m = map.toMap(world.getWorld());
+			Map m = map.toMap(world);
 			world.addMap(m.getName(), m);
 		}
 		

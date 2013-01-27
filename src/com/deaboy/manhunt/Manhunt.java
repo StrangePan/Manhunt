@@ -1,6 +1,7 @@
 package com.deaboy.manhunt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -12,7 +13,7 @@ import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.HubLobby;
-import com.deaboy.manhunt.lobby.ManhuntGameLobby;
+import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
@@ -59,9 +60,9 @@ public class Manhunt
 	//-------- Local variables ---------//
 	
 	private static	Manhunt				instance;
-	private 		HubLobby			mainlobby;
-	private 		List<GameLobby>		lobbies;
+	private 		List<Lobby>			lobbies;
 	private 		List<World>			worlds;
+	private			HashMap<String,Long>players;
 	private 		ManhuntSettings		settings;
 	private 		TimeoutManager		timeouts;
 	private 		FinderManager		finders;
@@ -74,8 +75,9 @@ public class Manhunt
 	public Manhunt()
 	{
 		instance = this;
-		this.lobbies =			new ArrayList<GameLobby>();
+		this.lobbies =			new ArrayList<Lobby>();
 		this.worlds =			new ArrayList<World>();
+		this.players =			new HashMap<String, Long>();
 		this.settings =			new ManhuntSettings(path_settings);
 		this.timeouts =			new TimeoutManager();
 		this.finders =			new FinderManager();
@@ -86,9 +88,9 @@ public class Manhunt
 	
 	//---------------- Public static methods ----------------//
 	//------------ Getters ------------//
-	public static HubLobby getMainLobby()
+	public static Lobby getDefaultLobby()
 	{
-		return getInstance().mainlobby;
+		return getLobby(Bukkit.getWorld(getSettings().DEFAULT_WORLD.getValue()));
 	}
 	
 	public static ManhuntSettings getSettings()
@@ -96,9 +98,9 @@ public class Manhunt
 		return getInstance().settings;
 	}
 	
-	public static GameLobby getLobby(long id)
+	public static Lobby getLobby(long id)
 	{
-		for (GameLobby lobby: getInstance().lobbies)
+		for (Lobby lobby: getInstance().lobbies)
 		{
 			if (lobby.getId() == id)
 			{
@@ -109,9 +111,9 @@ public class Manhunt
 		
 	}
 	
-	public static GameLobby getLobby(String name)
+	public static Lobby getLobby(String name)
 	{
-		for (GameLobby lobby : getInstance().lobbies)
+		for (Lobby lobby : getInstance().lobbies)
 		{
 			if (lobby.getName().equalsIgnoreCase(name))
 			{
@@ -122,9 +124,9 @@ public class Manhunt
 		
 	}
 	
-	public static GameLobby getLobby(org.bukkit.World world)
+	public static Lobby getLobby(org.bukkit.World world)
 	{
-		for (GameLobby lobby : getInstance().lobbies)
+		for (Lobby lobby : getInstance().lobbies)
 		{
 			if (lobby.getWorlds().contains(world))
 			{
@@ -135,9 +137,9 @@ public class Manhunt
 		
 	}
 	
-	public static GameLobby getLobby(Player player)
+	public static Lobby getLobby(Player player)
 	{
-		for (GameLobby lobby : getInstance().lobbies)
+		for (Lobby lobby : getInstance().lobbies)
 		{
 			if (lobby.getPlayers().contains(player))
 			{
@@ -205,7 +207,7 @@ public class Manhunt
 	//-------- Public Interface Methods --------//
 	public static GameLobby createLobby(String name, org.bukkit.World world)
 	{
-		GameLobby lobby = null;
+		Lobby lobby = null;
 		
 		lobby = getLobby(name);
 		if (lobby != null)

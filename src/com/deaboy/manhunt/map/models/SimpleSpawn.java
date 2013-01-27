@@ -1,10 +1,9 @@
 package com.deaboy.manhunt.map.models;
 
-import org.bukkit.World;
-
 import com.deaboy.manhunt.NewManhuntPlugin;
 import com.deaboy.manhunt.map.ManhuntSpawn;
 import com.deaboy.manhunt.map.Spawn;
+import com.deaboy.manhunt.map.World;
 
 public class SimpleSpawn
 {

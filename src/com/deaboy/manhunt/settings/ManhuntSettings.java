@@ -8,6 +8,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	
 	public final SettingListString WORLDS;
 	
+	public final SettingString DEFAULT_WORLD;
+	
 	public final SettingBoolean HANDLE_WORLDS;
 	public final SettingBoolean HANDLE_CHAT;
 	public final SettingBoolean OP_CONTROL;
@@ -22,6 +24,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		super( filepath );
 		
 		addSetting(WORLDS =		new SettingListString("worlds", "The list of Worlds Manhunt will run in.", Bukkit.getWorlds().get(0).getName()), false);
+		
+		addSetting(DEFAULT_WORLD =	new SettingString("defaultworld", Bukkit.getWorlds().get(0).getName(), "The default Manhunt world to place a lobby."), false);
 		
 		addSetting(HANDLE_WORLDS =	new SettingBoolean("handleworlds", false, "Manhunt will handle multi-world features.", "Another plugin must handle multi-world."), true);
 		addSetting(HANDLE_CHAT =	new SettingBoolean("handlechat", true, "Manhunt will handle chat events.", "Manhunt will ignore chat events."), true);

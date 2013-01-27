@@ -1,11 +1,10 @@
 package com.deaboy.manhunt.map.models;
 
-import org.bukkit.World;
-
 import com.deaboy.manhunt.NewManhuntPlugin;
 import com.deaboy.manhunt.map.ManhuntZone;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneType;
+import com.deaboy.manhunt.map.World;
 
 public class SimpleZone
 {

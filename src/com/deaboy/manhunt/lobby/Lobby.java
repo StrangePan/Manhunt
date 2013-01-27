@@ -203,6 +203,19 @@ public abstract class Lobby implements Closeable
 		return names;
 	}
 	
+	public Team getPlayerTeam(Player p)
+	{
+		return getPlayerTeam(p.getName());
+	}
+	
+	public Team getPlayerTeam(String name)
+	{
+		if (teams.containsKey(name))
+			return teams.get(name);
+		else
+			return null;
+	}
+	
 	/**
 	 * Gets this lobby's settings.
 	 * @return
@@ -346,6 +359,14 @@ public abstract class Lobby implements Closeable
 	public void broadcast(String message)
 	{
 		for (Player p : getOnlinePlayers())
+		{
+			p.sendMessage(message);
+		}
+	}
+	
+	public void broadcast(String message, Team...teams)
+	{
+		for (Player p : getOnlinePlayers(teams))
 		{
 			p.sendMessage(message);
 		}

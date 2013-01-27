@@ -2,12 +2,23 @@ package com.deaboy.manhunt.settings;
 
 public enum SettingType
 {
-	BOOLEAN,
-	INTEGER,
-	DOUBLE,
-	LIST_STRING,
-	LOCATION,
-	STRING;
+	BOOLEAN(0),
+	INTEGER(1),
+	DOUBLE(2),
+	LIST_STRING(3),
+	LOCATION(4),
+	STRING(5);
+	
+	
+	private final int id;
+	
+	
+	private SettingType(int id)
+	{
+		this.id = id;
+	}
+	
+	
 	
 	public String toString()
 	{
@@ -32,23 +43,7 @@ public enum SettingType
 	
 	public int getId()
 	{
-		switch (this)
-		{
-		case BOOLEAN:
-			return 0;
-		case INTEGER:
-			return 1;
-		case DOUBLE:
-			return 2;
-		case LIST_STRING:
-			return 3;
-		case LOCATION:
-			return 4;
-		case STRING:
-			return 5;
-		default:
-			return -1;
-		}
+		return id;
 	}
 	
 	/**

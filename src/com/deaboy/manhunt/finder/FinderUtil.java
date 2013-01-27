@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
 
@@ -18,7 +17,7 @@ public class FinderUtil
 		
 		lobby = Manhunt.getLobby(p);
 		
-		if (lobby.getPlayerTeam(p) == Team.HUNTERS)
+		if (lobby.getPlayerTeam(p.getName()) == Team.HUNTERS)
 		{
 			t = Team.PREY;
 		}
@@ -42,28 +41,6 @@ public class FinderUtil
 	public static void sendMessageFinderCancel(Player p)
 	{
 		p.sendMessage(ChatColor.RED + "The Prey Finder was cancelled!");
-	}
-
-	private static void sendMessageFinderResultsNearby(Player p)
-	{
-		GameLobby lobby;
-		Team t;
-		
-		lobby = Manhunt.getLobby(p);
-		
-		if (lobby.getPlayerTeam(p) == Team.HUNTERS)
-		{
-			t = Team.PREY;
-		}
-		else if (lobby.getPlayerTeam(p) == Team.PREY)
-		{
-			t = Team.HUNTERS;
-		}
-		else
-		{
-			return;
-		}
-		p.sendMessage(ChatManager.color + "The nearest " + t.getColor() + t.getName(false) + ChatManager.color + " is " + t.getColor() + "very close by" + ChatManager.color + "!");
 	}
 
 	/**

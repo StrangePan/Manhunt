@@ -1,9 +1,9 @@
 package com.deaboy.manhunt.map.models;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 
 import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.map.World;
 
 public class SimpleLocation
 {
@@ -27,7 +27,7 @@ public class SimpleLocation
 	//---------------- Public Methods ----------------//
 	public Location toLocation(World world)
 	{
-		return new Location(world, x, y, z, yaw, pitch);
+		return new Location(world.getWorld(), x, y, z, yaw, pitch);
 	}
 	
 	
