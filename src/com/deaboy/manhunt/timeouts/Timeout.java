@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.NewManhuntPlugin;
-import com.deaboy.manhunt.lobby.GameLobby;
+import com.deaboy.manhunt.lobby.Lobby;
 
 public class Timeout implements Closeable
 {
@@ -43,7 +43,7 @@ public class Timeout implements Closeable
 	
 	private void forfeitPlayer()
 	{
-		GameLobby lobby = Manhunt.getLobby(lobby_id);
+		Lobby lobby = Manhunt.getLobby(lobby_id);
 		
 		Player p = Bukkit.getPlayer(player_name);
 		

@@ -12,6 +12,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	
 	public final SettingBoolean HANDLE_WORLDS;
 	public final SettingBoolean HANDLE_CHAT;
+	public final SettingBoolean LOG_ERRORS;
+	public final SettingBoolean DISPLAY_ERRORS;
 	public final SettingBoolean OP_CONTROL;
 	public final SettingBoolean CONTEXT_LIST;
 	
@@ -29,6 +31,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		
 		addSetting(HANDLE_WORLDS =	new SettingBoolean("handleworlds", false, "Manhunt will handle multi-world features.", "Another plugin must handle multi-world."), true);
 		addSetting(HANDLE_CHAT =	new SettingBoolean("handlechat", true, "Manhunt will handle chat events.", "Manhunt will ignore chat events."), true);
+		addSetting(LOG_ERRORS =		new SettingBoolean("logerrors", true, "Manhunt will log errors in a seperate file.", "Manhunt will not keep a seperate error log."), false);
+		addSetting(DISPLAY_ERRORS =	new SettingBoolean("showerrors", false, "Manhunt will show full errors in the console.", "Manhunt will not show full errors in the console."), false);
 		addSetting(OP_CONTROL =		new SettingBoolean("opcontrol", true, "Only ops have access to basic commands.", "Non-ops have access to basic, non-harmful commands."), true);
 		addSetting(CONTEXT_LIST =	new SettingBoolean("contextlist", true, "Server list hides players in other games.", "Server list displays all players."), true);
 		
