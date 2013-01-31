@@ -1,5 +1,7 @@
 package com.deaboy.manhunt;
 
+import java.io.Closeable;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,9 +9,12 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.deaboy.manhunt.commands.CommandHelper;
 import com.deaboy.manhunt.finder.FinderManager;
+import com.deaboy.manhunt.game.Game;
+import com.deaboy.manhunt.game.GameType;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.HubLobby;
@@ -19,7 +24,7 @@ import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
 
-public class Manhunt
+public class Manhunt implements Closeable
 {
 	
 	//---------------- Constants ----------------//
@@ -70,6 +75,7 @@ public class Manhunt
 	private 		HashMap<Long, Lobby>	lobbies;
 	private			HashMap<String, Long>	players;
 	private 		HashMap<String, World>	worlds;
+	private			HashMap<Long, GameType>games;
 	
 	
 	
@@ -86,6 +92,13 @@ public class Manhunt
 		this.lobbies =			new HashMap<Long, Lobby>();
 		this.worlds =			new HashMap<String, World>();
 		this.players =			new HashMap<String, Long>();
+		this.games =			new HashMap<Long, GameType>();
+		
+		
+		// Register game types
+		// TODO registerGameType(ClassicGame.class, "Manhunt");
+		// TODO registerGameType(JuggernautGame.class, "Juggerhunt");
+		// TODO registerGameType(GhostGame.class, "Manhaunt");
 	}
 	
 	
@@ -239,6 +252,23 @@ public class Manhunt
 		p.setFlying(false);
 		p.setRemainingAir(10);
 		p.setTotalExperience(0);
+	}
+	
+	private void registerGameType(Class<? extends Game> gameType, String name)
+	{
+		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
+			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
+		
+		for (GameType gc : getInstance().games.values())
+			if (gc.getGameClass().equals(gameType))
+				return;
+		
+		long i = 0;
+		while (getInstance().games.containsKey(i))
+			i++;
+		
+		getInstance().games.put(i, new GameType(gameType, i, name, NewManhuntPlugin.getInstance()));
+		
 	}
 	
 	
@@ -397,8 +427,49 @@ public class Manhunt
 	
 	
 	
+	public static boolean registerGameType(Class<? extends Game> gameType, String name, JavaPlugin plugin)
+	{
+		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
+			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
+		
+		for (GameType gc : getInstance().games.values())
+			if (gc.getGameClass().equals(gameType))
+				return false;
+		
+		if (plugin == NewManhuntPlugin.getInstance())
+			throw new IllegalArgumentException("\"plugin\" arugment cannot be the Manhunt plugin itself.");
+		
+		long i = 0;
+		while (getInstance().games.containsKey(i))
+			i++;
+		
+		getInstance().games.put(i, new GameType(gameType, i, name, plugin));
+		
+		return true;
+		
+	}
+	
+	public static List<GameType> getRegisteredGameTypes()
+	{
+		return new ArrayList<GameType>(getInstance().games.values());
+	}
+	
+	public static GameType getGameType(long id)
+	{
+		if (getInstance().games.containsKey(id))
+			return getInstance().games.get(id);
+		else
+			return null;
+	}
 	
 	
 	
+	
+	
+	public void close()
+	{
+		for (GameType gc : games.values())
+			gc.close();
+	}
 	
 }
