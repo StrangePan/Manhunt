@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,6 +16,7 @@ import com.deaboy.manhunt.commands.CommandHelper;
 import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameType;
+import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.HubLobby;
@@ -84,6 +86,10 @@ public class Manhunt implements Closeable
 	{
 		Manhunt.instance =		this;
 		this.settings =			new ManhuntSettings(path_settings);
+		
+		if (Material.getMaterial(settings.FINDER_ITEM.getValue()) == null)
+			settings.FINDER_ITEM.resetToDefault();
+		
 		this.timeouts =			new TimeoutManager();
 		this.finders =			new FinderManager();
 		this.command_helper =	new CommandHelper();
@@ -95,10 +101,10 @@ public class Manhunt implements Closeable
 		this.games =			new HashMap<Long, GameType>();
 		
 		
-		// Register game types
-		// TODO registerGameType(ClassicGame.class, "Manhunt");
-		// TODO registerGameType(JuggernautGame.class, "Juggerhunt");
-		// TODO registerGameType(GhostGame.class, "Manhaunt");
+		//////// Register game types
+		registerGameType(ManhuntGame.class, "Manhunt");
+		// registerGameType(JuggernautGame.class, "Juggerhunt");
+		// registerGameType(GhostGame.class, "Manhaunt");
 	}
 	
 	
@@ -461,6 +467,23 @@ public class Manhunt implements Closeable
 		else
 			return null;
 	}
+	
+	/**
+	 * Used for lobby loading. Allows lobbies to get the GameType based
+	 * off the Game class's canonical name.
+	 * @param class_canonical_name
+	 * @return
+	 */
+	public static GameType getGameTypeByClassCanonicalName(String class_canonical_name)
+	{
+		for (GameType gt : getRegisteredGameTypes())
+		{
+			if (gt.getGameClass().getCanonicalName().equals(class_canonical_name))
+				return gt;
+		}
+		return null;
+	}
+	
 	
 	
 	

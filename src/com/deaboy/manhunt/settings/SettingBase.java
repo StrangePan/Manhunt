@@ -86,6 +86,12 @@ public abstract class SettingBase<Type> implements Setting
 		return this.description;
 	}
 	
+	@Override
+	public void resetToDefault()
+	{
+		this.value = this.value_default;
+	}
+	
 	
 
 }

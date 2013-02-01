@@ -57,6 +57,11 @@ public interface Setting
 	public String getDescription();
 	
 	/**
+	 * Resets the setting's value to it's default value.
+	 */
+	public void resetToDefault();
+	
+	/**
 	 * Gets the NBT Tag version of the setting.
 	 * @return Tag representation of the setting.
 	 */

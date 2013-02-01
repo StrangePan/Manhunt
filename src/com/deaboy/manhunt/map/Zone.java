@@ -152,7 +152,7 @@ public abstract class Zone
 	 * @return True if the locatio's coordinate falls within the zone's
 	 * boundaries, or false if it doesn't.
 	 */
-	public boolean envelopes(Location loc)
+	public boolean containsLocation(Location loc)
 	{
 		return (loc.getWorld() == getWorld()
 				&&((loc.getX() < corner1.getX() && loc.getX() > corner2.getX())

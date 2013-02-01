@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.settings;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 
 public class ManhuntSettings extends SettingManagerBase implements SettingManager
 {
@@ -17,6 +18,7 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	public final SettingBoolean OP_CONTROL;
 	public final SettingBoolean CONTEXT_LIST;
 	
+	public final SettingInteger FINDER_ITEM;
 	public final SettingInteger TIME_LIMIT;
 	public final SettingInteger TIME_INTERMISSION;
 	public final SettingInteger TIME_SETUP;  
@@ -36,6 +38,7 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		addSetting(OP_CONTROL =		new SettingBoolean("opcontrol", true, "Only ops have access to basic commands.", "Non-ops have access to basic, non-harmful commands."), true);
 		addSetting(CONTEXT_LIST =	new SettingBoolean("contextlist", true, "Server list hides players in other games.", "Server list displays all players."), true);
 		
+		addSetting(FINDER_ITEM =		new SettingInteger("finderitem", Material.COMPASS.getId(), "The item used as the Prey Finder.", ""), false);
 		addSetting(TIME_LIMIT =			new SettingInteger("timelimit", 60, "Minutes that the hunt will last.", "The game will never end."), true );
 		addSetting(TIME_INTERMISSION =	new SettingInteger("intermission", 3, "Minutes between Manhunt games.", ""), true);
 		addSetting(TIME_SETUP =			new SettingInteger("setuptime", 10, "Minutes the prey have to prepare.", "There is no setup time."), true);
