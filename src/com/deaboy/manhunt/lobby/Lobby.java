@@ -380,6 +380,24 @@ public abstract class Lobby implements Closeable
 		this.teams.clear();
 	}
 	
+	public void forfeitPlayer(String name)
+	{
+		if (!gameIsRunning())
+			return;
+		if (!containsPlayer(name))
+			return;
+		
+		Player p = Bukkit.getPlayerExact(name);
+		
+		if (p == null)
+		{
+			removePlayer(name);
+		}
+		
+		if (getGame() != null)
+			getGame().forfeitPlayer(name);
+	}
+	
 	/**
 	 * Enables the Lobby.
 	 */

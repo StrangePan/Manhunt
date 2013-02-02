@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -348,6 +349,39 @@ public abstract class Game implements Closeable, Listener
 			setPlayerTeam(p, Team.HUNTERS);
 			Bukkit.getPlayerExact(p).sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.HUNTERS.getColor() + Team.HUNTERS.getName(true));
 		}
+	}
+	
+	public void forfeitPlayer(String name)
+	{
+		Player p;
+		Team team;
+		
+		if (!isRunning())
+			return;
+		if (!containsPlayer(name))
+			return;
+		
+		p = Bukkit.getPlayerExact(name);
+		team = getPlayerTeam(name);
+		
+		if (p == null)
+		{
+			removePlayer(name);
+		}
+		else
+		{
+			setPlayerTeam(name, Team.SPECTATORS);
+			if (p.getWorld() == getWorld())
+			{
+				p.teleport(getLobby().getSpawnLocation());
+			}
+		}
+		
+		
+		getLobby().broadcast(team.getColor() + name + ChatManager.color + " has " + ChatColor.RED + " forfeit the game.");
+		
+		
+		
 	}
 	
 	

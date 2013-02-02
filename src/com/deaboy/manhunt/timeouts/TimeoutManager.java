@@ -1,12 +1,9 @@
 package com.deaboy.manhunt.timeouts;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 
 import org.bukkit.entity.Player;
-
-import com.deaboy.manhunt.Manhunt;
 
 /**
  * This class handles all player timeouts, including
@@ -16,17 +13,29 @@ import com.deaboy.manhunt.Manhunt;
  */
 public class TimeoutManager
 {
-	private List<Timeout> timeouts = new ArrayList<Timeout>();
+	//---------------- Properties ----------------//
+	private HashMap<String, Timeout> timeouts;
 	
+	
+	
+	//--------------- Constructor ----------------//
+	public TimeoutManager()
+	{
+		this.timeouts = new HashMap<String, Timeout>();
+	}
+	
+	
+	
+	//---------------- Functions ----------------//
 	/**
 	 * This method starts a timeout countdown for the player.
 	 * Time given is measured in milliseconds and is set at
 	 * the current system time + the given time.
 	 * @param p The player to start the timeout for.
-	 * @param time The milliseconds from the current time
+	 * @param delay The milliseconds from the current time
 	 * to eject the player.
 	 */
-	public Timeout startTimeout(Player p, long time)
+	public Timeout startTimeout(Player p, long lobby_id, long delay)
 	{
 		Timeout timeout = getTimeout(p.getName());
 		
@@ -35,8 +44,8 @@ public class TimeoutManager
 			stopTimeout(timeout);
 		}
 		
-		timeout = new Timeout(p.getName(), Manhunt.getLobby(p).getId(), new Date().getTime() + time);
-		timeouts.add(timeout);
+		timeout = new Timeout(p.getName(), lobby_id, new Date().getTime() + delay);
+		timeouts.put(p.getName(), timeout);
 		
 		return timeout;
 	}
@@ -48,14 +57,20 @@ public class TimeoutManager
 	 */
 	private Timeout getTimeout(String p)
 	{
-		for (Timeout timeout : timeouts)
-		{
-			if (timeout.player_name.equalsIgnoreCase(p))
-			{
-				return timeout;
-			}
-		}
-		return null;
+		if (timeouts.containsKey(p))
+			return timeouts.get(p);
+		else
+			return null;
+	}
+	
+	public boolean hasTimeout(Player p)
+	{
+		return hasTimeout(p.getName());
+	}
+	
+	public boolean hasTimeout(String name)
+	{
+		return timeouts.containsKey(name);
 	}
 	
 	/**
@@ -74,10 +89,11 @@ public class TimeoutManager
 	public void stopTimeout(String name)
 	{
 		Timeout t = getTimeout(name);
-		if (t != null)
-		{
-			stopTimeout(t);
-		}
+		if (t == null)
+			return;
+		
+		stopTimeout(t);
+		timeouts.remove(name);
 	}
 	
 	/**
@@ -87,11 +103,6 @@ public class TimeoutManager
 	protected void stopTimeout(Timeout t)
 	{
 		t.close();
-		
-		if (timeouts.contains(t));
-		{
-			timeouts.remove(t);
-		}
 	}
 	
 	/**
@@ -99,9 +110,9 @@ public class TimeoutManager
 	 */
 	public void stopAllTimeouts()
 	{
-		for (Timeout t : timeouts)
+		for (Timeout t : timeouts.values())
 		{
-			t.close();
+			stopTimeout(t);
 		}
 		timeouts.clear();
 	}

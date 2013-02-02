@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.NewManhuntPlugin;
@@ -24,13 +23,13 @@ public class Timeout implements Closeable
 		this.lobby_id = lobby;
 		
 		//Start the scheduler
-		this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(NewManhuntPlugin.getInstance(), new Runnable()
+		this.schedule = Bukkit.getScheduler().runTaskTimer(NewManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{
 				onTick();
 			}
-		}, 0, 5);
+		}, 0, 20).getTaskId();
 	}
 	
 	public void onTick()
@@ -44,13 +43,9 @@ public class Timeout implements Closeable
 	private void forfeitPlayer()
 	{
 		Lobby lobby = Manhunt.getLobby(lobby_id);
+		lobby.forfeitPlayer(player_name);
 		
-		Player p = Bukkit.getPlayer(player_name);
-		
-		if (p == null || p.getWorld() != lobby.getCurrentMap().getWorld())
-		{
-			Manhunt.getTimeoutManager().stopTimeout(this);
-		}
+		Manhunt.getTimeoutManager().stopTimeout(this);
 	}
 	
 	@Override
