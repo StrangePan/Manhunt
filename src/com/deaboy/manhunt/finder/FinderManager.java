@@ -14,11 +14,11 @@ public class FinderManager implements Closeable
 	 * Initializes a new finder for the given player if one isn't already initialized.
 	 * @param p
 	 */
-	public void startFinder(Player p)
+	public void startFinder(Player p, long lobby_id)
 	{
 		if (getFinder(p) == null)
 		{
-			finders.add(new Finder(p));
+			finders.add(new Finder(p, lobby_id));
 		}
 	}
 

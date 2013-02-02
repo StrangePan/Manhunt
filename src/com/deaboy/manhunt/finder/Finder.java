@@ -5,13 +5,13 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.NewManhuntPlugin;
 import com.deaboy.manhunt.chat.ChatManager;
+import com.deaboy.manhunt.lobby.Team;
 
 public class Finder
 {
@@ -21,16 +21,18 @@ public class Finder
 	
 	private final String player_name;
 	private final Location location;
-	private final Long activation_time; //REAL-LIFE TIME to ACTIVATE
-	private final Long expire_time; //REAL-LIFE TIME to SELF-DESTRUCT
+	/** REAL-LIFE TIME to ACTIVATE */
+	private final Long activation_time;
+	/** REAL-LIFE TIME to SELF-DESTRUCT */
+	private final Long expire_time;
 
 	private boolean used = false; //Whether or not the finder has sent the nearest enemy.
 
 	private int schedule;
 
-	public Finder(Player player)
+	public Finder(Player player, long lobby_id)
 	{
-		this.lobby_id = Manhunt.getLobby(player).getId();
+		this.lobby_id = lobby_id;
 		
 		this.player_name = player.getName();
 		this.location = player.getLocation();
@@ -47,7 +49,7 @@ public class Finder
 			{
 				onTick();
 			}
-		}, 5, 5);
+		}, 0, 0);
 	}
 	
 	
@@ -75,7 +77,13 @@ public class Finder
 		
 		long time = new Date().getTime();
 		
-		if (!used && time >= activation_time) //Should I send the player the information?
+		if (time < activation_time)
+		{
+			Player p = Bukkit.getPlayerExact(player_name);
+			if (p != null && Manhunt.getSettings().CONTROL_XP.getValue())
+				p.setExp((time + 8000 - activation_time) / 8000f);
+		}
+		else if (!used && time >= activation_time) //Should I send the player the information?
 		{
 			Player p = Bukkit.getPlayer(player_name);
 			if (p != null)
@@ -85,10 +93,9 @@ public class Finder
 					p.sendMessage(ChatManager.leftborder + ChatColor.RED + "You don't have enough food to power the finder!");
 					Manhunt.getFinders().stopFinder(this, true);
 				}
-				if (checkValidity())
+				else if (checkValidity())
 				{
-					// FinderUtil.sendMessageFinderResults(p);
-					FinderUtil.findNearestEnemy(p);
+					activate();
 				}
 			}
 			else
@@ -97,7 +104,13 @@ public class Finder
 			}
 			used = true;
 		}
-		if (time >= expire_time)
+		else if (Manhunt.getSettings().CONTROL_XP.getValue() && time < expire_time && used)
+		{
+			Player p = Bukkit.getPlayer(player_name);
+			if (p != null)
+				p.setExp((time + (Manhunt.getLobby(lobby_id).getSettings().FINDER_COOLDOWN.getValue() * 1000f) - expire_time) / (Manhunt.getLobby(lobby_id).getSettings().FINDER_COOLDOWN.getValue() * 1000f));
+		}
+		else if (time >= expire_time)
 		{
 			Player p = Bukkit.getPlayer(player_name);
 			if (p != null)
@@ -126,7 +139,7 @@ public class Finder
 
 		if (p != null)
 		{
-			if (p.getItemInHand().getType() != Material.COMPASS || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.5, true))
+			if (p.getItemInHand().getTypeId() != Manhunt.getSettings().FINDER_ITEM.getValue() || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.0, true))
 			{
 				FinderUtil.sendMessageFinderCancel(p);
 				Manhunt.getFinders().stopFinder(this, true);
@@ -144,6 +157,63 @@ public class Finder
 			return false;
 		}
 
+	}
+	
+	public void activate()
+	{
+		Team t;
+		Player player, enemy = null;
+		double d, distance = -1;
+		
+		t = Manhunt.getLobby(lobby_id).getPlayerTeam(player_name);
+		player = Bukkit.getPlayerExact(player_name);
+		switch (t)
+		{
+		case HUNTERS:
+			t = Team.PREY;
+			break;
+		case PREY:
+			t = Team.HUNTERS;
+			break;
+		default:
+			t = null;
+			break;
+		}
+		
+		if (t == null || player == null)
+		{
+			if (!checkValidity())
+				Manhunt.getFinders().stopFinder(this, true);
+			return;
+		}
+		
+		for (Player p : Manhunt.getLobby(lobby_id).getGame().getOnlinePlayers(t))
+		{
+			d = ManhuntUtil.getDistance(player.getLocation(), p.getLocation(), false);
+			if (enemy == null || d < distance)
+			{
+				enemy = p;
+				distance = d;
+			}
+		}
+		
+		if (enemy == null)
+		{
+			player.sendMessage(ChatManager.bracket1_ + "There are no online " + t.getColor() + t.getName(false) + ChatManager.color + "!" + ChatManager.bracket2_);
+			return;
+		}
+		else
+		{
+			if (distance < 25.0)
+			{
+				player.sendMessage(ChatManager.bracket1_ + "The nearest " + t.getColor() + t.getName(false) + ChatManager.color + " is very close by!" + ChatManager.bracket2_);
+			}
+			player.setCompassTarget(enemy.getLocation().clone());
+			enemy.sendMessage(ChatManager.bracket1_ + "A " + ChatColor.DARK_RED + "PreyFinder" + ChatManager.color + " has gotten your location!" + ChatManager.bracket2_);
+		}
+		
+		player.setFoodLevel(Math.max(player.getFoodLevel() - 4, 0));
+		
 	}
 
 	public void sendTimeLeft()
