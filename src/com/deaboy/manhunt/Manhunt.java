@@ -229,6 +229,8 @@ public class Manhunt implements Closeable
 	private void removePlayer(String name)
 	{
 		timeouts.stopTimeout(name);
+		stopFinder(name, true);
+		getPlayerLobby(name).removePlayer(name);
 		players.remove(name);
 	}
 	
@@ -322,29 +324,6 @@ public class Manhunt implements Closeable
 		// given lobby, for the given time.
 	}
 	
-	/**
-	 * Initializes a new Finder object for the given player.
-	 * This object will periodically check its validity
-	 * and will cancel if it is no longer valid. Conditions for
-	 * cancellation include
-	 *    the player moving, or
-	 *    the Player no longer holding a compass.
-	 * 
-	 * Once the charge time has passed, the Finder will cause
-	 * the player's compass to point towards the nearest prey's
-	 * last known location.
-	 * 
-	 * After a litle while longer, the finder will self-destruct,
-	 * allowing a new finder to be created for the player.
-	 * 
-	 * 
-	 * @param player The player to start a finder for.
-	 */
-	public static void startFinder(Player player)
-	{
-		// TODO Instantiate a new finder object for the given player.
-	}
-	
 	public static void registerPlayer(Player p)
 	{
 		
@@ -385,26 +364,9 @@ public class Manhunt implements Closeable
 		
 	}
 	
-	public static void bootPlayer(Player p)
-	{
-		p.kickPlayer("You've been booted from the game.");
-		
-		bootPlayer(p.getName());
-	}
-	
-	public static void bootPlayer(String name)
-	{
-		// TODO Kick the player from his lobby and from the main list
-		Lobby lobby = getPlayerLobby(name);
-		
-		if (lobby != null)
-			lobby.removePlayer(name);
-		
-		getInstance().removePlayer(name);
-	}
 	
 	
-	
+	//////////////// LOGGING ////////
 	public static void log(String message)
 	{
 		log(Level.INFO, message);
@@ -433,6 +395,7 @@ public class Manhunt implements Closeable
 	
 	
 	
+	//////////////// REGISTERING GAME TYPES ////////
 	public static boolean registerGameType(Class<? extends Game> gameType, String name, JavaPlugin plugin)
 	{
 		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
@@ -486,6 +449,26 @@ public class Manhunt implements Closeable
 	
 	
 	
+	//////////////// FINDERS ////////
+	public void startFinder(Player p, long lobby_id)
+	{
+		finders.startFinder(p, lobby_id);
+	}
+	
+	public void stopAllFinders(long lobby_id)
+	{
+		finders.stopLobbyFinders(lobby_id);
+	}
+	
+	public void stopFinder(Player p, boolean ignoreUsed)
+	{
+		stopFinder(p.getName(), ignoreUsed);
+	}
+	
+	public void stopFinder(String name, boolean ignoreUsed)
+	{
+		finders.stopFinder(name, ignoreUsed);
+	}
 	
 	
 	

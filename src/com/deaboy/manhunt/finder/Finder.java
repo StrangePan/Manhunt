@@ -63,6 +63,11 @@ public class Finder
 	{
 		return player_name;
 	}
+	
+	public long getLobbyId()
+	{
+		return lobby_id;
+	}
 
 	/**
 	 * Checks when to send a player the finder results.
