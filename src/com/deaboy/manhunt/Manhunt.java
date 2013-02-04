@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.deaboy.manhunt.commands.CommandHelper;
+import com.deaboy.manhunt.finder.Finder;
 import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameType;
@@ -450,24 +451,44 @@ public class Manhunt implements Closeable
 	
 	
 	//////////////// FINDERS ////////
-	public void startFinder(Player p, long lobby_id)
+	public static void startFinder(Player p, long lobby_id)
 	{
-		finders.startFinder(p, lobby_id);
+		getInstance().finders.startFinder(p, lobby_id);
 	}
 	
-	public void stopAllFinders(long lobby_id)
+	public static void stopAllFinders(long lobby_id)
 	{
-		finders.stopLobbyFinders(lobby_id);
+		getInstance().finders.stopLobbyFinders(lobby_id);
 	}
 	
-	public void stopFinder(Player p, boolean ignoreUsed)
+	public static void stopFinder(Player p, boolean ignoreUsed)
 	{
 		stopFinder(p.getName(), ignoreUsed);
 	}
 	
-	public void stopFinder(String name, boolean ignoreUsed)
+	public static void stopFinder(String name, boolean ignoreUsed)
 	{
-		finders.stopFinder(name, ignoreUsed);
+		getInstance().finders.stopFinder(name, ignoreUsed);
+	}
+	
+	public static Finder getFinder(Player p)
+	{
+		return getFinders().getFinder(p);
+	}
+	
+	public static Finder getFinder(String name)
+	{
+		return getFinders().getFinder(name);
+	}
+	
+	public static boolean finderExists(Player p)
+	{
+		return getFinders().finderExists(p);
+	}
+	
+	public static boolean finderExists(String name)
+	{
+		return getFinders().finderExists(name);
 	}
 	
 	

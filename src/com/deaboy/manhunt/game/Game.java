@@ -8,23 +8,39 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
+import com.deaboy.manhunt.finder.Finder;
+import com.deaboy.manhunt.finder.FinderUtil;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Zone;
+import com.deaboy.manhunt.map.ZoneType;
 
 public abstract class Game implements Closeable, Listener
 {
@@ -257,6 +273,8 @@ public abstract class Game implements Closeable, Listener
 		if (team == null)
 			throw new IllegalArgumentException("Argument cannot be null");
 		setPlayerTeam(player.getName(), team);
+		if (getPlayerTeam(player) == team)
+			player.sendMessage(ChatManager.bracket1_ + "You've been moved to team " + team.getColor() + team.getName(true) + ChatManager.bracket2_);
 	}
 	
 	public void setPlayerTeam(String name, Team team)
@@ -390,19 +408,35 @@ public abstract class Game implements Closeable, Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public final void onFinderActivate(PlayerInteractEvent e)
 	{
+		if (e.getPlayer().getWorld() != getWorld())
+			return;
+		if (!containsPlayer(e.getPlayer()))
+			return;
+		if (!isRunning())
+			return;
 		if (e.getItem().getTypeId() != Manhunt.getSettings().FINDER_ITEM.getValue()
 				|| e.getAction() != Action.RIGHT_CLICK_AIR
 				&& e.getAction() != Action.RIGHT_CLICK_BLOCK
 				&& e.getAction() != Action.LEFT_CLICK_AIR
 				&& e.getAction() != Action.LEFT_CLICK_BLOCK)
-		{
 			return;
+		if (!getLobby().getSettings().PREY_FINDER.getValue())
+			return;
+		if (getPlayerTeam(e.getPlayer()) != Team.HUNTERS
+				&& getPlayerTeam(e.getPlayer()) != Team.PREY)
+			return;
+		
+		Finder finder = Manhunt.getFinder(e.getPlayer());
+		
+		if (finder == null)
+		{
+			Manhunt.startFinder(e.getPlayer(), lobby_id);
+			FinderUtil.sendMessageFinderInitialize(e.getPlayer());
 		}
-		
-		
-		// TODO Handle finder events
-		
-		
+		else if (finder.isUsed())
+		{
+			finder.sendTimeLeft();
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
@@ -414,27 +448,315 @@ public abstract class Game implements Closeable, Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBlockPlace(BlockPlaceEvent e)
 	{
-		// TODO Check for valid placement
+		checkBlockActionValidity(e, e.getPlayer(), e.getBlockPlaced().getLocation());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBlockBreak(BlockBreakEvent e)
 	{
-		// TODO Check for valid breakage
+		checkBlockActionValidity(e, e.getPlayer(), e.getBlock().getLocation());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBucketFill(PlayerBucketFillEvent e)
 	{
-		// TODO Check for valid bucket filling
+		checkBlockActionValidity(e, e.getPlayer(), e.getBlockClicked().getLocation());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBucketEmpty(PlayerBucketEmptyEvent e)
 	{
-		// TODO Check for valid bucket emptying
+		checkBlockActionValidity(e, e.getPlayer(), e.getBlockClicked().getRelative(e.getBlockFace()).getLocation());
 	}
 	
+	@EventHandler(priority = EventPriority.LOW)
+	public void basePlayerTeleport(PlayerTeleportEvent e)
+	{
+		if (!isRunning())
+			return;
+		if (e.isCancelled())
+			return;
+		
+		if (e.getCause() == TeleportCause.COMMAND)
+		{
+			e.setCancelled(true);
+			return;
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOW)
+	public void basePlayerRespawn(PlayerRespawnEvent e)
+	{
+		if (!isRunning())
+			return;
+		
+		e.setRespawnLocation(getLobby().getSpawnLocation());
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void baseEntityDamageByEntity(EntityDamageByEntityEvent e)
+	{
+		Player damager;
+		Player damagee;
+		Team damager_team;
+		Team damagee_team;
+
+		if (!isRunning())
+			return;
+		if (e.isCancelled())
+			return;
+		if (e.getEntity().getWorld() != getWorld())
+			return;
+		if (e.getDamager().getWorld() != getWorld())
+			return;
+		if (e.getEntity().getType() != EntityType.PLAYER)
+			return;
+		if (e.getDamager() instanceof Projectile) // Deal with projectiles
+		{
+			if (((Projectile) e.getDamager()).getShooter().getType() != EntityType.PLAYER)
+				return;
+			else
+				damager = ((Player) ((Projectile) e.getDamager()).getShooter());
+		}
+		else if (e.getDamager().getType() != EntityType.PLAYER)
+			return;
+		
+		damager = (Player) e.getDamager();
+		damagee = (Player) e.getEntity();
+		damager_team = getPlayerTeam(damager);
+		damagee_team = getPlayerTeam(damagee);
+		
+		if (damager_team == null)
+			return;
+		if (damagee_team == null)
+			return;
+		
+		if (getStage() == GameStage.INTERMISSION)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		if (getStage() == GameStage.PREGAME)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		if (getStage() == GameStage.SETUP)
+		{
+			if (damagee_team == Team.HUNTERS || damager_team == Team.HUNTERS && damagee_team == Team.PREY)
+			{
+				e.setCancelled(true);
+				return;
+			}
+		}
+		
+		if (damager_team != Team.HUNTERS && damager_team != Team.PREY
+			|| damagee_team != Team.HUNTERS && damagee_team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		
+		
+		if (damager_team == damagee_team && getLobby().getSettings().FRIENDLY_FIRE.getValue() == false)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		
+		if (getLobby().getSettings().INSTANT_DEATH.getValue())
+		{
+			e.setDamage(damagee.getHealth());
+		}
+		
+		
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void basePlayerDeath(PlayerDeathEvent e)
+	{
+		Player damagee;
+		Player damager;
+		Team damagee_team;
+		Team damager_team;
+
+		if (!isRunning())
+			return;
+		if (!containsPlayer(e.getEntity()))
+			return;
+		else if (getWorld() != e.getEntity().getWorld())
+			return;
+		
+		damagee = e.getEntity();
+		damager = e.getEntity().getKiller();
+		damagee_team = getPlayerTeam(damagee);
+		damager_team = getPlayerTeam(damager);
+		
+		e.setDeathMessage(null);
+		
+		if (damager != null && damager_team != null)
+		{
+			getLobby().broadcast(ChatManager.leftborder + damagee_team.getColor() + damagee.getDisplayName() + ChatManager.color +
+					" was killed by " + damager_team.getColor() + damager.getName() + ChatManager.color + " and is eliminated!");
+		}
+		else
+		{
+			getLobby().broadcast(ChatManager.leftborder + damagee_team.getColor() + damagee.getDisplayName() + ChatManager.color +
+					" has died and is eliminated!");
+		}
+		
+		
+		
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void basePlayerInteract(PlayerInteractEvent e)
+	{
+		if (!isRunning())
+			return;
+		if (e.isCancelled())
+			return;
+		if (e.getPlayer().getWorld() != getWorld())
+			return;
+		if (!containsPlayer(e.getPlayer()))
+			return;
+		
+		
+		Team player_team = getPlayerTeam(e.getPlayer());
+		
+		if (player_team != Team.HUNTERS && player_team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOW)
+	public void baseCreatureSpawn(CreatureSpawnEvent e)
+	{
+		if (e.isCancelled())
+			return;
+		if (!isRunning())
+		{
+			e.setCancelled(true);
+			return;
+		}
+		if (e.getLocation().getWorld() != getWorld())
+			return;
+		
+		if (ManhuntUtil.isHostile(e.getEntity()))
+		{
+			for (Zone zone : getMap().getZones(ZoneType.NO_MOBS))
+			{
+				if (zone.containsLocation(e.getLocation()))
+				{
+					e.setCancelled(true);
+					return;
+				}
+			}
+		}
+		
+	}
+	
+	@EventHandler(priority = EventPriority.LOW)
+	public void baseMobTargetEvent(EntityTargetEvent e)
+	{
+		Player target;
+		Team target_team;
+		
+		if (e.isCancelled())
+			return;
+		if (e.getEntity().getWorld() != getWorld())
+			return;
+		if (!isRunning())
+		{
+			e.setCancelled(true);
+			return;
+		}
+		
+		if (e.getTarget().getType() == EntityType.PLAYER)
+			target = (Player) (e.getTarget());
+		else
+			return;
+		
+		target_team = getPlayerTeam(target);
+		
+		if (target_team != Team.HUNTERS && target_team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		if (getStage() == GameStage.SETUP)
+		{
+			if (target_team == Team.HUNTERS)
+			{
+				e.setCancelled(true);
+				return;
+			}
+		}
+		else if (getStage() != GameStage.HUNT)
+		{
+			e.setCancelled(true);
+		}
+		
+		
+	}
+	
+	
+	
+	
+	//////// Universal method for block-editing events
+	private void checkBlockActionValidity(Cancellable e, Player p, Location loc)
+	{
+		Team team;
+		
+		if (e.isCancelled())
+			return;
+		if (!isRunning())
+			return;
+		if (p.getWorld() != getWorld())
+			return;
+		
+		team = getPlayerTeam(p);
+		
+		if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		
+		if (getStage() == GameStage.SETUP && team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else if (getStage() != GameStage.HUNT)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		
+		
+		// Take map zones into account
+		for (Zone zone : getMap().getZones(ZoneType.BUILD, ZoneType.NO_BUILD))
+		{
+			if ((!e.isCancelled() || zone.getType() != ZoneType.NO_BUILD) && zone.containsLocation(loc))
+			{
+				if (zone.getType() == ZoneType.BUILD)
+				{
+					e.setCancelled(false);
+					break;
+				}
+				else
+				{
+					e.setCancelled(true);
+				}
+			}
+		}
+		if (e.isCancelled())
+			return;
+		
+	}
 	
 	
 	

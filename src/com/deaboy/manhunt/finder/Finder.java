@@ -86,7 +86,7 @@ public class Finder
 		{
 			Player p = Bukkit.getPlayerExact(player_name);
 			if (p != null && Manhunt.getSettings().CONTROL_XP.getValue())
-				p.setExp((time + 8000 - activation_time) / 8000f);
+				p.setExp((float) (activation_time - time) / (float) CHARGE_TIME);
 		}
 		else if (!used && time >= activation_time) //Should I send the player the information?
 		{
@@ -113,7 +113,7 @@ public class Finder
 		{
 			Player p = Bukkit.getPlayer(player_name);
 			if (p != null)
-				p.setExp((time + (Manhunt.getLobby(lobby_id).getSettings().FINDER_COOLDOWN.getValue() * 1000f) - expire_time) / (Manhunt.getLobby(lobby_id).getSettings().FINDER_COOLDOWN.getValue() * 1000f));
+				p.setExp(1f - (float) (expire_time - time) / (Manhunt.getLobby(lobby_id).getSettings().FINDER_COOLDOWN.getValue() * 1000f));
 		}
 		else if (time >= expire_time)
 		{
@@ -121,6 +121,8 @@ public class Finder
 			if (p != null)
 			{
 				p.sendMessage(ChatManager.bracket1_ + "The " + ChatColor.DARK_RED + "Prey Finder" + ChatManager.color + " is fully charged." + ChatManager.bracket2_);
+				if (Manhunt.getSettings().CONTROL_XP.getValue())
+					p.setExp(1f);
 			}
 			Manhunt.getFinders().stopFinder(this, true);
 		}

@@ -56,19 +56,29 @@ public class FinderManager implements Closeable
 	 * @param p
 	 * @return
 	 */
-	private Finder getFinder(Player p)
+	public Finder getFinder(Player p)
 	{
 		return getFinder(p.getName());
 	}
 	
-	private Finder getFinder(String name)
+	public Finder getFinder(String name)
 	{
 		if (finders.containsKey(name))
 			return finders.get(name);
 		else
 			return null;
 	}
-
+	
+	public boolean finderExists(Player p)
+	{
+		return finders.containsKey(p.getName());
+	}
+	
+	public boolean finderExists(String name)
+	{
+		return finders.containsKey(name);
+	}
+	
 	/**
 	 * Stops all finders.
 	 */

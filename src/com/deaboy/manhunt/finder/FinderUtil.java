@@ -42,4 +42,6 @@ public class FinderUtil
 	{
 		p.sendMessage(ChatColor.RED + "The Prey Finder was cancelled!");
 	}
+	
+	
 }
