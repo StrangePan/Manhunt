@@ -29,7 +29,6 @@ import com.deaboy.manhunt.timeouts.TimeoutManager;
 
 public class Manhunt implements Closeable
 {
-	
 	//---------------- Constants ----------------//
 	/** The extension to use for property files. */
 	public static final String extension_properties = ".properties";
@@ -65,9 +64,7 @@ public class Manhunt implements Closeable
 	
 	
 	
-	
 	//---------------- Local variables -----------------//
-	
 	private static	Manhunt				instance;
 	private 		ManhuntSettings		settings;
 	private 		TimeoutManager		timeouts;
@@ -312,36 +309,6 @@ public class Manhunt implements Closeable
 		return lobby;
 	}
 	
-	/**
-	 * Initializes a new Timeout object that will keep a timer
-	 * and disqualify a player if they do not log in on time.
-	 * @param player The player to start a timeout for.
-	 * @param lobby The lobby that the player is in.
-	 * @param time The the number of seconds until the player is disqualified.
-	 */
-	public static void startTimeout(Player player, GameLobby lobby, long time)
-	{
-		// TODO Initiate a new Timeout object for the given player in the
-		// given lobby, for the given time.
-	}
-	
-	public static void registerPlayer(Player p)
-	{
-		
-		Lobby lobby = getDefaultLobby();
-		
-		p.teleport(lobby.getSpawn().getRandomLocation());
-		resetPlayer(p);
-		
-		getInstance().players.put(p.getName(), lobby.getId());
-		
-		if (lobby.addPlayer(p.getName()))
-		{
-			lobby.broadcast(p.getName() + " has joined.");
-		}
-		
-	}
-	
 	public static void changePlayerLobby(Player p, long lobby_id)
 	{
 		
@@ -363,6 +330,104 @@ public class Manhunt implements Closeable
 			lobby.broadcast(p.getName() + " has joined.");
 		}
 		
+	}
+	
+	public static void playerJoin(Player p)
+	{
+		if (timeoutExists(p))
+			stopTimeout(p);
+		
+		if (!getInstance().players.containsKey(p.getName()))
+		{
+			setPlayerLobby(p, Manhunt.getDefaultLobby().getId());
+		}
+		
+		
+		
+	}
+	
+	public static void playerLeave(Player p)
+	{
+		/*
+		 * Function for protocol to remove player from Manhunt
+		 * 
+		 * When a player leaves,...
+		 * 		Starts a timeout,
+		 * 		Or just plain kicks him
+		 * 
+		 * Completely removing a player involves...
+			 * 	Stopping their timeout
+			 * 	Stopping their finder
+			 * 	Removing them from lobbies
+			 * 	Forfeiting them from games
+		 */
+		
+		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getSettings().OFFLINE_TIMEOUT.getValue() > 0)
+		{
+			startTimeout(p, getPlayerLobby(p), getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
+		}
+		else
+		{
+			if (getPlayerLobby(p).gameIsRunning())
+				getPlayerLobby(p).forfeitPlayer(p.getName());
+			else
+				getPlayerLobby(p).removePlayer(p);
+			stopFinder(p.getName(), false);
+			getInstance().removePlayer(p.getName());
+		}
+	}
+	
+	public static void setPlayerLobby(Player p, long lobby_id)
+	{
+		Lobby lobby_old;
+		Lobby lobby_new;
+		
+		lobby_old = getPlayerLobby(p);
+		lobby_new = getLobby(lobby_id);
+		
+		if (lobby_new == null)
+			return;
+		
+		if (lobby_old != null)
+		{
+			if (lobby_old.gameIsRunning())
+				lobby_old.forfeitPlayer(p.getName());
+			lobby_old.removePlayer(p);
+		}
+		
+		lobby_new.addPlayer(p.getName());
+		resetPlayer(p);
+		p.teleport(lobby_new.getSpawn().getRandomLocation());
+		
+		getInstance().players.put(p.getName(), lobby_new.getId());
+		
+	}
+	
+	
+	
+	//////////////// TIMEOUTS ////////
+	public static void startTimeout(Player player, Lobby lobby)
+	{
+		if (getSettings().OFFLINE_TIMEOUT.getValue() >= 0)
+			startTimeout(player, lobby, getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
+	}
+	
+	public static void startTimeout(Player player, Lobby lobby, long time)
+	{
+		if (getInstance().timeouts.hasTimeout(player))
+			getInstance().timeouts.stopTimeout(player);
+		
+		getInstance().timeouts.startTimeout(player, lobby.getId(), time);
+	}
+	
+	public static boolean timeoutExists(Player p)
+	{
+		return getInstance().timeouts.hasTimeout(p);
+	}
+	
+	public static void stopTimeout(Player player)
+	{
+		getInstance().timeouts.stopTimeout(player);
 	}
 	
 	

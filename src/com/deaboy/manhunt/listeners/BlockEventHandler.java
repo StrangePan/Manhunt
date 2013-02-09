@@ -3,6 +3,7 @@ package com.deaboy.manhunt.listeners;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -10,13 +11,13 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.lobby.GameLobby;
+import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.Team;
 
 public class BlockEventHandler implements Listener
 {
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent e)
 	{
 		if (!canBuildHere(e.getPlayer(), e.getBlock()))
@@ -25,7 +26,7 @@ public class BlockEventHandler implements Listener
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent e)
 	{
 		if (!canBuildHere(e.getPlayer(), e.getBlock()))
@@ -34,7 +35,7 @@ public class BlockEventHandler implements Listener
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e)
 	{
 		if (!canBuildHere(e.getPlayer(), e.getBlockClicked()))
@@ -43,7 +44,7 @@ public class BlockEventHandler implements Listener
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerBucketFill(PlayerBucketFillEvent e)
 	{
 		if (!canBuildHere(e.getPlayer(), e.getBlockClicked()))
@@ -54,7 +55,7 @@ public class BlockEventHandler implements Listener
 	
 	private boolean canBuildHere(Player p, Block b)
 	{
-		GameLobby lobby;
+		Lobby lobby;
 		
 		lobby = Manhunt.getLobby(p.getWorld());
 		
@@ -63,17 +64,14 @@ public class BlockEventHandler implements Listener
 		
 		if (lobby.getGame().isRunning())
 		{
-			if (lobby.getPlayerTeam(p) == Team.SPECTATORS)
+			if (lobby.getPlayerTeam(p) != Team.HUNTERS || lobby.getPlayerTeam(p) != Team.PREY)
 			{
 				return false;
 			}
-			
-			// TODO Makes sure players don't build within the various spawn protections.
-			
 		}
 		else
 		{
-			return false;
+			return p.isOp();
 		}
 		return true;
 	}

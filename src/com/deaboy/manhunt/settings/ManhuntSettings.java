@@ -18,7 +18,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	public final SettingBoolean OP_CONTROL;
 	public final SettingBoolean CONTEXT_LIST;
 	public final SettingBoolean CONTROL_XP;
-	
+
+	public final SettingInteger OFFLINE_TIMEOUT;
 	public final SettingInteger FINDER_ITEM;
 	public final SettingInteger TIME_LIMIT;
 	public final SettingInteger TIME_INTERMISSION;
@@ -39,7 +40,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		addSetting(OP_CONTROL =		new SettingBoolean("opcontrol", true, "Only ops have access to basic commands.", "Non-ops have access to basic, non-harmful commands."), true);
 		addSetting(CONTEXT_LIST =	new SettingBoolean("contextlist", true, "Server list hides players in other games.", "Server list displays all players."), true);
 		addSetting(CONTROL_XP =		new SettingBoolean("controlxp", true, "Manhunt will have its way with player XP levels.", "Manhunt will not touch player XP levels."), false);
-		
+
+		addSetting(OFFLINE_TIMEOUT =	new SettingInteger("timeout", 30, "Seconds before players are disqualified.", "Players will be immediately disqualified."), true);
 		addSetting(FINDER_ITEM =		new SettingInteger("finderitem", Material.COMPASS.getId(), "The item used as the Prey Finder.", ""), false);
 		addSetting(TIME_LIMIT =			new SettingInteger("timelimit", 60, "Minutes that the hunt will last.", "The game will never end."), true );
 		addSetting(TIME_INTERMISSION =	new SettingInteger("intermission", 3, "Minutes between Manhunt games.", ""), true);
