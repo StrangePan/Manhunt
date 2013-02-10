@@ -71,13 +71,21 @@ public class GameLobby extends Lobby
 	@Override
 	public void startGame()
 	{
-		// TODO Auto-generated method stub
+		if (gameIsRunning())
+			return;
+		
+		getGame().importPlayers(this);
+		getGame().startGame();
+		
 	}
 	
 	@Override
 	public void stopGame()
 	{
-		// TODO Auto-generated method stub
+		if (!gameIsRunning())
+			return;
+		
+		getGame().stopGame();
 	}
 	
 	public void close()

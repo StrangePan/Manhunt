@@ -1,7 +1,10 @@
 package com.deaboy.manhunt.game;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.Team;
 
@@ -15,33 +18,40 @@ public class ManhuntGame extends Game implements Listener
 	public ManhuntGame(Lobby lobby)
 	{
 		super(lobby);
+		
+		
 	}
 	
 	
 	
 	//---------------- Public methods ----------------//
 	@Override
-	public void startGame() {
-		// TODO Auto-generated method stub
-
+	public void startGame()
+	{
+		// Initiate timeline
+		
+		startListening();
 	}
 
 	@Override
-	public void stopGame() {
-		// TODO Auto-generated method stub
-
+	public void stopGame()
+	{
+		// Cancel timeline
+		// Send players to spawn
+		
+		stopListening();
 	}
 
 	@Override
 	public void startListening()
 	{
-		//Bukkit.getPluginManager().registerEvents(this, NewManhuntPlugin.getInstance());
+		Bukkit.getPluginManager().registerEvents(this, ManhuntPlugin.getInstance());
 	}
 
 	@Override
 	public void stopListening()
 	{
-		//HandlerList.unregisterAll(this);
+		HandlerList.unregisterAll(this);
 	}
 	
 	@Override
@@ -65,3 +75,4 @@ public class ManhuntGame extends Game implements Listener
 	//---------------- Listeners/Events ----------------//
 	
 }
+

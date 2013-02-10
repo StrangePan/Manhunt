@@ -12,7 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.deaboy.manhunt.commands.CommandHelper;
+import com.deaboy.manhunt.commands.CommandUtil;
 import com.deaboy.manhunt.finder.Finder;
 import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.game.Game;
@@ -69,7 +69,7 @@ public class Manhunt implements Closeable
 	private 		ManhuntSettings		settings;
 	private 		TimeoutManager		timeouts;
 	private 		FinderManager		finders;
-	private 		CommandHelper		command_helper;
+	private 		CommandUtil		command_util;
 	private 		LoadoutManager		loadouts;
 	
 	private 		HashMap<Long, Lobby>	lobbies;
@@ -90,7 +90,7 @@ public class Manhunt implements Closeable
 		
 		this.timeouts =			new TimeoutManager();
 		this.finders =			new FinderManager();
-		this.command_helper =	new CommandHelper();
+		this.command_util =	new CommandUtil();
 		this.loadouts =			new LoadoutManager();
 		
 		this.lobbies =			new HashMap<Long, Lobby>();
@@ -206,9 +206,9 @@ public class Manhunt implements Closeable
 		return getInstance().finders;
 	}
 	
-	public static CommandHelper getCommandHelper()
+	public static CommandUtil getCommandUtil()
 	{
-		return getInstance().command_helper;
+		return getInstance().command_util;
 	}
 	
 	public static LoadoutManager getLoadouts()

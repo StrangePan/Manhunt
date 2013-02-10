@@ -402,6 +402,14 @@ public abstract class Game implements Closeable, Listener
 		
 	}
 	
+	public void importPlayers(Lobby lobby)
+	{
+		this.teams.clear();
+		
+		for (String name : lobby.getPlayerNames())
+			this.teams.put(name, lobby.getPlayerTeam(name));
+	}
+	
 	
 	
 	//---------------- Listeners ----------------//
@@ -470,7 +478,7 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void basePlayerTeleport(PlayerTeleportEvent e)
+	public final void basePlayerTeleport(PlayerTeleportEvent e)
 	{
 		if (!isRunning())
 			return;
@@ -485,7 +493,7 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void basePlayerRespawn(PlayerRespawnEvent e)
+	public final void basePlayerRespawn(PlayerRespawnEvent e)
 	{
 		if (!isRunning())
 			return;
@@ -494,7 +502,7 @@ public abstract class Game implements Closeable, Listener
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void baseEntityDamageByEntity(EntityDamageByEntityEvent e)
+	public final void baseEntityDamageByEntity(EntityDamageByEntityEvent e)
 	{
 		Player damager;
 		Player damagee;
@@ -573,7 +581,7 @@ public abstract class Game implements Closeable, Listener
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void basePlayerDeath(PlayerDeathEvent e)
+	public final void basePlayerDeath(PlayerDeathEvent e)
 	{
 		Player damagee;
 		Player damager;
@@ -610,7 +618,7 @@ public abstract class Game implements Closeable, Listener
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void basePlayerInteract(PlayerInteractEvent e)
+	public final void basePlayerInteract(PlayerInteractEvent e)
 	{
 		if (!isRunning())
 			return;
@@ -632,7 +640,7 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void baseCreatureSpawn(CreatureSpawnEvent e)
+	public final void baseCreatureSpawn(CreatureSpawnEvent e)
 	{
 		if (e.isCancelled())
 			return;
@@ -659,7 +667,7 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void baseMobTargetEvent(EntityTargetEvent e)
+	public final void baseMobTargetEvent(EntityTargetEvent e)
 	{
 		Player target;
 		Team target_team;
