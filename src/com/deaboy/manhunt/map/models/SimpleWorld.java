@@ -2,7 +2,7 @@ package com.deaboy.manhunt.map.models;
 
 import java.util.ArrayList;
 
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Spawn;
 import com.deaboy.manhunt.map.World;
@@ -20,7 +20,7 @@ public class SimpleWorld
 	//---------------- Constructors ----------------//
 	public SimpleWorld()
 	{
-		this.Version = NewManhuntPlugin.getVersion();
+		this.Version = ManhuntPlugin.getVersion();
 		this.Maps = new ArrayList<SimpleMap>();
 	}
 	

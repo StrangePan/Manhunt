@@ -3,11 +3,18 @@ version: 1.3
 main: com.bendude56.hunted.ManhuntPlugin
 website: github.com/BenCmd/HuntedPlugin
 author: Deaboy
-soft-depend: [Amber]
+soft-depend: [Amber, WorldEdit]
 commands:
     manhunt:
         usage:
-        description: Controls all HuntedPlugin functions
-    m:
-        usage:
-        description: Controls all HuntedPlugin functions
+        description: Access to simple manhunt functions, like help and info.
+        aliases: [m, mh]
+    mstartgame:
+        usage: /mstartgame [lobby]
+        description: Starts a manhunt game in the current lobby, or the specified lobby.
+        aliases: [startgame]
+    mstopgame:
+        usage: /mstopgame [lobby]
+        description: Stops a manhunt game in the current lobby, or the specified lobby.
+        aliases: [stopgame]
+    

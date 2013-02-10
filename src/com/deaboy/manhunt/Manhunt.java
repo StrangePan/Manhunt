@@ -273,7 +273,7 @@ public class Manhunt implements Closeable
 		while (getInstance().games.containsKey(i))
 			i++;
 		
-		getInstance().games.put(i, new GameType(gameType, i, name, NewManhuntPlugin.getInstance()));
+		getInstance().games.put(i, new GameType(gameType, i, name, ManhuntPlugin.getInstance()));
 		
 	}
 	
@@ -471,7 +471,7 @@ public class Manhunt implements Closeable
 			if (gc.getGameClass().equals(gameType))
 				return false;
 		
-		if (plugin == NewManhuntPlugin.getInstance())
+		if (plugin == ManhuntPlugin.getInstance())
 			throw new IllegalArgumentException("\"plugin\" arugment cannot be the Manhunt plugin itself.");
 		
 		long i = 0;

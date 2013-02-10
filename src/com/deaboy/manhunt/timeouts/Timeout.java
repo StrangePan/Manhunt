@@ -6,7 +6,7 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.lobby.Lobby;
 
 public class Timeout implements Closeable
@@ -23,7 +23,7 @@ public class Timeout implements Closeable
 		this.lobby_id = lobby;
 		
 		//Start the scheduler
-		this.schedule = Bukkit.getScheduler().runTaskTimer(NewManhuntPlugin.getInstance(), new Runnable()
+		this.schedule = Bukkit.getScheduler().runTaskTimer(ManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{

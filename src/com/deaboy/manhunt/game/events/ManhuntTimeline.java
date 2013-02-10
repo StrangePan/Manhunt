@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.lobby.Team;
 
 public class ManhuntTimeline implements Timeline
@@ -120,7 +120,7 @@ public class ManhuntTimeline implements Timeline
 		event = 0;
 		sortEvents();
 		
-		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(NewManhuntPlugin.getInstance(), new Runnable()
+		schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 		{
 			public void run()
 			{

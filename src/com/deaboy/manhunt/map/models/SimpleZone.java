@@ -1,6 +1,6 @@
 package com.deaboy.manhunt.map.models;
 
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.ManhuntZone;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneType;
@@ -20,7 +20,7 @@ public class SimpleZone
 	//---------------- Constructor ----------------//
 	public SimpleZone()
 	{
-		this.Version = NewManhuntPlugin.getVersion();
+		this.Version = ManhuntPlugin.getVersion();
 	}
 	
 	

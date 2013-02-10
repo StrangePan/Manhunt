@@ -23,7 +23,7 @@ import org.jnbt.ByteTag;
 import org.jnbt.TagType;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.loadouts.models.SimpleEffect;
 
 public class LoadoutFile
@@ -206,7 +206,7 @@ public class LoadoutFile
 		
 		
 		// Insert essential values
-		main_tag.getValue().put(tag_version, new StringTag("version", NewManhuntPlugin.getInstance().getDescription().getVersion()));
+		main_tag.getValue().put(tag_version, new StringTag("version", ManhuntPlugin.getInstance().getDescription().getVersion()));
 		main_tag.getValue().put(tag_name, new StringTag("name", loadout.getName()));
 		
 		

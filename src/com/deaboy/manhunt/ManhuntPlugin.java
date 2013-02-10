@@ -2,11 +2,11 @@ package com.deaboy.manhunt;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class NewManhuntPlugin extends JavaPlugin
+public class ManhuntPlugin extends JavaPlugin
 {
 	//---------------- Declarations ----------------//
 	
-	private static NewManhuntPlugin instance;
+	private static ManhuntPlugin instance;
 	private static Manhunt manhunt;
 	
 	
@@ -29,7 +29,7 @@ public class NewManhuntPlugin extends JavaPlugin
 	
 	
 	//-------- Getters --------//
-	public static NewManhuntPlugin getInstance()
+	public static ManhuntPlugin getInstance()
 	{
 		return instance;
 	}

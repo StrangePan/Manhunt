@@ -2,7 +2,7 @@ package com.deaboy.manhunt.map.models;
 
 import org.bukkit.Location;
 
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.World;
 
 public class SimpleLocation
@@ -19,7 +19,7 @@ public class SimpleLocation
 	//---------------- Constructors ----------------//
 	public SimpleLocation()
 	{
-		this.version = NewManhuntPlugin.getVersion();
+		this.version = ManhuntPlugin.getVersion();
 	}
 	
 	

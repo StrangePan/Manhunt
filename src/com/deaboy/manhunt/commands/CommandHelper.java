@@ -5,8 +5,6 @@ import java.util.HashMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
-import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.map.Map;
 
 /**
@@ -37,6 +35,7 @@ public class CommandHelper
 	
 	
 	//---------------- Getters ----------------//
+	/*
 	public GameLobby getSelectedLobby(String name)
 	{
 		if (selected_lobbies.containsKey(name))
@@ -52,6 +51,7 @@ public class CommandHelper
 		else
 			return getSelectedLobby(sender.getName());
 	}
+	*/
 	
 	public Map getSelectedMap(String name)
 	{
@@ -65,6 +65,7 @@ public class CommandHelper
 	
 	
 	//---------------- Setters ----------------//
+	/*
 	public void setSelectedLobby(String name, GameLobby lobby)
 	{
 		selected_lobbies.put(name, lobby.getId());
@@ -77,6 +78,7 @@ public class CommandHelper
 		else
 			setSelectedLobby(sender.getName(), lobby);
 	}
+	*/
 	
 	public void setSelectedMap(String name, Map map)
 	{

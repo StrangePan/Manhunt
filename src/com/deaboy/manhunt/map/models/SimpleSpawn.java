@@ -1,6 +1,6 @@
 package com.deaboy.manhunt.map.models;
 
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.ManhuntSpawn;
 import com.deaboy.manhunt.map.Spawn;
 import com.deaboy.manhunt.map.World;
@@ -18,7 +18,7 @@ public class SimpleSpawn
 	//---------------- Constructors ----------------//
 	public SimpleSpawn()
 	{
-		Version = NewManhuntPlugin.getVersion();
+		Version = ManhuntPlugin.getVersion();
 	}
 	
 	

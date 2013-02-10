@@ -2,11 +2,11 @@ package com.deaboy.manhunt.loadouts.models;
 
 import java.util.ArrayList;
 
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 
 public class SimpleLoadout
 {
-	public String version = NewManhuntPlugin.getInstance().getDescription().getVersion();
+	public String version = ManhuntPlugin.getInstance().getDescription().getVersion();
 	public ArrayList<SimpleEffect> effects = new ArrayList<SimpleEffect>();
 	public ArrayList<SimpleItem> inventory = new ArrayList<SimpleItem>();
 	public ArrayList<SimpleItem> armor = new ArrayList<SimpleItem>();

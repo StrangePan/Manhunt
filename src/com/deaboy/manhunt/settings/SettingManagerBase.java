@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.deaboy.manhunt.NewManhuntPlugin;
+import com.deaboy.manhunt.ManhuntPlugin;
 
 public abstract class SettingManagerBase extends Properties implements SettingManager
 {
@@ -28,7 +28,7 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 		this.settings = new ArrayList<Setting>();
 		this.settings_visible = new ArrayList<Setting>();
 		
-		addSetting(new SettingString("version", NewManhuntPlugin.getVersion(), ""), false);
+		addSetting(new SettingString("version", ManhuntPlugin.getVersion(), ""), false);
 	}
 	
 	public void addSetting(Setting setting, boolean visible)
