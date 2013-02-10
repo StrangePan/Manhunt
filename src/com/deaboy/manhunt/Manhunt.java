@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.deaboy.manhunt.commands.CommandSwitchboard;
 import com.deaboy.manhunt.commands.CommandUtil;
 import com.deaboy.manhunt.finder.Finder;
 import com.deaboy.manhunt.finder.FinderManager;
@@ -98,6 +99,8 @@ public class Manhunt implements Closeable
 		this.players =			new HashMap<String, Long>();
 		this.games =			new HashMap<Long, GameType>();
 		
+		//////// Start up the command handlers ////////
+		new CommandSwitchboard();
 		
 		//////// Register game types
 		registerGameType(ManhuntGame.class, "Manhunt");

@@ -23,13 +23,13 @@ public class CommandSwitchboard implements CommandExecutor
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
 	{
 
-		if (cmd.equalsIgnoreCase("manhunt"))
+		if (c.getName().equalsIgnoreCase("manhunt"))
 			return HelpCommands.manhunt(sender, arguments);
 		
-		if (cmd.equalsIgnoreCase("mstartgame"))
+		if (c.getName().equalsIgnoreCase("mstartgame"))
 			return LobbyCommands.mstartgame(sender, arguments);
 		
-		if (cmd.equalsIgnoreCase("mstopgame"))
+		if (c.getName().equalsIgnoreCase("mstopgame"))
 			return LobbyCommands.mstopgame(sender, arguments);
 		
 		

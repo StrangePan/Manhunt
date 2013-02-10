@@ -30,7 +30,7 @@ public abstract class SettingBase<Type> implements Setting
 		
 		for (int i = 0; i < descriptions.length; i++)
 		{
-			this.description.set(i, descriptions[i]);
+			this.description.add(descriptions[i]);
 		}
 	}
 	

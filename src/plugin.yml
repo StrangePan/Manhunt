@@ -1,7 +1,7 @@
 name: Manhunt
 version: 1.3
-main: com.bendude56.hunted.ManhuntPlugin
-website: github.com/BenCmd/HuntedPlugin
+main: com.deaboy.manhunt.ManhuntPlugin
+website: github.com/Deaboy/HuntedPlugin
 author: Deaboy
 soft-depend: [Amber, WorldEdit]
 commands:
