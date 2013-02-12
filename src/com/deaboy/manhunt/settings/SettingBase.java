@@ -41,21 +41,21 @@ public abstract class SettingBase<Type> implements Setting
 	}
 
 	@Override
-	public void setValue(Object value) throws IllegalArgumentException
+	public boolean setValue(Object value)
 	{
 		if (value == null || value.getClass() == this.value_class)
 		{
 			this.value = value;
+			return true;
 		}
 		else
 		{
-			throw new IllegalArgumentException("Argument must be of type " + this.value_class.toString());
+			return false;
 		}
 	}
 
 	@Override
-	public void setValue(String value) throws IllegalArgumentException
-	{ }
+	public abstract boolean setValue(String value);
 
 	@Override
 	public Object getValue()

@@ -17,7 +17,7 @@ public abstract class LobbyCommands
 		boolean console;
 		Lobby lobby;
 		
-		if (sender.isOp())
+		if (!sender.isOp())
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
@@ -45,15 +45,25 @@ public abstract class LobbyCommands
 		
 		
 		
-		if (lobby == null)
+		if (lobby == null && args.length > 0)
 		{
 			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + args[0] + " does not exist.");
 			return false;
 		}
+		else if (lobby == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You are not in a Manhunt game lobby.");
+			return true;
+		}
 		else if (lobby.getType() != LobbyType.GAME)
 		{
-			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + args[0] + " is not a game lobby");
-			return false;
+			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + (args.length > 0 ? args[0] : "you are in") + " is not a game lobby");
+			return true;
+		}
+		else if (!lobby.isEnabled())
+		{
+			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + (args.length > 0 ? args[0] : "you are in") + " is closed.");
+			return true;
 		}
 		else if (lobby.gameIsRunning())
 		{
@@ -76,7 +86,7 @@ public abstract class LobbyCommands
 		boolean console;
 		Lobby lobby;
 		
-		if (sender.isOp())
+		if (!sender.isOp())
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
@@ -106,17 +116,20 @@ public abstract class LobbyCommands
 		
 		if (lobby == null)
 		{
-			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + args[0] + " does not exist.");
+			if (args.length > 0)
+				sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + args[0] + " does not exist.");
+			else
+				sender.sendMessage(ChatColor.RED + "You are not in a Manhunt game lobby.");
 			return false;
 		}
 		else if (lobby.getType() != LobbyType.GAME)
 		{
-			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + args[0] + " is not a game lobby");
+			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + (args.length > 0 ? args[0] : "you are in") + " is not a game lobby");
 			return false;
 		}
 		else if (!lobby.gameIsRunning())
 		{
-			sender.sendMessage((console ? "" : ChatColor.RED) + "A game isn't running.");
+			sender.sendMessage((console ? "" : ChatColor.RED) + "There are no games running.");
 			return true;
 		}
 		else

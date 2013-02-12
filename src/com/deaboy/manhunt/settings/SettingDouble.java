@@ -11,15 +11,15 @@ public class SettingDouble extends SettingBase<Double> implements Setting
 	}
 	
 	@Override
-	public void setValue(String value)
+	public boolean setValue(String value)
 	{
 		try
 		{
-			super.setValue(Double.parseDouble(value));
+			return super.setValue(Double.parseDouble(value));
 		}
 		catch (NumberFormatException e)
 		{
-			throw new IllegalArgumentException("Argument must be parseable to type Integer");
+			return false;
 		}
 	}
 	

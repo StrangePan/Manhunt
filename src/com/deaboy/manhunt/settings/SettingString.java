@@ -11,9 +11,9 @@ public class SettingString extends SettingBase<String> implements Setting
 	}
 
 	@Override
-	public void setValue(String value) throws IllegalArgumentException
+	public boolean setValue(String value)
 	{
-		super.setValue((Object) value);
+		return super.setValue((Object) value);
 	}
 
 	@Override

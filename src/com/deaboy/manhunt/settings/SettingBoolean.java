@@ -11,15 +11,15 @@ public class SettingBoolean extends SettingBase<Boolean> implements Setting
 	}
 
 	@Override
-	public void setValue(String value) throws IllegalArgumentException
+	public boolean setValue(String value)
 	{
 		try
 		{
-			super.setValue(Boolean.parseBoolean(value));
+			return super.setValue(Boolean.parseBoolean(value));
 		}
 		catch (NumberFormatException e)
 		{
-			throw new IllegalArgumentException("Argument could not be parsed to type Boolean");
+			return false;
 		}
 	}
 

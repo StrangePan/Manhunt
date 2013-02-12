@@ -11,22 +11,15 @@ public class SettingInteger extends SettingBase<Integer> implements Setting
 	}
 
 	@Override
-	public void setValue(String value)
+	public boolean setValue(String value)
 	{
-		if (value.equals("null"))
+		try
 		{
-			super.setValue(null);
+			return super.setValue(Integer.parseInt(value));
 		}
-		else
+		catch (NumberFormatException e)
 		{
-			try
-			{
-				super.setValue(Integer.parseInt(value));
-			}
-			catch (NumberFormatException e)
-			{
-				throw new IllegalArgumentException("Argument must be parseable to type Integer");
-			}
+			return false;
 		}
 	}
 

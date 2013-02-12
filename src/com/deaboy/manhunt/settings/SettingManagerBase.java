@@ -120,13 +120,13 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 	@Override
 	public List<Setting> getVisibleSettings()
 	{
-		return null;
+		return settings_visible;
 	}
 
 	@Override
 	public List<Setting> getAllSettings()
 	{
-		return null;
+		return settings;
 	}
 
 }

@@ -20,7 +20,7 @@ public class SettingLocation extends SettingBase<Location> implements Setting
 	}
 
 	@Override
-	public void setValue(String value) throws IllegalArgumentException
+	public boolean setValue(String value)
 	{
 		Location loc;
 		World world;
@@ -29,7 +29,7 @@ public class SettingLocation extends SettingBase<Location> implements Setting
 		String[] values = value.split(",");
 		
 		if (values.length != 6)
-			return;
+			return false;
 		
 		try
 		{
@@ -42,11 +42,11 @@ public class SettingLocation extends SettingBase<Location> implements Setting
 			
 			loc = new Location(world, x, y, z, yaw, pitch);
 			
-			setValue(loc);
+			return setValue(loc);
 		}
 		catch (NumberFormatException e)
 		{
-			throw new IllegalArgumentException( "Argument could not be parsed to a Location!" );
+			return false;
 		}
 		
 	}

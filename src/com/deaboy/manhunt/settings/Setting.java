@@ -14,18 +14,19 @@ public interface Setting
 	//---------------- Setters ----------------//
 	/**
 	 * Sets the value of the setting. Data type depends on
-	 * the setting. Will throw an error if the type
-	 * is not an instance of the setting's supported data type.
+	 * the setting.
 	 * @param value The new value.
+	 * @return True if the operation was a success, false if not.
 	 */
-	public void setValue(Object value);
+	public boolean setValue(Object value);
 	
 	/**
 	 * Sets the value of the setting via string, parsing the value
 	 * to the appropriate data type.
 	 * @param value The String representation of the new value.
+	 * @return True if the operation was a success, false if not.
 	 */
-	public void setValue(String value);
+	public boolean setValue(String value);
 	
 	/**
 	 * Gets the value of the setting.

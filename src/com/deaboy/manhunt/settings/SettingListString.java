@@ -22,7 +22,7 @@ public class SettingListString extends SettingBase<ArrayList<String>> implements
 	}
 	
 	@Override
-	public void setValue(String value) throws IllegalArgumentException
+	public boolean setValue(String value)
 	{
 		String[] values1 = value.split(",");
 		ArrayList<String> values2 = new ArrayList<String>(values1.length);
@@ -32,7 +32,7 @@ public class SettingListString extends SettingBase<ArrayList<String>> implements
 			values2.set(i, values1[i]);
 		}
 		
-		super.setValue(values1);
+		return super.setValue(values1);
 	}
 	
 	@SuppressWarnings("unchecked")
