@@ -20,6 +20,7 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mstopgame").setExecutor(this);
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
 		Bukkit.getPluginCommand("mset").setExecutor(this);
+		Bukkit.getPluginCommand("mworlds").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -39,6 +40,9 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (c.getName().equalsIgnoreCase("mset"))
 			return SettingCommands.mset(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mworlds"))
+			return WorldCommands.mworlds(sender, arguments);
 		
 		
 		

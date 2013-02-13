@@ -18,11 +18,16 @@ commands:
         description: Stops a manhunt game in the current lobby, or the specified lobby.
         aliases: [stopgame]
     msettings:
-        usage: /msettings <page>
+        usage: /msettings [page]
         description: Lists the global Manhunt settings. Cannot be used to view lobby settings.
         aliases: [settings, listsettings, mlistsettings]
     mset:
         usage: /mset <setting> <value>
         description: Changes a global Manhunt setting. Cannot be used to change lobby settings.
         aliases: [set, setting]
-    
+    mworlds:
+        usage: /mworlds [page]
+        description: Lists the worlds running on the server. Worlds not being used by Manhunt are grayed out.
+        aliases: [worlds, listworlds, mlistworlds]
+        
+         
