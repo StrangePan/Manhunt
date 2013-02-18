@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +25,7 @@ import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.HubLobby;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.map.ManhuntWorld;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
@@ -98,6 +100,19 @@ public class Manhunt implements Closeable
 		this.worlds =			new HashMap<String, World>();
 		this.players =			new HashMap<String, Long>();
 		this.games =			new HashMap<Long, GameType>();
+		
+		//////// Set up worlds ////////
+		for (String wname : settings.WORLDS.getValue())
+		{
+			org.bukkit.World world = Bukkit.getWorld(wname);
+			if (world == null && !settings.HANDLE_WORLDS.getValue())
+				continue;
+			else if (world == null)
+				registerWorld(Bukkit.createWorld(WorldCreator.name(wname)));
+			else
+				registerWorld(world);
+		}
+		
 		
 		//////// Start up the command handlers ////////
 		new CommandSwitchboard();
@@ -404,6 +419,19 @@ public class Manhunt implements Closeable
 		
 		getInstance().players.put(p.getName(), lobby_new.getId());
 		
+	}
+	
+	
+	
+	//////////////// WORLDS /////////
+	public static World registerWorld(org.bukkit.World world)
+	{
+		if (world == null || getInstance().worlds.containsKey(world.getName()) || getInstance().worlds.containsValue(world))
+			return null;
+		
+		World mworld = new ManhuntWorld(world);
+		getInstance().worlds.put(world.getName(), mworld);
+		return mworld;
 	}
 	
 	

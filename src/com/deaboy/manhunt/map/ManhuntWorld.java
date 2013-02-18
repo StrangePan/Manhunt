@@ -117,6 +117,22 @@ public class ManhuntWorld implements World
 	
 	
 	
+	//---------------- Private Methods ----------------//
+	private void setupAsDefault()
+	{
+		this.spawn = new ManhuntSpawn(world.getSpawnLocation());
+		
+		Map map = new ManhuntMap("default", this);
+		maps.clear();
+		maps.put("default", map);
+		map.addHunterSpawn(new ManhuntSpawn(world.getSpawnLocation()));
+		map.addPreySpawn(new ManhuntSpawn(world.getSpawnLocation()));
+		map.addSetupSpawn(new ManhuntSpawn(world.getSpawnLocation()));
+		
+	}
+	
+	
+	
 	//---------------- Public Methods ----------------//
 	@Override
 	public void save()
@@ -159,7 +175,7 @@ public class ManhuntWorld implements World
 		
 		if (!file.exists())
 		{
-			Manhunt.log(Level.SEVERE, "Could not load world " + world.getName());
+			setupAsDefault();
 			return;
 		}
 		else
