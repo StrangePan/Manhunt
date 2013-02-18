@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
@@ -17,6 +19,7 @@ public abstract class WorldCommands
 	{
 		final int perpage = 8;
 		int page = 1;
+		boolean all = false;
 		List<World> worlds;
 		
 		
@@ -31,8 +34,9 @@ public abstract class WorldCommands
 		// Get the page #
 		if (args.length == 0)
 			page = 1;
-		else
-			try
+		else if (args[0].equalsIgnoreCase("all"))
+			all = true;
+		else try
 		{
 			page = Integer.parseInt(args[0]);	
 		}
@@ -46,22 +50,28 @@ public abstract class WorldCommands
 		// Assemble list of settings
 		worlds = Bukkit.getWorlds();
  
-		if (page * perpage > worlds.size() - 1 )
-			page = (worlds.size()-1) / perpage;
-		
-		if (page < 0)
-			page = 0;
-		
-		if (worlds.size() == 0)
+		if (!all)
 		{
-			sender.sendMessage("There are no worlds to display.");
-			return true;
+			if (page * perpage > worlds.size() - 1 )
+				page = (worlds.size()-1) / perpage;
+			
+			if (page < 0)
+				page = 0;
+			
+			if (worlds.size() == 0)
+			{
+				sender.sendMessage("There are no worlds to display.");
+				return true;
+			}
 		}
 		
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Worlds " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) worlds.size()/perpage)) + ")" + ChatManager.bracket2_);
+		if (!all)
+		{
+			sender.sendMessage(ChatColor.GRAY + "Use /mworlds [n] to get page n of worlds");
+			worlds = worlds.subList(page * perpage, Math.min( (page + 1) * perpage, worlds.size() ));
+		}
 		
-		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Worlds " + ChatManager.color + "(" + (page+1) + "/" + (int) Math.ceil((double) worlds.size()/perpage) + ")" + ChatManager.bracket2_);
-		sender.sendMessage(ChatColor.GRAY + "Use /mworlds [n] to get page n of worlds");
-		worlds = worlds.subList(page * perpage, Math.min( (page + 1) * perpage, worlds.size() ));
 		for (World world : worlds)
 		{
 			sender.sendMessage((Manhunt.getWorld(world) == null ? ChatColor.GRAY : ChatColor.GOLD) + world.getName());
@@ -73,5 +83,55 @@ public abstract class WorldCommands
 		
 	}
 	
+	public static boolean mspawn(CommandSender sender, String[] args)
+	{
+		World world;
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return false;
+		}
+		else if (sender instanceof ConsoleCommandSender)
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		if (args.length == 0)
+			world = ((Player) sender).getWorld();
+		else
+			world = Bukkit.getWorld(args[0]);
+		
+		if (world == null)
+		{
+			sender.sendMessage(ChatColor.RED + "That world does not exist.");
+			return true;
+		}
+		
+		
+		((Player) sender).teleport(world.getSpawnLocation());
+		
+		return true;
+	}
+
+	public static boolean msetspawn(CommandSender sender, String[] args)
+	{
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return false;
+		}
+		else if (sender instanceof ConsoleCommandSender)
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		sender.sendMessage(ChatColor.GREEN + "Spawn point set!");
+		((Player) sender).getWorld().setSpawnLocation(((Player) sender).getLocation().getBlockX(), ((Player) sender).getLocation().getBlockY(), ((Player) sender).getLocation().getBlockZ());
+		
+		return true;
+	}
 	
 }

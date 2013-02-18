@@ -16,6 +16,7 @@ public abstract class SettingCommands
 	{
 		final int perpage = 8;
 		int page = 1;
+		boolean all = false;
 		List<Setting> settings;
 		
 		
@@ -30,8 +31,9 @@ public abstract class SettingCommands
 		// Get the page #
 		if (args.length == 0)
 			page = 1;
-		else
-			try
+		else if (args[0].equalsIgnoreCase("all"))
+			all = true;
+		else try
 		{
 			page = Integer.parseInt(args[0]);	
 		}
@@ -44,12 +46,15 @@ public abstract class SettingCommands
 		
 		// Assemble list of settings
 		settings = Manhunt.getSettings().getVisibleSettings();
- 
-		if (page * perpage > settings.size() - 1 )
-			page = (settings.size()-1) / perpage;
 		
-		if (page < 0)
-			page = 0;
+		if (!all)
+		{
+			if (page * perpage > settings.size() - 1 )
+				page = (settings.size()-1) / perpage;
+			
+			if (page < 0)
+				page = 0;
+		}
 		
 		if (settings.size() == 0)
 		{
@@ -58,9 +63,12 @@ public abstract class SettingCommands
 		}
 		
 		
-		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Settings " + ChatManager.color + "(" + (page+1) + "/" + (int) Math.ceil((double) settings.size()/perpage) + ")" + ChatManager.bracket2_);
-		sender.sendMessage(ChatColor.GRAY + "Use /msettings [n] to get page n of settings");
-		settings = settings.subList(page * perpage, Math.min( (page + 1) * perpage, settings.size() ));
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Settings " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) settings.size()/perpage)) + ")" + ChatManager.bracket2_);
+		if (!all)
+		{
+			sender.sendMessage(ChatColor.GRAY + "Use /msettings [n] to get page n of settings");
+			settings = settings.subList(page * perpage, Math.min( (page + 1) * perpage, settings.size() ));
+		}
 		for (Setting setting : settings)
 		{
 			sender.sendMessage(ChatColor.GOLD + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());

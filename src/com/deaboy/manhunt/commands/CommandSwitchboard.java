@@ -16,11 +16,14 @@ public class CommandSwitchboard implements CommandExecutor
 	public CommandSwitchboard()
 	{
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
+		Bukkit.getPluginCommand("mspawn").setExecutor(this);
+		Bukkit.getPluginCommand("msetspawn").setExecutor(this);
 		Bukkit.getPluginCommand("mstartgame").setExecutor(this);
 		Bukkit.getPluginCommand("mstopgame").setExecutor(this);
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
 		Bukkit.getPluginCommand("mset").setExecutor(this);
 		Bukkit.getPluginCommand("mworlds").setExecutor(this);
+		Bukkit.getPluginCommand("mmaps").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -44,6 +47,14 @@ public class CommandSwitchboard implements CommandExecutor
 		if (c.getName().equalsIgnoreCase("mworlds"))
 			return WorldCommands.mworlds(sender, arguments);
 		
+		if (c.getName().equalsIgnoreCase("mspawn"))
+			return WorldCommands.mspawn(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("msetspawn"))
+			return WorldCommands.msetspawn(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mmaps"))
+			return MapCommands.mmaps(sender, arguments);
 		
 		
 		return false;

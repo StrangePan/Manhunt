@@ -6,9 +6,17 @@ author: Deaboy
 soft-depend: [Amber, WorldEdit]
 commands:
     manhunt:
-        usage:
+        usage: /manhunt [help | info]
         description: Access to simple manhunt functions, like help and info.
         aliases: [m, mh]
+    mspawn:
+        usage: /mspawn [world_name]
+        description: Teleports you to a world's spawn point. If no world is specified, uses the current world.
+        aliases: [spawn]
+    msetspawn:
+        usage: /msetspawn
+        description: Changes the current world's spawn point to your location.
+        aliases: [setspawn]
     mstartgame:
         usage: /mstartgame [lobby]
         description: Starts a manhunt game in the current lobby, or the specified lobby.
@@ -29,5 +37,9 @@ commands:
         usage: /mworlds [page]
         description: Lists the worlds running on the server. Worlds not being used by Manhunt are grayed out.
         aliases: [worlds, listworlds, mlistworlds]
-        
+    mmaps:
+        usage: /mmaps [world_name1] [world_name2] ...
+        description: Lists the Manhunt maps in the different worlds. If no world is provided, will list every map in every world.
+        aliases: [maps, listmaps, mlistmaps]
+    
          
