@@ -14,6 +14,12 @@ public interface Map
 	public String getName();
 	
 	/**
+	 * Gets the full name of this map, formatted as such: <world name>.<map name>
+	 * @return
+	 */
+	public String getFullName();
+	
+	/**
 	 * Gets the main spawn point for the Map.
 	 * @return The Spawn for this Map.
 	 */

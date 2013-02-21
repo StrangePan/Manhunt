@@ -50,6 +50,12 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
+	public String getFullName()
+	{
+		return getWorld().getName() + "." + getName();
+	}
+	
+	@Override
 	public Location getSpawnLocation()
 	{
 		return spawn.clone();

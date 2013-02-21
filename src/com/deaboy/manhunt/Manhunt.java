@@ -26,6 +26,7 @@ import com.deaboy.manhunt.lobby.HubLobby;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.ManhuntWorld;
+import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
@@ -76,8 +77,10 @@ public class Manhunt implements Closeable
 	private 		LoadoutManager		loadouts;
 	
 	private 		HashMap<Long, Lobby>	lobbies;
-	private			HashMap<String, Long>	players;
-	private 		HashMap<String, World>	worlds;
+	private			HashMap<String, Long>	player_lobbies;
+	private			HashMap<String, MGameMode> player_modes;
+	private			HashMap<String, String> player_maps;
+	private			HashMap<String, World>	worlds;
 	private			HashMap<Long, GameType>games;
 	
 	
@@ -99,7 +102,9 @@ public class Manhunt implements Closeable
 		
 		this.lobbies =			new HashMap<Long, Lobby>();
 		this.worlds =			new HashMap<String, World>();
-		this.players =			new HashMap<String, Long>();
+		this.player_lobbies =	new HashMap<String, Long>();
+		this.player_modes =		new HashMap<String, MGameMode>();
+		this.player_maps =		new HashMap<String, String>();
 		this.games =			new HashMap<Long, GameType>();
 		
 		//////// Set up worlds ////////
@@ -186,8 +191,8 @@ public class Manhunt implements Closeable
 	
 	public static Lobby getPlayerLobby(String name)
 	{
-		if (getInstance().players.containsKey(name))
-			return getLobby(getInstance().players.get(name));
+		if (getInstance().player_lobbies.containsKey(name))
+			return getLobby(getInstance().player_lobbies.get(name));
 		else
 			return null;
 	}
@@ -248,7 +253,9 @@ public class Manhunt implements Closeable
 		timeouts.stopTimeout(name);
 		stopFinder(name, true);
 		getPlayerLobby(name).removePlayer(name);
-		players.remove(name);
+		player_lobbies.remove(name);
+		player_maps.remove(name);
+		player_modes.remove(name);
 	}
 	
 	private long getNextLobbyId()
@@ -340,7 +347,7 @@ public class Manhunt implements Closeable
 		p.teleport(lobby.getSpawn().getRandomLocation());
 		resetPlayer(p);
 		
-		getInstance().players.put(p.getName(), lobby.getId());
+		getInstance().player_lobbies.put(p.getName(), lobby.getId());
 		
 		if (lobby.addPlayer(p.getName()))
 		{
@@ -351,15 +358,27 @@ public class Manhunt implements Closeable
 		
 	}
 	
+	
+	
+	//////////////// PLAYERS ////////
 	public static void playerJoin(Player p)
 	{
 		if (timeoutExists(p))
 			stopTimeout(p);
 		
-		if (!getInstance().players.containsKey(p.getName()))
+		if (!getInstance().player_lobbies.containsKey(p.getName()))
 		{
 			setPlayerLobby(p, Manhunt.getDefaultLobby().getId());
 		}
+		
+		if (!getInstance().player_maps.containsKey(p.getName()))
+		{
+			if (getWorlds().size() == 1 && getWorlds().get(0).getMaps().size() == 1)
+				getInstance().player_maps.put(p.getName(), getWorlds().get(0).getMaps().get(0).getFullName());
+			else
+				getInstance().player_maps.put(p.getName(), null);
+		}
+		
 		
 		
 		
@@ -418,8 +437,36 @@ public class Manhunt implements Closeable
 		resetPlayer(p);
 		p.teleport(lobby_new.getSpawn().getRandomLocation());
 		
-		getInstance().players.put(p.getName(), lobby_new.getId());
+		getInstance().player_lobbies.put(p.getName(), lobby_new.getId());
 		
+	}
+	
+	public static void setPlayerMode(Player p, MGameMode mode)
+	{
+		if (getInstance().player_modes.containsKey(p.getName()))
+			getInstance().player_modes.put(p.getName(), mode);
+	}
+	
+	public static MGameMode getPlayerMode(Player p)
+	{
+		if (getInstance().player_modes.containsKey(p.getName()))
+			return getInstance().player_modes.get(p.getName());
+		else
+			return null;
+	}
+	
+	public static void setPlayerSelectedMap(Player p, Map map)
+	{
+		if (getInstance().player_maps.containsKey(p.getName()))
+			getInstance().player_maps.put(p.getName(), map.getFullName());
+	}
+	
+	public static Map getPlayerSelectedMap(Player p)
+	{
+		if (getInstance().player_maps.containsKey(p.getName()))
+			return getMap(getInstance().player_maps.get(p.getName()));
+		else
+			return null;
 	}
 	
 	
@@ -433,6 +480,25 @@ public class Manhunt implements Closeable
 		World mworld = new ManhuntWorld(world);
 		getInstance().worlds.put(world.getName(), mworld);
 		return mworld;
+	}
+	
+	public static Map getMap(String fullmapname)
+	{
+		String[] strn;
+		World world;
+		Map map;
+		strn = fullmapname.split(".");
+		
+		if (strn.length != 2)
+			return null;
+		
+		world = getWorld(strn[0]);
+		if (world == null)
+			return null;
+		
+		map = world.getMap(strn[1]);
+		
+		return map;
 	}
 	
 	
