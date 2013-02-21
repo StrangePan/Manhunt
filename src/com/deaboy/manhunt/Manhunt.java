@@ -87,6 +87,7 @@ public class Manhunt implements Closeable
 	{
 		Manhunt.instance =		this;
 		this.settings =			new ManhuntSettings(path_settings);
+		this.settings.save();
 		
 		if (Material.getMaterial(settings.FINDER_ITEM.getValue()) == null)
 			settings.FINDER_ITEM.resetToDefault();

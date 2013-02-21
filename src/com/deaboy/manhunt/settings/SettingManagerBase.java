@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
+import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntPlugin;
 
 public abstract class SettingManagerBase extends Properties implements SettingManager
@@ -43,10 +45,10 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 	@Override
 	public void save()
 	{
+		this.clear();
 		for (Setting setting : settings)
 		{
-			this.clear();
-			this.put(setting.getLabel(), this.toString());
+			this.put(setting.getLabel(), setting.getValue().toString());
 		}
 		saveFile();
 	}
@@ -55,7 +57,7 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 	{
 		FileOutputStream stream_out;
 		
-		file.mkdirs();
+		new File(file.getParent()).mkdirs();
 		if (!file.exists())
 		{
 			try
@@ -64,7 +66,9 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Manhunt.log(Level.SEVERE, "Failed to create new settings file " + file.getName());
+				Manhunt.log(e);
+				return;
 			}
 		}
 		

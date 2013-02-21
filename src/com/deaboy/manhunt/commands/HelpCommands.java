@@ -12,7 +12,7 @@ public class HelpCommands
 	{
 		if (args.length == 0 || args[0].equalsIgnoreCase("help"))
 		{
-			Bukkit.dispatchCommand(sender, "help manhunt " + (args.length == 1 ? "" : args[1]));
+			Bukkit.dispatchCommand(sender, "help manhunt " + (args.length == 0 ? "" : args[1]));
 		}
 		else if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("info"))
 		{
