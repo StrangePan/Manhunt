@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.map.Map;
@@ -32,13 +31,20 @@ public class CommandUtil
 	
 	
 	//---------------- Getters ----------------//
+	public static Map getSelectedMap(CommandSender sender)
+	{
+		if (Manhunt.getCommandUtil().selected_maps.containsKey(sender.getName()))
+			return Manhunt.getCommandUtil().selected_maps.get(sender.getName());
+		else
+			return null;
+	}
+	
 	public static Map getSelectedMap(String name)
 	{
 		if (Manhunt.getCommandUtil().selected_maps.containsKey(name))
-		{
 			return Manhunt.getCommandUtil().selected_maps.get(name);
-		}
-		return null;
+		else
+			return null;
 	}
 	
 	
@@ -51,10 +57,7 @@ public class CommandUtil
 	
 	public static void setSelectedMap(CommandSender sender, Map map)
 	{
-		if (!(sender instanceof ConsoleCommandSender))
-		{
-			Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map);
-		}
+		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map);
 	}
 	
 }

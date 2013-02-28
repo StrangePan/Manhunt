@@ -23,7 +23,7 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
 		Bukkit.getPluginCommand("mset").setExecutor(this);
 		Bukkit.getPluginCommand("mworlds").setExecutor(this);
-		Bukkit.getPluginCommand("mmaps").setExecutor(this);
+		Bukkit.getPluginCommand("mmap").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -53,8 +53,8 @@ public class CommandSwitchboard implements CommandExecutor
 		if (c.getName().equalsIgnoreCase("msetspawn"))
 			return WorldCommands.msetspawn(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mmaps"))
-			return MapCommands.mmaps(sender, arguments);
+		if (c.getName().equalsIgnoreCase("mmap"))
+			return MapCommands.mmap(sender, arguments);
 		
 		
 		return false;

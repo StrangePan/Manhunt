@@ -37,12 +37,9 @@ commands:
         usage: /mworlds [page]
         description: Lists the worlds running on the server. Worlds not being used by Manhunt are grayed out.
         aliases: [worlds, listworlds, mlistworlds]
-    mmaps:
-        usage: /mmaps [world_name1] [world_name2] ...
-        description: Lists the Manhunt maps in the different worlds. If no world is provided, will list every map in every world.
-        aliases: [maps, listmaps, mlistmaps]
     mmap:
         usage: /mmap <command> [arg1] [arg2]...
         description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
-        aliases: [map, mhmap]
+        aliases: [map, mhmap, map, mmap, mhmaps]
+    
     

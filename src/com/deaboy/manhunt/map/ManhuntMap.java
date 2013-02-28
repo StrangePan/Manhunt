@@ -23,20 +23,22 @@ public class ManhuntMap implements Map
 	 */
 	public ManhuntMap(String name, World world)
 	{
-		this(name, world.getSpawnLocation());
+		this(name, world.getSpawnLocation(), world);
 	}
 	
 	/**
 	 * Initializes a new ManhuntMap with the given spawn location.
 	 * @param loc The spawn location of the new map.
 	 */
-	public ManhuntMap(String name, Location loc)
+	public ManhuntMap(String name, Location loc, World world)
 	{
 		this.name = name;
+		this.world = world;
 		this.spawn = loc;
 		this.setup = new ArrayList<Spawn>();
 		this.hunter = new ArrayList<Spawn>();
 		this.prey = new ArrayList<Spawn>();
+		this.zones = new ArrayList<Zone>();
 	}
 	
 	

@@ -487,7 +487,7 @@ public class Manhunt implements Closeable
 		String[] strn;
 		World world;
 		Map map;
-		strn = fullmapname.split(".");
+		strn = fullmapname.split("\\.");
 		
 		if (strn.length != 2)
 			return null;
