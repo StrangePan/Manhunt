@@ -2,6 +2,7 @@ package com.deaboy.manhunt.commands;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -20,6 +21,8 @@ public class CommandUtil
 	
 	
 	private HashMap<String, Map> selected_maps;
+	private HashMap<CommandSender, String> vcommands;
+	private HashMap<CommandSender, Boolean> verified;
 	
 	
 	
@@ -27,6 +30,8 @@ public class CommandUtil
 	public CommandUtil()
 	{
 		this.selected_maps = new HashMap<String, Map>();
+		this.vcommands = new HashMap<CommandSender, String>();
+		this.verified = new HashMap<CommandSender, Boolean>();
 	}
 	
 	
@@ -59,5 +64,54 @@ public class CommandUtil
 	{
 		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map);
 	}
+	
+	
+	
+	//---------------- Verification ----------------//
+	public static void addVerifyCommand(CommandSender sender, String command, String message)
+	{
+		addVerifyCommand(sender, command);
+		sender.sendMessage(message);
+	}
+	
+	public static void addVerifyCommand(CommandSender sender, String command)
+	{
+		Manhunt.getCommandUtil().vcommands.put(sender, command);
+		Manhunt.getCommandUtil().verified.put(sender, false);
+	}
+	
+	public static boolean isVerified(CommandSender sender)
+	{
+		if (isVerifying(sender))
+			return Manhunt.getCommandUtil().verified.get(sender);
+		else
+			return false;
+	}
+	
+	public static boolean isVerifying(CommandSender sender)
+	{
+		return (Manhunt.getCommandUtil().verified.containsKey(sender)
+				&& Manhunt.getCommandUtil().vcommands.containsKey(sender));
+	}
+	
+	public static void executeCommand(CommandSender sender)
+	{
+		if (isVerifying(sender))
+		{
+			Manhunt.getCommandUtil().verified.put(sender,true);
+			Bukkit.dispatchCommand(sender, Manhunt.getCommandUtil().vcommands.get(sender));
+			cancelCommand(sender);
+		}
+	}
+	
+	public static void cancelCommand(CommandSender sender)
+	{
+		if (Manhunt.getCommandUtil().vcommands.containsKey(sender))
+			Manhunt.getCommandUtil().vcommands.remove(sender);
+		if (Manhunt.getCommandUtil().verified.containsKey(sender))
+			Manhunt.getCommandUtil().verified.remove(sender);
+	}
+	
+	
 	
 }

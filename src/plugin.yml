@@ -5,6 +5,14 @@ website: github.com/Deaboy/HuntedPlugin
 author: Deaboy
 soft-depend: [Amber, WorldEdit]
 commands:
+    mverify:
+        usage: /mverify
+        description: Verifies a Manhunt command.
+        aliases: [verify, myes, yes, ok]
+    mcancel:
+        usage: /mcancel
+        description: Cancels a Manhunt command.
+        aliases: [cancel, mno, no]
     manhunt:
         usage: /manhunt [help | info]
         description: Access to simple manhunt functions, like help and info.

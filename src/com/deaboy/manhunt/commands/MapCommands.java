@@ -26,9 +26,8 @@ public abstract class MapCommands
 		{
 			args2 = new String[args.length - 1];
 			for (int i = 1; i < args.length; i++)
-			{
 				args2[i-1] = args[i];
-			}
+				
 			return listmaps(sender, args2);
 		}
 		
@@ -36,9 +35,8 @@ public abstract class MapCommands
 		{
 			args2 = new String[args.length - 1];
 			for (int i = 1; i < args.length; i++)
-			{
 				args2[i-1] = args[i];
-			}
+			
 			return selectmap(sender, args2);
 		}
 		

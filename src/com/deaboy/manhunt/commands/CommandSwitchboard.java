@@ -5,6 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import com.deaboy.manhunt.chat.ChatManager;
+
 /**
  * This class takes the Manhunt command and determines where it should be redirected.
  * @author Deaboy
@@ -15,6 +17,8 @@ public class CommandSwitchboard implements CommandExecutor
 	
 	public CommandSwitchboard()
 	{
+		Bukkit.getPluginCommand("mverify").setExecutor(this);
+		Bukkit.getPluginCommand("mcancel").setExecutor(this);
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 		Bukkit.getPluginCommand("mspawn").setExecutor(this);
 		Bukkit.getPluginCommand("msetspawn").setExecutor(this);
@@ -28,6 +32,11 @@ public class CommandSwitchboard implements CommandExecutor
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
 	{
+		if (c.getName().equalsIgnoreCase("mverify"))
+			return mverify(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mcancel"))
+			return mcancel(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("manhunt"))
 			return HelpCommands.manhunt(sender, arguments);
@@ -59,6 +68,30 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		return false;
 		
+	}
+	
+	
+	private static boolean mverify(CommandSender sender, String[] arguments)
+	{
+		if (CommandUtil.isVerifying(sender))
+			CommandUtil.executeCommand(sender);
+		else
+			sender.sendMessage(ChatManager.leftborder + "No command to verify.");
+		
+		return true;
+	}
+	
+	private static boolean mcancel(CommandSender sender, String[] arguments)
+	{
+		if (CommandUtil.isVerifying(sender))
+		{
+			CommandUtil.cancelCommand(sender);
+			sender.sendMessage(ChatManager.leftborder + "Cancelled command.");
+		}
+		else
+			sender.sendMessage(ChatManager.leftborder + "No command to cancel.");
+		
+		return true;
 	}
 	
 	
