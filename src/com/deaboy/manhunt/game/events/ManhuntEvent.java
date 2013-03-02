@@ -3,21 +3,25 @@ package com.deaboy.manhunt.game.events;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ManhuntEvent implements Event
 {
 	
 	//---------------- Properties ----------------//
 	private List<Action> actions;
-	private Long time;
+	private Long delay;
 	private boolean expired;
 	
 	
 	//---------------- Constructors ----------------//
+	/**
+	 * Creates a new Event and requires two arguments:
+	 * @param time The time in ticks to activate.
+	 */
 	public ManhuntEvent(Long time)
 	{
+		this.delay = time;
 		this.actions = new ArrayList<Action>();
-		this.time = time;
-		this.expired = false;
 	}
 	
 	
@@ -31,7 +35,7 @@ public class ManhuntEvent implements Event
 	@Override
 	public Long getTriggerTime()
 	{
-		return time;
+		return delay;
 	}
 	
 	
@@ -39,13 +43,19 @@ public class ManhuntEvent implements Event
 	@Override
 	public void setTriggerTime(Long time)
 	{
-		this.time = time;
+		this.delay = time;
 	}
 	
 	@Override
 	public void setExpired(boolean expired)
 	{
-		this.expired = expired;
+		this.expired = false;
+	}
+	
+	@Override
+	public void reset()
+	{
+		this.expired = false;
 	}
 	
 	

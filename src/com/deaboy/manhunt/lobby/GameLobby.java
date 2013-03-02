@@ -75,6 +75,7 @@ public class GameLobby extends Lobby
 			return;
 		
 		getGame().importPlayers(this);
+		getGame().distributeTeams();
 		getGame().startGame();
 		
 	}

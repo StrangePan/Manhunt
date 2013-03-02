@@ -9,7 +9,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.game.Game;
+import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.map.*;
 import com.deaboy.manhunt.settings.LobbySettings;
 
@@ -50,8 +52,12 @@ public abstract class Lobby implements Closeable
 		
 		this.settings = new LobbySettings(world);
 		
-		
-		// TODO Get class for game, then instantiate it
+		if (type == LobbyType.GAME)
+		{
+			this.game = Manhunt.getGameTypeByClassCanonicalName(settings.GAME_TYPE.getValue()).createInstance(this);
+			if (game == null)
+				game = new ManhuntGame(this);
+		}
 	}
 	
 	

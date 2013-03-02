@@ -11,7 +11,7 @@ public interface Event
 	 * @return An ArrayList of Actions
 	 */
 	public List<Action> getActions();
-	
+
 	/**
 	 * Returns the time the event is going to trigger.
 	 * @return The Long value of time.
@@ -32,6 +32,12 @@ public interface Event
 	 */
 	public void setExpired(boolean expired);
 	
+	/**
+	 * Resets the event, including it's expiration time.
+	 */
+	public void reset();
+	
+	
 	
 	//---------------- Public Methods ----------------//
 	/**
@@ -39,23 +45,23 @@ public interface Event
 	 * @param action The Action to add
 	 */
 	public void addAction(Action action);
-	
+
 	/**
 	 * Removes an Action from this Event's Action list.
 	 * @param action The Action to remove
 	 */
 	public void removeAction(Action action);
-	
+
 	/**
 	 * Clears all Actions from this Event's Action list.
 	 */
 	public void clearActions();
-	
+
 	/**
 	 * Executes all of the action's events.
 	 */
 	public void execute();
-	
+
 	/**
 	 * Returns whether or not this event has expired.
 	 * @return True if this event has executed, false if not.

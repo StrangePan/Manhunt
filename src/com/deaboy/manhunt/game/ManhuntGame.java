@@ -1,16 +1,20 @@
 package com.deaboy.manhunt.game;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import com.deaboy.manhunt.ManhuntPlugin;
+import com.deaboy.manhunt.game.events.ManhuntTimeline;
+import com.deaboy.manhunt.game.events.Timeline;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.Team;
 
 public class ManhuntGame extends Game implements Listener
 {
 	//---------------- Properties ----------------//
+	Timeline timeline;
 	
 	
 	
@@ -30,14 +34,23 @@ public class ManhuntGame extends Game implements Listener
 	{
 		// Initiate timeline
 		
+		timeline = ManhuntTimeline.newStandardTimeline(this.getLobby().getId());
+		timeline.run();
+		
 		startListening();
 	}
 
 	@Override
 	public void stopGame()
 	{
-		// Cancel timeline
 		// Send players to spawn
+		
+		timeline.stop();
+		
+		for (Player p : getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
+		{
+			p.teleport(getLobby().getSpawn().getRandomLocation());
+		}
 		
 		stopListening();
 	}

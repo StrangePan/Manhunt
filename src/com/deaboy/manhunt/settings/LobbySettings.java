@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.settings;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.map.World;
 
 public class LobbySettings extends SettingManagerBase implements SettingManager
@@ -9,6 +10,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	
 	public final SettingInteger MODE;
 	public final SettingBoolean USE_AMBER;
+	public final SettingString	GAME_TYPE;
 
 	public final SettingDouble	TEAM_RATIO;
 	public final SettingInteger FINDER_COOLDOWN;
@@ -27,6 +29,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		
 		addSetting(MODE =		new SettingInteger("mode", 0, "The mode the plugin is running in.", ""), false);
 		addSetting(USE_AMBER =		new SettingBoolean("useamber", true, "Manhunt will record/restore the world with Amber.", "Manhunt will not restore the world."), true);
+		addSetting(GAME_TYPE =		new SettingString("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
 		
 		addSetting(TEAM_RATIO =		new SettingDouble("teamratio", 3.0, "The ratio of Hunters to Prey"), true);
 		addSetting(FINDER_COOLDOWN =	new SettingInteger("findercooldown", 60, "Seconds until the Prey Finder is recharged.", "The Prey Finder has no cooldown."), true);

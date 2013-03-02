@@ -143,6 +143,16 @@ public abstract class LobbyCommands
 		
 	}
 	
+	public static boolean mjoin(CommandSender sender, String[] args)
+	{
+		if (args.length == 0)
+		{
+			
+		}
+		
+		return true;
+	}
+	
 	
 	
 }

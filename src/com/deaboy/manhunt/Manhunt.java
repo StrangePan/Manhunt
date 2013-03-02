@@ -97,7 +97,7 @@ public class Manhunt implements Closeable
 		
 		this.timeouts =			new TimeoutManager();
 		this.finders =			new FinderManager();
-		this.command_util =	new CommandUtil();
+		this.command_util =		new CommandUtil();
 		this.loadouts =			new LoadoutManager();
 		
 		this.lobbies =			new HashMap<Long, Lobby>();

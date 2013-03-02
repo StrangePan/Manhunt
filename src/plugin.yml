@@ -48,6 +48,10 @@ commands:
     mmap:
         usage: /mmap <command> [arg1] [arg2]...
         description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
-        aliases: [map, mhmap, map, mmap, mhmaps]
+        aliases: [map, mhmap, maps, mmaps, mhmaps]
+    mjoin:
+        usage: /join <lobby> [player]
+        description: Joins a Manhunt lobby.
+        aliases: [join]
     
     
