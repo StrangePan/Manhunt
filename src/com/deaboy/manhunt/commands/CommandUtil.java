@@ -11,12 +11,14 @@ import com.deaboy.manhunt.map.Map;
 
 public class CommandUtil
 {
-	public static String NO_PERMISSION = ChatColor.RED + "You don't have permission to do that.";
-	public static String GAME_RUNNING = ChatColor.RED + "You can't do that while the game is running.";
-	public static String NO_GAME_RUNNING = ChatColor.RED + "There are no Manhunt games running.";
-	public static String IS_SERVER = ChatColor.RED + "The server cannot do that.";
-	public static String WRONG_WORLD = ChatColor.RED + "The player must be in the manhunt world first!";
-	public static String LOCKED = ChatColor.RED + "The teams are locked.";
+	public static final String NO_PERMISSION = ChatColor.RED + "You don't have permission to do that.";
+	public static final String GAME_RUNNING = ChatColor.RED + "You can't do that while the game is running.";
+	public static final String NO_GAME_RUNNING = ChatColor.RED + "There are no Manhunt games running.";
+	public static final String IS_SERVER = ChatColor.RED + "The server cannot do that.";
+	public static final String WRONG_WORLD = ChatColor.RED + "The player must be in the manhunt world first!";
+	public static final String LOCKED = ChatColor.RED + "The teams are locked.";
+	public static final String INVALID_USAGE = ChatColor.RED + "Invalid usage.";
+	public static final String NO_WORLD_BY_NAME = ChatColor.RED + "There is no Manhunt world by that name!";
 	
 	
 	
@@ -72,6 +74,7 @@ public class CommandUtil
 	{
 		addVerifyCommand(sender, command);
 		sender.sendMessage(message);
+		sender.sendMessage(ChatColor.GRAY + "To confirm, type \"/mverify\" or \"/cancel\"");
 	}
 	
 	public static void addVerifyCommand(CommandSender sender, String command)

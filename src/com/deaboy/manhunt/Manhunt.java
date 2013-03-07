@@ -1,6 +1,7 @@
 package com.deaboy.manhunt;
 
 import java.io.Closeable;
+import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,8 +22,6 @@ import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameType;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
-import com.deaboy.manhunt.lobby.GameLobby;
-import com.deaboy.manhunt.lobby.HubLobby;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.ManhuntWorld;
@@ -73,7 +72,7 @@ public class Manhunt implements Closeable
 	private 		ManhuntSettings		settings;
 	private 		TimeoutManager		timeouts;
 	private 		FinderManager		finders;
-	private 		CommandUtil		command_util;
+	private 		CommandUtil			command_util;
 	private 		LoadoutManager		loadouts;
 	
 	private 		HashMap<Long, Lobby>	lobbies;
@@ -81,7 +80,7 @@ public class Manhunt implements Closeable
 	private			HashMap<String, MGameMode> player_modes;
 	private			HashMap<String, String> player_maps;
 	private			HashMap<String, World>	worlds;
-	private			HashMap<Long, GameType>games;
+	private			HashMap<Long, GameType>	games;
 	
 	
 	
@@ -108,16 +107,24 @@ public class Manhunt implements Closeable
 		this.games =			new HashMap<Long, GameType>();
 		
 		//////// Set up worlds ////////
+		for (org.bukkit.World world : Bukkit.getWorlds())
+		{
+			registerWorld(world);
+		}
+		
 		for (String wname : settings.WORLDS.getValue())
 		{
-			org.bukkit.World world = Bukkit.getWorld(wname);
-			if (world == null && !settings.HANDLE_WORLDS.getValue())
+			if (worlds.containsKey(wname))
 				continue;
-			else if (world == null)
+			
+			if (Bukkit.getWorld(wname) != null)
+				registerWorld(Bukkit.getWorld(wname));
+			else if (settings.HANDLE_WORLDS.getValue() == true)
 				registerWorld(Bukkit.createWorld(WorldCreator.name(wname)));
-			else
-				registerWorld(world);
 		}
+		
+		///////// Set up the lobbies ////////
+		loadLobbies();
 		
 		
 		//////// Start up the command handlers ////////
@@ -174,6 +181,11 @@ public class Manhunt implements Closeable
 		}
 		return null;
 		
+	}
+	
+	public static Lobby getLobby(com.deaboy.manhunt.map.World world)
+	{
+		return getLobby(world.getWorld());
 	}
 	
 	public static List<Lobby> getLobbies()
@@ -303,6 +315,46 @@ public class Manhunt implements Closeable
 		
 	}
 	
+	private void loadLobbies()
+	{
+		File file = new File(path_lobbies);
+		if (!file.exists())
+		{
+			log("Lobby directory does not exist. Creating...");
+			if (file.mkdir())
+			{
+				log("Lobby directory created successfully at " + path_lobbies + ".");
+			}
+			else
+			{
+				log(Level.SEVERE, "A unexpected problem occured when creating directory at " + path_lobbies + ".");
+				return;
+			}
+		}
+		if (!file.isDirectory())
+		{
+			 log(Level.SEVERE, "File at " + path_lobbies + " is not a directory!");
+			 return;
+		}
+		for (File f : file.listFiles())
+		{
+			if (!f.isFile() || !f.getName().endsWith(extension_properties))
+				continue;
+			Lobby lobby = null;
+			// TODO Load lobbies from files; = ManhuntLobby.fromFile(f);
+			
+			if (lobby == null) // Loading from file failed
+			{
+				log("Failed to load lobby from file " + f.getName());
+			}
+			else
+			{
+				lobbies.put(lobby.getId(), lobby);
+			}
+		}
+		
+	}
+	
 	
 	
 	//---------------- Public Interface Methods ----------------//
@@ -320,17 +372,7 @@ public class Manhunt implements Closeable
 		if (lobby != null)
 			return null;
 		
-		switch (type)
-		{
-		case HUB:
-			lobby = new HubLobby(id, name, manhunt_world);
-			break;
-		case GAME:
-			lobby = new GameLobby(id, name, manhunt_world);
-			break;
-		default:
-			return null;
-		}
+		lobby = new Lobby(id, name, type, manhunt_world);
 		
 		return lobby;
 	}
@@ -342,7 +384,10 @@ public class Manhunt implements Closeable
 		Lobby lobby = Manhunt.getLobby(lobby_id);
 		
 		if (lobby == null) 
-			throw new IllegalArgumentException("Invalid lobby id.");
+			return;
+		
+		if (old_lobby == lobby)
+			return;
 		
 		p.teleport(lobby.getSpawn().getRandomLocation());
 		resetPlayer(p);
@@ -352,8 +397,8 @@ public class Manhunt implements Closeable
 		if (lobby.addPlayer(p.getName()))
 		{
 			if (old_lobby != null)
-				old_lobby.broadcast(p.getName() + " has left.");
-			lobby.broadcast(p.getName() + " has joined.");
+				old_lobby.broadcast(p.getName() + " has joined the lobby.");
+			lobby.broadcast(p.getName() + " has left the lobby.");
 		}
 		
 	}
@@ -361,14 +406,14 @@ public class Manhunt implements Closeable
 	
 	
 	//////////////// PLAYERS ////////
-	public static void playerJoin(Player p)
+	public static void playerJoinServer(Player p)
 	{
 		if (timeoutExists(p))
 			stopTimeout(p);
 		
 		if (!getInstance().player_lobbies.containsKey(p.getName()))
 		{
-			setPlayerLobby(p, Manhunt.getDefaultLobby().getId());
+			changePlayerLobby(p, Manhunt.getDefaultLobby().getId());
 		}
 		
 		if (!getInstance().player_maps.containsKey(p.getName()))
@@ -384,7 +429,7 @@ public class Manhunt implements Closeable
 		
 	}
 	
-	public static void playerLeave(Player p)
+	public static void playerLeaveServer(Player p)
 	{
 		/*
 		 * Function for protocol to remove player from Manhunt
@@ -413,32 +458,6 @@ public class Manhunt implements Closeable
 			stopFinder(p.getName(), false);
 			getInstance().removePlayer(p.getName());
 		}
-	}
-	
-	public static void setPlayerLobby(Player p, long lobby_id)
-	{
-		Lobby lobby_old;
-		Lobby lobby_new;
-		
-		lobby_old = getPlayerLobby(p);
-		lobby_new = getLobby(lobby_id);
-		
-		if (lobby_new == null)
-			return;
-		
-		if (lobby_old != null)
-		{
-			if (lobby_old.gameIsRunning())
-				lobby_old.forfeitPlayer(p.getName());
-			lobby_old.removePlayer(p);
-		}
-		
-		lobby_new.addPlayer(p.getName());
-		resetPlayer(p);
-		p.teleport(lobby_new.getSpawn().getRandomLocation());
-		
-		getInstance().player_lobbies.put(p.getName(), lobby_new.getId());
-		
 	}
 	
 	public static void setPlayerMode(Player p, MGameMode mode)
@@ -472,7 +491,7 @@ public class Manhunt implements Closeable
 	
 	
 	//////////////// WORLDS /////////
-	public static World registerWorld(org.bukkit.World world)
+	private static World registerWorld(org.bukkit.World world)
 	{
 		if (world == null || getInstance().worlds.containsKey(world.getName()) || getInstance().worlds.containsValue(world))
 			return null;

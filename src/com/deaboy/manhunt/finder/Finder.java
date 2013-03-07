@@ -194,7 +194,7 @@ public class Finder
 			return;
 		}
 		
-		for (Player p : Manhunt.getLobby(lobby_id).getGame().getOnlinePlayers(t))
+		for (Player p : Manhunt.getLobby(lobby_id).getOnlinePlayers(t))
 		{
 			d = ManhuntUtil.getDistance(player.getLocation(), p.getLocation(), false);
 			if (enemy == null || d < distance)

@@ -4,18 +4,20 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.map.*;
 import com.deaboy.manhunt.settings.LobbySettings;
 
-public abstract class Lobby implements Closeable
+public class Lobby implements Closeable
 {
 	//---------------- Properties ----------------//
 	private final long id;
@@ -110,16 +112,15 @@ public abstract class Lobby implements Closeable
 	
 	public Map getCurrentMap()
 	{
-		return current_map;
-	}
-	
-	/**
-	 * Gets the game of the lobby.
-	 * @return
-	 */
-	public Game getGame()
-	{
-		return this.game;
+		switch (type)
+		{
+		case HUB:
+			return null;
+		case GAME:
+			return current_map;
+		default:
+			return null;
+		}
 	}
 	
 	/**
@@ -249,6 +250,11 @@ public abstract class Lobby implements Closeable
 		return type;
 	}
 	
+	private Game getGame()
+	{
+		return this.game;
+	}
+	
 	
 	
 	//---------------- Setters ----------------//
@@ -266,9 +272,25 @@ public abstract class Lobby implements Closeable
 	 * Adds a player to the Lobby via their name.
 	 * @param p The Player to add.
 	 */
-	public abstract boolean addPlayer(String name);
+	public boolean addPlayer(String name)
+	{
+		switch (type)
+		{
+		case HUB:
+			return addPlayer(name, Team.NONE);
+			
+		case GAME:
+			if (gameIsRunning())
+				return addPlayer(name, Team.SPECTATORS);
+			else
+				return addPlayer(name, Team.STANDBY);
+			
+		default:
+			return false;
+		}
+	}
 	
-	protected boolean addPlayer(String name, Team team)
+	private boolean addPlayer(String name, Team team)
 	{
 		if (teams.containsKey(name))
 			return false;
@@ -309,33 +331,66 @@ public abstract class Lobby implements Closeable
 	
 	public void setPlayerTeam(Player player, Team team)
 	{
-		if (team == null)
-			throw new IllegalArgumentException("Argument cannot be null");
 		setPlayerTeam(player.getName(), team);
 	}
 	
 	public void setPlayerTeam(String name, Team team)
 	{
-		if (team == null)
-			throw new IllegalArgumentException("Argument cannot be null");
-		if (containsPlayer(name))
-			this.teams.put(name, team);
+		switch (type)
+		{
+		case HUB:
+			if (containsPlayer(name))
+				this.teams.put(name, Team.NONE);
+			return;
+			
+		case GAME:
+			if (team == null)
+				throw new IllegalArgumentException("Argument cannot be null");
+			if (containsPlayer(name))
+				this.teams.put(name, team);
+			return;
+			
+		default:
+			return;
+		}
 	}
 	
 	public void setAllPlayerTeams(Team team)
 	{
-		if (team == null)
-			throw new IllegalArgumentException("Argument cannot be null");
-		for (String key : teams.keySet())
-			teams.put(key, team);
+		switch (type)
+		{
+		case HUB:
+			for (String key : teams.keySet())
+				teams.put(key, Team.NONE);
+			
+		case GAME:
+			if (team == null)
+				throw new IllegalArgumentException("Argument cannot be null");
+			for (String key : teams.keySet())
+				teams.put(key, team);
+			return;
+			
+		default:
+			return;
+		}
 	}
 	
 	public boolean gameIsRunning()
 	{
-		if (game == null)
+		switch (type)
+		{
+		case HUB:
 			return false;
-		else
-			return game.isRunning();
+			
+		case GAME:
+			if (game == null)
+				return false;
+			else
+				return game.isRunning();
+			
+		default:
+			return false;
+		}
 	}
 	
 	/**
@@ -346,13 +401,23 @@ public abstract class Lobby implements Closeable
 	 */
 	public boolean setCurrentMap(Map map)
 	{
-		if (!worlds.containsValue(map.getWorld()))
+		switch (type)
+		{
+		case HUB:
 			return false;
-		else if (!map.getWorld().getMaps().contains(map))
+			
+		case GAME:
+			if (!worlds.containsValue(map.getWorld()))
+				return false;
+			else if (!map.getWorld().getMaps().contains(map))
+				return false;
+			else
+				current_map = map;
+			return true;
+			
+		default:
 			return false;
-		else
-			current_map = map;
-		return true;
+		}
 	}
 	
 	
@@ -420,21 +485,99 @@ public abstract class Lobby implements Closeable
 		this.enabled = false;
 	}
 	
+	public void distributeTeams()
+	{
+		switch (type)
+		{
+		case HUB:
+			return;
+			
+		case GAME:
+			List<String> hunters = new ArrayList<String>();
+			List<String> prey = new ArrayList<String>();
+			List<String> standby = getPlayerNames(Team.STANDBY);
+			double ratio = getSettings().TEAM_RATIO.getValue();
+			
+			String name;
+
+			while (standby.size() > 0)
+			{
+				name = standby.get(new Random().nextInt(standby.size()));
+
+				if (prey.size() == 0 || (double) hunters.size() / (double) prey.size() > ratio)
+				{
+					prey.add(name);
+				}
+				else
+				{
+					hunters.add(name);
+				}
+
+				standby.remove(name);
+			}
+
+			for (String p : prey)
+			{
+				setPlayerTeam(p, Team.PREY);
+				Bukkit.getPlayerExact(p).sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.PREY.getColor() + Team.PREY.getName(true));
+			}
+			for (String p : hunters)
+			{
+				setPlayerTeam(p, Team.HUNTERS);
+				Bukkit.getPlayerExact(p).sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.HUNTERS.getColor() + Team.HUNTERS.getName(true));
+			}
+			
+		default:
+			return;
+		}
+	}
+	
+	public void startGame()
+	{
+		switch (type)
+		{
+		case HUB:
+			return;
+			
+		case GAME:
+			if (gameIsRunning())
+				return;
+			
+			getGame().importPlayers(this);
+			getGame().distributeTeams();
+			getGame().startGame();
+			return;
+			
+		default:
+			return;
+		}
+	}
+	
+	public void stopGame()
+	{
+		switch (type)
+		{
+		case HUB:
+			return;
+			
+		case GAME:
+			if (!gameIsRunning())
+				return;
+			
+			getGame().stopGame();
+			return;
+			
+		default:
+			return;
+		}
+	}
+	
 	@Override
 	public void close()
 	{
 		clearPlayers();
 		current_map = null;
 	}
-	
-	
-	
-	//---------------- Public ABSTRACT Methods ----------------//
-	public abstract void distributeTeams();
-	
-	public abstract void startGame();
-	
-	public abstract void stopGame();
 	
 	
 	

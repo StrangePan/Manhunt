@@ -47,7 +47,7 @@ public class EntityEventHandler implements Listener
 		if (lobby == null)
 			return;
 		
-		if (!lobby.getGame().isRunning())
+		if (!lobby.gameIsRunning())
 		{
 			e.setCancelled(true);
 			return;

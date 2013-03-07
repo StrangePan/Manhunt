@@ -49,9 +49,16 @@ commands:
         usage: /mmap <command> [arg1] [arg2]...
         description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
         aliases: [map, mhmap, maps, mmaps, mhmaps]
+    mlobby:
+        usage: /mlobby <command> [arg1] [arg2]...
+        description: Performs various lobby commands, including editing, renaming, creating, and closing.
+        aliases: [lobby, mhlobby]
     mjoin:
-        usage: /join <lobby> [player]
-        description: Joins a Manhunt lobby.
-        aliases: [join]
-    
+        usage: /mjoin <lobby> [player]
+        description: Joins a Manhunt lobby by it's name. Add a player's name to make them join the lobby.
+        aliases: [join , mhjoin]
+    mleave:
+        usage: /mleave [player]
+        description: Leaves the current Manhunt lobby and joins the default lobby. Include a player's name to make them leave.
+        aliases: [leave, mhleave]
     

@@ -28,6 +28,7 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mset").setExecutor(this);
 		Bukkit.getPluginCommand("mworlds").setExecutor(this);
 		Bukkit.getPluginCommand("mmap").setExecutor(this);
+		Bukkit.getPluginCommand("mlobby").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -65,6 +66,8 @@ public class CommandSwitchboard implements CommandExecutor
 		if (c.getName().equalsIgnoreCase("mmap"))
 			return MapCommands.mmap(sender, arguments);
 		
+		if (c.getName().equalsIgnoreCase("mlobby"))
+			return LobbyCommands.mlobby(sender, arguments);
 		
 		return false;
 		

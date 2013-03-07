@@ -67,7 +67,7 @@ public class PlayerEventHandler implements Listener
 	{
 		e.setJoinMessage(null);
 		
-		Manhunt.playerJoin(e.getPlayer());
+		Manhunt.playerJoinServer(e.getPlayer());
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class PlayerEventHandler implements Listener
 	{
 		e.setLeaveMessage(null);
 		
-		Manhunt.playerLeave(e.getPlayer());
+		Manhunt.playerLeaveServer(e.getPlayer());
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class PlayerEventHandler implements Listener
 	{
 		e.setQuitMessage(null);
 		
-		Manhunt.playerLeave(e.getPlayer());
+		Manhunt.playerLeaveServer(e.getPlayer());
 	}
 	
 }

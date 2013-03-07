@@ -62,7 +62,7 @@ public class BlockEventHandler implements Listener
 		if (lobby == null)
 			return true;
 		
-		if (lobby.getGame().isRunning())
+		if (lobby.gameIsRunning())
 		{
 			if (lobby.getPlayerTeam(p) != Team.HUNTERS || lobby.getPlayerTeam(p) != Team.PREY)
 			{
