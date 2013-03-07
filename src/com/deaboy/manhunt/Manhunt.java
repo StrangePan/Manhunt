@@ -389,7 +389,7 @@ public class Manhunt implements Closeable
 		if (old_lobby == lobby)
 			return;
 		
-		p.teleport(lobby.getSpawn().getRandomLocation());
+		p.teleport(lobby.getRandomSpawnLocation());
 		resetPlayer(p);
 		
 		getInstance().player_lobbies.put(p.getName(), lobby.getId());

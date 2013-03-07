@@ -49,7 +49,7 @@ public class ManhuntGame extends Game implements Listener
 		
 		for (Player p : getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
 		{
-			p.teleport(getLobby().getSpawn().getRandomLocation());
+			p.teleport(getLobby().getRandomSpawnLocation());
 		}
 		
 		stopListening();

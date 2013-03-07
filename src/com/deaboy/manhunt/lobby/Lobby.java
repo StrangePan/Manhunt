@@ -87,7 +87,7 @@ public class Lobby implements Closeable
 	 * Gets this Lobby's Spawn object.
 	 * @return This Lobby's Spawn.
 	 */
-	public Spawn getSpawn()
+	private Spawn getSpawn()
 	{
 		return world.getSpawn();
 	}
@@ -130,6 +130,26 @@ public class Lobby implements Closeable
 	public Location getSpawnLocation()
 	{
 		return world.getSpawnLocation();
+	}
+	
+	public Location getRandomSpawnLocation()
+	{
+		return getSpawn().getRandomLocation();
+	}
+	
+	public int getSpawnRange()
+	{
+		return getSpawn().getRange();
+	}
+	
+	public void setSpawnRange(int range)
+	{
+		getSpawn().setRange(range);
+	}
+	
+	public void setSpawnLocation(Location loc)
+	{
+		getSpawn().setLocation(loc);
 	}
 	
 	/**
