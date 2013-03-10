@@ -11,7 +11,12 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingInteger MODE;
 	public final SettingBoolean USE_AMBER;
 	public final SettingString	GAME_TYPE;
-
+	
+	public final SettingString SPAWN_WORLD;
+	public final SettingDouble SPAWN_X;
+	public final SettingDouble SPAWN_Y;
+	public final SettingDouble SPAWN_Z;
+	
 	public final SettingDouble	TEAM_RATIO;
 	public final SettingInteger FINDER_COOLDOWN;
 	public final SettingBoolean ALL_TALK;
@@ -30,6 +35,11 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		addSetting(MODE =		new SettingInteger("mode", 0, "The mode the plugin is running in.", ""), false);
 		addSetting(USE_AMBER =		new SettingBoolean("useamber", true, "Manhunt will record/restore the world with Amber.", "Manhunt will not restore the world."), true);
 		addSetting(GAME_TYPE =		new SettingString("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
+		
+		addSetting(SPAWN_WORLD =	new SettingString("spawnworld", "", ""), false);
+		addSetting(SPAWN_X = 		new SettingDouble("spawnx", 0.0, ""), false);
+		addSetting(SPAWN_Y =		new SettingDouble("spawny", 64.0, ""), false);
+		addSetting(SPAWN_Z =		new SettingDouble("spawnz", 0.0, ""), false);
 		
 		addSetting(TEAM_RATIO =		new SettingDouble("teamratio", 3.0, "The ratio of Hunters to Prey"), true);
 		addSetting(FINDER_COOLDOWN =	new SettingInteger("findercooldown", 60, "Seconds until the Prey Finder is recharged.", "The Prey Finder has no cooldown."), true);

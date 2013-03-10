@@ -2,9 +2,11 @@ package com.deaboy.manhunt.lobby;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,10 +25,10 @@ public class Lobby implements Closeable
 	private final long id;
 	private String name;
 	private final World world;
-	private final LobbyType type;
+	private LobbyType type;
 	
 	private HashMap<String, Team> teams;
-	private HashMap<String, World> worlds;
+	private List<String> maps;
 	private Map current_map;
 	private boolean enabled;
 	
@@ -44,13 +46,11 @@ public class Lobby implements Closeable
 		this.type = type;
 		
 		this.teams = new HashMap<String, Team>();
-		this.worlds = new HashMap<String, World>();
+		this.maps = new ArrayList<String>();
 		this.current_map = null;
 		this.enabled = true;
 		
-		
-		this.worlds.put(world.getName(), world);
-		
+		// TODO Load up maps from file, or import maps from world
 		
 		this.settings = new LobbySettings(world);
 		
@@ -107,7 +107,32 @@ public class Lobby implements Closeable
 	 */
 	public List<World> getWorlds()
 	{
-		return new ArrayList<World>(worlds.values());
+		Map map;
+		List<World> worlds = new ArrayList<World>();
+		
+		for (String mapname : maps)
+		{
+			map = Manhunt.getMap(mapname);
+			if (map != null)
+				worlds.add(map.getWorld());
+		}
+		
+		return worlds;
+	}
+	
+	public List<Map> getMaps()
+	{
+		List<Map> maplist = new ArrayList<Map>();
+		Map map;
+		
+		for (String mapname : maps)
+		{
+			map = Manhunt.getMap(mapname);
+			if (map != null)
+				maplist.add(map);
+		}
+		
+		return maplist;
 	}
 	
 	public Map getCurrentMap()
@@ -272,7 +297,17 @@ public class Lobby implements Closeable
 	
 	private Game getGame()
 	{
-		return this.game;
+		switch (type)
+		{
+		case HUB:
+			return null;
+			
+		case GAME:
+			return this.game;
+			
+		default:
+			return null;
+		}
 	}
 	
 	
@@ -413,13 +448,18 @@ public class Lobby implements Closeable
 		}
 	}
 	
+	public boolean setCurrentMap(Map map)
+	{
+		return setCurrentMap(map.getFullName());
+	}
+	
 	/**
 	 * Sets the current map for the lobby. If the map is
 	 * not in a valid world, will return false and not make the assignment.
 	 * @param map
 	 * @return
 	 */
-	public boolean setCurrentMap(Map map)
+	public boolean setCurrentMap(String mapname)
 	{
 		switch (type)
 		{
@@ -427,17 +467,89 @@ public class Lobby implements Closeable
 			return false;
 			
 		case GAME:
-			if (!worlds.containsValue(map.getWorld()))
+			if (!maps.contains(mapname))
 				return false;
-			else if (!map.getWorld().getMaps().contains(map))
+			else if (Manhunt.getMap(mapname) == null)
 				return false;
 			else
-				current_map = map;
+				current_map = Manhunt.getMap(mapname);
 			return true;
 			
 		default:
 			return false;
 		}
+	}
+	
+	public void setLobbyType(LobbyType type)
+	{
+		if (type == null)
+			return;
+		if (gameIsRunning())
+			return;
+		
+		switch  (type)
+		{
+		case HUB:
+			setAllPlayerTeams(Team.NONE);
+			break;
+		case GAME:
+			setAllPlayerTeams(Team.STANDBY);
+			break;
+		default:
+			break;
+		}
+		
+		this.type = type;
+	}
+	
+	public boolean addWorld(World world)
+	{
+		if (world == null)
+			return false;
+		if (world.getMaps().isEmpty())
+			return false;
+		boolean success = false;
+		
+		for (Map map : world.getMaps())
+			if (addMap(map))
+				success = true;
+		
+		return success;
+	}
+	
+	public boolean addWorld(String worldname)
+	{
+		return addWorld(Manhunt.getWorld(worldname));
+	}
+	
+	public boolean addMap(Map map)
+	{
+		return addMap(map.getFullName());
+	}
+	
+	private boolean addMap(String mapname)
+	{
+		if (maps.contains(mapname))
+			return false;
+		else if (Manhunt.getMap(mapname) == null)
+			return false;
+		else
+			maps.add(mapname);
+		return true;
+	}
+	
+	public boolean removeMap(Map map)
+	{
+		return removeMap(map.getFullName());
+	}
+	
+	private boolean removeMap(String mapname)
+	{
+		if (!maps.contains(mapname))
+			return false;
+		else
+			maps.remove(mapname);
+		return true;
 	}
 	
 	
@@ -552,6 +664,37 @@ public class Lobby implements Closeable
 		}
 	}
 	
+	public Map chooseMap()
+	{
+		Map map;
+		
+		if (gameIsRunning())
+			return null;
+		if (maps.isEmpty())
+			return null;
+		
+		switch (type)
+		{
+		case HUB:
+			return null;
+		
+		case GAME:
+			Collections.sort(maps, new Comparator<String>() {
+				public int compare(String s1, String s2) {
+					return s1.compareTo(s2);
+				}
+			} );
+			
+			map = Manhunt.getMap(maps.get((int) (Math.random()*maps.size())));
+			
+			setCurrentMap(map);
+			return map;
+			
+		default:
+			return null;
+		}
+	}
+	
 	public void startGame()
 	{
 		switch (type)
@@ -561,6 +704,9 @@ public class Lobby implements Closeable
 			
 		case GAME:
 			if (gameIsRunning())
+				return;
+			
+			if (chooseMap() == null)
 				return;
 			
 			getGame().importPlayers(this);

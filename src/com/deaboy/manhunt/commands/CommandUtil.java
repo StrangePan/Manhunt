@@ -37,7 +37,13 @@ public class CommandUtil
 	}
 	
 	
-	//---------------- Getters ----------------//
+	
+	//---------------- Map Selection ----------------//
+	public static void setSelectedMap(CommandSender sender, Map map)
+	{
+		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map);
+	}
+	
 	public static Map getSelectedMap(CommandSender sender)
 	{
 		if (Manhunt.getCommandUtil().selected_maps.containsKey(sender.getName()))
@@ -52,19 +58,6 @@ public class CommandUtil
 			return Manhunt.getCommandUtil().selected_maps.get(name);
 		else
 			return null;
-	}
-	
-	
-	
-	//---------------- Setters ----------------//
-	public static void setSelectedMap(String name, Map map)
-	{
-		Manhunt.getCommandUtil().selected_maps.put(name, map);
-	}
-	
-	public static void setSelectedMap(CommandSender sender, Map map)
-	{
-		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map);
 	}
 	
 	
