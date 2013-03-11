@@ -432,7 +432,7 @@ public class Manhunt implements Closeable
 	public static void playerLeaveServer(Player p)
 	{
 		/*
-		 * Function for protocol to remove player from Manhunt
+		 * Protocol when a player leaves Manhunt
 		 * 
 		 * When a player leaves,...
 		 * 		Starts a timeout,
@@ -443,6 +443,7 @@ public class Manhunt implements Closeable
 			 * 	Stopping their finder
 			 * 	Removing them from lobbies
 			 * 	Forfeiting them from games
+			 *  Deleting their stuff in the command util
 		 */
 		
 		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getSettings().OFFLINE_TIMEOUT.getValue() > 0)
@@ -458,6 +459,8 @@ public class Manhunt implements Closeable
 			stopFinder(p.getName(), false);
 			getInstance().removePlayer(p.getName());
 		}
+		
+		getCommandUtil().deletePlayer(p);
 	}
 	
 	public static void setPlayerMode(Player p, MGameMode mode)
@@ -476,17 +479,15 @@ public class Manhunt implements Closeable
 	
 	public static void setPlayerSelectedMap(Player p, Map map)
 	{
-		if (getInstance().player_maps.containsKey(p.getName()))
-			getInstance().player_maps.put(p.getName(), map.getFullName());
+		CommandUtil.setSelectedMap(p, map);
 	}
 	
 	public static Map getPlayerSelectedMap(Player p)
 	{
-		if (getInstance().player_maps.containsKey(p.getName()))
-			return getMap(getInstance().player_maps.get(p.getName()));
-		else
-			return null;
+		return CommandUtil.getSelectedMap(p);
 	}
+	
+	
 	
 	
 	

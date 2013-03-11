@@ -5,8 +5,10 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
 
 public class CommandUtil
@@ -22,7 +24,8 @@ public class CommandUtil
 	
 	
 	
-	private HashMap<String, Map> selected_maps;
+	private HashMap<String, String> selected_maps;
+	private HashMap<String, Long> selected_lobbies;
 	private HashMap<CommandSender, String> vcommands;
 	private HashMap<CommandSender, Boolean> verified;
 	
@@ -31,7 +34,8 @@ public class CommandUtil
 	//---------------- Constructors ----------------//
 	public CommandUtil()
 	{
-		this.selected_maps = new HashMap<String, Map>();
+		this.selected_maps = new HashMap<String, String>();
+		this.selected_lobbies = new HashMap<String, Long>();
 		this.vcommands = new HashMap<CommandSender, String>();
 		this.verified = new HashMap<CommandSender, Boolean>();
 	}
@@ -41,13 +45,13 @@ public class CommandUtil
 	//---------------- Map Selection ----------------//
 	public static void setSelectedMap(CommandSender sender, Map map)
 	{
-		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map);
+		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map.getFullName());
 	}
 	
 	public static Map getSelectedMap(CommandSender sender)
 	{
 		if (Manhunt.getCommandUtil().selected_maps.containsKey(sender.getName()))
-			return Manhunt.getCommandUtil().selected_maps.get(sender.getName());
+			return Manhunt.getMap(Manhunt.getCommandUtil().selected_maps.get(sender.getName()));
 		else
 			return null;
 	}
@@ -55,7 +59,28 @@ public class CommandUtil
 	public static Map getSelectedMap(String name)
 	{
 		if (Manhunt.getCommandUtil().selected_maps.containsKey(name))
-			return Manhunt.getCommandUtil().selected_maps.get(name);
+			return Manhunt.getMap(Manhunt.getCommandUtil().selected_maps.get(name));
+		else
+			return null;
+	}
+	
+	
+	
+	//---------------- Lobby Selection ----------------//
+	public static void setSelectedLobby(CommandSender sender, Lobby lobby)
+	{
+		Manhunt.getCommandUtil().selected_lobbies.put(sender.getName(), lobby.getId());
+	}
+	
+	public static Lobby getSelectedLobby(CommandSender sender)
+	{
+		return getSelectedLobby(sender.getName());
+	}
+	
+	public static Lobby getSelectedLobby(String name)
+	{
+		if (Manhunt.getCommandUtil().selected_lobbies.containsKey(name))
+			return Manhunt.getLobby(Manhunt.getCommandUtil().selected_lobbies.get(name));
 		else
 			return null;
 	}
@@ -106,6 +131,18 @@ public class CommandUtil
 			Manhunt.getCommandUtil().vcommands.remove(sender);
 		if (Manhunt.getCommandUtil().verified.containsKey(sender))
 			Manhunt.getCommandUtil().verified.remove(sender);
+	}
+	
+	public void deletePlayer(Player player)
+	{
+		if (selected_lobbies.containsKey(player.getName()))
+			selected_lobbies.remove(player.getName());
+		if (selected_maps.containsKey(player.getName()))
+			selected_maps.remove(player.getName());
+		if (vcommands.containsKey(player.getName()))
+			vcommands.remove(player.getName());
+		if (verified.containsKey(player.getName()))
+			verified.remove(player.getName());
 	}
 	
 	

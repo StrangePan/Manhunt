@@ -2,12 +2,15 @@ package com.deaboy.manhunt.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
+import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
 
@@ -264,9 +267,111 @@ public abstract class LobbyCommands
 			sender.sendMessage("Lobby closed.");
 			return true;
 		}
+		else if (args[0].equalsIgnoreCase("select") || args[0].equalsIgnoreCase("sel"))
+		{
+			if (!sender.isOp())
+			{
+				sender.sendMessage(CommandUtil.NO_PERMISSION);
+				return true;
+			}
+			if (args.length != 2)
+			{
+				sender.sendMessage(CommandUtil.INVALID_USAGE);
+				sender.sendMessage("/mlobby select <lobby>");
+				return true;
+			}
+			
+			Lobby lobby;
+			lobby = Manhunt.getLobby(args[1]);
+			
+			if (lobby == null)
+			{
+				sender.sendMessage(ChatColor.RED + "No lobby exists by that name.");
+				sender.sendMessage(ChatColor.GRAY + "Type \"/mlobby list\" to view a list of lobbies.");
+				return true;
+			}
+			
+			CommandUtil.setSelectedLobby(sender, lobby);
+			sender.sendMessage(ChatColor.GREEN + "Selected lobby \"" + lobby.getName() + "\"");
+		}
+		else if (args[0].equalsIgnoreCase("selected"))
+		{
+			Lobby lobby = CommandUtil.getSelectedLobby(sender);
+			
+			if (hasSelectedLobby(sender))
+			{
+				sender.sendMessage(ChatManager.leftborder + "Selected Lobby: " + lobby.getName());
+				sender.sendMessage(ChatManager.leftborder + "  ID: " + lobby.getId() + "    Type: " + lobby.getType().name());
+				return true;
+			}
+		}
+		else if (args[0].equalsIgnoreCase("addmap"))
+		{
+			if (!hasSelectedLobby(sender))
+				return true;
+			
+			if (args.length != 2)
+			{
+				sender.sendMessage(CommandUtil.INVALID_USAGE);
+				sender.sendMessage(ChatColor.GRAY + "Usage: /mlobby addmap <map name>");
+				return true;
+			}
+			
+			Lobby lobby = CommandUtil.getSelectedLobby(sender);
+			World world;
+			Map map;
+			
+			if (sender instanceof ConsoleCommandSender)
+				world = null;
+			else if (sender instanceof Player)
+				world = Manhunt.getWorld(((Player) sender).getWorld());
+			else if (sender instanceof BlockCommandSender)
+				world = Manhunt.getWorld(((BlockCommandSender) sender).getBlock().getWorld());
+			else
+				world = null;
+			
+			if (args[1].contains("."))
+				map = Manhunt.getMap(args[1]);
+			else if (world == null)
+			{
+				if (sender instanceof ConsoleCommandSender)
+					sender.sendMessage(ChatColor.RED + "You must include a map's full name.");
+				else
+					sender.sendMessage(ChatColor.RED + "You are not in a world containing that map.");
+				sender.sendMessage(ChatColor.GRAY + "Use \"/map list\" to see a list of available maps.");
+				return true;
+			}
+			else if (world.getMap(args[1]) == null)
+			{
+				sender.sendMessage(ChatColor.RED + "No map by that name.");
+				sender.sendMessage(ChatColor.GRAY + "Use \"/map list\" to see a list of available maps.");
+				return true;
+			}
+			else
+			{
+				map = world.getMap(args[1]);
+				if (lobby.addMap(map))
+					sender.sendMessage(ChatColor.GREEN + "Added map " + map.getFullName() + " to lobby " + lobby.getName());
+				else
+					sender.sendMessage(ChatColor.RED + "There was a problem adding the map.");
+				return true;
+			}
+		}
 		
 		return true;
 	}
 	
+	
+	private static boolean hasSelectedLobby(CommandSender sender)
+	{
+		if (CommandUtil.getSelectedLobby(sender) == null)
+			return true;
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "You have no lobbies selected.");
+			sender.sendMessage(ChatColor.GRAY + "Use \"/mlobby select <lobby>\" so select a lobby.");
+			return false;
+		}
+	}
 	
 }
