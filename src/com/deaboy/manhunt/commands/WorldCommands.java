@@ -65,7 +65,7 @@ public abstract class WorldCommands
 			}
 		}
 		
-		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Worlds " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) worlds.size()/perpage)) + ")" + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Worlds" + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) worlds.size()/perpage)) + ")" + ChatManager.bracket2_);
 		if (!all)
 		{
 			sender.sendMessage(ChatColor.GRAY + "Use /mworlds [n] to get page n of worlds");

@@ -1,5 +1,7 @@
 package com.deaboy.manhunt.commands;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
@@ -167,6 +169,70 @@ public abstract class LobbyCommands
 			return true;
 		}
 		
+		if (args[0].equalsIgnoreCase("list"))
+		{
+			final int perpage = 8;
+			int page = 1;
+			boolean all = false;
+			List<Lobby> lobbies;
+			
+			
+			// Check permissions
+			if (!sender.isOp())
+			{
+				sender.sendMessage(CommandUtil.NO_PERMISSION);
+				return true;
+			}
+			
+			
+			// Get the page #
+			if (args.length == 0)
+				page = 1;
+			else if (args[0].equalsIgnoreCase("all"))
+				all = true;
+			else try
+			{
+				page = Integer.parseInt(args[0]);	
+			}
+			catch (NumberFormatException e)
+			{
+				page = 1;
+			}
+			
+			page--;
+			
+			// Assemble list of settings
+			lobbies = Manhunt.getLobbies();
+	 
+			if (!all)
+			{
+				if (page * perpage > lobbies.size() - 1 )
+					page = (lobbies.size()-1) / perpage;
+				
+				if (page < 0)
+					page = 0;
+				
+				if (lobbies.size() == 0)
+				{
+					sender.sendMessage("There are no lobbies to display.");
+					return true;
+				}
+			}
+			
+			sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Lobbies" + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) lobbies.size()/perpage)) + ")" + ChatManager.bracket2_);
+			if (!all)
+			{
+				sender.sendMessage(ChatColor.GRAY + "Use /mlobby list [n] to get page n of worlds");
+				lobbies = lobbies.subList(page * perpage, Math.min( (page + 1) * perpage, lobbies.size() ));
+			}
+			
+			for (Lobby lobby: lobbies)
+			{
+				sender.sendMessage(ChatManager.leftborder + lobby.getName() + "  " + ChatColor.GRAY + lobby.getType().name());
+			}
+			return true;
+			
+		}
 		if (args[0].equalsIgnoreCase("create"))
 		{
 			if (!sender.isOp())
@@ -305,7 +371,7 @@ public abstract class LobbyCommands
 				return true;
 			}
 		}
-		else if (args[0].equalsIgnoreCase("addmap"))
+		else if (args[0].equalsIgnoreCase("addmap") || args[0].equalsIgnoreCase("+map"))
 		{
 			if (!hasSelectedLobby(sender))
 				return true;
@@ -357,6 +423,50 @@ public abstract class LobbyCommands
 				return true;
 			}
 		}
+		else if (args[0].equalsIgnoreCase("remmap") || args[0].equalsIgnoreCase("delmap") || args[0].equalsIgnoreCase("-map"))
+		{
+			if (!hasSelectedLobby(sender))
+				return true;
+			
+			if (args.length != 2)
+			{
+				sender.sendMessage(CommandUtil.INVALID_USAGE);
+				sender.sendMessage(ChatColor.GRAY + "Usage: /mlobby delmap <map name>");
+				return true;
+			}
+			
+			Lobby lobby = CommandUtil.getSelectedLobby(sender);
+			Map map = null;
+			
+			for (Map m : lobby.getMaps())
+			{
+				if (m.getFullName().equals(args[1]))
+				{
+					map = m;
+					break;
+				}
+				else if (m.getName().equals(args[1]) && map == null)
+					map = m;
+				else if (m.getName().equals(args[1]) && map != null)
+				{
+					sender.sendMessage(ChatColor.RED + "The lobby has more than one map with the name " + args[1] + ".");
+					return true;
+				}
+			}
+			
+			if (map == null)
+			{
+				sender.sendMessage(ChatColor.RED + "The lobby has no maps with that name.");
+				return true;
+			}
+			else
+			{
+				if (lobby.removeMap(map))
+					sender.sendMessage(ChatColor.GREEN + "Removed map from lobby.");
+				else
+					sender.sendMessage(ChatColor.RED + "There was a problem removing the map.");
+			}
+		}
 		
 		return true;
 	}
@@ -364,7 +474,7 @@ public abstract class LobbyCommands
 	
 	private static boolean hasSelectedLobby(CommandSender sender)
 	{
-		if (CommandUtil.getSelectedLobby(sender) == null)
+		if (CommandUtil.getSelectedLobby(sender) != null)
 			return true;
 		else
 		{
