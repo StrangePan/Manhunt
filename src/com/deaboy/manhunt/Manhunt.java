@@ -36,6 +36,8 @@ public class Manhunt implements Closeable
 	//---------------- Constants ----------------//
 	/** The extension to use for property files. */
 	public static final String extension_properties = ".properties";
+	/** The extension to use for lobby files. */
+	public static final String extension_lobbies = ".lobby";
 	/** The extension to use for loadout files. */
 	public static final String extension_loadouts = ".dat";
 	/** The extension to use for the world data files. */
@@ -75,6 +77,7 @@ public class Manhunt implements Closeable
 	private 		FinderManager		finders;
 	private 		CommandUtil			command_util;
 	private 		LoadoutManager		loadouts;
+	private			long				default_lobby;
 	
 	private 		HashMap<Long, Lobby>	lobbies;
 	private			HashMap<String, Long>	player_lobbies;
@@ -127,6 +130,28 @@ public class Manhunt implements Closeable
 		///////// Set up the lobbies ////////
 		loadLobbies();
 		
+		Lobby lobby = getLobby(settings.DEFAULT_LOBBY.getValue());
+		
+		if (lobby == null)
+			if (lobbies.isEmpty())
+				lobby = null;
+			else
+			{
+				for (Lobby l : lobbies.values())
+					if (l.getWorld().getWorld() == Bukkit.getWorlds().get(0))
+					{
+						lobby = l;
+						break;
+					}
+				if (lobby == null)
+					lobby = lobbies.get(0);
+			}
+		
+		if (lobby == null)
+			this.default_lobby = -1;
+		else
+			this.default_lobby = lobby.getId();
+		
 		
 		//////// Start up the command handlers ////////
 		new CommandSwitchboard();
@@ -141,7 +166,7 @@ public class Manhunt implements Closeable
 	//-------------------- Getters --------------------//
 	public static Lobby getDefaultLobby()
 	{
-		return getLobby(Bukkit.getWorld(getSettings().DEFAULT_WORLD.getValue()));
+		return getLobby(getInstance().default_lobby);
 	}
 	
 	public static ManhuntSettings getSettings()
@@ -335,14 +360,15 @@ public class Manhunt implements Closeable
 		if (!file.isDirectory())
 		{
 			 log(Level.SEVERE, "File at " + path_lobbies + " is not a directory!");
+			 log(Level.SEVERE, "Please remedy the situation and restart Manhunt.");
 			 return;
 		}
 		for (File f : file.listFiles())
 		{
-			if (!f.isFile() || !f.getName().endsWith(extension_properties))
+			if (!f.isFile() || !f.getName().endsWith(extension_lobbies))
 				continue;
-			Lobby lobby = null;
-			// TODO Load lobbies from files; = ManhuntLobby.fromFile(f);
+			
+			Lobby lobby = createLobbyFromFile(f);
 			
 			if (lobby == null) // Loading from file failed
 			{
@@ -350,7 +376,7 @@ public class Manhunt implements Closeable
 			}
 			else
 			{
-				lobbies.put(lobby.getId(), lobby);
+				lobby.load();
 			}
 		}
 		
@@ -359,6 +385,8 @@ public class Manhunt implements Closeable
 	
 	
 	//---------------- Public Interface Methods ----------------//
+	
+	//////////////// LOBBIES ////////
 	public static Lobby createLobby(String name, LobbyType type, Location location)
 	{
 		Lobby lobby = null;
@@ -372,6 +400,19 @@ public class Manhunt implements Closeable
 		lobby = new Lobby(id, name, type, manhunt_world, location);
 		
 		return lobby;
+	}
+	
+	public static Lobby createLobbyFromFile(File f)
+	{
+		// TODO
+		
+		// Open a file
+		// Get basic data from it
+		//	- World, Spawn point, Type,
+		// call the createLobby(String, LobbyType, Location) method
+		// return the result
+		
+		return null;
 	}
 	
 	public static void changePlayerLobby(Player p, long lobby_id)
@@ -398,6 +439,23 @@ public class Manhunt implements Closeable
 			lobby.broadcast(p.getName() + " has left the lobby.");
 		}
 		
+	}
+	
+	public static boolean setDefaultLobby(Lobby lobby)
+	{
+		if (lobby == null || !getInstance().lobbies.containsValue(lobby))
+			return false;
+		
+		return setDefaultLobby(lobby.getId());
+	}
+	
+	public static boolean setDefaultLobby(long lobbyId)
+	{
+		if (!getInstance().lobbies.containsValue(lobbyId))
+			return false;
+		else
+			getInstance().default_lobby = lobbyId;
+		return true;
 	}
 	
 	

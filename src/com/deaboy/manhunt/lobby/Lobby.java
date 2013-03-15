@@ -745,6 +745,19 @@ public class Lobby implements Closeable
 		}
 	}
 	
+	
+	
+	//---------------- Saving, Loading, Closing ----------------//
+	public void save()
+	{
+		// TODO Saving, loading
+	}
+	
+	public void load()
+	{
+		// TODO Saving, loading
+	}
+	
 	@Override
 	public void close()
 	{
