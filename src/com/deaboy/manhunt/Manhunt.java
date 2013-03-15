@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
@@ -358,21 +359,17 @@ public class Manhunt implements Closeable
 	
 	
 	//---------------- Public Interface Methods ----------------//
-	public static Lobby createLobby(String name, LobbyType type, org.bukkit.World world)
+	public static Lobby createLobby(String name, LobbyType type, Location location)
 	{
 		Lobby lobby = null;
-		World manhunt_world = getWorld(world);
+		World manhunt_world = getWorld(location.getWorld());
 		long id = getInstance().getNextLobbyId();
 		
 		lobby = getLobby(name);
 		if (lobby != null)
 			return null;
 		
-		lobby = getLobby(world);
-		if (lobby != null)
-			return null;
-		
-		lobby = new Lobby(id, name, type, manhunt_world);
+		lobby = new Lobby(id, name, type, manhunt_world, location);
 		
 		return lobby;
 	}

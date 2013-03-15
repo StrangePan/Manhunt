@@ -30,6 +30,7 @@ public class Lobby implements Closeable
 	private HashMap<String, Team> teams;
 	private List<String> maps;
 	private Map current_map;
+	private Spawn spawn;
 	private boolean enabled;
 	
 	private Game game;
@@ -40,6 +41,11 @@ public class Lobby implements Closeable
 	//---------------- Constructors ----------------//
 	public Lobby(long id, String name, LobbyType type, World world)
 	{
+		this(id, name, type, world, world.getSpawnLocation());
+	}
+	
+	public Lobby(long id, String name, LobbyType type, World world, Location location)
+	{
 		this.id = id;
 		this.name = name;
 		this.world = world;
@@ -48,6 +54,7 @@ public class Lobby implements Closeable
 		this.teams = new HashMap<String, Team>();
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
+		this.spawn = new ManhuntSpawn(location);
 		this.enabled = true;
 		
 		// TODO Load up maps from file, or import maps from world
@@ -89,7 +96,7 @@ public class Lobby implements Closeable
 	 */
 	private Spawn getSpawn()
 	{
-		return world.getSpawn();
+		return spawn;
 	}
 	
 	/**
