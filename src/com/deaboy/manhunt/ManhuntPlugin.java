@@ -23,6 +23,7 @@ public class ManhuntPlugin extends JavaPlugin
 	public void onDisable()
 	{
 		Manhunt.getSettings().save();
+		getManhuntInstance().close();
 		instance = null;
 		manhunt = null;
 	}
@@ -38,7 +39,6 @@ public class ManhuntPlugin extends JavaPlugin
 	
 	
 	//-------- Private Methods --------//
-	@SuppressWarnings("unused")
 	private static Manhunt getManhuntInstance()
 	{
 		return manhunt;

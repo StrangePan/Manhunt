@@ -57,7 +57,7 @@ public class BlockEventHandler implements Listener
 	{
 		Lobby lobby;
 		
-		lobby = Manhunt.getLobby(p.getWorld());
+		lobby = Manhunt.getPlayerLobby(p);
 		
 		if (lobby == null)
 			return true;

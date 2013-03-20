@@ -7,7 +7,8 @@ public enum SettingType
 	DOUBLE(2),
 	LIST_STRING(3),
 	LOCATION(4),
-	STRING(5);
+	STRING(5),
+	FLOAT(6);
 	
 	
 	private final int id;
@@ -36,6 +37,8 @@ public enum SettingType
 			return "location";
 		case STRING:
 			return "string";
+		case FLOAT:
+			return "float";
 		default:
 			return "";
 		}
@@ -80,6 +83,9 @@ public enum SettingType
 		case "String":
 		case "string":
 			return SettingType.STRING;
+		case "Float":
+		case "float":
+			return SettingType.FLOAT;
 		default:
 			return null;
 		}

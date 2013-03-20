@@ -2,10 +2,13 @@ package com.deaboy.manhunt;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -93,7 +96,8 @@ public class Manhunt implements Closeable
 	{
 		Manhunt.instance =		this;
 		this.settings =			new ManhuntSettings(path_settings);
-		this.settings.save();
+		settings.load();
+		settings.save();
 		
 		if (Material.getMaterial(settings.FINDER_ITEM.getValue()) == null)
 			settings.FINDER_ITEM.resetToDefault();
@@ -116,16 +120,27 @@ public class Manhunt implements Closeable
 			registerWorld(world);
 		}
 		
-		for (String wname : settings.WORLDS.getValue())
+		if (settings.HANDLE_WORLDS.getValue())
 		{
-			if (worlds.containsKey(wname))
-				continue;
-			
-			if (Bukkit.getWorld(wname) != null)
-				registerWorld(Bukkit.getWorld(wname));
-			else if (settings.HANDLE_WORLDS.getValue() == true)
+			for (String wname : settings.WORLDS.getValue())
+			{
+				if (worlds.containsKey(wname))
+					continue;
+				
+				if (Bukkit.getWorld(wname) != null)
+					continue;
+				
 				registerWorld(Bukkit.createWorld(WorldCreator.name(wname)));
+			}
 		}
+		
+		
+		//////// Register game types
+		registerGameType(ManhuntGame.class, "Manhunt");
+		// registerGameType(JuggernautGame.class, "Juggerhunt");
+		// registerGameType(GhostGame.class, "Manhaunt");
+		
+		
 		
 		///////// Set up the lobbies ////////
 		loadLobbies();
@@ -133,33 +148,51 @@ public class Manhunt implements Closeable
 		Lobby lobby = getLobby(settings.DEFAULT_LOBBY.getValue());
 		
 		if (lobby == null)
+		{
 			if (lobbies.isEmpty())
 				lobby = null;
 			else
 			{
-				for (Lobby l : lobbies.values())
-					if (l.getWorld().getWorld() == Bukkit.getWorlds().get(0))
+				for (Lobby l : getLobbies(Bukkit.getWorlds().get(0)))
+				{
+					if (l.getType() == LobbyType.HUB)
 					{
 						lobby = l;
 						break;
 					}
+				}
 				if (lobby == null)
+				{
+					for (Lobby l : lobbies.values())
+					{
+						if (l.getType() == LobbyType.HUB)
+						{
+							lobby = l;
+							break;
+						}
+					}
+				}
+				if (lobby == null)
+				{
+					if (!getLobbies(Bukkit.getWorlds().get(0)).isEmpty())
+						lobby = getLobbies(Bukkit.getWorlds().get(0)).get(0);
+				}
+				if (lobby == null)
+				{
 					lobby = lobbies.get(0);
+				}
 			}
+		}
 		
 		if (lobby == null)
-			this.default_lobby = -1;
-		else
-			this.default_lobby = lobby.getId();
+			lobby = createLobby("default", LobbyType.GAME, Bukkit.getWorlds().get(0).getSpawnLocation());
+		
+		setDefaultLobby(lobby);
 		
 		
 		//////// Start up the command handlers ////////
 		new CommandSwitchboard();
 		
-		//////// Register game types
-		registerGameType(ManhuntGame.class, "Manhunt");
-		// registerGameType(JuggernautGame.class, "Juggerhunt");
-		// registerGameType(GhostGame.class, "Manhaunt");
 	}
 	
 	
@@ -198,20 +231,38 @@ public class Manhunt implements Closeable
 	
 	public static Lobby getLobby(org.bukkit.World world)
 	{
+		for (Lobby l : getLobbies())
+			if (l.getCurrentMap() != null && l.gameIsRunning() && l.getCurrentMap().getWorld() == world)
+				return l;
+		return null;
+	}
+	
+	public static Lobby getLobby(World world)
+	{
+		if (world != null)
+			return getLobby(world.getWorld());
+		else
+			return null;
+	}
+	
+	public static List<Lobby> getLobbies(World world)
+	{
+		List<Lobby> lobbies = new ArrayList<Lobby>();
+		
 		for (Lobby lobby : getInstance().lobbies.values())
 		{
 			if (lobby.getWorlds().contains(world))
 			{
-				return lobby;
+				lobbies.add(lobby);
 			}
 		}
-		return null;
+		return lobbies;
 		
 	}
 	
-	public static Lobby getLobby(com.deaboy.manhunt.map.World world)
+	public static List<Lobby> getLobbies(org.bukkit.World world)
 	{
-		return getLobby(world.getWorld());
+		return getLobbies(Manhunt.getWorld(world));
 	}
 	
 	public static List<Lobby> getLobbies()
@@ -368,7 +419,7 @@ public class Manhunt implements Closeable
 			if (!f.isFile() || !f.getName().endsWith(extension_lobbies))
 				continue;
 			
-			Lobby lobby = createLobbyFromFile(f);
+			Lobby lobby = createLobbyFromFile(f.getName().substring(0, f.getName().lastIndexOf(extension_lobbies)), f);
 			
 			if (lobby == null) // Loading from file failed
 			{
@@ -389,8 +440,16 @@ public class Manhunt implements Closeable
 	//////////////// LOBBIES ////////
 	public static Lobby createLobby(String name, LobbyType type, Location location)
 	{
+		if (name == null || type == null || location == null)
+			return null;
+		
 		Lobby lobby = null;
+		
 		World manhunt_world = getWorld(location.getWorld());
+		
+		if (manhunt_world == null)
+			return null;
+		
 		long id = getInstance().getNextLobbyId();
 		
 		lobby = getLobby(name);
@@ -399,20 +458,59 @@ public class Manhunt implements Closeable
 		
 		lobby = new Lobby(id, name, type, manhunt_world, location);
 		
+		getInstance().lobbies.put(lobby.getId(), lobby);
+		lobby.save();
+		
 		return lobby;
 	}
 	
-	public static Lobby createLobbyFromFile(File f)
+	public static Lobby createLobbyFromFile(String name, File f)
 	{
-		// TODO
 		
-		// Open a file
-		// Get basic data from it
-		//	- World, Spawn point, Type,
-		// call the createLobby(String, LobbyType, Location) method
-		// return the result
+		FileInputStream fin;
+		Properties prop;
+		LobbyType type;
+		Location location;
+		World world;
 		
-		return null;
+		if (!f.exists())
+			return null;
+		
+		try
+		{
+			fin = new FileInputStream(f);
+			prop = new Properties();
+			prop.load(fin);
+			
+			if (prop.containsKey("lobbytype"))
+				type = LobbyType.values()[Integer.parseInt(prop.getProperty("lobbytype"))];
+			else
+				type = null;
+			
+			if (prop.containsKey("spawnworld"))
+				world = Manhunt.getWorld(prop.getProperty("spawnworld"));
+			else
+				world = null;
+			
+			if (world != null && prop.containsKey("spawnx") && prop.containsKey("spawny") && prop.containsKey("spawnz"))
+				location = new Location(world.getWorld(), Double.parseDouble(prop.getProperty("spawnx")), Double.parseDouble(prop.getProperty("spawny")), Double.parseDouble(prop.getProperty("spawnz")));
+			else
+				location = null;
+			
+			fin.close();
+		}
+		catch (IOException | NumberFormatException e)
+		{
+			log(e);
+			return null;
+		}
+		
+		
+		if (type == null || world == null || location == null)
+			return null;
+		else
+			return createLobby(name, type, location);
+		
 	}
 	
 	public static void changePlayerLobby(Player p, long lobby_id)
@@ -451,11 +549,14 @@ public class Manhunt implements Closeable
 	
 	public static boolean setDefaultLobby(long lobbyId)
 	{
-		if (!getInstance().lobbies.containsValue(lobbyId))
+		if (!getInstance().lobbies.containsKey(lobbyId))
 			return false;
 		else
+		{
 			getInstance().default_lobby = lobbyId;
-		return true;
+			getSettings().DEFAULT_LOBBY.setValue(getLobby(lobbyId).getName());
+			return true;
+		}
 	}
 	
 	
@@ -735,6 +836,11 @@ public class Manhunt implements Closeable
 	{
 		for (GameType gc : games.values())
 			gc.close();
+		
+		for (Lobby l : getInstance().lobbies.values())
+			l.save();
+		
+		settings.save();
 	}
 	
 }

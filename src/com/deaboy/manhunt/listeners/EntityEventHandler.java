@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.listeners;
 
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.Team;
 
 public class EntityEventHandler implements Listener
 {
@@ -41,6 +43,7 @@ public class EntityEventHandler implements Listener
 			return;
 		
 		Lobby lobby;
+		Team team;
 		
 		lobby = Manhunt.getLobby(e.getEntity().getWorld());
 		
@@ -51,6 +54,12 @@ public class EntityEventHandler implements Listener
 		{
 			e.setCancelled(true);
 			return;
+		}
+		else
+		{
+			team = lobby.getPlayerTeam((Player) e);
+			if (team != Team.HUNTERS && team != Team.PREY)
+				e.setCancelled(true);
 		}
 		
 	}
@@ -66,7 +75,10 @@ public class EntityEventHandler implements Listener
 		lobby = Manhunt.getLobby(e.getLocation().getWorld());
 		
 		if (lobby == null)
+		{
+			e.setCancelled(true);
 			return;
+		}
 		
 		if (!lobby.gameIsRunning())
 		{

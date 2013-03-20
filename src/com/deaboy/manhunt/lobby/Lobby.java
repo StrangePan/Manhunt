@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.Game;
+import com.deaboy.manhunt.game.GameType;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.map.*;
 import com.deaboy.manhunt.settings.LobbySettings;
@@ -57,16 +58,28 @@ public class Lobby implements Closeable
 		this.spawn = new ManhuntSpawn(location);
 		this.enabled = true;
 		
-		// TODO Load up maps from file, or import maps from world
 		
-		this.settings = new LobbySettings(world);
+		// TODO Start loading maps n stuff
+		
+		
+		this.settings = new LobbySettings(name);
+		settings.load();
+		settings.save();
+		
+		if (!settings.LOBBY_NAME.getValue().trim().isEmpty())
+			this.name = settings.LOBBY_NAME.getValue();
 		
 		if (type == LobbyType.GAME)
 		{
-			this.game = Manhunt.getGameTypeByClassCanonicalName(settings.GAME_TYPE.getValue()).createInstance(this);
+			GameType gametype = Manhunt.getGameTypeByClassCanonicalName(settings.GAME_TYPE.getValue());
+			if (gametype == null)
+				gametype = Manhunt.getGameTypeByClassCanonicalName(ManhuntGame.class.getCanonicalName());
+			
+			this.game = gametype.createInstance(this);
 			if (game == null)
 				game = new ManhuntGame(this);
 		}
+		
 	}
 	
 	
@@ -123,6 +136,9 @@ public class Lobby implements Closeable
 			if (map != null)
 				worlds.add(map.getWorld());
 		}
+		
+		if (!worlds.contains(getWorld()))
+			worlds.add(getWorld());
 		
 		return worlds;
 	}
@@ -324,9 +340,16 @@ public class Lobby implements Closeable
 	 * Sets the name of this lobby.
 	 * @param name
 	 */
-	public void setName(String name)
+	public boolean setName(String name)
 	{
+		if (name.trim().isEmpty())
+			return false;
+		
+		if (Manhunt.getLobby(name) != null)
+			return false;
+		
 		this.name = name;
+		return true;
 	}
 	
 	//////// ABSTRACT
@@ -750,12 +773,31 @@ public class Lobby implements Closeable
 	//---------------- Saving, Loading, Closing ----------------//
 	public void save()
 	{
-		// TODO Saving, loading
+		settings.SPAWN_WORLD.setValue(world.getName());
+		settings.SPAWN_X.setValue(spawn.getLocation().getX());
+		settings.SPAWN_Y.setValue(spawn.getLocation().getY());
+		settings.SPAWN_Z.setValue(spawn.getLocation().getZ());
+		settings.SPAWN_PITCH.setValue(spawn.getLocation().getPitch());
+		settings.SPAWN_YAW.setValue(spawn.getLocation().getYaw());
+		settings.SPAWN_RANGE.setValue(spawn.getRange());
+		settings.LOBBY_NAME.setValue(name);
+		settings.save();
 	}
 	
 	public void load()
 	{
-		// TODO Saving, loading
+		Location loc = getSpawn().getLocation();
+		loc.setX(settings.SPAWN_X.getValue());
+		loc.setY(settings.SPAWN_Y.getValue());
+		loc.setZ(settings.SPAWN_Z.getValue());
+		loc.setPitch(settings.SPAWN_PITCH.getValue());
+		loc.setYaw(settings.SPAWN_YAW.getValue());
+		setSpawnLocation(loc);
+		setSpawnRange(settings.SPAWN_RANGE.getValue());
+		
+		setName(settings.LOBBY_NAME.getValue());
+		
+		settings.load();
 	}
 	
 	@Override
