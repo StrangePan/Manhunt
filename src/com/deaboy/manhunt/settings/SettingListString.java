@@ -24,15 +24,21 @@ public class SettingListString extends SettingBase<ArrayList<String>> implements
 	@Override
 	public boolean setValue(String value)
 	{
-		String[] values1 = value.split(",");
-		ArrayList<String> values2 = new ArrayList<String>(values1.length);
+		if (!value.startsWith("[") || !value.endsWith("]"))
+			return false;
+		
+		value = value.substring(1, value.length()-1);
+		
+		String[] values1 = value.split("\\s*,\\s*");
+		ArrayList<String> values2 = new ArrayList<String>();
 		
 		for (int i = 0; i < values1.length; i++)
 		{
-			values2.set(i, values1[i]);
+			if (!values1[i].isEmpty())
+				values2.add(values1[i]);
 		}
 		
-		return super.setValue(values1);
+		return super.setValue(values2);
 	}
 	
 	@SuppressWarnings("unchecked")
