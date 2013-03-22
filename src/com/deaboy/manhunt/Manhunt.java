@@ -12,10 +12,17 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.deaboy.manhunt.commands.CommandSwitchboard;
@@ -28,13 +35,14 @@ import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.ManhuntWorld;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
 
-public class Manhunt implements Closeable
+public class Manhunt implements Closeable, Listener
 {
 	//---------------- Constants ----------------//
 	/** The extension to use for property files. */
@@ -193,6 +201,9 @@ public class Manhunt implements Closeable
 		//////// Start up the command handlers ////////
 		new CommandSwitchboard();
 		
+		
+		//////// Register events ////////
+		Bukkit.getPluginManager().registerEvents(this, ManhuntPlugin.getInstance());
 	}
 	
 	
@@ -528,13 +539,17 @@ public class Manhunt implements Closeable
 		p.teleport(lobby.getRandomSpawnLocation());
 		resetPlayer(p);
 		
-		getInstance().player_lobbies.put(p.getName(), lobby.getId());
+		getInstance().player_lobbies.put(p.getName(), lobby_id);
 		
 		if (lobby.addPlayer(p.getName()))
 		{
 			if (old_lobby != null)
-				old_lobby.broadcast(p.getName() + " has joined the lobby.");
-			lobby.broadcast(p.getName() + " has left the lobby.");
+			{
+				old_lobby.broadcast(p.getName() + " has left the lobby.");
+				old_lobby.removePlayer(p);
+			}
+			lobby.broadcast(p.getName() + " has joined the lobby.");
+			log(p.getName() + " joined lobby " + lobby.getName());
 		}
 		
 	}
@@ -617,6 +632,41 @@ public class Manhunt implements Closeable
 		}
 		
 		getCommandUtil().deletePlayer(p);
+	}
+	
+	public static void playerChat(Player p, String message)
+	{
+		Lobby l = getPlayerLobby(p);
+		
+		if (l == null)
+		{
+			p.sendMessage(ChatColor.RED + "You are not in a lobby!");
+			p.sendMessage(ChatColor.GRAY + "Use /mjoin to join a lobby.");
+			return;
+		}
+		
+		message = ChatColor.WHITE + "<" + l.getPlayerTeam(p).getColor() + p.getName() + ChatColor.WHITE + "> " + message;
+		
+		if (!l.gameIsRunning() || l.getSettings().ALL_TALK.getValue())
+		{
+			l.broadcast(message);
+		}
+		else
+		{
+			switch (l.getPlayerTeam(p))
+			{
+			case HUNTERS:
+			case PREY:
+				l.broadcast(message, l.getPlayerTeam(p));
+				break;
+			default:
+				l.broadcast(message, Team.SPECTATORS, Team.STANDBY, Team.NONE);
+				break;
+			}
+			
+			log(message);
+			return;
+		}
 	}
 	
 	public static void setPlayerMode(Player p, MGameMode mode)
@@ -832,6 +882,28 @@ public class Manhunt implements Closeable
 	
 	
 	
+	//////////////// GLOBAL MANHUNT EVENTS ////////
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent e)
+	{
+		playerJoinServer(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent e)
+	{
+		playerLeaveServer(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onAsyncPlayerChat(AsyncPlayerChatEvent e)
+	{
+		playerChat(e.getPlayer(), e.getMessage());
+		e.setCancelled(true);
+	}
+	
+	
+	
 	public void close()
 	{
 		for (GameType gc : games.values())
@@ -839,6 +911,8 @@ public class Manhunt implements Closeable
 		
 		for (Lobby l : getInstance().lobbies.values())
 			l.save();
+
+		HandlerList.unregisterAll(this);
 		
 		settings.save();
 	}

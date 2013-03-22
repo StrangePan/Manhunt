@@ -26,9 +26,14 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mstopgame").setExecutor(this);
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
 		Bukkit.getPluginCommand("mset").setExecutor(this);
+		Bukkit.getPluginCommand("mworld").setExecutor(this);
 		Bukkit.getPluginCommand("mworlds").setExecutor(this);
 		Bukkit.getPluginCommand("mmap").setExecutor(this);
+		Bukkit.getPluginCommand("mmaps").setExecutor(this);
+		Bukkit.getPluginCommand("mjoin").setExecutor(this);
+		Bukkit.getPluginCommand("mleave").setExecutor(this);
 		Bukkit.getPluginCommand("mlobby").setExecutor(this);
+		Bukkit.getPluginCommand("mlobbies").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -54,6 +59,9 @@ public class CommandSwitchboard implements CommandExecutor
 		if (c.getName().equalsIgnoreCase("mset"))
 			return SettingCommands.mset(sender, arguments);
 		
+		if (c.getName().equalsIgnoreCase("mworld"))
+			return WorldCommands.mworld(sender, arguments);
+		
 		if (c.getName().equalsIgnoreCase("mworlds"))
 			return WorldCommands.mworlds(sender, arguments);
 		
@@ -66,8 +74,20 @@ public class CommandSwitchboard implements CommandExecutor
 		if (c.getName().equalsIgnoreCase("mmap"))
 			return MapCommands.mmap(sender, arguments);
 		
+		if (c.getName().equalsIgnoreCase("mmaps"))
+			return MapCommands.mmaps(sender, arguments);
+		
 		if (c.getName().equalsIgnoreCase("mlobby"))
 			return LobbyCommands.mlobby(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mlobbies"))
+			return LobbyCommands.mlobbies(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mjoin"))
+			return LobbyCommands.mjoin(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mleave"))
+			return LobbyCommands.mleave(sender, arguments);
 		
 		return false;
 		

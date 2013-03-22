@@ -41,6 +41,10 @@ commands:
         usage: /mset <setting> <value>
         description: Changes a global Manhunt setting. Cannot be used to change lobby settings.
         aliases: [set, setting]
+    mworld:
+        usage: /mworld <command> [arg1] [arg2]...
+        description: Performs various world commands, such as listing loaded worlds.
+        aliases: [world, mhworld]
     mworlds:
         usage: /mworlds [page]
         description: Lists the worlds running on the server. Worlds not being used by Manhunt are grayed out.
@@ -48,11 +52,19 @@ commands:
     mmap:
         usage: /mmap <command> [arg1] [arg2]...
         description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
-        aliases: [map, mhmap, maps, mmaps, mhmaps]
+        aliases: [map, mhmap]
+    mmaps:
+        usage: /mmaps [page]
+        description: Lists the maps loaded on the server.
+        aliases: [maps, mhmaps, listmaps, mlistmaps]
     mlobby:
         usage: /mlobby <command> [arg1] [arg2]...
         description: Performs various lobby commands, including editing, renaming, creating, and closing.
         aliases: [lobby, mhlobby]
+    mlobbies:
+        usage: /mlobbies [page|all]
+        description: Lists the currently loaded Manhunt lobbies.
+        aliases: [lobbies, mhlobbies]
     mjoin:
         usage: /mjoin <lobby> [player]
         description: Joins a Manhunt lobby by it's name. Add a player's name to make them join the lobby.

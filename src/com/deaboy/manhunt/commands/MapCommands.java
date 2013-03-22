@@ -16,9 +16,10 @@ public abstract class MapCommands
 	{
 		String args2[];
 		
-		if (args.length == 0)
+		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
 		{
 			Bukkit.getServer().dispatchCommand(sender, "help mmap");
+			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, select (sel), selected");
 			return true;
 		}
 		
@@ -31,7 +32,7 @@ public abstract class MapCommands
 			return listmaps(sender, args2);
 		}
 		
-		if (args[0].equalsIgnoreCase("select") || args[0].equalsIgnoreCase("selected") || args[0].equalsIgnoreCase("sel"))
+		else if (args[0].equalsIgnoreCase("select") || args[0].equalsIgnoreCase("selected") || args[0].equalsIgnoreCase("sel"))
 		{
 			args2 = new String[args.length - 1];
 			for (int i = 1; i < args.length; i++)
@@ -40,7 +41,24 @@ public abstract class MapCommands
 			return selectmap(sender, args2);
 		}
 		
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Unknown command.");
+			sender.sendMessage(ChatColor.GRAY + "Available commands: list, select (sel), selected");
+		}
+		
 		return false;
+	}
+	
+	public static boolean mmaps(CommandSender sender, String args[])
+	{
+		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
+		{
+			Bukkit.dispatchCommand(sender, "help mmaps");
+			return true;
+		}
+		
+		return listmaps(sender, args);
 	}
 	
 	private static boolean listmaps(CommandSender sender, String args[])
@@ -63,12 +81,12 @@ public abstract class MapCommands
 			}
 			for (World world : Manhunt.getWorlds())
 			{
-				sender.sendMessage(ChatColor.GOLD + world.getName());
+				sender.sendMessage(ChatManager.leftborder + world.getName());
 				if (world.getMaps().size() == 0)
-					sender.sendMessage(spacing + ChatColor.GRAY + "[NONE]");
+					sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.GRAY + "[NONE]");
 				else
 					for (Map map : world.getMaps())
-						sender.sendMessage(spacing + ChatColor.WHITE + world.getName() + "." + map.getName());
+						sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.WHITE + world.getName() + "." + map.getName());
 			}
 		}
 		else
@@ -79,16 +97,16 @@ public abstract class MapCommands
 				World world = Manhunt.getWorld(wname);
 				if (world == null)
 				{
-					sender.sendMessage(ChatColor.RED + wname + " is not a valid world.");
+					sender.sendMessage(ChatManager.leftborder + ChatColor.RED + wname + " is not a valid world.");
 				}
 				else
 				{
 					sender.sendMessage(ChatColor.GOLD + world.getName());
 					if (world.getMaps().size() == 0)
-						sender.sendMessage(spacing + ChatColor.GRAY + "[NONE]");
+						sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.GRAY + "[NONE]");
 					else
 						for (Map map : world.getMaps())
-							sender.sendMessage(spacing + ChatColor.WHITE + world.getName() + "." + map.getName());
+							sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.WHITE + world.getName() + "." + map.getName());
 				}
 			}
 		}

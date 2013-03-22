@@ -153,25 +153,114 @@ public abstract class LobbyCommands
 	
 	public static boolean mjoin(CommandSender sender, String[] args)
 	{
-		if (args.length == 0)
+		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
 		{
-			
+			Bukkit.dispatchCommand(sender, "help mjoin");
+			return true;
 		}
+		
+		Lobby l;
+		Player p;
+		
+		if (sender instanceof Player && args.length == 1)
+			p = (Player) sender;
+		else if (args.length == 2)
+			p = Bukkit.getPlayerExact(args[1]);
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Proper useage: /mjoin <lobby> " + (sender instanceof Player ? "[player]" : "<player>"));
+			return true;
+		}
+		
+		if (p == null)
+		{
+			sender.sendMessage(ChatColor.RED + "There is no player by that name.");
+			return true;
+		}
+		
+		// Get the lobby
+		l = Manhunt.getLobby(args[0]);
+		
+		if (l == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Lobby does not exist.");
+			return true;
+		}
+		
+		if (Manhunt.getPlayerLobby(p) == l)
+		{
+			if (args.length == 2)
+				sender.sendMessage(ChatColor.RED + "Player is already in that lobby");
+			else
+				sender.sendMessage(ChatColor.RED + "You are already in that lobby.");
+			return true;
+		}
+		else if (args.length == 2)
+			sender.sendMessage(ChatColor.GREEN + "Player sent to lobby " + args[0]);
+		Manhunt.changePlayerLobby(p, l.getId());
+		
+		return true;
+	}
+	
+	public static boolean mleave(CommandSender sender, String[] args)
+	{
+		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
+		{
+			Bukkit.dispatchCommand(sender, "help mleave");
+			return true;
+		}
+		
+		Player p;
+		
+		if (sender instanceof Player && args.length == 0)
+			p = (Player) sender;
+		else if (args.length == 2)
+			p = Bukkit.getPlayerExact(args[0]);
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Proper useage: /mleave " + (sender instanceof Player ? "[player]" : "<player>"));
+			return true;
+		}
+		
+		if (p == null)
+		{
+			sender.sendMessage(ChatColor.RED + "There is no player by that name.");
+			return true;
+		}
+		
+		if (Manhunt.getPlayerLobby(p) == Manhunt.getDefaultLobby())
+		{
+			if (args.length == 1)
+				sender.sendMessage(ChatColor.RED + "That player is already in the default lobby.");
+			else
+				sender.sendMessage(ChatColor.RED + "You're already in the default lobby.");
+			return true;
+		}
+		
+		if (args.length == 2)
+			sender.sendMessage(ChatColor.GREEN + "Player sent to lobby " + args[0]);
+		Manhunt.changePlayerLobby(p, Manhunt.getDefaultLobby().getId());
 		
 		return true;
 	}
 	
 	public static boolean mlobby(CommandSender sender, String[] args)
 	{
-		if (args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
+		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
 		{
-			sender.sendMessage(Bukkit.getPluginCommand("mlobby").getUsage());
-			sender.sendMessage("Commands:\njoin, leave, create, delete, close, open");
+			Bukkit.dispatchCommand(sender, "help mlobby");
+			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, join, leave, create, delete, close, open");
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("list"))
 			return mlobby_list(sender, args);
+		
+		if (args[0].equalsIgnoreCase("join"))
+			return mlobby_join(sender, args);
+		
+		if (args[0].equalsIgnoreCase("leave"))
+			return mlobby_leave(sender, args);
 		
 		else if (args[0].equalsIgnoreCase("create"))
 			return mlobby_create(sender, args);
@@ -191,8 +280,21 @@ public abstract class LobbyCommands
 		else if (args[0].equalsIgnoreCase("remmap") || args[0].equalsIgnoreCase("removemap") || args[0].equalsIgnoreCase("delmap") || args[0].equalsIgnoreCase("-map"))
 			return mlobby_remmap(sender, args);
 		
+		else
+			sender.sendMessage(ChatColor.GRAY + " Available commands:\n  list, join, leave, create, delete, close, open");
 		
 		return true;
+	}
+	
+	public static boolean mlobbies(CommandSender sender, String[] args)
+	{
+		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
+		{
+			Bukkit.dispatchCommand(sender, "help mlobbies");
+			return true;
+		}
+		
+		return mlobby_list(sender, args);
 	}
 	
 	private static boolean mlobby_list(CommandSender sender, String[] args)
@@ -245,7 +347,7 @@ public abstract class LobbyCommands
 			}
 		}
 		
-		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Lobbies" + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) lobbies.size()/perpage)) + ")" + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Lobbies " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) lobbies.size()/perpage)) + ")" + ChatManager.bracket2_);
 		if (!all)
 		{
 			sender.sendMessage(ChatColor.GRAY + "Use /mlobby list [n] to get page n of worlds");
@@ -254,8 +356,53 @@ public abstract class LobbyCommands
 		
 		for (Lobby lobby: lobbies)
 		{
-			sender.sendMessage(ChatManager.leftborder + lobby.getName() + "  " + ChatColor.GRAY + lobby.getType().name());
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + lobby.getName() + "    " + ChatColor.GRAY + lobby.getType().name());
 		}
+		return true;
+	}
+	
+	private static boolean mlobby_join(CommandSender sender, String[] args)
+	{
+		Lobby l;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(ChatColor.RED + "That command can only be performed by a Player.");
+			sender.sendMessage(ChatColor.GRAY + "Please use /mjoin <lobby> <player>");
+			return true;
+		}
+		
+		if (args.length != 1)
+		{
+			sender.sendMessage(ChatColor.RED + "Usage: /mlobby join");
+			return true;
+		}
+		
+		l = CommandUtil.getSelectedLobby(sender);
+		
+		if (l == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must have a lobby seleted.");
+			sender.sendMessage(ChatColor.GRAY + "Use /mlobby select <lobby> or /mjoin <lobby>");
+			return true;
+		}
+		else if (l == Manhunt.getPlayerLobby((Player) sender))
+		{
+			sender.sendMessage(ChatColor.RED + "You're already in lobby " + l.getName() + ".");
+			sender.sendMessage(ChatColor.GRAY + "Use /mjoin to join another lobby.");
+			return true;
+		}
+		else
+		{
+			Manhunt.changePlayerLobby((Player) sender, l.getId());
+			return true;
+		}
+	}
+	
+	private static boolean mlobby_leave(CommandSender sender, String[] args)
+	{
+		Bukkit.dispatchCommand(sender, "mleave");
+		
 		return true;
 	}
 	
