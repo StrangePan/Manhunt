@@ -416,8 +416,8 @@ public class Manhunt implements Closeable, Listener
 			else
 			{
 				log(Level.SEVERE, "A unexpected problem occured when creating directory at " + path_lobbies + ".");
-				return;
 			}
+			return;
 		}
 		if (!file.isDirectory())
 		{
@@ -470,7 +470,6 @@ public class Manhunt implements Closeable, Listener
 		lobby = new Lobby(id, name, type, manhunt_world, location);
 		
 		getInstance().lobbies.put(lobby.getId(), lobby);
-		lobby.save();
 		
 		return lobby;
 	}
@@ -911,6 +910,9 @@ public class Manhunt implements Closeable, Listener
 		
 		for (Lobby l : getInstance().lobbies.values())
 			l.save();
+		
+		for (World w : getInstance().worlds.values())
+			w.save();
 
 		HandlerList.unregisterAll(this);
 		

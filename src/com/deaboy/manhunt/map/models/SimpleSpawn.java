@@ -11,7 +11,7 @@ public class SimpleSpawn
 	public String Version;
 	
 	public SimpleLocation Location;
-	public Integer Range;
+	public int Range;
 	
 	
 	

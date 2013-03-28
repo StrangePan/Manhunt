@@ -146,7 +146,7 @@ public class ManhuntWorld implements World
 		{
 			if (!file.exists())
 			{
-				file.mkdirs();
+				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
 			
@@ -177,6 +177,7 @@ public class ManhuntWorld implements World
 		if (!file.exists())
 		{
 			setupAsDefault();
+			save();
 			return;
 		}
 		else

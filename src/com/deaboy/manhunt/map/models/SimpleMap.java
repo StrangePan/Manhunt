@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.map.models;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.ManhuntMap;
@@ -16,10 +17,10 @@ public class SimpleMap
 	
 	public String Name;
 	public SimpleLocation Spawn;
-	public ArrayList<SimpleSpawn> HunterSpawns;
-	public ArrayList<SimpleSpawn> PreySpawns;
-	public ArrayList<SimpleSpawn> SetupSpawns;
-	public ArrayList<SimpleZone> Zones;
+	public List<SimpleSpawn> HunterSpawns;
+	public List<SimpleSpawn> PreySpawns;
+	public List<SimpleSpawn> SetupSpawns;
+	public List<SimpleZone> Zones;
 	
 	
 	
@@ -40,6 +41,8 @@ public class SimpleMap
 	{
 		Map map = new ManhuntMap(Name, world);
 		
+		map.setName(Name);
+		map.setSpawn(Spawn.toLocation(world));
 		for (SimpleSpawn spawn : HunterSpawns)
 			map.addHunterSpawn(spawn.toSpawn(world));
 		for (SimpleSpawn spawn : PreySpawns)

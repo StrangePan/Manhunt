@@ -9,11 +9,11 @@ public class SimpleLocation
 {
 	public String version;
 	
-	public Double x;
-	public Double y;
-	public Double z;
-	public Float yaw;
-	public Float pitch;
+	public double x;
+	public double y;
+	public double z;
+	public float yaw;
+	public float pitch;
 	
 	
 	//---------------- Constructors ----------------//

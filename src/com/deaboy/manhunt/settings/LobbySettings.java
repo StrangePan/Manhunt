@@ -13,6 +13,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingString	LOBBY_NAME;
 	public final SettingInteger LOBBY_TYPE;
 	public final SettingString	GAME_TYPE;
+	public final SettingListString MAPS;
 	
 	public final SettingString	SPAWN_WORLD;
 	public final SettingDouble	SPAWN_X;
@@ -43,6 +44,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		addSetting(LOBBY_NAME =		new SettingString("lobbyname", "", ""), false);
 		addSetting(LOBBY_TYPE =		new SettingInteger("lobbytype", LobbyType.GAME.ordinal(), "", ""), false);
 		addSetting(GAME_TYPE =		new SettingString("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
+		addSetting(MAPS =			new SettingListString("maps", ""), false);
 		
 		addSetting(SPAWN_WORLD =	new SettingString("spawnworld", "", ""), false);
 		addSetting(SPAWN_X = 		new SettingDouble("spawnx", 0.0, ""), false);

@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.map.models;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.Map;
@@ -13,7 +14,7 @@ public class SimpleWorld
 	public String Version;
 	public String Name;
 	public SimpleSpawn Spawn;
-	public ArrayList<SimpleMap> Maps;
+	public List<SimpleMap> Maps;
 	
 	
 	

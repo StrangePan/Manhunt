@@ -63,8 +63,8 @@ public class Lobby implements Closeable
 		
 		
 		this.settings = new LobbySettings(name);
-		settings.load();
-		settings.save();
+		load();
+		save();
 		
 		if (!settings.LOBBY_NAME.getValue().trim().isEmpty())
 			this.name = settings.LOBBY_NAME.getValue();
@@ -781,11 +781,17 @@ public class Lobby implements Closeable
 		settings.SPAWN_YAW.setValue(spawn.getLocation().getYaw());
 		settings.SPAWN_RANGE.setValue(spawn.getRange());
 		settings.LOBBY_NAME.setValue(name);
+		ArrayList<String> mapnames = new ArrayList<String>();
+		for (String mapname : maps)
+			mapnames.add(mapname);
+		settings.MAPS.setValue(mapnames);
 		settings.save();
 	}
 	
 	public void load()
 	{
+		settings.load();
+		
 		Location loc = getSpawn().getLocation();
 		loc.setX(settings.SPAWN_X.getValue());
 		loc.setY(settings.SPAWN_Y.getValue());
@@ -797,7 +803,10 @@ public class Lobby implements Closeable
 		
 		setName(settings.LOBBY_NAME.getValue());
 		
-		settings.load();
+		maps.clear();
+		for (String mapname : settings.MAPS.getValue())
+			if (Manhunt.getMap(mapname) != null)
+				maps.add(mapname);
 	}
 	
 	@Override

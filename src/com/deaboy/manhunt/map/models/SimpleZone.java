@@ -10,10 +10,10 @@ public class SimpleZone
 {
 	//---------------- Properties ----------------//
 	public String Version;
-	public Integer Type;
+	public int Type;
 	public SimpleLocation Corner1;
 	public SimpleLocation Corner2;
-	public Boolean IgnoreY;
+	public boolean IgnoreY;
 	
 	
 	

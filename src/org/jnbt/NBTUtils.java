@@ -207,7 +207,7 @@ public final class NBTUtils {
 				}
 				else
 				{
-					if (field.getType() == t.getValue().getClass())
+					if (field.getType() == t.getDataType())
 						field.set(object, t.getValue());
 				}
 			}
