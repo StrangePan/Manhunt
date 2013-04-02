@@ -73,4 +73,12 @@ commands:
         usage: /mleave [player]
         description: Leaves the current Manhunt lobby and joins the default lobby. Include a player's name to make them leave.
         aliases: [leave, mhleave]
+    mteam:
+        usage: /mteam <command> [arg1] [arg2]...
+        description: Performs various team commands, like joining  team and clearing a team.
+        aliases: [team]
+    manhuntmode:
+        usage: /manhuntmode <mode> [player]
+        description: Chances a player's Manhunt mode. Available modes- play, edit.
+        aliases: [mhmode]
     

@@ -414,49 +414,50 @@ public class Lobby implements Closeable
 		return this.teams.containsKey(name);
 	}
 	
-	public void setPlayerTeam(Player player, Team team)
+	public boolean setPlayerTeam(Player player, Team team)
 	{
-		setPlayerTeam(player.getName(), team);
+		return setPlayerTeam(player.getName(), team);
 	}
 	
-	public void setPlayerTeam(String name, Team team)
+	public boolean setPlayerTeam(String name, Team team)
 	{
 		switch (type)
 		{
 		case HUB:
 			if (containsPlayer(name))
 				this.teams.put(name, Team.NONE);
-			return;
+			return false;
 			
 		case GAME:
 			if (team == null)
-				throw new IllegalArgumentException("Argument cannot be null");
+				return false;
 			if (containsPlayer(name))
 				this.teams.put(name, team);
-			return;
+			return true;
 			
 		default:
-			return;
+			return false;
 		}
 	}
 	
-	public void setAllPlayerTeams(Team team)
+	public boolean setAllPlayerTeams(Team team)
 	{
 		switch (type)
 		{
 		case HUB:
 			for (String key : teams.keySet())
 				teams.put(key, Team.NONE);
+			return false;
 			
 		case GAME:
 			if (team == null)
-				throw new IllegalArgumentException("Argument cannot be null");
+				return false;
 			for (String key : teams.keySet())
 				teams.put(key, team);
-			return;
+			return true;
 			
 		default:
-			return;
+			return false;
 		}
 	}
 	

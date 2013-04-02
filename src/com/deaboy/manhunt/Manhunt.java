@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
@@ -20,7 +21,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,6 +41,7 @@ import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.ManhuntWorld;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Selection;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
@@ -92,10 +96,11 @@ public class Manhunt implements Closeable, Listener
 	
 	private 		HashMap<Long, Lobby>	lobbies;
 	private			HashMap<String, Long>	player_lobbies;
-	private			HashMap<String, MGameMode> player_modes;
+	private			HashMap<String, ManhuntMode> player_modes;
 	private			HashMap<String, String> player_maps;
 	private			HashMap<String, World>	worlds;
 	private			HashMap<Long, GameType>	games;
+	private			HashMap<String, Selection> selections;
 	
 	
 	
@@ -118,9 +123,13 @@ public class Manhunt implements Closeable, Listener
 		this.lobbies =			new HashMap<Long, Lobby>();
 		this.worlds =			new HashMap<String, World>();
 		this.player_lobbies =	new HashMap<String, Long>();
-		this.player_modes =		new HashMap<String, MGameMode>();
+		this.player_modes =		new HashMap<String, ManhuntMode>();
 		this.player_maps =		new HashMap<String, String>();
 		this.games =			new HashMap<Long, GameType>();
+		this.selections =		new HashMap<String, Selection>();
+		
+		for (Player p : Bukkit.getOnlinePlayers())
+			selections.put(p.getName(), new Selection(p));
 		
 		//////// Set up worlds ////////
 		for (org.bukkit.World world : Bukkit.getWorlds())
@@ -204,6 +213,11 @@ public class Manhunt implements Closeable, Listener
 		
 		//////// Register events ////////
 		Bukkit.getPluginManager().registerEvents(this, ManhuntPlugin.getInstance());
+		
+		
+		//////// Handle online players ////////
+		for (Player p : Bukkit.getOnlinePlayers())
+			playerJoinServer(p);
 	}
 	
 	
@@ -384,6 +398,7 @@ public class Manhunt implements Closeable, Listener
 		p.setFlying(false);
 		p.setRemainingAir(10);
 		p.setTotalExperience(0);
+		p.setGameMode(GameMode.ADVENTURE);
 	}
 	
 	private void registerGameType(Class<? extends Game> gameType, String name)
@@ -593,6 +608,10 @@ public class Manhunt implements Closeable, Listener
 			else
 				getInstance().player_maps.put(p.getName(), null);
 		}
+		if (!getInstance().player_modes.containsKey(p.getName()))
+		{
+			getInstance().player_modes.put(p.getName(), ManhuntMode.PLAY);
+		}
 		
 		
 		
@@ -622,9 +641,9 @@ public class Manhunt implements Closeable, Listener
 		}
 		else
 		{
-			if (getPlayerLobby(p).gameIsRunning())
+			if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning())
 				getPlayerLobby(p).forfeitPlayer(p.getName());
-			else
+			else if (getPlayerLobby(p) != null)
 				getPlayerLobby(p).removePlayer(p);
 			stopFinder(p.getName(), false);
 			getInstance().removePlayer(p.getName());
@@ -668,13 +687,13 @@ public class Manhunt implements Closeable, Listener
 		}
 	}
 	
-	public static void setPlayerMode(Player p, MGameMode mode)
+	public static void setPlayerMode(Player p, ManhuntMode mode)
 	{
 		if (getInstance().player_modes.containsKey(p.getName()))
 			getInstance().player_modes.put(p.getName(), mode);
 	}
 	
-	public static MGameMode getPlayerMode(Player p)
+	public static ManhuntMode getPlayerMode(Player p)
 	{
 		if (getInstance().player_modes.containsKey(p.getName()))
 			return getInstance().player_modes.get(p.getName());
@@ -881,6 +900,45 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	
+	//////////////// SELECTIONS ////////
+	private Selection getPlayerSelection(Player p)
+	{
+		if (p == null)
+			return null;
+		
+		
+		// Return the Selection from WorldEdit
+		
+		// Return a Selection from Manhunt
+			if (selections.containsKey(p.getName()))
+				return selections.get(p.getName());
+			else
+			{
+				selections.put(p.getName(), new Selection(p));
+				return selections.get(p.getName());
+			}
+	}
+	
+	public static boolean setPlayerSelectionPrimaryCorner(Player p, Location loc)
+	{
+		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+			return false;
+		
+		getInstance().getPlayerSelection(p).setPrimaryCorner(loc);
+		return true;
+	}
+	
+	public static boolean setPlayerSelectionSecondaryCorner(Player p, Location loc)
+	{
+		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+			return false;
+		
+		getInstance().getPlayerSelection(p).setSecondaryCorner(loc);
+		return true;
+	}
+	
+	
+	
 	//////////////// GLOBAL MANHUNT EVENTS ////////
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
@@ -899,6 +957,47 @@ public class Manhunt implements Closeable, Listener
 	{
 		playerChat(e.getPlayer(), e.getMessage());
 		e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPlayerClick(PlayerInteractEvent e)
+	{
+		if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_BLOCK)
+			return;
+		
+		if (e.getPlayer().getItemInHand().getType() != Material.WOOD_AXE)
+			return;
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+			return;
+		
+		if (getPlayerMode(e.getPlayer()) != ManhuntMode.EDIT)
+			return;
+		
+		if (e.getAction() == Action.LEFT_CLICK_BLOCK)
+		{
+			if (setPlayerSelectionPrimaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
+			{
+				e.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Corner 1 set to ["
+						+ e.getClickedBlock().getLocation().getBlockX() + ", "
+						+ e.getClickedBlock().getLocation().getBlockY() + ", "
+						+ e.getClickedBlock().getLocation().getBlockZ() + "]");
+			}
+			e.setCancelled(true);
+		}
+		else if (e.getAction() == Action.RIGHT_CLICK_BLOCK)
+		{
+			if (setPlayerSelectionSecondaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
+			{
+
+				e.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Corner 2 set to ["
+						+ e.getClickedBlock().getLocation().getBlockX() + ", "
+						+ e.getClickedBlock().getLocation().getBlockY() + ", "
+						+ e.getClickedBlock().getLocation().getBlockZ() + "]");
+			}
+			e.setCancelled(true);
+		}
+		
 	}
 	
 	

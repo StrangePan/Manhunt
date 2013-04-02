@@ -16,6 +16,7 @@ import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.Team;
 
 public abstract class LobbyCommands
 {
@@ -648,6 +649,69 @@ public abstract class LobbyCommands
 		}
 	}
 	
+	
+	
+	public static boolean mteam(CommandSender sender, String[] args)
+	{
+		if (args.length == 0 || args[0].equalsIgnoreCase("help") || args[0].equals("?"))
+		{
+			Bukkit.dispatchCommand(sender, "help mteam");
+			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  join");
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("join"))
+			return mteam_join(sender, args);
+		
+		return true;
+	}
+	
+	private static boolean mteam_join(CommandSender sender, String[] args)
+	{
+		if (!(sender instanceof Player) && args.length != 3)
+		{
+			sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.WHITE + "/mteam join <team> <player>");
+			return true;
+		}
+		else if (args.length < 2 || args.length > 3)
+		{
+			sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.WHITE + "/mteam join <team> [player]");
+			return true;
+		}
+		
+		Player p;
+		Team t;
+		
+		if (args.length == 3)
+			p = Bukkit.getPlayer(args[2]);
+		else
+			p = (Player) sender;
+		
+		switch (args[1].toLowerCase())
+		{
+		case "hunter":
+		case "hunters":
+		case "hunt":
+			t = Team.HUNTERS;
+			break;
+		case "prey":
+			t = Team.PREY;
+			break;
+		case "spectate":
+		case "spectator":
+		case "spectators":
+			t = Team.SPECTATORS;
+			break;
+		default:
+			sender.sendMessage(ChatColor.RED + "Invalid team name.");
+			sender.sendMessage(ChatColor.GRAY + "Available teams: hunters, prey, spectators.");
+			return true;
+		}
+		
+		Manhunt.getPlayerLobby(p).setPlayerTeam(p, t);
+		
+		return true;
+	}
 	
 	
 	

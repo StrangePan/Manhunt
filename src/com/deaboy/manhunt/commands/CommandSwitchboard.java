@@ -34,6 +34,8 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mleave").setExecutor(this);
 		Bukkit.getPluginCommand("mlobby").setExecutor(this);
 		Bukkit.getPluginCommand("mlobbies").setExecutor(this);
+		Bukkit.getPluginCommand("mteam").setExecutor(this);
+		Bukkit.getPluginCommand("manhuntmode").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -88,6 +90,12 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (c.getName().equalsIgnoreCase("mleave"))
 			return LobbyCommands.mleave(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mteam"))
+			return LobbyCommands.mteam(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("manhuntmode"))
+			return PlayerCommands.manhuntmode(sender, arguments);
 		
 		return false;
 		
