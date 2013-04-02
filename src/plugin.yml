@@ -79,6 +79,6 @@ commands:
         aliases: [team]
     manhuntmode:
         usage: /manhuntmode <mode> [player]
-        description: Chances a player's Manhunt mode. Available modes- play, edit.
+        description: Changes a player's Manhunt mode. Currently available modes - PLAY, EDIT.
         aliases: [mhmode]
     

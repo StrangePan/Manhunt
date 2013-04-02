@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.commands.CommandSwitchboard;
 import com.deaboy.manhunt.commands.CommandUtil;
 import com.deaboy.manhunt.finder.Finder;
@@ -45,6 +46,8 @@ import com.deaboy.manhunt.map.Selection;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Manhunt implements Closeable, Listener
 {
@@ -102,6 +105,9 @@ public class Manhunt implements Closeable, Listener
 	private			HashMap<Long, GameType>	games;
 	private			HashMap<String, Selection> selections;
 	
+	private static	WorldEdit			worldedit;
+	private static	WorldEditPlugin		worldeditplugin;
+	
 	
 	
 	//---------------- Constructor ----------------//
@@ -127,6 +133,9 @@ public class Manhunt implements Closeable, Listener
 		this.player_maps =		new HashMap<String, String>();
 		this.games =			new HashMap<Long, GameType>();
 		this.selections =		new HashMap<String, Selection>();
+		
+		worldedit = null;
+		worldeditplugin = null;
 		
 		for (Player p : Bukkit.getOnlinePlayers())
 			selections.put(p.getName(), new Selection(p));
@@ -352,6 +361,18 @@ public class Manhunt implements Closeable, Listener
 	public static LoadoutManager getLoadouts()
 	{
 		return getInstance().loadouts;
+	}
+	
+	private static void verifyWorldEdit()
+	{
+		if (worldedit == null)
+			if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+				if (Bukkit.getPluginManager().getPlugin("WorldEdit") instanceof WorldEditPlugin)
+					worldedit = WorldEdit.getInstance();
+		if (worldeditplugin == null)
+			if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+				if (Bukkit.getPluginManager().getPlugin("WorldEdit") instanceof WorldEditPlugin)
+					worldeditplugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 	}
 	
 	
@@ -596,11 +617,13 @@ public class Manhunt implements Closeable, Listener
 		if (timeoutExists(p))
 			stopTimeout(p);
 		
+		// Reset the player's current lobby
 		if (!getInstance().player_lobbies.containsKey(p.getName()))
 		{
 			changePlayerLobby(p, Manhunt.getDefaultLobby().getId());
 		}
 		
+		// Set the player's current map
 		if (!getInstance().player_maps.containsKey(p.getName()))
 		{
 			if (getWorlds().size() == 1 && getWorlds().get(0).getMaps().size() == 1)
@@ -608,13 +631,12 @@ public class Manhunt implements Closeable, Listener
 			else
 				getInstance().player_maps.put(p.getName(), null);
 		}
+		
+		// Set the player's Manhunt mode
 		if (!getInstance().player_modes.containsKey(p.getName()))
 		{
-			getInstance().player_modes.put(p.getName(), ManhuntMode.PLAY);
+			setPlayerManhuntMode(p, ManhuntMode.PLAY, false, true);
 		}
-		
-		
-		
 		
 	}
 	
@@ -687,10 +709,43 @@ public class Manhunt implements Closeable, Listener
 		}
 	}
 	
-	public static void setPlayerMode(Player p, ManhuntMode mode)
+	public static void setPlayerManhuntMode(Player p, ManhuntMode mode, boolean announce, boolean gamemode)
 	{
-		if (getInstance().player_modes.containsKey(p.getName()))
-			getInstance().player_modes.put(p.getName(), mode);
+		// Validate arguments
+		if (p == null)
+			return;
+		
+		if (mode == null)
+			return;
+		
+		
+		// Set the player's game mode
+		if (announce && getInstance().player_modes.get(p.getName()) != mode)
+			p.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Manhunt Mode set to (" + mode.getId() + ") " + mode.getName());
+		Manhunt.log(p.getName() + "'s Manhunt mode set to (" + mode.getId() + ") " + mode.getName());
+		
+		getInstance().player_modes.put(p.getName(), mode);
+		
+		verifyWorldEdit();
+		
+		// Enable/disable world edit's tools.
+		switch (mode)
+		{
+		case PLAY:
+			if (gamemode)
+				p.setGameMode(GameMode.ADVENTURE);
+			if (worldedit != null && worldedit.getSession(p.getName()) != null)
+				worldedit.getSession(p.getName()).setToolControl(false);
+			break;
+		case EDIT:
+			if (gamemode)
+				p.setGameMode(GameMode.CREATIVE);
+			if (worldedit != null && worldedit.getSession(p.getName()) != null)
+				worldedit.getSession(p.getName()).setToolControl(true);
+			break;
+		}
+		
+		
 	}
 	
 	public static ManhuntMode getPlayerMode(Player p)
@@ -906,22 +961,27 @@ public class Manhunt implements Closeable, Listener
 		if (p == null)
 			return null;
 		
-		
-		// Return the Selection from WorldEdit
-		
-		// Return a Selection from Manhunt
-			if (selections.containsKey(p.getName()))
-				return selections.get(p.getName());
-			else
-			{
-				selections.put(p.getName(), new Selection(p));
-				return selections.get(p.getName());
-			}
+		verifyWorldEdit();
+		if (worldedit != null)
+		{
+			return null;
+		}
+		else if (selections.containsKey(p.getName()))
+		{
+			return selections.get(p.getName());
+		}
+		else
+		{
+			selections.put(p.getName(), new Selection(p));
+			return selections.get(p.getName());
+		}
 	}
 	
 	public static boolean setPlayerSelectionPrimaryCorner(Player p, Location loc)
 	{
-		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+		verifyWorldEdit();
+		
+		if (worldedit != null)
 			return false;
 		
 		getInstance().getPlayerSelection(p).setPrimaryCorner(loc);
@@ -930,11 +990,35 @@ public class Manhunt implements Closeable, Listener
 	
 	public static boolean setPlayerSelectionSecondaryCorner(Player p, Location loc)
 	{
-		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+		verifyWorldEdit();
+		
+		if (worldedit != null)
 			return false;
 		
 		getInstance().getPlayerSelection(p).setSecondaryCorner(loc);
 		return true;
+	}
+	
+	public static Location getPlayerSelectionPrimaryCorner(Player p)
+	{
+		if (worldeditplugin != null)
+			return getInstance().getPlayerSelection(p).getPrimaryCorner();
+		else if (worldeditplugin.getSelection(p) == null)
+			return null;
+		else
+			return worldeditplugin.getSelection(p).getMaximumPoint();
+	}
+	
+	public static Location getPlayerSelectionSecondaryCorner(Player p)
+	{
+		verifyWorldEdit();
+		
+		if (worldeditplugin != null)
+			return getInstance().getPlayerSelection(p).getSecondaryCorner();
+		else if (worldeditplugin.getSelection(p) == null)
+			return null;
+		else
+			return worldeditplugin.getSelection(p).getMinimumPoint();
 	}
 	
 	
@@ -965,23 +1049,26 @@ public class Manhunt implements Closeable, Listener
 		if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 		
-		if (e.getPlayer().getItemInHand().getType() != Material.WOOD_AXE)
-			return;
-		
-		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+		if (e.getPlayer().getItemInHand().getTypeId() != getSettings().SELECTION_TOOL.getValue())
 			return;
 		
 		if (getPlayerMode(e.getPlayer()) != ManhuntMode.EDIT)
+			return;
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
 			return;
 		
 		if (e.getAction() == Action.LEFT_CLICK_BLOCK)
 		{
 			if (setPlayerSelectionPrimaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
 			{
-				e.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Corner 1 set to ["
+				e.getPlayer().sendMessage(ChatManager.leftborder + "   First location set to " + ChatColor.GREEN + "("
 						+ e.getClickedBlock().getLocation().getBlockX() + ", "
 						+ e.getClickedBlock().getLocation().getBlockY() + ", "
-						+ e.getClickedBlock().getLocation().getBlockZ() + "]");
+						+ e.getClickedBlock().getLocation().getBlockZ() + ")"
+						+ ChatColor.GOLD
+						+ (getPlayerSelection(e.getPlayer()).isComplete() ? " [" + getPlayerSelection(e.getPlayer()).getArea() + "]" : "" )
+						+ ".");
 			}
 			e.setCancelled(true);
 		}
@@ -990,10 +1077,13 @@ public class Manhunt implements Closeable, Listener
 			if (setPlayerSelectionSecondaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
 			{
 
-				e.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Corner 2 set to ["
+				e.getPlayer().sendMessage(ChatManager.leftborder + "Second location set to " + ChatColor.GREEN + "("
 						+ e.getClickedBlock().getLocation().getBlockX() + ", "
 						+ e.getClickedBlock().getLocation().getBlockY() + ", "
-						+ e.getClickedBlock().getLocation().getBlockZ() + "]");
+						+ e.getClickedBlock().getLocation().getBlockZ() + ")"
+						+ ChatColor.GOLD
+						+ (getPlayerSelection(e.getPlayer()).isComplete() ? " [" + getPlayerSelection(e.getPlayer()).getArea() + "]" : "" )
+						+ ".");
 			}
 			e.setCancelled(true);
 		}
@@ -1004,6 +1094,9 @@ public class Manhunt implements Closeable, Listener
 	
 	public void close()
 	{
+		worldedit = null;
+		worldeditplugin = null;
+		
 		for (GameType gc : games.values())
 			gc.close();
 		

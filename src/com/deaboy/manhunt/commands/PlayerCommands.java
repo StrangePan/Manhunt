@@ -60,13 +60,11 @@ public abstract class PlayerCommands
 		if (m == null)
 		{
 			sender.sendMessage(ChatColor.RED + "Invalid Manhunt mode.");
-			sender.sendMessage(ChatManager.leftborder + "play, edit");
+			sender.sendMessage(ChatManager.leftborder + "Available modes: PLAY, EDIT");
 			return true;
 		}
 		
-		Manhunt.setPlayerMode(p, m);
-		p.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Your Manhunt Mode is set to " + m.getId() + ": " + m.getName());
-		Manhunt.log(p.getName() + " Manhunt mode set to " + m.getId() + ": " + m.getName());
+		Manhunt.setPlayerManhuntMode(p, m, true, true);
 		
 		return true;
 	}

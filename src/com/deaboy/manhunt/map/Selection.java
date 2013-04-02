@@ -49,6 +49,19 @@ public class Selection implements Closeable
 			this.secondary = corner.clone();
 	}
 	
+	public int getArea()
+	{
+		if (!isComplete())
+			return -1;
+		else
+			return (Math.abs(primary.getBlockX() - secondary.getBlockX()) + 1) * (Math.abs(primary.getBlockY() - secondary.getBlockY()) + 1) * (Math.abs(primary.getBlockZ() - secondary.getBlockZ()) + 1);
+	}
+	
+	public boolean isComplete()
+	{
+		return (primary != null && secondary != null);
+	}
+	
 	public void clear()
 	{
 		this.primary = null;

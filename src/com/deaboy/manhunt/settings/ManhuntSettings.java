@@ -23,7 +23,9 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	public final SettingInteger FINDER_ITEM;
 	public final SettingInteger TIME_LIMIT;
 	public final SettingInteger TIME_INTERMISSION;
-	public final SettingInteger TIME_SETUP;  
+	public final SettingInteger TIME_SETUP;
+	
+	public final SettingInteger SELECTION_TOOL;
 	
 	public ManhuntSettings( String filepath )
 	{
@@ -46,6 +48,8 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		addSetting(TIME_LIMIT =			new SettingInteger("timelimit", 60, "Minutes that the hunt will last.", "The game will never end."), true );
 		addSetting(TIME_INTERMISSION =	new SettingInteger("intermission", 3, "Minutes between Manhunt games.", ""), true);
 		addSetting(TIME_SETUP =			new SettingInteger("setuptime", 10, "Minutes the prey have to prepare.", "There is no setup time."), true);
+		
+		addSetting(SELECTION_TOOL =		new SettingInteger("selectiontool", 271, "", ""), false);
 		
 	}
 	
