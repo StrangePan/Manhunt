@@ -6,6 +6,7 @@ public abstract class Zone
 {
 	//---------------- Properties ----------------/
 	private final ZoneType type;
+	private String name;
 	private Location corner1;
 	private Location corner2;
 	private boolean ignoreY;
@@ -13,7 +14,7 @@ public abstract class Zone
 	
 	
 	//---------------- Constructors ----------------//
-	public Zone(ZoneType type, Location corner1, Location corner2, boolean ignoreY)
+	public Zone(ZoneType type, String name, Location corner1, Location corner2, boolean ignoreY)
 	{
 		if (corner1 == null || corner1 == null)
 			throw new IllegalArgumentException("Both locations must not be null.");
@@ -21,8 +22,9 @@ public abstract class Zone
 			throw new IllegalArgumentException("Both locations must be in the same world.");
 		
 		this.type = type;
-		this.corner1 = corner1;
-		this.corner2 = corner2;
+		this.name = name;
+		this.corner1 = corner1.clone();
+		this.corner2 = corner2.clone();
 		this.ignoreY = ignoreY;
 	}
 	
@@ -36,6 +38,15 @@ public abstract class Zone
 	public ZoneType getType()
 	{
 		return this.type;
+	}
+	
+	/**
+	 * Gets the name for this zone.
+	 * @return
+	 */
+	public String getName()
+	{
+		return this.name;
 	}
 	
 	/**
@@ -78,6 +89,16 @@ public abstract class Zone
 	
 	
 	//---------------- Setters ----------------//
+	/**
+	 * Changes the name of this zone.
+	 * @param name The new name for the zone.
+	 */
+	public void setName(String name)
+	{
+		if (name != null)
+			this.name = name;
+	}
+	
 	/**
 	 * Changes the first corner of the zone to a clone of
 	 * the given location. 
@@ -183,6 +204,8 @@ public abstract class Zone
 		
 		return loc;
 	}
+	
+	
 	
 	
 	

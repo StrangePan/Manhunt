@@ -56,6 +56,13 @@ public interface Map
 	public List<Zone> getZones();
 	
 	/**
+	 * Gets a zone based on the zone's name.
+	 * @param name The name of the zone to get.
+	 * @return The zone with the given name or null if none exist.
+	 */
+	public Zone getZone(String name);
+	
+	/**
 	 * Gets a list of the specified type(s) of zones associated
 	 * with this maps.
 	 * @param types The different types of zone(s) desired.
@@ -130,16 +137,29 @@ public interface Map
 	public void clearPreySpawns();
 	
 	/**
-	 * Adds a new zone to the map.
-	 * @param zone The zone to add.
+	 * Creates and adds a new zone to the map.
+	 * @param type The type of zone
+	 * @param corner1 The first corner of the zone
+	 * @param corner2 The second corner of the zone
+	 * @return The newly created zone or null if it didn't work.
 	 */
-	public void addZone(Zone zone);
+	public Zone createZone(ZoneType type, Location corner1, Location corner2);
+	
+	/**
+	 * Creates and adds a new zone to the map.
+	 * @param type The type of zone
+	 * @param name The name of the new zone
+	 * @param corner1 The first corner of the zone
+	 * @param corner2 The second corner of the zone
+	 * @return The newly created zone or null if it didn't work.
+	 */
+	public Zone createZone(ZoneType type, String name, Location corner1, Location corner2);
 	
 	/**
 	 * Removes a zone from the map.
-	 * @param zone The zone to remove.
+	 * @param name The name of the zone to remove.
 	 */
-	public void removeZone(Zone zone);
+	public void removeZone(String name);
 	
 	/**
 	 * Clears all zones from this map.

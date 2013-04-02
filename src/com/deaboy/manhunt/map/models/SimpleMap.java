@@ -50,7 +50,10 @@ public class SimpleMap
 		for (SimpleSpawn spawn : SetupSpawns)
 			map.addSetupSpawn(spawn.toSpawn(world));
 		for (SimpleZone zone : Zones)
-			map.addZone(zone.toZone(world));
+		{
+			Zone z = zone.toZone(world);
+			map.createZone(z.getType(), z.getName(), z.getCorner1(), z.getCorner2());
+		}
 		
 		return map;
 	}

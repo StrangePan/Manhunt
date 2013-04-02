@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.map;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -13,7 +14,7 @@ public class ManhuntMap implements Map
 	private List<Spawn> setup;
 	private List<Spawn> hunter;
 	private List<Spawn> prey;
-	private List<Zone> zones;
+	private HashMap<String, Zone> zones;
 	
 	
 	//-------------------- Constructors --------------------//
@@ -38,7 +39,7 @@ public class ManhuntMap implements Map
 		this.setup = new ArrayList<Spawn>();
 		this.hunter = new ArrayList<Spawn>();
 		this.prey = new ArrayList<Spawn>();
-		this.zones = new ArrayList<Zone>();
+		this.zones = new HashMap<String, Zone>();
 	}
 	
 	
@@ -88,16 +89,25 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
+	public Zone getZone(String name)
+	{
+		if (zones.containsKey(name))
+			return zones.get(name);
+		else
+			return null;
+	}
+	
+	@Override
 	public List<Zone> getZones()
 	{
-		return this.zones;
+		return new ArrayList<Zone>(this.zones.values());
 	}
 	
 	@Override
 	public List<Zone> getZones(ZoneType ... types)
 	{
 		List<Zone> zones = new ArrayList<Zone>();
-		for (Zone zone : this.zones)
+		for (Zone zone : this.zones.values())
 		{
 			for (ZoneType type : types)
 			{
@@ -188,19 +198,56 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public void addZone(Zone zone)
+	public Zone createZone(ZoneType type, Location corner1, Location corner2)
 	{
-		if (zone.getWorld() != getWorld())
-			throw new IllegalArgumentException("The zone must be in the same world as the map.");
-		if (!zones.contains(zone))
-			zones.add(zone);
+		return createZone(type, new String(), corner1, corner2);
 	}
 	
 	@Override
-	public void removeZone(Zone zone)
+	public Zone createZone(ZoneType type, String name, Location corner1, Location corner2)
 	{
-		if (zones.contains(zone))
-			zones.remove(zone);
+		Zone zone;
+		
+		if (type == null)
+			return null;
+		if (corner1 == null)
+			return null;
+		if (corner2 == null)
+			return null;
+		if (name == null)
+			name = "";
+		if (corner1.getWorld() != corner2.getWorld())
+			return null;
+		if (name.contains(" "))
+			return null;
+		
+		
+		
+		if (name.isEmpty())
+		{
+			int i = 1;
+			while (getZone("zone" + i) != null)
+				i++;
+			name = "zone" + i;
+		}
+		else
+		{
+			if (zones.containsKey(name))
+				return null;
+		}
+		
+		zone = new ManhuntZone(type, name, corner1, corner2);
+		
+		zones.put(name, zone);
+		
+		return zone;
+	}
+	
+	@Override
+	public void removeZone(String name)
+	{
+		if (zones.containsKey(name))
+			zones.remove(name);
 	}
 	
 	@Override

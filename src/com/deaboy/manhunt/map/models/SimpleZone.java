@@ -11,9 +11,10 @@ public class SimpleZone
 	//---------------- Properties ----------------//
 	public String Version;
 	public int Type;
+	public String Name;
 	public SimpleLocation Corner1;
 	public SimpleLocation Corner2;
-	public boolean IgnoreY;
+	public byte IgnoreY;
 	
 	
 	
@@ -28,7 +29,7 @@ public class SimpleZone
 	//---------------- Public Methods ----------------//
 	public Zone toZone(World world)
 	{
-		return new ManhuntZone(ZoneType.fromId(Type), Corner1.toLocation(world), Corner2.toLocation(world), IgnoreY);
+		return new ManhuntZone(ZoneType.fromId(Type), Name, Corner1.toLocation(world), Corner2.toLocation(world), (char) IgnoreY != 0);
 	}
 	
 	
@@ -38,9 +39,10 @@ public class SimpleZone
 	{
 		SimpleZone model = new SimpleZone();
 		model.Type = zone.getType().getId();
+		model.Name = zone.getName();
 		model.Corner1 = SimpleLocation.fromLocation(zone.getCorner1());
 		model.Corner2 = SimpleLocation.fromLocation(zone.getCorner2());
-		model.IgnoreY = zone.getIgnoreY();
+		model.IgnoreY = zone.getIgnoreY() ? (byte) (char) 1 : (byte) (char) 0;
 		return model;
 	}
 	

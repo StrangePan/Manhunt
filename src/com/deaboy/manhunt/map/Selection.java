@@ -37,16 +37,18 @@ public class Selection implements Closeable
 	{
 		if (corner == null)
 			this.primary = null;
-		else
-			this.primary = corner.clone();
+		if (this.secondary != null && corner.getWorld() != this.secondary.getWorld())
+			this.secondary = null;
+		this.primary = corner.clone();
 	}
 	
 	public void setSecondaryCorner(Location corner)
 	{
 		if (corner == null)
 			this.secondary = null;
-		else
-			this.secondary = corner.clone();
+		if (this.primary != null && corner.getWorld() != this.primary.getWorld())
+			this.primary = null;
+		this.secondary = corner.clone();
 	}
 	
 	public int getArea()

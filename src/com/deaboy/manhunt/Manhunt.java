@@ -1001,7 +1001,9 @@ public class Manhunt implements Closeable, Listener
 	
 	public static Location getPlayerSelectionPrimaryCorner(Player p)
 	{
-		if (worldeditplugin != null)
+		verifyWorldEdit();
+		
+		if (worldeditplugin == null)
 			return getInstance().getPlayerSelection(p).getPrimaryCorner();
 		else if (worldeditplugin.getSelection(p) == null)
 			return null;
@@ -1013,7 +1015,7 @@ public class Manhunt implements Closeable, Listener
 	{
 		verifyWorldEdit();
 		
-		if (worldeditplugin != null)
+		if (worldeditplugin == null)
 			return getInstance().getPlayerSelection(p).getSecondaryCorner();
 		else if (worldeditplugin.getSelection(p) == null)
 			return null;

@@ -36,6 +36,9 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mlobbies").setExecutor(this);
 		Bukkit.getPluginCommand("mteam").setExecutor(this);
 		Bukkit.getPluginCommand("manhuntmode").setExecutor(this);
+		Bukkit.getPluginCommand("mzone").setExecutor(this);
+		Bukkit.getPluginCommand("mzones").setExecutor(this);
+		Bukkit.getPluginCommand("newzone").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
@@ -96,6 +99,15 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (c.getName().equalsIgnoreCase("manhuntmode"))
 			return PlayerCommands.manhuntmode(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mzone"))
+			return MapCommands.mzone(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mzones"))
+			return MapCommands.mzones(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("newzone"))
+			return MapCommands.newzone(sender, arguments);
 		
 		return false;
 		
