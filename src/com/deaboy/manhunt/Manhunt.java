@@ -53,9 +53,9 @@ public class Manhunt implements Closeable, Listener
 {
 	//---------------- Constants ----------------//
 	/** The extension to use for property files. */
-	public static final String extension_properties = ".properties";
+	public static final String extension_properties = ".prop";
 	/** The extension to use for lobby files. */
-	public static final String extension_lobbies = ".lobby";
+	public static final String extension_lobbies = ".prop";
 	/** The extension to use for loadout files. */
 	public static final String extension_loadouts = ".dat";
 	/** The extension to use for the world data files. */

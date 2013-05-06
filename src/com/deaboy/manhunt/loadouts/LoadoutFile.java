@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.jnbt.CompoundTag;
@@ -83,7 +83,7 @@ public class LoadoutFile
 			{
 				if (tag.getTagType() == TagType.COMPOUND)
 				{
-					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R2.ItemStack.createStack(((CompoundTag) tag).toNBTTag()));
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R3.ItemStack.createStack(((CompoundTag) tag).toNBTTag()));
 					
 					if (((CompoundTag) tag).getValue().containsKey("Slot") && ((CompoundTag) tag).getValue().get("Slot").getTagType() == TagType.BYTE)
 					{
@@ -101,7 +101,7 @@ public class LoadoutFile
 			{
 				if (tag.getTagType() == TagType.COMPOUND)
 				{
-					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R2.ItemStack.createStack(((CompoundTag) tag).toNBTTag()));
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R3.ItemStack.createStack(((CompoundTag) tag).toNBTTag()));
 					
 					if (((CompoundTag) tag).getValue().containsKey("Slot") && ((CompoundTag) tag).getValue().get("Slot").getTagType() == TagType.BYTE)
 					{
@@ -137,7 +137,7 @@ public class LoadoutFile
 			{
 				if (tag.getTagType() == TagType.COMPOUND)
 				{
-					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R2.ItemStack.createStack(((CompoundTag) tag).toNBTTag()));
+					ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_5_R3.ItemStack.createStack(((CompoundTag) tag).toNBTTag()));
 					
 					if (((CompoundTag) tag).getValue().containsKey(tag_chance) && ((CompoundTag) tag).getValue().get(tag_chance).getTagType() == TagType.DOUBLE)
 					{
