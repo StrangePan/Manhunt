@@ -1062,7 +1062,7 @@ public class Manhunt implements Closeable, Listener
 		
 		if (e.getAction() == Action.LEFT_CLICK_BLOCK)
 		{
-			if (setPlayerSelectionPrimaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
+			if (!e.getClickedBlock().getLocation().equals(getPlayerSelectionPrimaryCorner(e.getPlayer())) && setPlayerSelectionPrimaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
 			{
 				e.getPlayer().sendMessage(ChatManager.leftborder + "   First location set to " + ChatColor.GREEN + "("
 						+ e.getClickedBlock().getLocation().getBlockX() + ", "
@@ -1076,7 +1076,7 @@ public class Manhunt implements Closeable, Listener
 		}
 		else if (e.getAction() == Action.RIGHT_CLICK_BLOCK)
 		{
-			if (setPlayerSelectionSecondaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
+			if (!e.getClickedBlock().getLocation().equals(getPlayerSelectionSecondaryCorner(e.getPlayer())) && setPlayerSelectionSecondaryCorner(e.getPlayer(), e.getClickedBlock().getLocation()))
 			{
 
 				e.getPlayer().sendMessage(ChatManager.leftborder + "Second location set to " + ChatColor.GREEN + "("

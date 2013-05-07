@@ -25,12 +25,18 @@ public class Selection implements Closeable
 	
 	public Location getPrimaryCorner()
 	{
-		return primary.clone();
+		if (primary == null)
+			return null;
+		else
+			return primary.clone();
 	}
 	
 	public Location getSecondaryCorner()
 	{
-		return secondary.clone();
+		if (secondary == null)
+			return null;
+		else
+			return secondary.clone();
 	}
 	
 	public void setPrimaryCorner(Location corner)
