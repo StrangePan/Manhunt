@@ -93,6 +93,6 @@ commands:
         usage: /mzones [page|all]
         description: Lists the currently selected map's zones.
         aliases: [zones]
-        
-        
+    
+    
     

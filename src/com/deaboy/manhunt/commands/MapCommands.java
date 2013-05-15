@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntMode;
 import com.deaboy.manhunt.chat.ChatManager;
+import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.map.Zone;
@@ -51,6 +52,11 @@ public abstract class MapCommands
 		else if (args[0].equalsIgnoreCase("zones"))
 		{
 			return listzones(sender, args);
+		}
+		
+		else if (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("rm"))
+		{
+			return deletemap(sender, args);
 		}
 		
 		else
@@ -161,6 +167,95 @@ public abstract class MapCommands
 		}
 	}
 	
+	private static boolean deletemap(CommandSender sender, String args[])
+	{
+		Map map;
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+		}
+		
+		map = CommandUtil.getSelectedMap(sender);
+		
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must first select a map!");
+			sender.sendMessage(ChatColor.GRAY + "Use /mmap select <map full name>");
+			return true;
+		}
+		
+		if (!CommandUtil.isVerified(sender))
+		{
+			CommandUtil.addVerifyCommand(sender, "/mmap delete");
+			return true;
+		}
+		
+		for (Lobby lobby : Manhunt.getLobbies())
+		{
+			lobby.removeMap(map);
+		}
+		
+		map.getWorld().removeMap(map.getName());
+		
+		sender.sendMessage("That map has been deleted.");
+		
+		return true;
+	}
+	
+	
+	// Zones
+	public static boolean mzone(CommandSender sender, String args[])
+	{
+		String args2[];
+		
+		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
+		{
+			Bukkit.getServer().dispatchCommand(sender, "help mzone");
+			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, new, delete");
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("list"))
+		{
+			return listzones(sender, args);
+		}
+		else if (args[0].equalsIgnoreCase("new") || args[0].equalsIgnoreCase("create") || args[0].equalsIgnoreCase("add"))
+		{
+			args2 = new String[args.length - 1];
+			for (int i = 1; i < args.length; i++)
+				args2[i-1] = args[i];
+			return newzone(sender, args2);
+		}
+		else if (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("rm"))
+		{
+			return deletezone(sender, args);
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Unknown command.");
+			sender.sendMessage(ChatColor.GRAY + "Available commands: list, new");
+		}
+		
+		
+		return true;
+	}
+	
+	public static boolean mzones(CommandSender sender, String args[])
+	{
+		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
+		{
+			Bukkit.dispatchCommand(sender, "help mzones");
+			return true;
+		}
+		
+		String args2[] = new String[args.length + 1];
+		for (int i = 0; i < args.length; i++)
+			args2[i+1] = args[i];
+		
+		return listzones(sender, args2);
+	}
+	
 	private static boolean listzones(CommandSender sender, String args[])
 	{
 		final int perpage = 8;
@@ -232,53 +327,53 @@ public abstract class MapCommands
 		return true;
 	}
 	
-	
-	// Spawns n zones n stuff
-	public static boolean mzone(CommandSender sender, String args[])
+	private static boolean deletezone(CommandSender sender, String args[])
 	{
-		String args2[];
+		// Declarations
+		Zone z;
+		Map m;
 		
-		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
+		
+		// Permission checks
+		if (!sender.isOp())
 		{
-			Bukkit.getServer().dispatchCommand(sender, "help mzone");
-			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, new");
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
 		}
 		
-		if (args[0].equalsIgnoreCase("list"))
+		// Check for arguments
+		if (args.length != 2)
 		{
-			return listzones(sender, args);
-		}
-		if (args[0].equalsIgnoreCase("new") || args[0].equalsIgnoreCase("create") || args[0].equalsIgnoreCase("add"))
-		{
-			args2 = new String[args.length - 1];
-			for (int i = 1; i < args.length; i++)
-				args2[i-1] = args[i];
-			return newzone(sender, args2);
-		}
-		else
-		{
-			sender.sendMessage(ChatColor.RED + "Unknown command.");
-			sender.sendMessage(ChatColor.GRAY + "Available commands: list, new");
+			Bukkit.dispatchCommand(sender, "help mzone");
+			sender.sendMessage(ChatColor.RED + "Proper usage: /mzone delete <zone name>");
+			sender.sendMessage(ChatColor.GRAY + "Use /mzone list to list all zones in the selected map.");
+			return true;
 		}
 		
+		m = CommandUtil.getSelectedMap(sender);
+		
+		// Check for selected map
+		if (m == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must first select a map!");
+			sender.sendMessage(ChatColor.GRAY + "Use /mmap select <map full name>");
+			return true;
+		}
+		
+		z = m.getZone(args[2]);
+		
+		if (z == null)
+		{
+			sender.sendMessage(ChatColor.RED + "There are no zones in this map by that name.");
+			sender.sendMessage(ChatColor.GRAY + "Use /mzone list to list all zones in the selected map.");
+			return true;
+		}
+		
+		m.removeZone(z.getName());
+		
+		sender.sendMessage(ChatColor.GREEN + "Removed zone " + z.getName() + " removed from map.");
 		
 		return true;
-	}
-	
-	public static boolean mzones(CommandSender sender, String args[])
-	{
-		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
-		{
-			Bukkit.dispatchCommand(sender, "help mzones");
-			return true;
-		}
-		
-		String args2[] = new String[args.length + 1];
-		for (int i = 0; i < args.length; i++)
-			args2[i+1] = args[i];
-		
-		return listzones(sender, args2);
 	}
 	
 	public static boolean newzone(CommandSender sender, String args[])
@@ -382,7 +477,45 @@ public abstract class MapCommands
 	}
 	
 	
+	// Spawns
+	public static boolean mspawn(CommandSender sender, String args[])
+	{
+		if (args.length == 0 || args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help"))
+		{
+			Bukkit.dispatchCommand(sender, "/help mspawn");
+			return true;
+		}
+		
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return true;
+		}
+		
+		else if (args[0].equalsIgnoreCase("new") || args[0].equalsIgnoreCase("create"))
+		{
+			if (args.length == 2 && (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("prey")))
+			{
+				
+			}
+			else
+			{
+				sender.sendMessage(ChatColor.GRAY + "Usage: /mspawn " + args[0] + " <hunter|prey|spectator>");
+				return true;
+			}
+			
+			
+			
+		}
+		
+		return true;
+	}
 	
+	public static boolean mspawns(CommandSender sender, String args[])
+	{
+		Bukkit.dispatchCommand(sender, "/mspawn list " + (args.length == 0 ? "" : args[0]));
+		return true;
+	}
 	
 	
 }
