@@ -5,14 +5,19 @@ import org.bukkit.Location;
 public class ManhuntZone extends Zone
 {
 	//---------------- Constructors ----------------//
-	public ManhuntZone(ZoneType type, String name, Location corner1, Location corner2)
+	public ManhuntZone(String name, Location primaryCorner, Location secondaryCorner)
 	{
-		this(type, name, corner1, corner2, false);
+		this(name, primaryCorner, secondaryCorner, false, 0);
 	}
 	
-	public ManhuntZone(ZoneType type, String name, Location corner1, Location corner2, boolean ignoreY)
+	public ManhuntZone(String name, Location primaryCorner, Location secondaryCorner, boolean ignoreY)
 	{
-		super(type, name, corner1, corner2, ignoreY);
+		this(name, primaryCorner, secondaryCorner, ignoreY, 0);
+	}
+	
+	public ManhuntZone(String name, Location primaryCorner, Location secondaryCorner, boolean ignoreY, int flags)
+	{
+		super(name, primaryCorner, secondaryCorner, ignoreY, flags);
 	}
 	
 	

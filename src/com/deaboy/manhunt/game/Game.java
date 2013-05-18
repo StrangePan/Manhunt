@@ -40,7 +40,7 @@ import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Zone;
-import com.deaboy.manhunt.map.ZoneType;
+import com.deaboy.manhunt.map.ZoneFlag;
 
 public abstract class Game implements Closeable, Listener
 {
@@ -654,7 +654,7 @@ public abstract class Game implements Closeable, Listener
 		
 		if (ManhuntUtil.isHostile(e.getEntity()))
 		{
-			for (Zone zone : getMap().getZones(ZoneType.NO_MOBS))
+			for (Zone zone : getMap().getZones(ZoneFlag.NO_MOBS))
 			{
 				if (zone.containsLocation(e.getLocation()))
 				{
@@ -746,11 +746,11 @@ public abstract class Game implements Closeable, Listener
 		
 		
 		// Take map zones into account
-		for (Zone zone : getMap().getZones(ZoneType.BUILD, ZoneType.NO_BUILD))
+		for (Zone zone : getMap().getZones(ZoneFlag.BUILD, ZoneFlag.NO_BUILD))
 		{
-			if ((!e.isCancelled() || zone.getType() != ZoneType.NO_BUILD) && zone.containsLocation(loc))
+			if ((!e.isCancelled() || !zone.checkFlag(ZoneFlag.NO_BUILD)) && zone.containsLocation(loc))
 			{
-				if (zone.getType() == ZoneType.BUILD)
+				if (zone.checkFlag(ZoneFlag.BUILD))
 				{
 					e.setCancelled(false);
 					break;

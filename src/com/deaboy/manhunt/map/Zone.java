@@ -5,7 +5,7 @@ import org.bukkit.Location;
 public abstract class Zone
 {
 	//---------------- Properties ----------------/
-	private final ZoneType type;
+	private int flags;
 	private String name;
 	private Location corner1;
 	private Location corner2;
@@ -14,32 +14,23 @@ public abstract class Zone
 	
 	
 	//---------------- Constructors ----------------//
-	public Zone(ZoneType type, String name, Location corner1, Location corner2, boolean ignoreY)
+	public Zone(String name, Location primaryCorner, Location secondaryCorner, boolean ignoreY, int flags)
 	{
-		if (corner1 == null || corner1 == null)
+		if (primaryCorner == null || primaryCorner == null)
 			throw new IllegalArgumentException("Both locations must not be null.");
-		if (corner1.getWorld() != corner2.getWorld())
+		if (primaryCorner.getWorld() != secondaryCorner.getWorld())
 			throw new IllegalArgumentException("Both locations must be in the same world.");
 		
-		this.type = type;
+		this.flags = flags;
 		this.name = name;
-		this.corner1 = corner1.clone();
-		this.corner2 = corner2.clone();
+		this.corner1 = primaryCorner.clone();
+		this.corner2 = secondaryCorner.clone();
 		this.ignoreY = ignoreY;
 	}
 	
 	
 	
 	//---------------- Getters ----------------//
-	/**
-	 * Gets the type for this zone.
-	 * @return
-	 */
-	public ZoneType getType()
-	{
-		return this.type;
-	}
-	
 	/**
 	 * Gets the name for this zone.
 	 * @return
@@ -50,10 +41,10 @@ public abstract class Zone
 	}
 	
 	/**
-	 * Gets the first corner of this zone.
+	 * Gets the primary corner of this zone.
 	 * @return
 	 */
-	public Location getCorner1()
+	public Location getPrimaryCorner()
 	{
 		return this.corner1.clone();
 	}
@@ -62,7 +53,7 @@ public abstract class Zone
 	 * Gets the second corner of this zone.
 	 * @return
 	 */
-	public Location getCorner2()
+	public Location getSecondaryCorner()
 	{
 		return this.corner2.clone();
 	}
@@ -138,6 +129,52 @@ public abstract class Zone
 	public void setIgnoreY(boolean ignore)
 	{
 		this.ignoreY = ignore;
+	}
+	
+	/**
+	 * Sets a flag's value on a Zone.
+	 * @param flag The flag to change.
+	 * @param val The value of the flag. true for on, false for off.
+	 */
+	public void setFlag(ZoneFlag flag, boolean val)
+	{
+		if (flag == null)
+		{
+			throw new IllegalArgumentException("Argument 'flag' cannot be null.");
+		}
+		flags |= 1 << flag.ordinal();
+	}
+	
+	/** 
+	 * Sets this zone's falgs using an integer.
+	 * @param flagCode The integer code for zone flags.
+	 */
+	public void setFlags(int flagCode)
+	{
+		this.flags = flagCode;
+	}
+	
+	/**
+	 * Checks whether a flag was set on this Zone.
+	 * @param flag The flag to check for.
+	 * @return True if the flag is set, false if not.
+	 */
+	public boolean checkFlag(ZoneFlag flag)
+	{
+		if (flag == null)
+		{
+			throw new IllegalArgumentException("Argument 'flag' canot be null.");
+		}
+		return (flags & 1 << flag.ordinal()) != 0;
+	}
+	
+	/**
+	 * Gets an integer containing the state of this zone's flags.
+	 * @return integer code representing the set and unset flags.
+	 */
+	public int getFlags()
+	{
+		return flags;
 	}
 	
 	

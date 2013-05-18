@@ -68,7 +68,7 @@ public interface Map
 	 * @param types The different types of zone(s) desired.
 	 * @return
 	 */
-	public List<Zone> getZones(ZoneType ... types);
+	public List<Zone> getZones(ZoneFlag ... types);
 	
 	
 	
@@ -143,7 +143,7 @@ public interface Map
 	 * @param corner2 The second corner of the zone
 	 * @return The newly created zone or null if it didn't work.
 	 */
-	public Zone createZone(ZoneType type, Location corner1, Location corner2);
+	public Zone createZone(Location corner1, Location corner2);
 	
 	/**
 	 * Creates and adds a new zone to the map.
@@ -153,7 +153,7 @@ public interface Map
 	 * @param corner2 The second corner of the zone
 	 * @return The newly created zone or null if it didn't work.
 	 */
-	public Zone createZone(ZoneType type, String name, Location corner1, Location corner2);
+	public Zone createZone(String name, Location corner1, Location corner2);
 	
 	/**
 	 * Removes a zone from the map.

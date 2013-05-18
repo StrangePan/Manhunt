@@ -15,7 +15,7 @@ import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.map.Zone;
-import com.deaboy.manhunt.map.ZoneType;
+import com.deaboy.manhunt.map.ZoneFlag;
 
 public abstract class MapCommands
 {
@@ -322,7 +322,13 @@ public abstract class MapCommands
 		
 		for (Zone zone : zones)
 		{
-			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + zone.getName() + "    " + ChatColor.GRAY + zone.getType().getName());
+			String flaginfo = new String();
+			for (ZoneFlag flag : ZoneFlag.values())
+			{
+				if (zone.checkFlag(flag))
+					flaginfo += flag.getName() + ", ";
+			}
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + zone.getName() + "    " + flaginfo);
 		}
 		return true;
 	}
@@ -383,7 +389,7 @@ public abstract class MapCommands
 		Location c2;
 		Map m;
 		String name;
-		ZoneType zt;
+		ZoneFlag zt;
 		Zone z;
 		
 		// Verify sender is a Player
@@ -414,7 +420,7 @@ public abstract class MapCommands
 		c1 = Manhunt.getPlayerSelectionPrimaryCorner(p);
 		c2 = Manhunt.getPlayerSelectionSecondaryCorner(p);
 		m = Manhunt.getPlayerSelectedMap(p);
-		zt = ZoneType.fromName(args[0]);
+		zt = ZoneFlag.fromName(args[0]);
 		
 		if (!p.isOp())
 		{
@@ -452,7 +458,7 @@ public abstract class MapCommands
 		{
 			sender.sendMessage(ChatColor.RED + args[0] + " is not a valid zone type.");
 			String types = ChatColor.GRAY + "Choose from the following:";
-			for (ZoneType t : ZoneType.values())
+			for (ZoneFlag t : ZoneFlag.values())
 				types += " " + t.getName();
 			sender.sendMessage(types);
 		}

@@ -104,14 +104,14 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public List<Zone> getZones(ZoneType ... types)
+	public List<Zone> getZones(ZoneFlag ... flags)
 	{
 		List<Zone> zones = new ArrayList<Zone>();
 		for (Zone zone : this.zones.values())
 		{
-			for (ZoneType type : types)
+			for (ZoneFlag flag : flags)
 			{
-				if (zone.getType() == type)
+				if (zone.checkFlag(flag))
 				{
 					zones.add(zone);
 					break;
@@ -198,18 +198,16 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public Zone createZone(ZoneType type, Location corner1, Location corner2)
+	public Zone createZone(Location corner1, Location corner2)
 	{
-		return createZone(type, new String(), corner1, corner2);
+		return createZone(new String(), corner1, corner2);
 	}
 	
 	@Override
-	public Zone createZone(ZoneType type, String name, Location corner1, Location corner2)
+	public Zone createZone(String name, Location corner1, Location corner2)
 	{
 		Zone zone;
 		
-		if (type == null)
-			return null;
 		if (corner1 == null)
 			return null;
 		if (corner2 == null)
@@ -236,7 +234,7 @@ public class ManhuntMap implements Map
 				return null;
 		}
 		
-		zone = new ManhuntZone(type, name, corner1, corner2);
+		zone = new ManhuntZone(name, corner1, corner2);
 		
 		zones.put(name, zone);
 		
