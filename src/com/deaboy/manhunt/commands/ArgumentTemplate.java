@@ -12,6 +12,8 @@ public class ArgumentTemplate
 	private List<String> parameters;
 	private boolean required;
 	
+	private boolean locked; 
+	
 	
 	
 	// Constructors
@@ -28,6 +30,8 @@ public class ArgumentTemplate
 		aliases = new ArrayList<String>();
 		parameters = new ArrayList<String>();
 		required = false;
+		
+		locked = false;
 	}
 	
 	
@@ -35,55 +39,79 @@ public class ArgumentTemplate
 	// Setters
 	public ArgumentTemplate setName(String name)
 	{
+		if (locked)
+			return this;
 		if (name != null && !name.isEmpty())
 			this.name = name;
 		return this;
 	}
 	public ArgumentTemplate setType(ArgumentType type)
 	{
+		if (locked)
+			return this;
 		if (type != null)
 			this.type = type;
 		return this;
 	}
 	public ArgumentTemplate addAlias(String alias)
 	{
+		if (locked)
+			return this;
 		if (alias != null && !alias.isEmpty() && !this.aliases.contains(alias))
 			this.aliases.add(alias);
 		return this;
 	}
 	public ArgumentTemplate removeAlias(String alias)
 	{
+		if (locked)
+			return this;
 		if (alias != null && !alias.isEmpty() && this.aliases.contains(alias))
 			this.aliases.remove(alias);
 		return this;
 	}
 	public ArgumentTemplate clearAliases()
 	{
+		if (locked)
+			return this;
 		this.aliases.clear();
 		return this;
 	}
 	public ArgumentTemplate addParameter(String parameter)
 	{
+		if (locked)
+			return this;
 		if (parameter != null && !parameter.isEmpty() && !this.parameters.contains(parameter) && (this.type == ArgumentType.RADIO || this.type == ArgumentType.CHECK))
 			this.parameters.add(parameter);
 		return this;
 	}
 	public ArgumentTemplate removeParameter(String parameter)
 	{
+		if (locked)
+			return this;
 		if (parameter != null && !parameter.isEmpty() && this.parameters.contains(parameter))
 			this.parameters.remove(parameter);
 		return this;
 	}
 	public ArgumentTemplate clearParameters()
 	{
+		if (locked)
+			return this;
 		this.parameters.clear();
 		return this;
 	}
 	public ArgumentTemplate setRequired(boolean required)
 	{
+		if (locked)
+			return this;
 		this.required = required;
 		return this;
 	}
+	public ArgumentTemplate finalize_()
+	{
+		this.locked = true;
+		return this;
+	}
+	
 	
 	// Getters
 	public String getName()

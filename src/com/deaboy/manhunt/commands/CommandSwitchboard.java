@@ -14,6 +14,19 @@ import com.deaboy.manhunt.chat.ChatManager;
  */
 public class CommandSwitchboard implements CommandExecutor
 {
+	// Public templates
+	public static final CommandTemplate cmd_mlobby =
+			new CommandTemplate("mlobby")
+				.addAlias("lobby")
+				.addAlias("mhlobby")
+				.addArgument(new ArgumentTemplate("select")
+						.setType(ArgumentType.TEXT)
+						.addAlias("s")
+						.addAlias("sel")
+						)
+				.addArgument(new ArgumentTemplate(""));    
+	
+	
 	
 	public CommandSwitchboard()
 	{

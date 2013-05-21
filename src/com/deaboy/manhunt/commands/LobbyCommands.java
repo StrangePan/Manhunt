@@ -20,7 +20,6 @@ import com.deaboy.manhunt.lobby.Team;
 
 public abstract class LobbyCommands
 {
-	
 	public static boolean mstartgame(CommandSender sender, String[] args)
 	{
 		boolean console;

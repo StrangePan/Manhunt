@@ -13,6 +13,7 @@ import com.deaboy.manhunt.map.Map;
 
 public class CommandUtil
 {
+	//////// STANDARD COMMAND ERROR MESSAGES ////////
 	public static final String NO_PERMISSION = ChatColor.RED + "You don't have permission to do that.";
 	public static final String GAME_RUNNING = ChatColor.RED + "You can't do that while the game is running.";
 	public static final String NO_GAME_RUNNING = ChatColor.RED + "There are no Manhunt games running.";
@@ -24,6 +25,29 @@ public class CommandUtil
 	
 	
 	
+	
+	
+	//////// COMMAND TEMPLATES ////////
+	// mLobby
+	public static final ArgumentTemplate arg_mlobby_select	= new ArgumentTemplate("select").setType(ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
+	public static final ArgumentTemplate arg_mlobby_name	= new ArgumentTemplate("name").setType(ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
+	public static final ArgumentTemplate arg_mlobby_list	= new ArgumentTemplate("list").setType(ArgumentType.FLAG).addAlias("ls").finalize_();
+	public static final ArgumentTemplate arg_mlobby_join	= new ArgumentTemplate("join").setType(ArgumentType.TEXT).addAlias("jn").finalize_();
+	
+	public static final CommandTemplate cmd_mlobby	= new CommandTemplate("mlobby")
+			.addAlias("lobby")
+			.addAlias("mhlobby")
+			.addArgument(arg_mlobby_select)
+			.addArgument(arg_mlobby_name)
+			.addArgument(arg_mlobby_list)
+			.addArgument(arg_mlobby_join)
+			.finalize_();
+	
+	
+
+	
+	
+	//////// PROPERTIES ////////
 	private HashMap<String, String> selected_maps;
 	private HashMap<String, Long> selected_lobbies;
 	private HashMap<CommandSender, String> vcommands;
