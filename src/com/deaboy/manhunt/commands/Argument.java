@@ -1,33 +1,152 @@
 package com.deaboy.manhunt.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Argument
 {
-	//---------------- Properties ----------------//
+	// Properties
+	private final String name;
 	private final String label;
-	private final String[] aliases;
+	private final ArgumentType type;
+	private List<String> paramters;
 	
 	
 	
-	//---------------- Constructors ----------------//
-	public Argument(String label, String...aliases)
+	// Constructors
+	public Argument(String name, String label, ArgumentType type, String...params)
 	{
+		this.name = name;
 		this.label = label;
-		this.aliases = aliases;
+		this.type = type;
+		this.paramters = new ArrayList<String>();
+		for (String arg: params)
+			this.paramters.add(arg);
 	}
 	
 	
 	
-	//---------------- Getters ----------------//
+	// Setters
+	public boolean addParameter(String parameter)
+	{
+		if (parameter == null || parameter.isEmpty())
+		{
+			return false;
+		}
+		else
+		{
+			this.paramters.add(parameter);
+			return true;
+		}
+	}
+	public boolean removeParameter(String parameter)
+	{
+		if (parameter == null || parameter.isEmpty() || !this.paramters.contains(parameter))
+		{
+			return false;
+		}
+		else
+		{
+			this.paramters.remove(parameter);
+			return true;
+		}
+	}
+	public void clearParameters()
+	{
+		this.paramters.clear();
+	}
+	
+	
+	// Getters
+	public String getName()
+	{
+		return this.name;
+	}
 	public String getLabel()
 	{
 		return this.label;
 	}
-	
-	public String[] getAliases()
+	public ArgumentType getType()
 	{
-		return this.aliases;
+		return this.type;
+	}
+	public List<String> getParameters()
+	{
+		return this.paramters;
+	}
+	public boolean containsParameter(String parameter)
+	{
+		for (String arg : this.paramters)
+		{
+			if (arg.equalsIgnoreCase(parameter))
+				return true;
+		}
+		return false;
+	}
+	public String getParameter()
+	{
+		if (paramters.isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			return this.paramters.get(0);
+		}
 	}
 	
+	
+	// Static Constructors
+	public static Argument fromTemplate(ArgumentTemplate template, String label, String...params)
+	{
+		Argument argument = new Argument(template.getName(), label, template.getType());
+		String param;
+		
+		switch (template.getType())
+		{
+		case TEXT:
+			param = new String();
+			for (int i = 0; i < params.length; i++)
+				param += (i > 0 ? " " : "") + params[i];
+			if (!param.isEmpty())
+				argument.addParameter(param);
+			break;
+			
+		case RADIO:
+			if (params.length == 0)
+				return null;
+			for (String tpar : template.getParameters())
+			{
+				if (params[0].equalsIgnoreCase(tpar))
+				{
+					argument.addParameter(tpar);
+					break;
+				}
+			}
+			return null;
+			
+		case CHECK:
+			if (params.length == 0)
+				return null;
+			for (String tpar : template.getParameters())
+			{
+				if (params[0].equalsIgnoreCase(tpar))
+				{
+					argument.addParameter(tpar);
+				}
+			}
+			break;
+			
+		case FLAG:
+			break;
+			
+		default:
+			break;
+		
+		}
+		
+		return argument;
+	}
 	
 	
 }

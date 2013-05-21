@@ -389,7 +389,6 @@ public abstract class MapCommands
 		Location c2;
 		Map m;
 		String name;
-		ZoneFlag zt;
 		Zone z;
 		
 		// Verify sender is a Player
