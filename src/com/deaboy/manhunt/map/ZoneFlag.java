@@ -7,7 +7,7 @@ public enum ZoneFlag
 	BOUNDARY,
 	BUILD,
 	NO_MOBS,
-	SETUP_BOUNDARY;
+	SETUP;
 	
 	
 	
@@ -22,15 +22,15 @@ public enum ZoneFlag
 		switch (this)
 		{
 		case NO_BUILD:
-			return "NO_BUILD";
+			return "NOBUILD";
 		case BOUNDARY:
 			return "BOUNDARY";
 		case BUILD:
 			return "BUILD";
 		case NO_MOBS:
-			return "NO_MOBS";
-		case SETUP_BOUNDARY:
-			return "SETUP_BOUNDARY";
+			return "NOMOBS";
+		case SETUP:
+			return "SETUP";
 		default:
 			return "";
 		}
@@ -93,7 +93,7 @@ public enum ZoneFlag
 		case "bordersetup":
 		case "border_setup":
 		case "4":
-			return SETUP_BOUNDARY;
+			return SETUP;
 		default:
 			return null;
 		}

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.ZoneFlag;
 
 public class CommandUtil
 {
@@ -28,23 +29,56 @@ public class CommandUtil
 	
 	
 	//////// COMMAND TEMPLATES ////////
-	// mLobby
-	public static final ArgumentTemplate arg_mlobby_select	= new ArgumentTemplate("select").setType(ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
-	public static final ArgumentTemplate arg_mlobby_name	= new ArgumentTemplate("name").setType(ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
-	public static final ArgumentTemplate arg_mlobby_list	= new ArgumentTemplate("list").setType(ArgumentType.FLAG).addAlias("ls").finalize_();
-	public static final ArgumentTemplate arg_mlobby_join	= new ArgumentTemplate("join").setType(ArgumentType.TEXT).addAlias("jn").finalize_();
+	// Arguments
+	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
+	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.FLAG).addAlias("ls").finalize_();
+	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
+	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT).addAlias("jn").finalize_();
+	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.FLAG).addAlias("cr").addAlias("new").finalize_();
+	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
+	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
+	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
+	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG).finalize_();
+	/* public static final ArgumentTemplate arg_flag_nobuild		= new ArgumentTemplate("nobuild", ArgumentType.FLAG).finalize_();
+	 * public static final ArgumentTemplate arg_flag_boundary		= new ArgumentTemplate("boundary", ArgumentType.FLAG).finalize_();
+	 * public static final ArgumentTemplate arg_flag_build		= new ArgumentTemplate("build", ArgumentType.FLAG).finalize_();
+	 * public static final ArgumentTemplate arg_flag_nomobs		= new ArgumentTemplate("nomobs", ArgumentType.FLAG).finalize_();
+	 * public static final ArgumentTemplate arg_flag_setup		= new ArgumentTemplate("setup", ArgumentType.FLAG).finalize_();  */
+	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK);
+	static {
+		for (ZoneFlag flag : ZoneFlag.values())
+		arg_zoneflags.addParameter(flag.getName().toLowerCase());
+		arg_zoneflags.finalize_();
+	}
+	
 	
 	public static final CommandTemplate cmd_mlobby	= new CommandTemplate("mlobby")
 			.addAlias("lobby")
 			.addAlias("mhlobby")
-			.addArgument(arg_mlobby_select)
-			.addArgument(arg_mlobby_name)
-			.addArgument(arg_mlobby_list)
-			.addArgument(arg_mlobby_join)
+			.addArgument(arg_select)
+			.addArgument(arg_list)
+			.addArgument(arg_page)
+			.addArgument(arg_join)
+			.addArgument(arg_create)
+			.addArgument(arg_delete)
+			.addArgument(arg_name)
+			.addArgument(arg_open)
+			.addArgument(arg_close)
+			.finalize_();
+	
+	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
+			.addAlias("zone")
+			.addAlias("mhzone")
+			.addArgument(arg_select)
+			.addArgument(arg_list)
+			.addArgument(arg_page)
+			.addArgument(arg_create)
+			.addArgument(arg_delete)
+			.addArgument(arg_name)
+			
 			.finalize_();
 	
 	
-
 	
 	
 	//////// PROPERTIES ////////

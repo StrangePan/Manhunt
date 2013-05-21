@@ -114,14 +114,14 @@ public class Command
 				{
 					for (ArgumentTemplate argtemp : template.getArguments())
 					{
-						if (argtemp.matches(arg.substring(1)))
+						if (argtemp.matches(argument))
 						{
-							command.addArgument(Argument.fromTemplate(argtemp, arg.substring(1), (String[]) arguments.toArray()));
+							command.addArgument(Argument.fromTemplate(argtemp, argument, (String[]) arguments.toArray()));
 							break;
 						}
 					}
 				}
-				argument = "";
+				argument = arg.substring(1);
 				arguments.clear();
 				temp = "";
 			}

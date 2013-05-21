@@ -17,16 +17,10 @@ public class ArgumentTemplate
 	
 	
 	// Constructors
-	public ArgumentTemplate(String name)
+	public ArgumentTemplate(String name, ArgumentType type)
 	{
-		this();
 		this.name = name;
-	}
-	
-	public ArgumentTemplate()
-	{
-		this.name = new String();
-		this.type = null;
+		this.type = type;
 		aliases = new ArrayList<String>();
 		parameters = new ArrayList<String>();
 		required = false;
