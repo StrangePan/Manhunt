@@ -85,14 +85,6 @@ commands:
         usage: /newzone <type> [name]
         description: Creates a new zone in the selected map and displays its name.
         aliases: [createzone]
-    mzone:
-        usage: /mzone <command> [arg1] [arg2]...
-        description: Performs various zone commands. Must have a map selected first.
-        aliases: [zone]
-    mzones:
-        usage: /mzones [page|all]
-        description: Lists the currently selected map's zones.
-        aliases: [zones]
     
     
     

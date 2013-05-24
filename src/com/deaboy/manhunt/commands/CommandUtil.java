@@ -30,8 +30,9 @@ public class CommandUtil
 	
 	//////// COMMAND TEMPLATES ////////
 	// Arguments
+	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG).addAlias("?").finalize_();
 	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
-	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.FLAG).addAlias("ls").finalize_();
+	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
 	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
 	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT).addAlias("jn").finalize_();
 	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.FLAG).addAlias("cr").addAlias("new").finalize_();
@@ -55,6 +56,7 @@ public class CommandUtil
 	public static final CommandTemplate cmd_mlobby	= new CommandTemplate("mlobby")
 			.addAlias("lobby")
 			.addAlias("mhlobby")
+			.addArgument(arg_help)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_page)
@@ -69,6 +71,7 @@ public class CommandUtil
 	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
 			.addAlias("zone")
 			.addAlias("mhzone")
+			.addArgument(arg_help)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_page)

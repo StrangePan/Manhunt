@@ -62,6 +62,10 @@ public class Command
 	{
 		return argument_names.contains(arg);
 	}
+	public boolean containsArgument(ArgumentTemplate template)
+	{
+		return argument_names.contains(template.getName());
+	}
 	public Argument getArgument(String arg)
 	{
 		if (!argument_names.contains(arg))
@@ -78,6 +82,11 @@ public class Command
 		}
 		return null;
 	}
+	public Argument getArgument(ArgumentTemplate template)
+	{
+		return getArgument(template.getName());
+	}
+	
 	
 	
 	// Static Constructors

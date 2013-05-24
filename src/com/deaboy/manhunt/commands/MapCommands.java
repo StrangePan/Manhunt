@@ -207,18 +207,31 @@ public abstract class MapCommands
 	// Zones
 	public static boolean mzone(CommandSender sender, String args[])
 	{
-		String args2[];
-		
-		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
+		// Check permissions
+		if (!sender.isOp())
 		{
-			Bukkit.getServer().dispatchCommand(sender, "help mzone");
-			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, new, delete");
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
 		}
 		
-		if (args[0].equalsIgnoreCase("list"))
+		Command cmd = Command.fromTemplate(CommandUtil.cmd_mzone, "mzone", args);
+		
+		boolean action = false;
+		int i;
+		
+		if (cmd.containsArgument(CommandUtil.arg_help))
 		{
-			return listzones(sender, args);
+			Bukkit.getServer().dispatchCommand(sender, "help mzone");
+			return true;
+		}
+		
+		if (cmd.containsArgument(CommandUtil.arg_list))
+		{
+			return listzones(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_select))
+		{
+			// TODO select the desired zone
 		}
 		else if (args[0].equalsIgnoreCase("new") || args[0].equalsIgnoreCase("create") || args[0].equalsIgnoreCase("add"))
 		{
@@ -241,35 +254,49 @@ public abstract class MapCommands
 		return true;
 	}
 	
-	public static boolean mzones(CommandSender sender, String args[])
+	private static boolean listzones(CommandSender sender, Command cmd)
 	{
-		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
-		{
-			Bukkit.dispatchCommand(sender, "help mzones");
-			return true;
-		}
-		
-		String args2[] = new String[args.length + 1];
-		for (int i = 0; i < args.length; i++)
-			args2[i+1] = args[i];
-		
-		return listzones(sender, args2);
-	}
-	
-	private static boolean listzones(CommandSender sender, String args[])
-	{
-		final int perpage = 8;
-		int page = 1;
+		int perpage = 8;
 		boolean all = false;
 		Map m;
 		List<Zone> zones;
+		int page;
 		
-		// Check permissions
-		if (!sender.isOp())
+		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
 		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return true;
+			try
+			{
+				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				page = 1;
+			}
 		}
+		else if (cmd.getArgument(CommandUtil.arg_list).getParameter() != null)
+		{
+			 if (cmd.getArgument(CommandUtil.arg_list).getParameter().equalsIgnoreCase("all"))
+			 {
+				 all = true;
+				 page = 1;
+			 }
+			 else
+			 {
+				 try
+				 {
+					 page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_list).getParameter());
+				 }
+				 catch (Exception e)
+				 {
+					 page = 1;
+				 }
+			 }
+		}
+		else
+		{
+			page = 1;
+		}
+		
 		
 		m = CommandUtil.getSelectedMap(sender);
 		
@@ -278,19 +305,6 @@ public abstract class MapCommands
 			sender.sendMessage(ChatColor.RED + "You must first select a map!");
 			sender.sendMessage(ChatColor.GRAY + "Use /map select <map full name>");
 			return true;
-		}
-		
-		if (args.length == 1)
-			page = 1;
-		else if (args[1].equalsIgnoreCase("all"))
-			all = true;
-		else try
-		{
-			page = Integer.parseInt(args[0]);	
-		}
-		catch (NumberFormatException e)
-		{
-			page = 1;
 		}
 		
 		page--;
@@ -378,105 +392,6 @@ public abstract class MapCommands
 		m.removeZone(z.getName());
 		
 		sender.sendMessage(ChatColor.GREEN + "Removed zone " + z.getName() + " removed from map.");
-		
-		return true;
-	}
-	
-	public static boolean newzone(CommandSender sender, String args[])
-	{
-		Player p;
-		Location c1;
-		Location c2;
-		Map m;
-		String name;
-		Zone z;
-		
-		// Verify sender is a Player
-		// Servers and command blocks may not use this command
-		if (!(sender instanceof Player))
-		{
-			sender.sendMessage(CommandUtil.IS_SERVER);
-			return true;
-		}
-		
-		// Verify arguments
-		if (args.length > 2 || args.length < 1 || args[0].equals("?") || args[0].equals("help"))
-		{
-			Bukkit.dispatchCommand(sender, "help newzone");
-			return true;
-		}
-		if (args.length == 2)
-		{
-			name = args[1];
-		}
-		else
-		{
-			name = "";
-		}
-		
-		
-		p = (Player) sender;
-		c1 = Manhunt.getPlayerSelectionPrimaryCorner(p);
-		c2 = Manhunt.getPlayerSelectionSecondaryCorner(p);
-		m = Manhunt.getPlayerSelectedMap(p);
-		zt = ZoneFlag.fromName(args[0]);
-		
-		if (!p.isOp())
-		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return true;
-		}
-		if (Manhunt.getPlayerMode(p) != ManhuntMode.EDIT)
-		{
-			sender.sendMessage(ChatColor.RED + "You have to be in EDIT mode for that!");
-			sender.sendMessage(ChatColor.GRAY + "Use /manhuntmode edit");
-			return true;
-		}
-		if (m == null)
-		{
-			sender.sendMessage(ChatColor.RED + "You need to select a map to edit first!");
-			sender.sendMessage(ChatColor.GRAY + "Use /map select <full map name>");
-			return true;
-		}
-		if (c1 == null || c2 == null)
-		{
-			sender.sendMessage(ChatColor.RED + "You must mark off a region first!");
-			return true;
-		}
-		if (p.getWorld() != m.getWorld().getWorld())
-		{
-			sender.sendMessage(ChatColor.RED + "You're not in the same world as the map!");
-			return true;
-		}
-		if (p.getWorld() != c1.getWorld())
-		{
-			sender.sendMessage(ChatColor.RED + "You're not in the same world as your selection!");
-			return true;
-		}
-		if (zt == null)
-		{
-			sender.sendMessage(ChatColor.RED + args[0] + " is not a valid zone type.");
-			String types = ChatColor.GRAY + "Choose from the following:";
-			for (ZoneFlag t : ZoneFlag.values())
-				types += " " + t.getName();
-			sender.sendMessage(types);
-		}
-		if (!name.isEmpty())
-		{
-			if (m.getZone(name) != null)
-			{
-				sender.sendMessage(ChatColor.RED + "A zone with that name already exists.");
-				return true;
-			}
-		}
-		
-		
-		z = m.createZone(zt, name, c1, c2);
-		
-		if (z == null)
-			sender.sendMessage(ChatColor.RED + "There was an error creating a new zone.");
-		else
-			sender.sendMessage(ChatManager.leftborder + "Successfully created zone " + ChatColor.GREEN + z.getName() + ChatManager.color + " in map " + ChatColor.GREEN + m.getName() + ChatManager.color + ".");
 		
 		return true;
 	}
