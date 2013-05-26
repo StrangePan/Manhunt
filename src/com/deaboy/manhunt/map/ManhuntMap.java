@@ -7,7 +7,8 @@ import java.util.List;
 import org.bukkit.Location;
 
 public class ManhuntMap implements Map
-{//-------------------- Properties --------------------//
+{
+	//-------------------- Properties --------------------//
 	private String name;
 	private World world;
 	private Location spawn;
@@ -198,13 +199,7 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public Zone createZone(Location corner1, Location corner2)
-	{
-		return createZone(new String(), corner1, corner2);
-	}
-	
-	@Override
-	public Zone createZone(String name, Location corner1, Location corner2)
+	public Zone createZone(String name, Location corner1, Location corner2, ZoneFlag...flags)
 	{
 		Zone zone;
 		
@@ -212,11 +207,9 @@ public class ManhuntMap implements Map
 			return null;
 		if (corner2 == null)
 			return null;
-		if (name == null)
-			name = "";
-		if (corner1.getWorld() != corner2.getWorld())
+		if (name == null || name.isEmpty())
 			return null;
-		if (name.contains(" "))
+		if (corner1.getWorld() != corner2.getWorld())
 			return null;
 		
 		
@@ -235,6 +228,9 @@ public class ManhuntMap implements Map
 		}
 		
 		zone = new ManhuntZone(name, corner1, corner2);
+		
+		for (ZoneFlag flag : flags)
+			zone.setFlag(flag, true);
 		
 		zones.put(name, zone);
 		

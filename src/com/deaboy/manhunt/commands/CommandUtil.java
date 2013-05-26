@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneFlag;
 
 public class CommandUtil
@@ -23,6 +24,11 @@ public class CommandUtil
 	public static final String LOCKED = ChatColor.RED + "The teams are locked.";
 	public static final String INVALID_USAGE = ChatColor.RED + "Invalid usage.";
 	public static final String NO_WORLD_BY_NAME = ChatColor.RED + "There is no Manhunt world by that name!";
+	public static final String MAP_NOT_SELECTED = ChatColor.RED + "You must select a map first.\n"
+			+ ChatColor.GRAY + " Selecting a map: /mmap -s <mapname>\n"
+			+ ChatColor.GRAY + " Seeing registered maps: /mmap -list [all] [-page <page>]";
+	public static final String CORNER_PRIMARY_NOT_SELECTED = ChatColor.RED + "Select a corner using left-click with a wooden axe.";
+	public static final String CORNER_SECONDARY_NOT_SELECTED = ChatColor.RED + "Select a corner using right-click with a wooden axe.";
 	
 	
 	
@@ -87,6 +93,7 @@ public class CommandUtil
 	//////// PROPERTIES ////////
 	private HashMap<String, String> selected_maps;
 	private HashMap<String, Long> selected_lobbies;
+	private HashMap<String, String> selected_zones;
 	private HashMap<CommandSender, String> vcommands;
 	private HashMap<CommandSender, Boolean> verified;
 	
@@ -97,6 +104,7 @@ public class CommandUtil
 	{
 		this.selected_maps = new HashMap<String, String>();
 		this.selected_lobbies = new HashMap<String, Long>();
+		this.selected_zones = new HashMap<String, String>();
 		this.vcommands = new HashMap<CommandSender, String>();
 		this.verified = new HashMap<CommandSender, Boolean>();
 	}
@@ -108,7 +116,6 @@ public class CommandUtil
 	{
 		Manhunt.getCommandUtil().selected_maps.put(sender.getName(), map.getFullName());
 	}
-	
 	public static Map getSelectedMap(CommandSender sender)
 	{
 		if (Manhunt.getCommandUtil().selected_maps.containsKey(sender.getName()))
@@ -116,7 +123,6 @@ public class CommandUtil
 		else
 			return null;
 	}
-	
 	public static Map getSelectedMap(String name)
 	{
 		if (Manhunt.getCommandUtil().selected_maps.containsKey(name))
@@ -132,16 +138,35 @@ public class CommandUtil
 	{
 		Manhunt.getCommandUtil().selected_lobbies.put(sender.getName(), lobby.getId());
 	}
-	
 	public static Lobby getSelectedLobby(CommandSender sender)
 	{
 		return getSelectedLobby(sender.getName());
 	}
-	
 	public static Lobby getSelectedLobby(String name)
 	{
 		if (Manhunt.getCommandUtil().selected_lobbies.containsKey(name))
 			return Manhunt.getLobby(Manhunt.getCommandUtil().selected_lobbies.get(name));
+		else
+			return null;
+	}
+	
+	
+	//---------------- Zone Selection -----------------//
+	public static void setSelectedZone(CommandSender sender, Zone zone)
+	{
+		Manhunt.getCommandUtil().selected_zones.put(sender.getName(), zone.getName());
+	}
+	public static Zone getSelectedZone(CommandSender sender)
+	{
+		return getSelectedZone(sender.getName());
+	}
+	public static Zone getSelectedZone(String name)
+	{
+		if (Manhunt.getCommandUtil().selected_zones.containsKey(name))
+			if (getSelectedMap(name) != null)
+				return getSelectedMap(name).getZone(Manhunt.getCommandUtil().selected_zones.get(name));
+			else
+				return null;
 		else
 			return null;
 	}
@@ -155,13 +180,11 @@ public class CommandUtil
 		sender.sendMessage(message);
 		sender.sendMessage(ChatColor.GRAY + "To confirm, type \"/mverify\" or \"/cancel\"");
 	}
-	
 	public static void addVerifyCommand(CommandSender sender, String command)
 	{
 		Manhunt.getCommandUtil().vcommands.put(sender, command);
 		Manhunt.getCommandUtil().verified.put(sender, false);
 	}
-	
 	public static boolean isVerified(CommandSender sender)
 	{
 		if (isVerifying(sender))
@@ -169,13 +192,11 @@ public class CommandUtil
 		else
 			return false;
 	}
-	
 	public static boolean isVerifying(CommandSender sender)
 	{
 		return (Manhunt.getCommandUtil().verified.containsKey(sender)
 				&& Manhunt.getCommandUtil().vcommands.containsKey(sender));
 	}
-	
 	public static void executeCommand(CommandSender sender)
 	{
 		if (isVerifying(sender))
@@ -185,7 +206,6 @@ public class CommandUtil
 			cancelCommand(sender);
 		}
 	}
-	
 	public static void cancelCommand(CommandSender sender)
 	{
 		if (Manhunt.getCommandUtil().vcommands.containsKey(sender))
@@ -193,7 +213,6 @@ public class CommandUtil
 		if (Manhunt.getCommandUtil().verified.containsKey(sender))
 			Manhunt.getCommandUtil().verified.remove(sender);
 	}
-	
 	public void deletePlayer(Player player)
 	{
 		if (selected_lobbies.containsKey(player.getName()))

@@ -1,5 +1,6 @@
 package com.deaboy.manhunt.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -207,6 +208,9 @@ public abstract class MapCommands
 	// Zones
 	public static boolean mzone(CommandSender sender, String args[])
 	{
+		boolean action = false;
+		int i;
+		
 		// Check permissions
 		if (!sender.isOp())
 		{
@@ -216,44 +220,36 @@ public abstract class MapCommands
 		
 		Command cmd = Command.fromTemplate(CommandUtil.cmd_mzone, "mzone", args);
 		
-		boolean action = false;
-		int i;
-		
 		if (cmd.containsArgument(CommandUtil.arg_help))
 		{
 			Bukkit.getServer().dispatchCommand(sender, "help mzone");
-			return true;
+			action = true;
 		}
 		
 		if (cmd.containsArgument(CommandUtil.arg_list))
 		{
-			return listzones(sender, cmd);
+			action |= listzones(sender, cmd);
 		}
 		if (cmd.containsArgument(CommandUtil.arg_select))
 		{
-			// TODO select the desired zone
+			action |= selectzone(sender, cmd);
 		}
-		else if (args[0].equalsIgnoreCase("new") || args[0].equalsIgnoreCase("create") || args[0].equalsIgnoreCase("add"))
+		if (cmd.containsArgument(CommandUtil.arg_create))
 		{
-			args2 = new String[args.length - 1];
-			for (int i = 1; i < args.length; i++)
-				args2[i-1] = args[i];
-			return newzone(sender, args2);
+			action |= createzone(sender, cmd);
 		}
-		else if (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("rm"))
+		if (cmd.containsArgument(CommandUtil.arg_delete))
 		{
-			return deletezone(sender, args);
-		}
-		else
-		{
-			sender.sendMessage(ChatColor.RED + "Unknown command.");
-			sender.sendMessage(ChatColor.GRAY + "Available commands: list, new");
+			action |= deletezone(sender, cmd);
 		}
 		
+		if (!action)
+		{
+			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
+		}
 		
 		return true;
 	}
-	
 	private static boolean listzones(CommandSender sender, Command cmd)
 	{
 		int perpage = 8;
@@ -304,7 +300,7 @@ public abstract class MapCommands
 		{
 			sender.sendMessage(ChatColor.RED + "You must first select a map!");
 			sender.sendMessage(ChatColor.GRAY + "Use /map select <map full name>");
-			return true;
+			return false;
 		}
 		
 		page--;
@@ -323,7 +319,7 @@ public abstract class MapCommands
 			if (zones.size() == 0)
 			{
 				sender.sendMessage("There are no zones to display.");
-				return true;
+				return false;
 			}
 		}
 		
@@ -346,55 +342,136 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	
-	private static boolean deletezone(CommandSender sender, String args[])
+	private static boolean selectzone(CommandSender sender, Command cmd)
 	{
-		// Declarations
-		Zone z;
-		Map m;
+		String zonename;
+		Zone zone;
+		Map map;
 		
-		
-		// Permission checks
-		if (!sender.isOp())
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
 		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return true;
+			sender.sendMessage(ChatColor.RED + "You must select a map before you can select a zone within!");
+			sender.sendMessage(ChatColor.GRAY+ " Use /mmap -s <mapname> to select a map.");
+			return false;
 		}
 		
-		// Check for arguments
-		if (args.length != 2)
+		zonename = cmd.getArgument(CommandUtil.arg_select).getParameter();
+		zone = map.getZone(zonename);
+		if (zonename == null || zonename.isEmpty())
 		{
-			Bukkit.dispatchCommand(sender, "help mzone");
-			sender.sendMessage(ChatColor.RED + "Proper usage: /mzone delete <zone name>");
-			sender.sendMessage(ChatColor.GRAY + "Use /mzone list to list all zones in the selected map.");
-			return true;
+			sender.sendMessage(ChatColor.RED + "You must include the name of the zone you want to select.");
+			sender.sendMessage(ChatColor.GRAY + " /mzone -s <zonename>");
+			return false;
+		}
+		else if (zone == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No zone witht hat name exists in the selected map.");
+			sender.sendMessage(ChatColor.GRAY + " To see available zones, use /mzone -list [all] [-page <page>]");
+			sender.sendMessage(ChatColor.GRAY + " To select a different map, use /mmap -s <mapname>");
+			return false;
 		}
 		
-		m = CommandUtil.getSelectedMap(sender);
-		
-		// Check for selected map
-		if (m == null)
-		{
-			sender.sendMessage(ChatColor.RED + "You must first select a map!");
-			sender.sendMessage(ChatColor.GRAY + "Use /mmap select <map full name>");
-			return true;
-		}
-		
-		z = m.getZone(args[2]);
-		
-		if (z == null)
-		{
-			sender.sendMessage(ChatColor.RED + "There are no zones in this map by that name.");
-			sender.sendMessage(ChatColor.GRAY + "Use /mzone list to list all zones in the selected map.");
-			return true;
-		}
-		
-		m.removeZone(z.getName());
-		
-		sender.sendMessage(ChatColor.GREEN + "Removed zone " + z.getName() + " removed from map.");
-		
+		CommandUtil.setSelectedZone(sender, zone);
+		sender.sendMessage(ChatColor.GREEN + "Selected zone '" + zone.getName() + "' in map '" + map.getName() + "'.");
 		return true;
 	}
+	private static boolean createzone(CommandSender sender, Command cmd)
+	{
+		// Declarations.
+		Zone zone;
+		Map map;
+		String zonename;
+		List<ZoneFlag> flags;
+		Location primarycorner;
+		Location secondarycorner;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(CommandUtil.MAP_NOT_SELECTED);
+			return false;
+		}
+		
+		zonename = cmd.getArgument(CommandUtil.arg_name).getParameter();
+		if (zonename == null || zonename.isEmpty())
+		{
+			sender.sendMessage(ChatColor.RED + "Name argument missing.");
+			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+			return false;
+		}
+		
+		primarycorner = Manhunt.getPlayerSelectionPrimaryCorner((Player) sender);
+		secondarycorner = Manhunt.getPlayerSelectionSecondaryCorner((Player) sender);
+		if (primarycorner == null || secondarycorner == null)
+		{
+			if (primarycorner == null)
+				sender.sendMessage(CommandUtil.CORNER_PRIMARY_NOT_SELECTED);
+			if (secondarycorner == null)
+				sender.sendMessage(CommandUtil.CORNER_SECONDARY_NOT_SELECTED);
+			return false;
+		}
+		
+		if (map.getZone(zonename) != null)
+		{
+			int i;
+			for (i = 0; map.getZone(zonename + i) != null; i++);
+			zonename += i;
+		}
+		
+		flags = new ArrayList<ZoneFlag>();
+		if (cmd.containsArgument(CommandUtil.arg_zoneflags))
+		{
+			for (String f : cmd.getArgument(CommandUtil.arg_zoneflags).getParameters())
+			{
+				if (ZoneFlag.fromName(f) != null)
+					flags.add(ZoneFlag.fromName(f));
+			}
+		}
+		
+		zone = map.createZone(zonename, primarycorner, secondarycorner, (ZoneFlag[]) flags.toArray());
+		if (zone == null)
+		{
+			sender.sendMessage(ChatColor.RED + "There was an error creating the zone.");
+			return false;
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.GREEN + "Zone '" + zone.getName() + "' successfully created in map '" + map.getName() + "'");
+			sender.sendMessage(ChatColor.GRAY + " ("
+					+ zone.getPrimaryCorner().getBlockX() + ","
+					+ zone.getPrimaryCorner().getBlockY() + ","
+					+ zone.getPrimaryCorner().getBlockZ() + ")  ("
+					+ zone.getSecondaryCorner().getBlockX() + ","
+					+ zone.getSecondaryCorner().getBlockY() + ","
+					+ zone.getSecondaryCorner().getBlockZ() + ")");
+			if (flags.isEmpty())
+			{
+				sender.sendMessage(ChatColor.GRAY + " No flags.");
+			}
+			else
+			{
+				sender.sendMessage(ChatColor.GRAY + " Flags:");
+				for (ZoneFlag flag : flags)
+				{
+					sender.sendMessage(ChatColor.GRAY + "  - " + flag.getName());
+				}
+			}
+		
+			return true;
+		}
+	}
+	private static boolean deletezone(CommandSender sender, Command cmd)
+	{
+		// TODO rewrite all this
+	}
+	
 	
 	
 	// Spawns
