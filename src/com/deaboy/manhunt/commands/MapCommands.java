@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.ManhuntMode;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
@@ -23,95 +22,55 @@ public abstract class MapCommands
 	
 	public static boolean mmap(CommandSender sender, String args[])
 	{
-		String args2[];
-		
-		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
-		{
-			Bukkit.getServer().dispatchCommand(sender, "help mmap");
-			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, select (sel), selected, zones");
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("list"))
-		{
-			args2 = new String[args.length - 1];
-			for (int i = 1; i < args.length; i++)
-				args2[i-1] = args[i];
-				
-			return listmaps(sender, args2);
-		}
-		
-		else if (args[0].equalsIgnoreCase("select") || args[0].equalsIgnoreCase("selected") || args[0].equalsIgnoreCase("sel"))
-		{
-			args2 = new String[args.length - 1];
-			for (int i = 1; i < args.length; i++)
-				args2[i-1] = args[i];
-			
-			return selectmap(sender, args2);
-		}
-		
-		else if (args[0].equalsIgnoreCase("zones"))
-		{
-			return listzones(sender, args);
-		}
-		
-		else if (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("rm"))
-		{
-			return deletemap(sender, args);
-		}
-		
-		else
-		{
-			sender.sendMessage(ChatColor.RED + "Unknown command.");
-			sender.sendMessage(ChatColor.GRAY + "Available commands: list, select (sel), selected, zones");
-		}
-		
-		return false;
-	}
-	
-	public static boolean mmaps(CommandSender sender, String args[])
-	{
-		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
-		{
-			Bukkit.dispatchCommand(sender, "help mmaps");
-			return true;
-		}
-		
-		return listmaps(sender, args);
-	}
-	
-	private static boolean listmaps(CommandSender sender, String args[])
-	{
-		final String spacing = "   ";
+		boolean action = false;
 		
 		// Check permissions
 		if (!sender.isOp())
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return false;
+			return true;
 		}
 		
-		if (args.length == 0)
+		Command cmd = Command.fromTemplate(CommandUtil.cmd_mmap, "mzone", args);
+		
+		if (cmd.containsArgument(CommandUtil.arg_help))
 		{
-			sender.sendMessage(ChatManager.bracket1_ + "All Loaded Manhunt Maps" + ChatManager.bracket2_);
-			if (Manhunt.getWorlds().size() == 0)
-			{
-				sender.sendMessage(ChatColor.RED + "  No worlds loaded into Manhunt.");
-			}
-			for (World world : Manhunt.getWorlds())
-			{
-				sender.sendMessage(ChatManager.leftborder + world.getName());
-				if (world.getMaps().size() == 0)
-					sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.GRAY + "[NONE]");
-				else
-					for (Map map : world.getMaps())
-						sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.WHITE + world.getName() + "." + map.getName());
-			}
+			Bukkit.getServer().dispatchCommand(sender, "help " + cmd.getName());
+			action = true;
 		}
-		else
+		
+		if (cmd.containsArgument(CommandUtil.arg_list))
+		{
+			action |= listmaps(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_select))
+		{
+			action |= selectmap(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_create))
+		{
+			action |= createmap(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_delete))
+		{
+			action |= deletemap(sender, cmd);
+		}
+		
+		if (!action)
+		{
+			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
+		}
+		
+		return true;
+	}
+	private static boolean listmaps(CommandSender sender, Command cmd)
+	{
+		final String spacing = "   ";
+		
+		if (cmd.containsArgument(CommandUtil.arg_world))
 		{
 			sender.sendMessage(ChatManager.bracket1_ + "Loaded Manhunt Maps" + ChatManager.bracket2_);
-			for (String wname : args)
+			for (String wname : cmd.getArgument(CommandUtil.arg_world).getParameters())
 			{
 				World world = Manhunt.getWorld(wname);
 				if (world == null)
@@ -129,67 +88,73 @@ public abstract class MapCommands
 				}
 			}
 		}
+		else
+		{
+			sender.sendMessage(ChatManager.bracket1_ + "All Loaded Manhunt Maps" + ChatManager.bracket2_);
+			if (Manhunt.getWorlds().size() == 0)
+			{
+				sender.sendMessage(ChatColor.RED + "  No worlds loaded into Manhunt.");
+			}
+			for (World world : Manhunt.getWorlds())
+			{
+				sender.sendMessage(ChatManager.leftborder + world.getName());
+				if (world.getMaps().size() == 0)
+					sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.GRAY + "[NONE]");
+				else
+					for (Map map : world.getMaps())
+						sender.sendMessage(ChatManager.leftborder + spacing + ChatColor.WHITE + world.getName() + "." + map.getName());
+			}
+		}
 		
 		return true;
 	}
-	
-	private static boolean selectmap(CommandSender sender, String args[])
+	private static boolean selectmap(CommandSender sender, Command cmd)
 	{
-		if (args.length == 0 || args[0].equalsIgnoreCase("selected"))
+		Map map;
+		String mapname;
+		
+		if (cmd.getArgument(CommandUtil.arg_select).getParameter() == null)
 		{
-			if (CommandUtil.getSelectedMap(sender) == null)
-			{
-				sender.sendMessage(ChatColor.RED + "You have not selected any maps.");
-				sender.sendMessage(ChatManager.leftborder + "Use /mmap select <mapname>");
-				return true;
-			}
-			else
-			{
-				sender.sendMessage(ChatManager.color + "Selected map: " + CommandUtil.getSelectedMap(sender).getFullName());
-				return true;
-			}
+			sender.sendMessage(ChatColor.RED + "Invalid parameter usage: -" + cmd.getArgument(CommandUtil.arg_select).getLabel());
+			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -select <map name>");
+			return false;
+		}
+		
+		mapname = cmd.getArgument(CommandUtil.arg_select).getParameter();
+		if (!mapname.contains("."))
+		{
+			if (sender instanceof Player)
+				mapname = Manhunt.getWorld(((Player) sender).getWorld()).getName() + '.' + mapname;
+		}
+		
+		map = Manhunt.getMap(mapname);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No map named '" + mapname + "' exists.");
+			sender.sendMessage(ChatManager.leftborder + "Use /mmap -list [-world <world name>] to see available maps.");
+			return false;
 		}
 		else
 		{
-			Map map = Manhunt.getMap(args[0]);
-			if (map == null)
-			{
-				sender.sendMessage(ChatColor.RED + args[0] + " is not a valid map name.");
-				sender.sendMessage(ChatManager.leftborder + "Use /mmap list [page] to see available maps.");
-				return true;
-			}
-			else
-			{
-				CommandUtil.setSelectedMap(sender, map);
-				sender.sendMessage(ChatColor.GREEN + "You have selected map " + map.getFullName() + ".");
-				return true;
-			}
-			
+			CommandUtil.setSelectedMap(sender, map);
+			sender.sendMessage(ChatColor.GREEN + "You have selected map " + map.getFullName() + ".");
+			return true;
 		}
 	}
-	
-	private static boolean deletemap(CommandSender sender, String args[])
+	private static boolean createmap(CommandSender sender, Command cmd)
+	{
+		// TODO Create a new map
+	}
+	private static boolean deletemap(CommandSender sender, Command cmd)
 	{
 		Map map;
 		
-		if (!sender.isOp())
-		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-		}
-		
 		map = CommandUtil.getSelectedMap(sender);
-		
 		if (map == null)
 		{
 			sender.sendMessage(ChatColor.RED + "You must first select a map!");
-			sender.sendMessage(ChatColor.GRAY + "Use /mmap select <map full name>");
-			return true;
-		}
-		
-		if (!CommandUtil.isVerified(sender))
-		{
-			CommandUtil.addVerifyCommand(sender, "/mmap delete");
-			return true;
+			sender.sendMessage(ChatColor.GRAY + " Use /mmap -select <map name>");
+			return false;
 		}
 		
 		for (Lobby lobby : Manhunt.getLobbies())
@@ -199,10 +164,11 @@ public abstract class MapCommands
 		
 		map.getWorld().removeMap(map.getName());
 		
-		sender.sendMessage("That map has been deleted.");
+		sender.sendMessage(ChatColor.GREEN + "Map '" + map.getName() + "' has been deleted.");
 		
 		return true;
 	}
+	
 	
 	
 	// Zones

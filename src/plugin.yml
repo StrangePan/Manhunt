@@ -53,10 +53,6 @@ commands:
         usage: /mmap <command> [arg1] [arg2]...
         description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
         aliases: [map, mhmap]
-    mmaps:
-        usage: /mmaps [page]
-        description: Lists the maps loaded on the server.
-        aliases: [maps, mhmaps, listmaps, mlistmaps]
     mlobby:
         usage: /mlobby <command> [arg1] [arg2]...
         description: Performs various lobby commands, including editing, renaming, creating, and closing.
@@ -81,10 +77,10 @@ commands:
         usage: /manhuntmode <mode> [player]
         description: Changes a player's Manhunt mode. Currently available modes - PLAY, EDIT.
         aliases: [mhmode]
-    newzone:
-        usage: /newzone <type> [name]
-        description: Creates a new zone in the selected map and displays its name.
-        aliases: [createzone]
+    mzone:
+        usage: /mzone
+        description: 
+        aliases: [zone, mhzone]
     
     
     

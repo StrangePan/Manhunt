@@ -44,6 +44,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.FLAG).addAlias("cr").addAlias("new").finalize_();
 	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
 	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
+	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT).addAlias("w").addAlias("worlds").finalize_();
 	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
 	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG).finalize_();
 	/* public static final ArgumentTemplate arg_flag_nobuild		= new ArgumentTemplate("nobuild", ArgumentType.FLAG).finalize_();
@@ -72,6 +73,18 @@ public class CommandUtil
 			.addArgument(arg_name)
 			.addArgument(arg_open)
 			.addArgument(arg_close)
+			.finalize_();
+	
+	public static final CommandTemplate cmd_mmap	= new CommandTemplate("mmap")
+			.addAlias("map")
+			.addAlias("mhmap")
+			.addArgument(arg_help)
+			.addArgument(arg_select)
+			.addArgument(arg_list)
+			.addArgument(arg_world)
+			.addArgument(arg_create)
+			.addArgument(arg_delete)
+			.addArgument(arg_name)
 			.finalize_();
 	
 	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
