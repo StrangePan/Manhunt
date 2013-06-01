@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.map.ManhuntMap;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.map.Zone;
@@ -143,7 +144,38 @@ public abstract class MapCommands
 	}
 	private static boolean createmap(CommandSender sender, Command cmd)
 	{
-		// TODO Create a new map
+		String mapname;
+		
+		if (!cmd.containsArgument(CommandUtil.arg_name))
+		{
+			sender.sendMessage(ChatColor.RED + "Name argument missing.");
+			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+			return false;
+		}
+		
+		mapname = cmd.getArgument(CommandUtil.arg_name).getParameter();
+		if (mapname == null || mapname.isEmpty())
+		{
+			sender.sendMessage(ChatColor.RED + "Invalid parameter use: name");
+			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+			return false;
+		}
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		if (Manhunt.getWorld(((Player) sender).getWorld()).getMap(mapname) != null)
+		{
+			sender.sendMessage(ChatColor.RED + "A map by that name already exists!");
+			return false;
+		}
+		
+		Manhunt.getWorld(((Player) sender).getWorld()).addMap(mapname, new ManhuntMap(mapname, ((Player) sender).getLocation(), Manhunt.getWorld(((Player) sender).getWorld())));
+		sender.sendMessage(ChatColor.GREEN + "Map '" + mapname + "' created in world '" + Manhunt.getWorld(((Player) sender).getWorld()).getName() + "'.");
+		return true;
 	}
 	private static boolean deletemap(CommandSender sender, Command cmd)
 	{
