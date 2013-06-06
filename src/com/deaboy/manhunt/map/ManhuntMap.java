@@ -199,6 +199,22 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
+	public void addZone(Zone zone)
+	{
+		if (!this.zones.containsKey(zone.getName()) && !this.zones.containsValue(zone))
+			this.zones.put(zone.getName(), zone);
+	}
+	
+	@Override
+	public Zone createZone(String name, Location corner1, Location corner2, List<ZoneFlag> flags)
+	{
+		ZoneFlag[] f = new ZoneFlag[flags.size()];
+		for (int i = 0; i < flags.size(); i++)
+			f[i] = flags.get(i);
+		return createZone(name, corner1, corner2, f);
+	}
+	
+	@Override
 	public Zone createZone(String name, Location corner1, Location corner2, ZoneFlag...flags)
 	{
 		Zone zone;

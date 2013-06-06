@@ -102,7 +102,7 @@ public class Command
 		{
 			if (!temp.isEmpty())
 			{
-				temp += arg;
+				temp += ' ' + arg;
 				if (temp.endsWith("\""))
 				{
 					arguments.add(temp.substring(1, temp.length()-1));
@@ -116,6 +116,11 @@ public class Command
 			else if (arg.startsWith("\""))
 			{
 				temp = arg;
+				if (temp.endsWith("\""))
+				{
+					arguments.add(temp.substring(1, temp.length()-1));
+					temp = "";
+				}
 			}
 			else if (arg.startsWith("-"))
 			{
@@ -125,7 +130,7 @@ public class Command
 					{
 						if (argtemp.matches(argument))
 						{
-							command.addArgument(Argument.fromTemplate(argtemp, argument, (String[]) arguments.toArray()));
+							command.addArgument(Argument.fromTemplate(argtemp, argument, arguments));
 							break;
 						}
 					}
@@ -137,6 +142,17 @@ public class Command
 			else
 			{
 				arguments.add(arg);
+			}
+		}
+		if (!argument.isEmpty())
+		{
+			for (ArgumentTemplate argtemp : template.getArguments())
+			{
+				if (argtemp.matches(argument))
+				{
+					command.addArgument(Argument.fromTemplate(argtemp, argument, arguments));
+					break;
+				}
 			}
 		}
 		

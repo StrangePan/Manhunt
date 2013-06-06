@@ -52,7 +52,7 @@ public class CommandUtil
 	 * public static final ArgumentTemplate arg_flag_build		= new ArgumentTemplate("build", ArgumentType.FLAG).finalize_();
 	 * public static final ArgumentTemplate arg_flag_nomobs		= new ArgumentTemplate("nomobs", ArgumentType.FLAG).finalize_();
 	 * public static final ArgumentTemplate arg_flag_setup		= new ArgumentTemplate("setup", ArgumentType.FLAG).finalize_();  */
-	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK);
+	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("fl");
 	static {
 		for (ZoneFlag flag : ZoneFlag.values())
 		arg_zoneflags.addParameter(flag.getName().toLowerCase());
@@ -97,7 +97,7 @@ public class CommandUtil
 			.addArgument(arg_create)
 			.addArgument(arg_delete)
 			.addArgument(arg_name)
-			
+			.addArgument(arg_zoneflags)
 			.finalize_();
 	
 	

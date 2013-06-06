@@ -52,7 +52,7 @@ public class SimpleMap
 		for (SimpleZone zone : Zones)
 		{
 			Zone z = zone.toZone(world);
-			map.createZone(z.getName(), z.getPrimaryCorner(), z.getSecondaryCorner());
+			map.addZone(z);
 		}
 		
 		return map;

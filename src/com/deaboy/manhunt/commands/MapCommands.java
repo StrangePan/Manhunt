@@ -146,6 +146,12 @@ public abstract class MapCommands
 	{
 		String mapname;
 		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
 		if (!cmd.containsArgument(CommandUtil.arg_name))
 		{
 			sender.sendMessage(ChatColor.RED + "Name argument missing.");
@@ -158,12 +164,6 @@ public abstract class MapCommands
 		{
 			sender.sendMessage(ChatColor.RED + "Invalid parameter use: name");
 			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
-			return false;
-		}
-		
-		if (!(sender instanceof Player))
-		{
-			sender.sendMessage(CommandUtil.IS_SERVER);
 			return false;
 		}
 		
@@ -432,7 +432,7 @@ public abstract class MapCommands
 			}
 		}
 		
-		zone = map.createZone(zonename, primarycorner, secondarycorner, (ZoneFlag[]) flags.toArray());
+		zone = map.createZone(zonename, primarycorner, secondarycorner, flags);
 		if (zone == null)
 		{
 			sender.sendMessage(ChatColor.RED + "There was an error creating the zone.");
@@ -504,8 +504,8 @@ public abstract class MapCommands
 			}
 		}
 		
-		CommandUtil.getSelectedMap(sender).removeZone(zonename);
 		sender.sendMessage(ChatColor.GREEN + "Zone '" + zonename + "' removed from map '" + CommandUtil.getSelectedZone(sender).getName() +"'");
+		CommandUtil.getSelectedMap(sender).removeZone(zonename);
 		return true;
 	}
 	

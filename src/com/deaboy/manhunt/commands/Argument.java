@@ -97,7 +97,7 @@ public class Argument
 	
 	
 	// Static Constructors
-	public static Argument fromTemplate(ArgumentTemplate template, String label, String...params)
+	public static Argument fromTemplate(ArgumentTemplate template, String label, List<String> params)
 	{
 		Argument argument = new Argument(template.getName(), label, template.getType());
 		String param;
@@ -106,18 +106,18 @@ public class Argument
 		{
 		case TEXT:
 			param = new String();
-			for (int i = 0; i < params.length; i++)
-				param += (i > 0 ? " " : "") + params[i];
+			for (int i = 0; i < params.size(); i++)
+				param += (i > 0 ? " " : "") + params.get(i);
 			if (!param.isEmpty())
 				argument.addParameter(param);
 			break;
 			
 		case RADIO:
-			if (params.length == 0)
+			if (params.size() == 0)
 				return null;
 			for (String tpar : template.getParameters())
 			{
-				if (params[0].equalsIgnoreCase(tpar))
+				if (params.get(0).equalsIgnoreCase(tpar))
 				{
 					argument.addParameter(tpar);
 					break;
@@ -126,13 +126,17 @@ public class Argument
 			return null;
 			
 		case CHECK:
-			if (params.length == 0)
+			if (params.size() == 0)
 				return null;
-			for (String tpar : template.getParameters())
+			for (String par : params)
 			{
-				if (params[0].equalsIgnoreCase(tpar))
+				for (String tpar : template.getParameters())
 				{
-					argument.addParameter(tpar);
+					if (par.equalsIgnoreCase(tpar))
+					{
+						argument.addParameter(tpar);
+						break;
+					}
 				}
 			}
 			break;

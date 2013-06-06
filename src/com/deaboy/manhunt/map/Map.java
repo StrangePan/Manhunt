@@ -137,14 +137,30 @@ public interface Map
 	public void clearPreySpawns();
 	
 	/**
+	 * Adds a pre-made zone to the map.
+	 * @param zone The zone to add
+	 */
+	public void addZone(Zone zone);
+	
+	/**
 	 * Creates and adds a new zone to the map.
 	 * @param type The type of zone
-	 * @param name The name of the new zone
 	 * @param corner1 The first corner of the zone
 	 * @param corner2 The second corner of the zone
+	 * @param flags Array of zone flags to apply to this zone
 	 * @return The newly created zone or null if it didn't work.
 	 */
 	public Zone createZone(String name, Location corner1, Location corner2, ZoneFlag...flags);
+
+	/**
+	 * Creates and adds a new zone to the map.
+	 * @param type The type of zone
+	 * @param corner1 The first corner of the zone
+	 * @param corner2 The second corner of the zone
+	 * @param flags List of flags to apply to this zone
+	 * @return The newly created zone or null if it didn't work.
+	 */
+	public Zone createZone(String name, Location corner1, Location corner2, List<ZoneFlag> flags);
 	
 	/**
 	 * Removes a zone from the map.

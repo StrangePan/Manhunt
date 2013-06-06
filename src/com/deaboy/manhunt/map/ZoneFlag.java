@@ -71,6 +71,7 @@ public enum ZoneFlag
 		case "safe":
 		case "3":
 			return NO_MOBS;
+		case "setup":
 		case "setup_constrain":
 		case "setup constrain":
 		case "setupconstrain":
