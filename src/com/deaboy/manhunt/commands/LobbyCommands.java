@@ -244,44 +244,69 @@ public abstract class LobbyCommands
 		return true;
 	}
 	
-	public static boolean mlobby(CommandSender sender, String[] args)
+	public static boolean mlobby(CommandSender sender, String command, String[] args)
 	{
-		if (args.length == 0 || args[0].equals("?") || args[0].equalsIgnoreCase("help"))
+		boolean action = false;
+		
+		if (!sender.isOp())
 		{
-			Bukkit.dispatchCommand(sender, "help mlobby");
-			sender.sendMessage(ChatColor.GRAY + "Available commands:\n  list, join, leave, create, delete, close, open");
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
 		}
 		
-		if (args[0].equalsIgnoreCase("list"))
-			return mlobby_list(sender, args);
+		Command cmd = Command.fromTemplate(CommandUtil.cmd_mlobby, command, args);
 		
-		if (args[0].equalsIgnoreCase("join"))
-			return mlobby_join(sender, args);
+		if (cmd.containsArgument(CommandUtil.arg_help))
+		{
+			Bukkit.getServer().dispatchCommand(sender, "help " + cmd.getName());
+			action = true;
+		}
 		
-		if (args[0].equalsIgnoreCase("leave"))
-			return mlobby_leave(sender, args);
-		
-		else if (args[0].equalsIgnoreCase("create"))
-			return mlobby_create(sender, args);
-		
-		else if (args[0].equalsIgnoreCase("close"))
-			return mlobby_close(sender, args);
-		
-		else if (args[0].equalsIgnoreCase("select") || args[0].equalsIgnoreCase("sel"))
-			return mlobby_select(sender, args);
-		
-		else if (args[0].equalsIgnoreCase("selected"))
-			return mlobby_selected(sender, args);
-		
-		else if (args[0].equalsIgnoreCase("addmap") || args[0].equalsIgnoreCase("+map"))
-			return mlobby_addmap(sender, args);
-		
-		else if (args[0].equalsIgnoreCase("remmap") || args[0].equalsIgnoreCase("removemap") || args[0].equalsIgnoreCase("delmap") || args[0].equalsIgnoreCase("-map"))
-			return mlobby_remmap(sender, args);
-		
-		else
-			sender.sendMessage(ChatColor.GRAY + " Available commands:\n  list, join, leave, create, delete, close, open");
+		if (cmd.containsArgument(CommandUtil.arg_list))
+		{
+			action |= listlobbies(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_select))
+		{
+			action |= selectlobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_create))
+		{
+			action |= createlobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_delete))
+		{
+			action |= deletelobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_addmap))
+		{
+			action |= addmap(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_remmap))
+		{
+			action |= removemap(sender,cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_join))
+		{
+			action |= joinlobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_leave))
+		{
+			action |= leavelobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_open))
+		{
+			action |= openlobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_close))
+		{
+			action |= closelobby(sender, cmd);
+		}
+
+		if (!action)
+		{
+			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
+		}
 		
 		return true;
 	}
@@ -405,7 +430,6 @@ public abstract class LobbyCommands
 		
 		return true;
 	}
-	
 	private static boolean mlobby_create(CommandSender sender, String[] args)
 	{
 		Location loc;
@@ -449,7 +473,6 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "at location [" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "]");
 		return true;
 	}
-	
 	private static boolean mlobby_close(CommandSender sender, String[] args)
 	{
 		if (!sender.isOp())
@@ -492,7 +515,6 @@ public abstract class LobbyCommands
 		sender.sendMessage("Lobby closed.");
 		return true;
 	}
-	
 	private static boolean mlobby_select(CommandSender sender, String[] args)
 	{
 		if (!sender.isOp())
@@ -521,7 +543,6 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.GREEN + "Selected lobby \"" + lobby.getName() + "\"");
 		return true;
 	}
-	
 	private static boolean mlobby_selected(CommandSender sender, String[] args)
 	{
 		Lobby lobby = CommandUtil.getSelectedLobby(sender);
@@ -538,7 +559,6 @@ public abstract class LobbyCommands
 		}
 		return true;
 	}
-	
 	private static boolean mlobby_addmap(CommandSender sender, String[] args)
 	{
 		if (!hasSelectedLobby(sender))
@@ -601,7 +621,6 @@ public abstract class LobbyCommands
 				
 		return true;
 	}
-	
 	private static boolean mlobby_remmap(CommandSender sender, String[] args)
 	{
 		if (!hasSelectedLobby(sender))

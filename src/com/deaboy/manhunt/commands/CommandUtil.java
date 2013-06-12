@@ -41,18 +41,17 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
 	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
 	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT).addAlias("jn").finalize_();
-	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.FLAG).addAlias("cr").addAlias("new").finalize_();
+	public static final ArgumentTemplate arg_leave	= new ArgumentTemplate("leave", ArgumentType.FLAG).addAlias("lv").finalize_();
+	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.TEXT).addAlias("cr").addAlias("new").finalize_();
 	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
 	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
 	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT).addAlias("w").addAlias("worlds").finalize_();
 	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
 	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG).finalize_();
-	/* public static final ArgumentTemplate arg_flag_nobuild		= new ArgumentTemplate("nobuild", ArgumentType.FLAG).finalize_();
-	 * public static final ArgumentTemplate arg_flag_boundary		= new ArgumentTemplate("boundary", ArgumentType.FLAG).finalize_();
-	 * public static final ArgumentTemplate arg_flag_build		= new ArgumentTemplate("build", ArgumentType.FLAG).finalize_();
-	 * public static final ArgumentTemplate arg_flag_nomobs		= new ArgumentTemplate("nomobs", ArgumentType.FLAG).finalize_();
-	 * public static final ArgumentTemplate arg_flag_setup		= new ArgumentTemplate("setup", ArgumentType.FLAG).finalize_();  */
-	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("fl");
+	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
+	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").finalize_();
+	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").finalize_();
+	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
 	static {
 		for (ZoneFlag flag : ZoneFlag.values())
 		arg_zoneflags.addParameter(flag.getName().toLowerCase());
@@ -73,8 +72,10 @@ public class CommandUtil
 			.addArgument(arg_name)
 			.addArgument(arg_open)
 			.addArgument(arg_close)
+			.addArgument(arg_lsmaps)
+			.addArgument(arg_addmap)
+			.addArgument(arg_remmap)
 			.finalize_();
-	
 	public static final CommandTemplate cmd_mmap	= new CommandTemplate("mmap")
 			.addAlias("map")
 			.addAlias("mhmap")
@@ -86,7 +87,6 @@ public class CommandUtil
 			.addArgument(arg_delete)
 			.addArgument(arg_name)
 			.finalize_();
-	
 	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
 			.addAlias("zone")
 			.addAlias("mhzone")

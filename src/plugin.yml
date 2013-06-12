@@ -57,10 +57,6 @@ commands:
         usage: /mlobby <command> [arg1] [arg2]...
         description: Performs various lobby commands, including editing, renaming, creating, and closing.
         aliases: [lobby, mhlobby]
-    mlobbies:
-        usage: /mlobbies [page|all]
-        description: Lists the currently loaded Manhunt lobbies.
-        aliases: [lobbies, mhlobbies]
     mjoin:
         usage: /mjoin <lobby> [player]
         description: Joins a Manhunt lobby by it's name. Add a player's name to make them join the lobby.

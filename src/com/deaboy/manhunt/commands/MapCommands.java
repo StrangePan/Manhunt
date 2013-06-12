@@ -21,7 +21,7 @@ import com.deaboy.manhunt.map.ZoneFlag;
 public abstract class MapCommands
 {
 	
-	public static boolean mmap(CommandSender sender, String args[])
+	public static boolean mmap(CommandSender sender, String command, String args[])
 	{
 		boolean action = false;
 		
@@ -32,7 +32,7 @@ public abstract class MapCommands
 			return true;
 		}
 		
-		Command cmd = Command.fromTemplate(CommandUtil.cmd_mmap, "mzone", args);
+		Command cmd = Command.fromTemplate(CommandUtil.cmd_mmap, command, args);
 		
 		if (cmd.containsArgument(CommandUtil.arg_help))
 		{
@@ -145,6 +145,7 @@ public abstract class MapCommands
 	private static boolean createmap(CommandSender sender, Command cmd)
 	{
 		String mapname;
+		Map map;
 		
 		if (!(sender instanceof Player))
 		{
@@ -152,19 +153,26 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		if (!cmd.containsArgument(CommandUtil.arg_name))
+		if (cmd.containsArgument(CommandUtil.arg_name))
 		{
-			sender.sendMessage(ChatColor.RED + "Name argument missing.");
-			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
-			return false;
+			mapname = cmd.getArgument(CommandUtil.arg_name).getParameter();
+			if (mapname == null || mapname.isEmpty())
+			{
+				sender.sendMessage(ChatColor.RED + "Invalid parameter use: name");
+				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+				return false;
+			}
 		}
-		
-		mapname = cmd.getArgument(CommandUtil.arg_name).getParameter();
-		if (mapname == null || mapname.isEmpty())
+		else
 		{
-			sender.sendMessage(ChatColor.RED + "Invalid parameter use: name");
-			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
-			return false;
+			mapname = cmd.getArgument(CommandUtil.arg_create).getParameter();
+			if (mapname == null || mapname.isEmpty())
+			{
+				sender.sendMessage(ChatColor.RED + "No map name specified. Options:");
+				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -" + cmd.getArgument(CommandUtil.arg_create).getLabel() + " <name>");
+				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+				return false;
+			}
 		}
 		
 		if (Manhunt.getWorld(((Player) sender).getWorld()).getMap(mapname) != null)
@@ -173,8 +181,14 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		Manhunt.getWorld(((Player) sender).getWorld()).addMap(mapname, new ManhuntMap(mapname, ((Player) sender).getLocation(), Manhunt.getWorld(((Player) sender).getWorld())));
+		map = new ManhuntMap(mapname, ((Player) sender).getLocation(), Manhunt.getWorld(((Player) sender).getWorld()));
+		
+		Manhunt.getWorld(((Player) sender).getWorld()).addMap(mapname, map);
 		sender.sendMessage(ChatColor.GREEN + "Map '" + mapname + "' created in world '" + Manhunt.getWorld(((Player) sender).getWorld()).getName() + "'.");
+		
+		CommandUtil.setSelectedMap(sender, map);
+		sender.sendMessage(ChatColor.YELLOW + "  New map selected.");
+		
 		return true;
 	}
 	private static boolean deletemap(CommandSender sender, Command cmd)
@@ -204,7 +218,7 @@ public abstract class MapCommands
 	
 	
 	// Zones
-	public static boolean mzone(CommandSender sender, String args[])
+	public static boolean mzone(CommandSender sender, String command, String args[])
 	{
 		boolean action = false;
 		
@@ -215,7 +229,7 @@ public abstract class MapCommands
 			return true;
 		}
 		
-		Command cmd = Command.fromTemplate(CommandUtil.cmd_mzone, "mzone", args);
+		Command cmd = Command.fromTemplate(CommandUtil.cmd_mzone, command, args);
 		
 		if (cmd.containsArgument(CommandUtil.arg_help))
 		{
@@ -396,12 +410,26 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		zonename = cmd.getArgument(CommandUtil.arg_name).getParameter();
-		if (zonename == null || zonename.isEmpty())
+		if (cmd.containsArgument(CommandUtil.arg_name))
 		{
-			sender.sendMessage(ChatColor.RED + "Name argument missing.");
-			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
-			return false;
+			zonename = cmd.getArgument(CommandUtil.arg_name).getParameter();
+			if (zonename == null || zonename.isEmpty())
+			{
+				sender.sendMessage(ChatColor.RED + "Name argument missing.");
+				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+				return false;
+			}
+		}
+		else
+		{
+			zonename = cmd.getArgument(CommandUtil.arg_create).getParameter();
+			if (zonename == null || zonename.isEmpty())
+			{
+				sender.sendMessage(ChatColor.RED + "No zone name specified. Options:");
+				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -" + cmd.getArgument(CommandUtil.arg_create).getLabel() + " <name>");
+				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
+				return false;
+			}
 		}
 		
 		primarycorner = Manhunt.getPlayerSelectionPrimaryCorner((Player) sender);
@@ -447,7 +475,8 @@ public abstract class MapCommands
 					+ zone.getPrimaryCorner().getBlockZ() + ")  ("
 					+ zone.getSecondaryCorner().getBlockX() + ","
 					+ zone.getSecondaryCorner().getBlockY() + ","
-					+ zone.getSecondaryCorner().getBlockZ() + ")");
+					+ zone.getSecondaryCorner().getBlockZ() + ")  ("
+					+ zone.getVolume() + " blocks)");
 			if (flags.isEmpty())
 			{
 				sender.sendMessage(ChatColor.GRAY + " No flags.");
@@ -460,7 +489,10 @@ public abstract class MapCommands
 					sender.sendMessage(ChatColor.GRAY + "  - " + flag.getName());
 				}
 			}
-		
+			
+			CommandUtil.setSelectedZone(sender, zone);
+			sender.sendMessage(ChatColor.YELLOW + " Selected new zone.");
+			
 			return true;
 		}
 	}
