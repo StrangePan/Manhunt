@@ -310,44 +310,45 @@ public abstract class LobbyCommands
 		
 		return true;
 	}
-	
-	public static boolean mlobbies(CommandSender sender, String[] args)
-	{
-		if (args.length > 0 && (args[0].equals("?") || args[0].equalsIgnoreCase("help")))
-		{
-			Bukkit.dispatchCommand(sender, "help mlobbies");
-			return true;
-		}
-		
-		return mlobby_list(sender, args);
-	}
-	
-	private static boolean mlobby_list(CommandSender sender, String[] args)
+	private static boolean listlobbies(CommandSender sender, Command cmd)
 	{
 		final int perpage = 8;
 		int page = 1;
 		boolean all = false;
 		List<Lobby> lobbies;
 		
-		
-		// Check permissions
-		if (!sender.isOp())
-		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return true;
-		}
-		
-		
 		// Get the page #
-		if (args.length == 0)
-			page = 1;
-		else if (args[0].equalsIgnoreCase("all"))
-			all = true;
-		else try
+		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
 		{
-			page = Integer.parseInt(args[0]);	
+			try
+			{
+				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				page = 1;
+			}
 		}
-		catch (NumberFormatException e)
+		else if (cmd.getArgument(CommandUtil.arg_list).getParameter() != null)
+		{
+			 if (cmd.getArgument(CommandUtil.arg_list).getParameter().equalsIgnoreCase("all"))
+			 {
+				 all = true;
+				 page = 1;
+			 }
+			 else
+			 {
+				 try
+				 {
+					 page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_list).getParameter());
+				 }
+				 catch (Exception e)
+				 {
+					 page = 1;
+				 }
+			 }
+		}
+		else
 		{
 			page = 1;
 		}
@@ -385,7 +386,6 @@ public abstract class LobbyCommands
 		}
 		return true;
 	}
-	
 	private static boolean mlobby_join(CommandSender sender, String[] args)
 	{
 		Lobby l;
@@ -423,7 +423,6 @@ public abstract class LobbyCommands
 			return true;
 		}
 	}
-	
 	private static boolean mlobby_leave(CommandSender sender, String[] args)
 	{
 		Bukkit.dispatchCommand(sender, "mleave");
