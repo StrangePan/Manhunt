@@ -30,8 +30,6 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mworld").setExecutor(this);
 		Bukkit.getPluginCommand("mworlds").setExecutor(this);
 		Bukkit.getPluginCommand("mmap").setExecutor(this);
-		Bukkit.getPluginCommand("mjoin").setExecutor(this);
-		Bukkit.getPluginCommand("mleave").setExecutor(this);
 		Bukkit.getPluginCommand("mlobby").setExecutor(this);
 		Bukkit.getPluginCommand("mteam").setExecutor(this);
 		Bukkit.getPluginCommand("manhuntmode").setExecutor(this);
@@ -78,12 +76,6 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (c.getName().equalsIgnoreCase("mlobby"))
 			return LobbyCommands.mlobby(sender, cmd, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mjoin"))
-			return LobbyCommands.mjoin(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mleave"))
-			return LobbyCommands.mleave(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("mteam"))
 			return LobbyCommands.mteam(sender, arguments);

@@ -135,12 +135,10 @@ public abstract class MapCommands
 			sender.sendMessage(ChatManager.leftborder + "Use /mmap -list [-world <world name>] to see available maps.");
 			return false;
 		}
-		else
-		{
-			CommandUtil.setSelectedMap(sender, map);
-			sender.sendMessage(ChatColor.GREEN + "You have selected map " + map.getFullName() + ".");
-			return true;
-		}
+		
+		CommandUtil.setSelectedMap(sender, map);
+		sender.sendMessage(ChatColor.YELLOW + "Selected map '" + map.getFullName() + "'.");
+		return true;
 	}
 	private static boolean createmap(CommandSender sender, Command cmd)
 	{
@@ -384,7 +382,7 @@ public abstract class MapCommands
 		}
 		
 		CommandUtil.setSelectedZone(sender, zone);
-		sender.sendMessage(ChatColor.GREEN + "Selected zone '" + zone.getName() + "' in map '" + map.getName() + "'.");
+		sender.sendMessage(ChatColor.YELLOW + "Selected zone '" + zone.getName() + "' in map '" + map.getName() + "'.");
 		return true;
 	}
 	private static boolean createzone(CommandSender sender, Command cmd)
