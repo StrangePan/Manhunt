@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneFlag;
@@ -52,10 +53,15 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
+	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
 	static {
 		for (ZoneFlag flag : ZoneFlag.values())
-		arg_zoneflags.addParameter(flag.getName().toLowerCase());
+			arg_zoneflags.addParameter(flag.getName().toLowerCase());
 		arg_zoneflags.finalize_();
+		
+		for (LobbyType type : LobbyType.values())
+			arg_lobbytype.addParameter(type.getName().toLowerCase());
+		arg_lobbytype.finalize_();
 	}
 	
 	
@@ -69,6 +75,7 @@ public class CommandUtil
 			.addArgument(arg_join)
 			.addArgument(arg_create)
 			.addArgument(arg_delete)
+			.addArgument(arg_lobbytype)
 			.addArgument(arg_name)
 			.addArgument(arg_open)
 			.addArgument(arg_close)

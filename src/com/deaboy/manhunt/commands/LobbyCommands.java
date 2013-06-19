@@ -296,7 +296,7 @@ public abstract class LobbyCommands
 	private static boolean joinlobby(CommandSender sender, Command cmd)
 	{
 		Lobby lobby;
-		String lobbyname = null;
+		String lobbyname;
 		
 		if (!(sender instanceof Player))
 		{
@@ -308,6 +308,8 @@ public abstract class LobbyCommands
 		// 1. Check for -name
 		// 2. Check for parameter
 		// 3. Check if lobby is selected
+		
+		lobbyname = null;
 		
 		if (cmd.containsArgument(CommandUtil.arg_name))
 		{
@@ -377,42 +379,73 @@ public abstract class LobbyCommands
 		Manhunt.changePlayerLobby(p, Manhunt.getDefaultLobby().getId());
 		return true;
 	}
-	private static boolean mlobby_create(CommandSender sender, String[] args)
+	private static boolean createlobby(CommandSender sender, Command cmd)
 	{
 		Location loc;
+		String lobbyname;
+		LobbyType type;
 		
 		if (!(sender instanceof Player))
 		{
-			sender.sendMessage(ChatColor.RED + "Only a player may perform this command.");
-			return true;
-		}
-		if (args.length != 2)
-		{
-			sender.sendMessage(CommandUtil.INVALID_USAGE);
-			sender.sendMessage("/mlobby create <name>");
-			return true;
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
 		}
 		
-		if (!CommandUtil.isVerified(sender))
+		// 1. Check for name argument
+		// 2. Check for parameter
+		
+		lobbyname = null;
+		
+		if (cmd.containsArgument(CommandUtil.arg_name))
 		{
-			String cmd = "mlobby";
-			for (String s : args)
-				cmd += " " + s;
-			CommandUtil.addVerifyCommand(sender, cmd, "Are you sure you want to create a new lobby?");
-			return true;
+			lobbyname = cmd.getArgument(CommandUtil.arg_name).getParameter();
+		}
+		if (!cmd.containsArgument(CommandUtil.arg_name) || lobbyname == null || lobbyname.isEmpty())
+		{
+			lobbyname = cmd.getArgument(CommandUtil.arg_create).getParameter();
+		}
+		if (lobbyname == null || lobbyname.isEmpty())
+		{
+			sender.sendMessage(ChatColor.RED + "You must include a lobby name while creating one.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_create).getLabel() + " <lobbyname>");
+			return false;
 		}
 		
-		if (Manhunt.getLobby(args[1]) != null)
+		if (Manhunt.getLobby(lobbyname) != null)
 		{
-			sender.sendMessage(ChatColor.RED + "A lobby already exists by that name!");
-			return true;
+			sender.sendMessage(ChatColor.RED + "A lobby already exists with that name.");
+			sender.sendMessage(ChatColor.GRAY + "  See a list of all lobbies with '/" + cmd.getLabel() + " -" + CommandUtil.arg_list.getName());
+			return false;
 		}
 		
 		loc = ((Player) sender).getLocation();
 		
-		Manhunt.createLobby(args[1], LobbyType.GAME, loc);
-		sender.sendMessage(ChatColor.GREEN + "Created lobby in world " + ((Player) sender).getWorld().getName());
-		sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "at location [" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "]");
+		if (cmd.containsArgument(CommandUtil.arg_lobbytype))
+		{
+			type = LobbyType.fromName(cmd.getArgument(CommandUtil.arg_lobbytype).getParameter());
+			if (type == null)
+			{
+				if (cmd.getArgument(CommandUtil.arg_lobbytype).getParameter() != null)
+				{
+					sender.sendMessage(ChatColor.RED + "Unable to parse '" + cmd.getArgument(CommandUtil.arg_lobbytype).getParameter() + "' as a lobby type.");
+					sender.sendMessage(ChatColor.GRAY + "  Argument usage: -" + cmd.getArgument(CommandUtil.arg_lobbytype).getLabel() + " <hub|game>");
+				}
+				else
+				{
+					sender.sendMessage(ChatColor.RED + "Invalid use of the " + CommandUtil.arg_lobbytype + " parameter.");
+					sender.sendMessage(ChatColor.GRAY + "  Argument usage: -" + cmd.getArgument(CommandUtil.arg_lobbytype).getLabel() + " <hub|game>");
+				}
+				return false;
+			}
+		}
+		else
+		{
+			type = LobbyType.GAME;
+		}
+		
+		Manhunt.createLobby(lobbyname, type, loc);
+		sender.sendMessage(ChatColor.GREEN + "Created lobby '" + lobbyname + "' in world '" + ((Player) sender).getWorld().getName() + "'.");
+		sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "  with spawn at [" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "]");
 		return true;
 	}
 	private static boolean mlobby_close(CommandSender sender, String[] args)
