@@ -510,6 +510,40 @@ public class Manhunt implements Closeable, Listener
 		return lobby;
 	}
 	
+	public static boolean deleteLobby(long lobbyId)
+	{
+		Lobby lobby = getLobby(lobbyId);
+		
+		if (lobby == null)
+		{
+			return false;
+		}
+		
+		closeLobby(lobbyId);
+		lobby.close();
+		getInstance().lobbies.remove(lobbyId);
+		
+		if (lobbyId == getInstance().default_lobby)
+		{
+			if (getInstance().lobbies.isEmpty())
+			{
+				getInstance().default_lobby = -1L;
+			}
+			else
+			{
+				for (long i = 0; true; i++)
+				{
+					if (getInstance().lobbies.containsKey(i))
+					{
+						getInstance().default_lobby = i;
+						break;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	public static Lobby createLobbyFromFile(String name, File f)
 	{
 		
@@ -607,6 +641,54 @@ public class Manhunt implements Closeable, Listener
 			getSettings().DEFAULT_LOBBY.setValue(getLobby(lobbyId).getName());
 			return true;
 		}
+	}
+	
+	public static void closeLobby(long lobbyId)
+	{
+		Lobby lobby = getLobby(lobbyId);
+		
+		if (lobby == null)
+		{
+			return;
+		}
+		
+		if (!lobby.isEnabled())
+		{
+			return;
+		}
+		
+		if (lobby.gameIsRunning())
+		{
+			lobby.stopGame();
+		}
+		
+		// Lobby to close is NOT the default lobby
+		if (lobbyId != getInstance().default_lobby)
+		{
+			for (Player p : lobby.getOnlinePlayers())
+			{
+				p.sendMessage(ChatColor.GOLD + ChatManager.leftborder + "The lobby you were in has been closed.");
+				changePlayerLobby(p, getInstance().default_lobby);
+			}
+		}
+		
+	}
+	
+	public static void openLobby(long lobbyId)
+	{
+		Lobby lobby = getLobby(lobbyId);
+		
+		if (lobby == null)
+		{
+			return;
+		}
+		
+		if (!lobby.isEnabled())
+		{
+			return;
+		}
+		
+		lobby.enable();
 	}
 	
 	
