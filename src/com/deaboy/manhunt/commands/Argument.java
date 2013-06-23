@@ -100,16 +100,12 @@ public class Argument
 	public static Argument fromTemplate(ArgumentTemplate template, String label, List<String> params)
 	{
 		Argument argument = new Argument(template.getName(), label, template.getType());
-		String param;
 		
 		switch (template.getType())
 		{
 		case TEXT:
-			param = new String();
 			for (int i = 0; i < params.size(); i++)
-				param += (i > 0 ? " " : "") + params.get(i);
-			if (!param.isEmpty())
-				argument.addParameter(param);
+				argument.addParameter(params.get(i));
 			break;
 			
 		case RADIO:

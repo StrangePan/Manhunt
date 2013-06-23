@@ -33,6 +33,11 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 		addSetting(new SettingString("version", ManhuntPlugin.getVersion(), ""), false);
 	}
 	
+	public String getFileLocation()
+	{
+		return file.getAbsolutePath();
+	}
+	
 	public void addSetting(Setting setting, boolean visible)
 	{
 		this.settings.add(setting);
@@ -41,7 +46,6 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 			this.settings_visible.add(setting);
 		}
 	}
-	
 	@Override
 	public void save()
 	{
@@ -52,7 +56,6 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 		}
 		saveFile();
 	}
-	
 	private void saveFile()
 	{
 		FileOutputStream stream_out;
@@ -83,7 +86,7 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public void load()
 	{
@@ -99,7 +102,6 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 			setting.setValue((String) this.get(setting.getLabel()));
 		}
 	}
-	
 	private void loadFile()
 	{
 		FileInputStream stream_in;
@@ -120,13 +122,11 @@ public abstract class SettingManagerBase extends Properties implements SettingMa
 			e.printStackTrace();
 		}
 	}
-
 	@Override
 	public List<Setting> getVisibleSettings()
 	{
 		return settings_visible;
 	}
-
 	@Override
 	public List<Setting> getAllSettings()
 	{

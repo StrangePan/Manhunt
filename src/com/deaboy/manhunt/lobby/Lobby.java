@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.lobby;
 
 import java.io.Closeable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class Lobby implements Closeable
 	//---------------- Properties ----------------//
 	private final long id;
 	private String name;
-	private final World world;
+	private World world;
 	private LobbyType type;
 	
 	private HashMap<String, Team> teams;
@@ -44,7 +45,6 @@ public class Lobby implements Closeable
 	{
 		this(id, name, type, world, world.getSpawnLocation());
 	}
-	
 	public Lobby(long id, String name, LobbyType type, World world, Location location)
 	{
 		this.id = id;
@@ -58,28 +58,17 @@ public class Lobby implements Closeable
 		this.spawn = new ManhuntSpawn(location);
 		this.enabled = true;
 		
-		
-		// TODO Start loading maps n stuff
-		
-		
-		this.settings = new LobbySettings(name);
-		load();
+		this.settings = new LobbySettings(name, false);
 		save();
 		
-		if (!settings.LOBBY_NAME.getValue().trim().isEmpty())
-			this.name = settings.LOBBY_NAME.getValue();
-		
-		if (type == LobbyType.GAME)
-		{
-			GameType gametype = Manhunt.getGameTypeByClassCanonicalName(settings.GAME_TYPE.getValue());
-			if (gametype == null)
-				gametype = Manhunt.getGameTypeByClassCanonicalName(ManhuntGame.class.getCanonicalName());
-			
-			this.game = gametype.createInstance(this);
-			if (game == null)
-				game = new ManhuntGame(this);
-		}
-		
+	}
+	public Lobby(long id, String settingsfile)
+	{
+		this.id = id;
+		this.settings = new LobbySettings(settingsfile, true);
+		this.teams = new HashMap<String, Team>();
+		this.maps = new ArrayList<String>();
+		load();
 	}
 	
 	
@@ -93,7 +82,6 @@ public class Lobby implements Closeable
 	{
 		return id;
 	}
-	
 	/**
 	 * Gets the name of this lobby.
 	 * @return This lobby's name.
@@ -102,7 +90,6 @@ public class Lobby implements Closeable
 	{
 		return name;
 	}
-	
 	/**
 	 * Gets this Lobby's Spawn object.
 	 * @return This Lobby's Spawn.
@@ -111,7 +98,10 @@ public class Lobby implements Closeable
 	{
 		return spawn;
 	}
-	
+	public File getFile()
+	{
+		return new File(this.settings.getFileLocation());
+	}
 	/**
 	 * Gets this Lobby's main World.
 	 * @return This Lobby's World.
@@ -120,7 +110,6 @@ public class Lobby implements Closeable
 	{
 		return world;
 	}
-	
 	/**
 	 * Gets the Manhunt worlds associated with this lobby.
 	 * @return
@@ -142,7 +131,6 @@ public class Lobby implements Closeable
 		
 		return worlds;
 	}
-	
 	public List<Map> getMaps()
 	{
 		List<Map> maplist = new ArrayList<Map>();
@@ -157,7 +145,6 @@ public class Lobby implements Closeable
 		
 		return maplist;
 	}
-	
 	public Map getCurrentMap()
 	{
 		switch (type)
@@ -170,7 +157,7 @@ public class Lobby implements Closeable
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Get this Lobby's main spawn point.
 	 * @return This Lobby's spawn location
@@ -179,27 +166,23 @@ public class Lobby implements Closeable
 	{
 		return world.getSpawnLocation();
 	}
-	
 	public Location getRandomSpawnLocation()
 	{
 		return getSpawn().getRandomLocation();
 	}
-	
 	public int getSpawnRange()
 	{
 		return getSpawn().getRange();
 	}
-	
 	public void setSpawnRange(int range)
 	{
 		getSpawn().setRange(range);
 	}
-	
 	public void setSpawnLocation(Location loc)
 	{
 		getSpawn().setLocation(loc);
 	}
-	
+
 	/**
 	 * Gets a list of this Lobby's Players.
 	 * @return ArrayList of Players in this Lobby
@@ -218,7 +201,6 @@ public class Lobby implements Closeable
 		
 		return players;
 	}
-	
 	/**
 	 * Gets a list of this Lobby's Player handles,
 	 * filtered by team.
@@ -242,7 +224,6 @@ public class Lobby implements Closeable
 		
 		return players;
 	}
-	
 	/**
 	 * Gets a list of this Lobby's players' names.
 	 * @return ArrayList of Strings of players' names in this lobby.
@@ -251,7 +232,6 @@ public class Lobby implements Closeable
 	{
 		return new ArrayList<String>(teams.keySet());
 	}
-	
 	/**
 	 * Gets a list of this Lobby's players' names,
 	 * filtered by teams given in the parameters.
@@ -277,12 +257,10 @@ public class Lobby implements Closeable
 		
 		return names;
 	}
-	
 	public Team getPlayerTeam(Player p)
 	{
 		return getPlayerTeam(p.getName());
 	}
-	
 	public Team getPlayerTeam(String name)
 	{
 		if (teams.containsKey(name))
@@ -299,7 +277,6 @@ public class Lobby implements Closeable
 	{
 		return this.settings;
 	}
-	
 	/**
 	 * Checks to see if the Lobby is currently enabled.
 	 * @return True if the Lobby is enabled, false if not.
@@ -308,7 +285,6 @@ public class Lobby implements Closeable
 	{
 		return enabled;
 	}
-	
 	/**
 	 * Gets the type of this lobby.
 	 * @return
@@ -317,7 +293,6 @@ public class Lobby implements Closeable
 	{
 		return type;
 	}
-	
 	private Game getGame()
 	{
 		switch (type)
@@ -374,7 +349,6 @@ public class Lobby implements Closeable
 			return false;
 		}
 	}
-	
 	private boolean addPlayer(String name, Team team)
 	{
 		if (teams.containsKey(name))
@@ -383,7 +357,6 @@ public class Lobby implements Closeable
 			teams.put(name, team);
 		return true;
 	}
-	
 	/**
 	 * Removes a Player from the lobby via their name.
 	 * @param p The Player to remove.
@@ -393,7 +366,6 @@ public class Lobby implements Closeable
 		if (this.teams.containsKey(name))
 			this.teams.remove(name);
 	}
-	
 	/**
 	 * Removes a player from the lobby.
 	 * @param player
@@ -403,22 +375,18 @@ public class Lobby implements Closeable
 		if (this.teams.containsKey(player.getName()))
 			this.teams.remove(player.getName());
 	}
-	
 	public boolean containsPlayer(Player p)
 	{
 		return containsPlayer(p.getName());
 	}
-	
 	public boolean containsPlayer(String name)
 	{
 		return this.teams.containsKey(name);
 	}
-	
 	public boolean setPlayerTeam(Player player, Team team)
 	{
 		return setPlayerTeam(player.getName(), team);
 	}
-	
 	public boolean setPlayerTeam(String name, Team team)
 	{
 		switch (type)
@@ -439,7 +407,6 @@ public class Lobby implements Closeable
 			return false;
 		}
 	}
-	
 	public boolean setAllPlayerTeams(Team team)
 	{
 		switch (type)
@@ -478,12 +445,10 @@ public class Lobby implements Closeable
 			return false;
 		}
 	}
-	
 	public boolean setCurrentMap(Map map)
 	{
 		return setCurrentMap(map.getFullName());
 	}
-	
 	/**
 	 * Sets the current map for the lobby. If the map is
 	 * not in a valid world, will return false and not make the assignment.
@@ -510,7 +475,6 @@ public class Lobby implements Closeable
 			return false;
 		}
 	}
-	
 	public void setLobbyType(LobbyType type)
 	{
 		if (type == null)
@@ -547,17 +511,14 @@ public class Lobby implements Closeable
 		
 		return success;
 	}
-	
 	public boolean addWorld(String worldname)
 	{
 		return addWorld(Manhunt.getWorld(worldname));
 	}
-	
 	public boolean addMap(Map map)
 	{
 		return addMap(map.getFullName());
 	}
-	
 	private boolean addMap(String mapname)
 	{
 		if (maps.contains(mapname))
@@ -568,12 +529,10 @@ public class Lobby implements Closeable
 			maps.add(mapname);
 		return true;
 	}
-	
 	public boolean removeMap(Map map)
 	{
 		return removeMap(map.getFullName());
 	}
-	
 	private boolean removeMap(String mapname)
 	{
 		if (!maps.contains(mapname))
@@ -597,7 +556,6 @@ public class Lobby implements Closeable
 			p.sendMessage(message);
 		}
 	}
-	
 	public void broadcast(String message, Team...teams)
 	{
 		for (Player p : getOnlinePlayers(teams))
@@ -605,7 +563,6 @@ public class Lobby implements Closeable
 			p.sendMessage(message);
 		}
 	}
-	
 	/**
 	 * Clears all Players from this Lobby.
 	 */
@@ -613,7 +570,6 @@ public class Lobby implements Closeable
 	{
 		this.teams.clear();
 	}
-	
 	public void forfeitPlayer(String name)
 	{
 		if (!gameIsRunning())
@@ -639,7 +595,6 @@ public class Lobby implements Closeable
 	{
 		this.enabled = true;
 	}
-	
 	/**
 	 * Disables the Lobby.
 	 */
@@ -647,7 +602,6 @@ public class Lobby implements Closeable
 	{
 		this.enabled = false;
 	}
-	
 	public void distributeTeams()
 	{
 		switch (type)
@@ -694,7 +648,6 @@ public class Lobby implements Closeable
 			return;
 		}
 	}
-	
 	public Map chooseMap()
 	{
 		Map map;
@@ -725,7 +678,6 @@ public class Lobby implements Closeable
 			return null;
 		}
 	}
-	
 	public void startGame()
 	{
 		switch (type)
@@ -749,7 +701,6 @@ public class Lobby implements Closeable
 			return;
 		}
 	}
-	
 	public void stopGame()
 	{
 		switch (type)
@@ -774,6 +725,28 @@ public class Lobby implements Closeable
 	//---------------- Saving, Loading, Closing ----------------//
 	public void save()
 	{
+		List<String> mapnames;
+		
+		// Save name
+		settings.LOBBY_NAME.setValue(this.name);
+		
+		// Save world
+		settings.SPAWN_WORLD.setValue(this.world.getName());
+		
+		// Save type
+		settings.LOBBY_TYPE.setValue(this.type.getName());
+		
+		// Save maps
+		mapnames = new ArrayList<String>();
+		for (String mapname : maps)
+			mapnames.add(mapname);
+		
+		
+		// Save spawn
+		// Save open state
+		
+		// Save game
+		
 		settings.SPAWN_WORLD.setValue(world.getName());
 		settings.SPAWN_X.setValue(spawn.getLocation().getX());
 		settings.SPAWN_Y.setValue(spawn.getLocation().getY());
@@ -782,34 +755,59 @@ public class Lobby implements Closeable
 		settings.SPAWN_YAW.setValue(spawn.getLocation().getYaw());
 		settings.SPAWN_RANGE.setValue(spawn.getRange());
 		settings.LOBBY_NAME.setValue(name);
-		ArrayList<String> mapnames = new ArrayList<String>();
-		for (String mapname : maps)
-			mapnames.add(mapname);
 		settings.MAPS.setValue(mapnames);
 		settings.save();
 	}
-	
 	public void load()
 	{
+		Location loc;
+		
 		settings.load();
 		
-		Location loc = getSpawn().getLocation();
+		// Load name
+		this.name = settings.LOBBY_NAME.getValue();
+		
+		// Load world
+		world = Manhunt.getWorld(settings.SPAWN_WORLD.getValue());
+		if (world == null)
+			world = Manhunt.getWorld(Bukkit.getWorlds().get(0));
+		
+		// Load type
+		this.type = LobbyType.fromId(settings.LOBBY_TYPE.getValue());
+		if (this.type == null)
+			this.type = LobbyType.GAME;
+		
+		// Load maps 
+		maps.clear();
+		for (String mapname : settings.MAPS.getValue())
+			if (Manhunt.getMap(mapname) != null)
+				maps.add(mapname);
+		
+		// Load spawn
+		loc = new Location(world.getWorld(), 0.0, 0.0, 0.0);
 		loc.setX(settings.SPAWN_X.getValue());
 		loc.setY(settings.SPAWN_Y.getValue());
 		loc.setZ(settings.SPAWN_Z.getValue());
 		loc.setPitch(settings.SPAWN_PITCH.getValue());
 		loc.setYaw(settings.SPAWN_YAW.getValue());
-		setSpawnLocation(loc);
-		setSpawnRange(settings.SPAWN_RANGE.getValue());
+		this.spawn = new ManhuntSpawn(loc, settings.SPAWN_RANGE.getValue());
 		
-		setName(settings.LOBBY_NAME.getValue());
+		// Load open state
+		this.enabled = settings.LOBBY_OPEN.getValue();
 		
-		maps.clear();
-		for (String mapname : settings.MAPS.getValue())
-			if (Manhunt.getMap(mapname) != null)
-				maps.add(mapname);
+		// Load game
+		if (type == LobbyType.GAME)
+		{
+			GameType gametype = Manhunt.getGameTypeByClassCanonicalName(settings.GAME_TYPE.getValue());
+			if (gametype == null)
+				gametype = Manhunt.getGameTypeByClassCanonicalName(ManhuntGame.class.getCanonicalName());
+			
+			this.game = gametype.createInstance(this);
+			if (game == null)
+				game = new ManhuntGame(this);
+		}
+		
 	}
-	
 	@Override
 	public void close()
 	{

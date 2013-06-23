@@ -299,9 +299,8 @@ public abstract class LobbyCommands
 		
 		if (!(sender instanceof Player))
 		{
-			sender.sendMessage(ChatColor.RED + "That command can only be performed by a Player.");
-			sender.sendMessage(ChatColor.GRAY + "Please use /mjoin <lobby> <player>");
-			return true;
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
 		}
 		
 		// 1. Check for -name
@@ -314,11 +313,11 @@ public abstract class LobbyCommands
 		{
 			lobbyname = cmd.getArgument(CommandUtil.arg_name).getParameter();
 		}
-		if (lobbyname == null || lobbyname.isEmpty())
+		if (lobbyname == null)
 		{
 			lobbyname = cmd.getArgument(CommandUtil.arg_join).getParameter();
 		}
-		if (lobbyname == null || lobbyname.isEmpty())
+		if (lobbyname == null)
 		{
 			lobby = CommandUtil.getSelectedLobby(sender);
 			if (lobby != null)
@@ -523,7 +522,7 @@ public abstract class LobbyCommands
 		Lobby lobby;
 		String lobbyname = cmd.getArgument(CommandUtil.arg_select).getParameter();
 		
-		if (lobbyname == null || lobbyname.isEmpty())
+		if (lobbyname == null)
 		{
 			sender.sendMessage(ChatColor.RED + "You must include the name of the lobby you want to select.");
 			sender.sendMessage(ChatColor.GRAY + " /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_select).getLabel() + " <zonename>");

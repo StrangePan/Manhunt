@@ -12,6 +12,7 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingBoolean USE_AMBER;
 	public final SettingString	LOBBY_NAME;
 	public final SettingInteger LOBBY_TYPE;
+	public final SettingBoolean	LOBBY_OPEN;
 	public final SettingString	GAME_TYPE;
 	public final SettingListString MAPS;
 	
@@ -35,14 +36,15 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingBoolean PASSIVE_MOBS;
 	
 	
-	public LobbySettings( String filename )
+	public LobbySettings( String filename, boolean literalpath )
 	{
-		super( Manhunt.path_lobbies + "/" + filename + Manhunt.extension_lobbies);
+		super(literalpath ? filename : Manhunt.path_lobbies + "/" + filename + Manhunt.extension_lobbies);
 		
 		addSetting(MODE =			new SettingInteger("mode", 0, "The mode the plugin is running in.", ""), false);
 		addSetting(USE_AMBER =		new SettingBoolean("useamber", true, "Manhunt will record/restore the world with Amber.", "Manhunt will not restore the world."), true);
 		addSetting(LOBBY_NAME =		new SettingString("lobbyname", "", ""), false);
 		addSetting(LOBBY_TYPE =		new SettingInteger("lobbytype", LobbyType.GAME.ordinal(), "", ""), false);
+		addSetting(LOBBY_OPEN =		new SettingBoolean("open", true, "", ""), false);
 		addSetting(GAME_TYPE =		new SettingString("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
 		addSetting(MAPS =			new SettingListString("maps", ""), false);
 		
