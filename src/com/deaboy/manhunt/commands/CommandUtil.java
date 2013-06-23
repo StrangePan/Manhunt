@@ -52,6 +52,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").finalize_();
+	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("remap", ArgumentType.FLAG).addAlias("redef").addAlias("remap").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
 	static {
@@ -105,6 +106,7 @@ public class CommandUtil
 			.addArgument(arg_delete)
 			.addArgument(arg_name)
 			.addArgument(arg_zoneflags)
+			.addArgument(arg_redefine)
 			.finalize_();
 	
 	

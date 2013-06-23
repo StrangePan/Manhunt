@@ -70,6 +70,11 @@ public class Selection implements Closeable
 		return (primary != null && secondary != null);
 	}
 	
+	public boolean isValid()
+	{
+		return (primary != null && secondary != null && primary.getWorld() == secondary.getWorld() && primary.getWorld() == player.getWorld());
+	}
+	
 	public void clear()
 	{
 		this.primary = null;

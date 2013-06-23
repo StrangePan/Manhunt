@@ -20,7 +20,7 @@ import com.deaboy.manhunt.map.ZoneFlag;
 
 public abstract class MapCommands
 {
-	
+	// Maps
 	public static boolean mmap(CommandSender sender, String command, String args[])
 	{
 		boolean action = false;
@@ -247,6 +247,14 @@ public abstract class MapCommands
 		{
 			action |= createzone(sender, cmd);
 		}
+		if (cmd.containsArgument(CommandUtil.arg_redefine))
+		{
+			action |= redefinezone(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_zoneflags))
+		{
+			action |= flagzone(sender, cmd);
+		}
 		if (cmd.containsArgument(CommandUtil.arg_delete))
 		{
 			action |= deletezone(sender, cmd);
@@ -391,7 +399,6 @@ public abstract class MapCommands
 		Zone zone;
 		Map map;
 		String zonename;
-		List<ZoneFlag> flags;
 		Location primarycorner;
 		Location secondarycorner;
 		
@@ -448,17 +455,7 @@ public abstract class MapCommands
 			zonename += i;
 		}
 		
-		flags = new ArrayList<ZoneFlag>();
-		if (cmd.containsArgument(CommandUtil.arg_zoneflags))
-		{
-			for (String f : cmd.getArgument(CommandUtil.arg_zoneflags).getParameters())
-			{
-				if (ZoneFlag.fromName(f) != null)
-					flags.add(ZoneFlag.fromName(f));
-			}
-		}
-		
-		zone = map.createZone(zonename, primarycorner, secondarycorner, flags);
+		zone = map.createZone(zonename, primarycorner, secondarycorner);
 		if (zone == null)
 		{
 			sender.sendMessage(ChatColor.RED + "There was an error creating the zone.");
@@ -467,27 +464,14 @@ public abstract class MapCommands
 		else
 		{
 			sender.sendMessage(ChatColor.GREEN + "Zone '" + zone.getName() + "' successfully created in map '" + map.getName() + "'");
-			sender.sendMessage(ChatColor.GRAY + " ("
-					+ zone.getPrimaryCorner().getBlockX() + ","
-					+ zone.getPrimaryCorner().getBlockY() + ","
-					+ zone.getPrimaryCorner().getBlockZ() + ")  ("
-					+ zone.getSecondaryCorner().getBlockX() + ","
-					+ zone.getSecondaryCorner().getBlockY() + ","
-					+ zone.getSecondaryCorner().getBlockZ() + ")  ("
+			sender.sendMessage(ChatColor.GRAY + " ["
+					+ zone.getPrimaryCorner().getBlockX() + ", "
+					+ zone.getPrimaryCorner().getBlockY() + ", "
+					+ zone.getPrimaryCorner().getBlockZ() + "]  ["
+					+ zone.getSecondaryCorner().getBlockX() + ", "
+					+ zone.getSecondaryCorner().getBlockY() + ", "
+					+ zone.getSecondaryCorner().getBlockZ() + "]  ("
 					+ zone.getVolume() + " blocks)");
-			if (flags.isEmpty())
-			{
-				sender.sendMessage(ChatColor.GRAY + " No flags.");
-			}
-			else
-			{
-				sender.sendMessage(ChatColor.GRAY + " Flags:");
-				for (ZoneFlag flag : flags)
-				{
-					sender.sendMessage(ChatColor.GRAY + "  - " + flag.getName());
-				}
-			}
-			
 			CommandUtil.setSelectedZone(sender, zone);
 			sender.sendMessage(ChatColor.YELLOW + " Selected new zone.");
 			
@@ -538,41 +522,92 @@ public abstract class MapCommands
 		CommandUtil.getSelectedMap(sender).removeZone(zonename);
 		return true;
 	}
-	
-	
-	
-	// Spawns
-	public static boolean mspawn(CommandSender sender, String args[])
+	private static boolean flagzone(CommandSender sender, Command cmd)
 	{
-		if (args.length == 0 || args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help"))
+		Zone zone;
+		List<ZoneFlag> flags;
+		
+		zone = CommandUtil.getSelectedZone(sender);
+		if (zone == null)
 		{
-			Bukkit.dispatchCommand(sender, "/help mspawn");
-			return true;
+			sender.sendMessage(ChatColor.RED + "Please select a zone to modify.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <zonename>");
+			return false;
 		}
 		
-		if (!sender.isOp())
+		flags = new ArrayList<ZoneFlag>();
+		for (String f : cmd.getArgument(CommandUtil.arg_zoneflags).getParameters())
 		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return true;
+			if (ZoneFlag.fromName(f) != null)
+				flags.add(ZoneFlag.fromName(f));
 		}
 		
-		else if (args[0].equalsIgnoreCase("new") || args[0].equalsIgnoreCase("create"))
+		if (flags.isEmpty())
 		{
-			if (args.length == 2 && (args[1].equalsIgnoreCase("hunter") || args[1].equalsIgnoreCase("prey")))
+			sender.sendMessage(ChatColor.RED + "Please list the flags you would like to set.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_zoneflags).getLabel() + " <flag1> [flag2] [flag3] ...");
+			return false;
+		}
+		else
+		{
+			zone.clearFlags();
+			sender.sendMessage(ChatColor.GREEN + "Flags set of " + zone.getName() + ":");
+			for (ZoneFlag flag : flags)
 			{
-				
+				zone.setFlag(flag, true);
+				sender.sendMessage(ChatColor.GREEN + "  - " + flag.getName());
 			}
-			else
-			{
-				sender.sendMessage(ChatColor.GRAY + "Usage: /mspawn " + args[0] + " <hunter|prey|spectator>");
-				return true;
-			}
-			
-			
-			
 		}
 		
 		return true;
 	}
+	private static boolean redefinezone(CommandSender sender, Command cmd)
+	{
+		Zone zone;
+		Location primary, secondary;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(ChatColor.RED + CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		zone = CommandUtil.getSelectedZone(sender);
+		if (zone == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a zone to redefine.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <zonename>");
+			return false;
+		}
+		
+		primary = Manhunt.getPlayerSelectionPrimaryCorner((Player) sender);
+		secondary = Manhunt.getPlayerSelectionSecondaryCorner((Player) sender);
+		
+		if (primary == null || secondary == null || !Manhunt.getPlayerSelectionValid((Player) sender))
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a region first.");
+			return false;
+		}
+		
+		zone.setCorner1(primary);
+		zone.setCorner2(secondary);
+		sender.sendMessage(ChatColor.GREEN + "Zone redefined with the following coordinates:");
+		sender.sendMessage(ChatColor.GRAY + " ["
+				+ zone.getPrimaryCorner().getBlockX() + ", "
+				+ zone.getPrimaryCorner().getBlockY() + ", "
+				+ zone.getPrimaryCorner().getBlockZ() + "]  ["
+				+ zone.getSecondaryCorner().getBlockX() + ", "
+				+ zone.getSecondaryCorner().getBlockY() + ", "
+				+ zone.getSecondaryCorner().getBlockZ() + "]  ("
+				+ zone.getVolume() + " blocks)");
+		return true;
+	}
+	
+	
+	
+	// Spawns
+	
+	
+	
 	
 }

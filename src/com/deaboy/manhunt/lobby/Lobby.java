@@ -69,6 +69,10 @@ public class Lobby implements Closeable
 		this.teams = new HashMap<String, Team>();
 		this.maps = new ArrayList<String>();
 		load();
+		if (this.name.isEmpty())
+		{
+			this.name = "lobby";
+		}
 	}
 	
 	

@@ -155,6 +155,14 @@ public abstract class Zone
 	}
 	
 	/**
+	 * Clears this zone's flags
+	 */
+	public void clearFlags()
+	{
+		this.flags = 0;
+	}
+	
+	/**
 	 * Checks whether a flag was set on this Zone.
 	 * @param flag The flag to check for.
 	 * @return True if the flag is set, false if not.
@@ -166,15 +174,6 @@ public abstract class Zone
 			throw new IllegalArgumentException("Argument 'flag' canot be null.");
 		}
 		return (flags & 1 << flag.ordinal()) != 0;
-	}
-	
-	/**
-	 * Gets an integer containing the state of this zone's flags.
-	 * @return integer code representing the set and unset flags.
-	 */
-	public int getFlags()
-	{
-		return flags;
 	}
 	
 	
@@ -242,6 +241,14 @@ public abstract class Zone
 		return loc;
 	}
 	
+	/**
+	 * Gets an integer containing the state of this zone's flags.
+	 * @return integer code representing the set and unset flags.
+	 */
+	public int getFlags()
+	{
+		return flags;
+	}
 	
 	
 	

@@ -1043,6 +1043,10 @@ public class Manhunt implements Closeable, Listener
 		else
 			return worldeditplugin.getSelection(p).getMinimumPoint();
 	}
+	public static boolean getPlayerSelectionValid(Player p)
+	{
+		return getInstance().getPlayerSelection(p).isValid();
+	}
 	
 	
 	
