@@ -55,7 +55,7 @@ public class Lobby implements Closeable
 		this.teams = new HashMap<String, Team>();
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
-		this.spawn = new ManhuntSpawn(location);
+		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, location);
 		this.enabled = true;
 		
 		this.settings = new LobbySettings(name, false);
@@ -794,7 +794,7 @@ public class Lobby implements Closeable
 		loc.setZ(settings.SPAWN_Z.getValue());
 		loc.setPitch(settings.SPAWN_PITCH.getValue());
 		loc.setYaw(settings.SPAWN_YAW.getValue());
-		this.spawn = new ManhuntSpawn(loc, settings.SPAWN_RANGE.getValue());
+		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, loc, settings.SPAWN_RANGE.getValue());
 		
 		// Load open state
 		this.enabled = settings.LOBBY_OPEN.getValue();

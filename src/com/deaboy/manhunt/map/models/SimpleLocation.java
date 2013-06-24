@@ -20,6 +20,12 @@ public class SimpleLocation
 	public SimpleLocation()
 	{
 		this.version = ManhuntPlugin.getVersion();
+		
+		this.x = 0.0;
+		this.y = 0.0;
+		this.z = 0.0;
+		this.yaw = 0.0f;
+		this.pitch = 0.0f;
 	}
 	
 	

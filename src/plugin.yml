@@ -5,14 +5,8 @@ website: github.com/Deaboy/HuntedPlugin
 author: Deaboy
 soft-depend: [Amber, WorldEdit]
 commands:
-    mverify:
-        usage: /mverify
-        description: Verifies a Manhunt command.
-        aliases: [verify, myes, yes, ok]
-    mcancel:
-        usage: /mcancel
-        description: Cancels a Manhunt command.
-        aliases: [cancel, mno, no]
+    
+    ############ General Commands ############
     manhunt:
         usage: /manhunt [help | info]
         description: Access to simple manhunt functions, like help and info.
@@ -25,22 +19,6 @@ commands:
         usage: /msetspawn
         description: Changes the current world's spawn point to your location.
         aliases: [setspawn]
-    mstartgame:
-        usage: /mstartgame [lobby]
-        description: Starts a manhunt game in the current lobby, or the specified lobby.
-        aliases: [startgame]
-    mstopgame:
-        usage: /mstopgame [lobby]
-        description: Stops a manhunt game in the current lobby, or the specified lobby.
-        aliases: [stopgame]
-    msettings:
-        usage: /msettings [page]
-        description: Lists the global Manhunt settings. Cannot be used to view lobby settings.
-        aliases: [settings, listsettings, mlistsettings]
-    mset:
-        usage: /mset <setting> <value>
-        description: Changes a global Manhunt setting. Cannot be used to change lobby settings.
-        aliases: [set, setting]
     mworld:
         usage: /mworld <command> [arg1] [arg2]...
         description: Performs various world commands, such as listing loaded worlds.
@@ -49,10 +27,12 @@ commands:
         usage: /mworlds [page]
         description: Lists the worlds running on the server. Worlds not being used by Manhunt are grayed out.
         aliases: [worlds, listworlds, mlistworlds]
-    mmap:
-        usage: /mmap <command> [arg1] [arg2]...
-        description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
-        aliases: [map, mhmap]
+    manhuntmode:
+        usage: /manhuntmode <mode> [player]
+        description: Changes a player's Manhunt mode. Currently available modes - PLAY, EDIT.
+        aliases: [mhmode]
+    
+    ############ Lobbies ############
     mlobby:
         usage: /mlobby <command> [arg1] [arg2]...
         description: Performs various lobby commands, including editing, renaming, creating, and closing.
@@ -69,14 +49,48 @@ commands:
         usage: /mteam <command> [arg1] [arg2]...
         description: Performs various team commands, like joining  team and clearing a team.
         aliases: [team]
-    manhuntmode:
-        usage: /manhuntmode <mode> [player]
-        description: Changes a player's Manhunt mode. Currently available modes - PLAY, EDIT.
-        aliases: [mhmode]
+    
+    ############ Maps ############
+    mmap:
+        usage: /mmap <command> [arg1] [arg2]...
+        description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
+        aliases: [map, mhmap]
     mzone:
         usage: /mzone
         description: 
         aliases: [zone, mhzone]
+    mpoint:
+        usage: /mpoint
+        description:
+        aliases: [point, mhpoint]
+    
+    ############ Game Commands ############
+    mstartgame:
+        usage: /mstartgame [lobby]
+        description: Starts a manhunt game in the current lobby, or the specified lobby.
+        aliases: [startgame]
+    mstopgame:
+        usage: /mstopgame [lobby]
+        description: Stops a manhunt game in the current lobby, or the specified lobby.
+        aliases: [stopgame]
+    
+    mverify:
+        usage: /mverify
+        description: Verifies a Manhunt command.
+        aliases: [verify, myes, yes, ok]
+    mcancel:
+        usage: /mcancel
+        description: Cancels a Manhunt command.
+        aliases: [cancel, mno, no]
+    
+    msettings:
+        usage: /msettings [page]
+        description: Lists the global Manhunt settings. Cannot be used to view lobby settings.
+        aliases: [settings, listsettings, mlistsettings]
+    mset:
+        usage: /mset <setting> <value>
+        description: Changes a global Manhunt setting. Cannot be used to change lobby settings.
+        aliases: [set, setting]
     
     
     

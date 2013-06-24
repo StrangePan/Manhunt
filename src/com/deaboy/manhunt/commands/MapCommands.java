@@ -14,6 +14,8 @@ import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.ManhuntMap;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Spawn;
+import com.deaboy.manhunt.map.SpawnType;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneFlag;
@@ -277,13 +279,21 @@ public abstract class MapCommands
 		
 		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
 		{
-			try
+			if (cmd.getArgument(CommandUtil.arg_page).getParameter().equalsIgnoreCase("all"))
 			{
-				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
-			}
-			catch (NumberFormatException e)
-			{
+				all = true;
 				page = 1;
+			}
+			else
+			{
+				try
+				{
+					page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+				}
+				catch (NumberFormatException e)
+				{
+					page = 1;
+				}
 			}
 		}
 		else if (cmd.getArgument(CommandUtil.arg_list).getParameter() != null)
@@ -606,6 +616,418 @@ public abstract class MapCommands
 	
 	
 	// Spawns
+	public static boolean mpoint(CommandSender sender, String command, String args[])
+	{
+		boolean action = false;
+
+		// Check permissions
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return true;
+		}
+		
+		Command cmd = Command.fromTemplate(CommandUtil.cmd_mpoint, command, args);
+		
+		if (cmd.containsArgument(CommandUtil.arg_help))
+		{
+			Bukkit.getServer().dispatchCommand(sender, "help mpoint");
+			action = true;
+		}
+		
+		if (cmd.containsArgument(CommandUtil.arg_list))
+		{
+			action |= listpoints(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_select))
+		{
+			action |= selectpoint(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_create))
+		{
+			action |= createpoint(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_range))
+		{
+			action |= rangepoint(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_redefine))
+		{
+			action |= redefinepoint(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_tp))
+		{
+			action |= tppoint(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_delete))
+		{
+			action |= deletepoint(sender, cmd);
+		}
+		
+		if (!action)
+		{
+			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
+		}
+		
+		return true;
+	}
+	private static boolean listpoints(CommandSender sender, Command cmd)
+	{
+		int perpage = 8;
+		boolean all = false;
+		Map map;
+		List<Spawn> spawns;
+		SpawnType type;
+		int page;
+		
+		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
+		{
+			if (cmd.getArgument(CommandUtil.arg_page).getParameter().equalsIgnoreCase("all"))
+			{
+				all = true;
+				page = 1;
+			}
+			else
+			{
+				try
+				{
+					page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+				}
+				catch (NumberFormatException e)
+				{
+					page = 1;
+				}
+			}
+		}
+		else if (cmd.getArgument(CommandUtil.arg_list).getParameter() != null)
+		{
+			 if (cmd.getArgument(CommandUtil.arg_list).getParameter().equalsIgnoreCase("all"))
+			 {
+				 all = true;
+				 page = 1;
+			 }
+			 else
+			 {
+				 try
+				 {
+					 page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_list).getParameter());
+				 }
+				 catch (Exception e)
+				 {
+					 page = 1;
+				 }
+			 }
+		}
+		else
+		{
+			page = 1;
+		}
+		
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must first select a map!");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + CommandUtil.cmd_mmap.getName() + " -" + CommandUtil.arg_select.getName() + " <full map name>");
+			return false;
+		}
+		if (cmd.containsArgument(CommandUtil.arg_pointtype))
+		{
+			type = SpawnType.fromName(cmd.getArgument(CommandUtil.arg_pointtype).getParameter());
+		}
+		else
+		{
+			type = null;
+		}
+		
+		page--;
+		
+		// Assemble list of settings
+		if (type == null)
+			spawns = map.getSpawns();
+		else
+			spawns = map.getSpawns(type);
+ 
+		if (!all)
+		{
+			if (page * perpage > spawns.size() - 1 )
+				page = (spawns.size()-1) / perpage;
+			
+			if (page < 0)
+				page = 0;
+			
+			if (spawns.size() == 0)
+			{
+				sender.sendMessage("There are no points to display.");
+				return false;
+			}
+		}
+		
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Map Points " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) spawns.size()/perpage)) + ")" + ChatManager.bracket2_);
+		if (!all)
+		{
+			sender.sendMessage(ChatColor.GRAY + "Use /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_list).getLabel() + " [n] to get page n of points");
+			spawns = spawns.subList(page * perpage, Math.min( (page + 1) * perpage, spawns.size() ));
+		}
+		
+		for (Spawn spawn : spawns)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + spawn.getName() + "    [" + spawn.getLocation().getBlockX() + ", " + spawn.getLocation().getBlockY() + ", " + spawn.getLocation().getBlockZ() + "]  (range: " + spawn.getRange() + ", " + spawn.getType().getName() + ")");
+		}
+		return true;
+	}
+	private static boolean selectpoint(CommandSender sender, Command cmd)
+	{
+		String spawnname;
+		Spawn spawn;
+		Map map;
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must select a map before you can select a point within!");
+			sender.sendMessage(ChatColor.GRAY+ "  Example: /" + CommandUtil.cmd_mmap.getName() + " -" + CommandUtil.arg_select.getName() + " <map name>");
+			return false;
+		}
+		
+		spawnname = cmd.getArgument(CommandUtil.arg_select).getParameter();
+		spawn = map.getSpawn(spawnname);
+		if (spawnname == null || spawnname.isEmpty())
+		{
+			sender.sendMessage(ChatColor.RED + "You must include the name of the point you want to select.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_select).getLabel() + " <point name>");
+			return false;
+		}
+		else if (spawn == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No point with that name exists in the selected map.");
+			sender.sendMessage(ChatColor.GRAY + "  To see available points, use /" + cmd.getLabel() + " -" + CommandUtil.arg_list.getName() + " [page | all]");
+			sender.sendMessage(ChatColor.GRAY + "  To select a different map, use /" + CommandUtil.cmd_mmap.getName() + " -" + CommandUtil.arg_select.getName() + " <map name>");
+			return false;
+		}
+		
+		CommandUtil.setSelectedSpawn(sender, spawn);
+		sender.sendMessage(ChatColor.YELLOW + "Selected point '" + spawn.getName() + "' in map '" + map.getName() + "'.");
+		return true;
+	}
+	private static boolean createpoint(CommandSender sender, Command cmd)
+	{
+		// Declarations.
+		Spawn spawn;
+		Map map;
+		String spawnname;
+		Location loc;
+		SpawnType type;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null || map.getWorld().getWorld() != ((Player) sender).getWorld())
+		{
+			sender.sendMessage(CommandUtil.MAP_NOT_SELECTED);
+			return false;
+		}
+		
+		// Location
+		loc = ((Player) sender).getLocation();
+		
+		if (cmd.containsArgument(CommandUtil.arg_name))
+		{
+			spawnname = cmd.getArgument(CommandUtil.arg_name).getParameter();
+			if (spawnname == null || spawnname.isEmpty())
+			{
+				sender.sendMessage(ChatColor.RED + "Invalid use of name parameter.");
+				sender.sendMessage(ChatColor.GRAY + "  Parameter usage: -" + CommandUtil.arg_name.getName() + " <name>");
+				return false;
+			}
+		}
+		else
+		{
+			spawnname = cmd.getArgument(CommandUtil.arg_create).getParameter();
+			if (spawnname == null || spawnname.isEmpty())
+			{
+				sender.sendMessage(ChatColor.RED + "No point name specified. Options:");
+				sender.sendMessage(ChatColor.GRAY + "  Parameter usage: -" + cmd.getArgument(CommandUtil.arg_create).getLabel() + " <name>");
+				sender.sendMessage(ChatColor.GRAY + "  Parameter usage: -" + CommandUtil.arg_name.getName() + " <name>");
+				return false;
+			}
+		}
+		
+		if (cmd.containsArgument(CommandUtil.arg_pointtype))
+		{
+			if (cmd.getArgument(CommandUtil.arg_pointtype).getParameter() == null)
+			{
+				sender.sendMessage(ChatColor.RED + "Please include a type for this point.");
+				sender.sendMessage(ChatColor.GRAY + "  Usage: -" + cmd.getArgument(CommandUtil.arg_pointtype).getLabel() + " <setup | hunter | prey>");
+				return false;
+			}
+			type = SpawnType.fromName(cmd.getArgument(CommandUtil.arg_pointtype).getParameter());
+			if (type == null)
+			{
+				sender.sendMessage(ChatColor.RED + "Invalid type point type.");
+				sender.sendMessage(ChatColor.GRAY + "  Usage: -" + cmd.getArgument(CommandUtil.arg_pointtype).getLabel() + " <setup | hunter | prey>");
+				return false;
+			}
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Please include a type for this point.");
+			sender.sendMessage(ChatColor.GRAY + "  Usage: -" + CommandUtil.arg_pointtype.getName() + " <setup | hunter | prey>");
+			return false;
+		}
+		
+		if (map.getSpawn(spawnname) != null)
+		{
+			int i;
+			for (i = 0; map.getSpawn(spawnname + i) != null; i++);
+			spawnname += i;
+		}
+		
+		spawn = map.createSpawn(spawnname, type, loc);
+		if (spawn == null)
+		{
+			sender.sendMessage(ChatColor.RED + "There was an error creating the point.");
+			return false;
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.GREEN + "Point '" + spawn.getName() + "' successfully created in map '" + map.getName() + "'");
+			sender.sendMessage(ChatColor.GRAY + " [" +
+					spawn.getLocation().getBlockX() + ", " +
+					spawn.getLocation().getBlockY() + ", " +
+					spawn.getLocation().getBlockZ() + ", y:" +
+					spawn.getLocation().getYaw() + ", p:" +
+					spawn.getLocation().getPitch() + "] (range: " +
+					spawn.getRange() + ", " +
+					spawn.getType().getName() + ")");
+			CommandUtil.setSelectedSpawn(sender, spawn);
+			sender.sendMessage(ChatColor.YELLOW + "Selected new point.");
+			
+			return true;
+		}
+	}
+	private static boolean rangepoint(CommandSender sender, Command cmd)
+	{
+		Spawn spawn;
+		int range;
+		
+		spawn = CommandUtil.getSelectedSpawn(sender);
+		if (spawn == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select the point you wish to modify.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name>");
+			return false;
+		}
+		
+		try
+		{
+			range = Integer.parseInt(cmd.getArgument(CommandUtil.arg_range).getParameter());
+		}
+		catch (NumberFormatException e)
+		{
+			sender.sendMessage(ChatColor.RED + "Invalid range: " + cmd.getArgument(CommandUtil.arg_range).getParameter());
+			return false;
+		}
+		if (range < 0) range = 0;
+		
+		spawn.setRange(range);
+		sender.sendMessage(ChatColor.GREEN + "Range of " + spawn.getName() + " set to " + range + ".");
+		return true;
+	}
+	private static boolean redefinepoint(CommandSender sender, Command cmd)
+	{
+		Spawn spawn;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		spawn = CommandUtil.getSelectedSpawn(sender);
+		if (spawn == null || spawn.getWorld() != ((Player) sender).getWorld())
+		{
+			sender.sendMessage(ChatColor.RED + "Please select the point you wish to redefine.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name>");
+			return false;
+		}
+		
+		spawn.setLocation(((Player) sender).getLocation());
+		sender.sendMessage(ChatColor.GREEN + "Moved point '" + spawn.getName() + "' to " + ChatColor.WHITE + "[" + spawn.getLocation().getBlockX() + ", " + spawn.getLocation().getBlockY() + ", " + spawn.getLocation().getBlockZ() + ", y:" + spawn.getLocation().getYaw() + ", p:" + spawn.getLocation().getPitch() +"]");
+		return true;
+	}
+	private static boolean tppoint(CommandSender sender, Command cmd)
+	{
+		Spawn spawn;
+		Map map;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		if (cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
+		{
+			map = CommandUtil.getSelectedMap(sender);
+			if (map == null)
+			{
+				sender.sendMessage(ChatColor.RED + "You must first select a map you wish to delete a point from.");
+				sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name");
+				return false;
+			}
+			spawn = map.getSpawn(cmd.getArgument(CommandUtil.arg_tp).getParameter());
+			if (spawn == null)
+			{
+				sender.sendMessage(ChatColor.RED + "No point with the name '" + cmd.getArgument(CommandUtil.arg_tp).getParameter() + "' exists in map '" + map.getName() + "'");
+				sender.sendMessage(ChatColor.GRAY + "  List points: /" + cmd.getLabel() + " -" + CommandUtil.arg_list.getName());
+				return false;
+			}
+		}
+		else
+		{
+			spawn = CommandUtil.getSelectedSpawn(sender);
+			if (spawn == null)
+			{
+				sender.sendMessage(ChatColor.RED + "Please select the point you wish to modify.");
+				sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name>");
+				return false;
+			}
+		}
+		
+		((Player) sender).teleport(spawn.getLocation());
+		sender.sendMessage(ChatColor.GREEN + "Teleported to " + spawn.getName() + ".");
+		return true;
+	}
+	private static boolean deletepoint(CommandSender sender, Command cmd)
+	{
+		Spawn spawn;
+		Map map;
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must first select a map you wish to delete a point from.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name");
+			return false;
+		}
+		
+		spawn = CommandUtil.getSelectedSpawn(sender);
+		if (spawn == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select the point you wish to delete.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name>");
+			return false;
+		}
+		
+		map.removeSpawn(spawn.getName());
+		sender.sendMessage(ChatColor.GREEN + "Deleted point '" + spawn.getName() + "' from map '" + map.getName() + "'.");
+		return true;
+	}
 	
 	
 	

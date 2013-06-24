@@ -21,6 +21,11 @@ public class SimpleZone
 	public SimpleZone()
 	{
 		this.Version = ManhuntPlugin.getVersion();
+		this.Flags = 0;
+		this.Name = new String();
+		this.PrimaryCorner = null;
+		this.SecondaryCorner = null;
+		this.IgnoreY = (byte) 0;
 	}
 	
 	

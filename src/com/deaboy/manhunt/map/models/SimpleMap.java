@@ -17,9 +17,7 @@ public class SimpleMap
 	
 	public String Name;
 	public SimpleLocation Spawn;
-	public List<SimpleSpawn> HunterSpawns;
-	public List<SimpleSpawn> PreySpawns;
-	public List<SimpleSpawn> SetupSpawns;
+	public List<SimpleSpawn> Spawns;
 	public List<SimpleZone> Zones;
 	
 	
@@ -28,9 +26,9 @@ public class SimpleMap
 	public SimpleMap()
 	{
 		this.Version = ManhuntPlugin.getVersion();
-		this.HunterSpawns = new ArrayList<SimpleSpawn>();
-		this.PreySpawns = new ArrayList<SimpleSpawn>();
-		this.SetupSpawns = new ArrayList<SimpleSpawn>();
+		this.Name = new String();
+		this.Spawn = null;
+		this.Spawns = new ArrayList<SimpleSpawn>();
 		this.Zones = new ArrayList<SimpleZone>();
 	}
 	
@@ -43,17 +41,10 @@ public class SimpleMap
 		
 		map.setName(Name);
 		map.setSpawn(Spawn.toLocation(world));
-		for (SimpleSpawn spawn : HunterSpawns)
-			map.addHunterSpawn(spawn.toSpawn(world));
-		for (SimpleSpawn spawn : PreySpawns)
-			map.addPreySpawn(spawn.toSpawn(world));
-		for (SimpleSpawn spawn : SetupSpawns)
-			map.addSetupSpawn(spawn.toSpawn(world));
+		for (SimpleSpawn spawn : Spawns)
+			map.addSpawn(spawn.toSpawn(world));
 		for (SimpleZone zone : Zones)
-		{
-			Zone z = zone.toZone(world);
-			map.addZone(z);
-		}
+			map.addZone(zone.toZone(world));
 		
 		return map;
 	}
@@ -66,12 +57,8 @@ public class SimpleMap
 		SimpleMap model = new SimpleMap();
 		model.Name = map.getName();
 		model.Spawn = SimpleLocation.fromLocation(map.getSpawnLocation());
-		for (Spawn spawn : map.getHunterSpawns())
-			model.HunterSpawns.add(SimpleSpawn.fromSpawn(spawn));
-		for (Spawn spawn : map.getPreySpawns())
-			model.PreySpawns.add(SimpleSpawn.fromSpawn(spawn));
-		for (Spawn spawn : map.getSetupSpawns())
-			model.SetupSpawns.add(SimpleSpawn.fromSpawn(spawn));
+		for (Spawn spawn : map.getSpawns())
+			model.Spawns.add(SimpleSpawn.fromSpawn(spawn));
 		for (Zone zone : map.getZones())
 			model.Zones.add(SimpleZone.fromZone(zone));
 		return model;

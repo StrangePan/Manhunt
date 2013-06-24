@@ -31,10 +31,10 @@ public enum LobbyType
 	//---------------- Public Static Methods ----------------//
 	public static LobbyType fromId(int id)
 	{
-		for (LobbyType type : LobbyType.values())
-			if (type.getId() == id)
-				return type;
-		return null;
+		if (id >= 0 && id < LobbyType.values().length)
+			return LobbyType.values()[id];
+		else
+			return null;
 	}
 	
 	public static LobbyType fromName(String name)

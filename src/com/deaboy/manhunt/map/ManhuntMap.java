@@ -12,9 +12,7 @@ public class ManhuntMap implements Map
 	private String name;
 	private World world;
 	private Location spawn;
-	private List<Spawn> setup;
-	private List<Spawn> hunter;
-	private List<Spawn> prey;
+	private HashMap<String, Spawn> spawns;
 	private HashMap<String, Zone> zones;
 	
 	
@@ -37,22 +35,19 @@ public class ManhuntMap implements Map
 		this.name = name;
 		this.world = world;
 		this.spawn = loc;
-		this.setup = new ArrayList<Spawn>();
-		this.hunter = new ArrayList<Spawn>();
-		this.prey = new ArrayList<Spawn>();
+		this.spawns = new HashMap<String, Spawn>();
 		this.zones = new HashMap<String, Zone>();
 	}
 	
 	
-	//-------------------- Public Methods --------------------//
 	
+	//-------------------- Public Methods --------------------//
 	//---------------- Getters ----------------//
 	@Override
 	public String getName()
 	{
 		return name;
 	}
-	
 	@Override
 	public String getFullName()
 	{
@@ -64,7 +59,6 @@ public class ManhuntMap implements Map
 	{
 		return spawn.clone();
 	}
-
 	@Override
 	public World getWorld()
 	{
@@ -72,21 +66,30 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public List<Spawn> getSetupSpawns()
+	public Spawn getSpawn(String name)
 	{
-		return this.setup;
+		if (this.spawns.containsKey(name))
+		{
+			return this.spawns.get(name);
+		}
+		else
+		{
+			return null;
+		}
 	}
-	
 	@Override
-	public List<Spawn> getHunterSpawns()
+	public List<Spawn> getSpawns()
 	{
-		return this.hunter;
+		return (new ArrayList<Spawn>(this.spawns.values()));
 	}
-	
 	@Override
-	public List<Spawn> getPreySpawns()
+	public List<Spawn> getSpawns(SpawnType type)
 	{
-		return this.prey;
+		List<Spawn> spawns = new ArrayList<Spawn>();
+		for (Spawn spawn : this.spawns.values())
+			if (spawn.getType() == type)
+				spawns.add(spawn);
+		return spawns;
 	}
 	
 	@Override
@@ -97,13 +100,11 @@ public class ManhuntMap implements Map
 		else
 			return null;
 	}
-	
 	@Override
 	public List<Zone> getZones()
 	{
 		return new ArrayList<Zone>(this.zones.values());
 	}
-	
 	@Override
 	public List<Zone> getZones(ZoneFlag ... flags)
 	{
@@ -130,7 +131,6 @@ public class ManhuntMap implements Map
 	{
 		this.name = name;
 	}
-	
 	@Override
 	public void setSpawn(Location loc)
 	{
@@ -139,72 +139,70 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public void addSetupSpawn(Spawn spawn)
+	public boolean addSpawn(Spawn spawn)
 	{
-		if (spawn != null && !setup.contains(spawn) && spawn.getWorld() == getWorld())
-			setup.add(spawn);
+		if (!this.spawns.containsKey(spawn.getName()) && !this.spawns.containsValue(spawn) && spawn.getWorld() == this.world)
+		{
+			this.spawns.put(spawn.getName(), spawn);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	@Override
+	public Spawn createSpawn(String name, SpawnType type, Location location)
+	{
+		return createSpawn(name, type, location, 0);
+	}
+	@Override
+	public Spawn createSpawn(String name, SpawnType type, Location location, int range)
+	{
+		Spawn spawn;
+		
+		if (name == null || this.spawns.containsKey(name))
+			return null;
+		
+		if (location == null || location.getWorld() != this.world.getWorld())
+			return null;
+		
+		if (range < 0)
+			return null;
+		
+		if (type == null)
+			return null;
+		
+		spawn = new ManhuntSpawn(name, type, location, range);
+		
+		this.spawns.put(name, spawn);
+		return spawn;
+	}
+	public void removeSpawn(String name)
+	{
+		if (this.spawns.containsKey(name))
+		{
+			this.spawns.remove(name);
+		}
+	}
+	public void clearSpawns()
+	{
+		this.spawns.clear();
 	}
 	
 	@Override
-	public void addHunterSpawn(Spawn spawn)
+	public boolean addZone(Zone zone)
 	{
-		if ( spawn != null && !hunter.contains(spawn) &&spawn.getWorld() == getWorld())
-			hunter.add(spawn);
-	}
-	
-	@Override
-	public void addPreySpawn(Spawn spawn)
-	{
-		if (spawn != null && !prey.contains(spawn) && spawn.getWorld() == getWorld())
-			prey.add(spawn);
-	}
-	
-	@Override
-	public void removeSetupSpawn(Spawn spawn)
-	{
-		if (setup.contains(spawn))
-			setup.remove(spawn);
-	}
-	
-	@Override
-	public void removeHunterSpawn(Spawn spawn)
-	{
-		if (hunter.contains(spawn))
-			hunter.remove(spawn);
-	}
-	
-	@Override
-	public void removePreySpawn(Spawn spawn)
-	{
-		if (prey.contains(spawn))
-			prey.remove(spawn);
-	}
-	
-	@Override
-	public void clearSetupSpawns()
-	{
-		this.setup.clear();
-	}
-	
-	@Override
-	public void clearHunterSpawns()
-	{
-		this.hunter.clear();
-	}
-	
-	@Override
-	public void clearPreySpawns()
-	{
-		this.prey.clear();
-	}
-	
-	@Override
-	public void addZone(Zone zone)
-	{
-		if (!this.zones.containsKey(zone.getName()) && !this.zones.containsValue(zone))
+		if (!this.zones.containsKey(zone.getName()) && !this.zones.containsValue(zone) && zone.getWorld() == this.world)
+		{
 			this.zones.put(zone.getName(), zone);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
-	
 	@Override
 	public Zone createZone(String name, Location corner1, Location corner2, List<ZoneFlag> flags)
 	{
@@ -213,7 +211,6 @@ public class ManhuntMap implements Map
 			f[i] = flags.get(i);
 		return createZone(name, corner1, corner2, f);
 	}
-	
 	@Override
 	public Zone createZone(String name, Location corner1, Location corner2, ZoneFlag...flags)
 	{
@@ -252,14 +249,12 @@ public class ManhuntMap implements Map
 		
 		return zone;
 	}
-	
 	@Override
 	public void removeZone(String name)
 	{
 		if (zones.containsKey(name))
 			zones.remove(name);
 	}
-	
 	@Override
 	public void clearZones()
 	{

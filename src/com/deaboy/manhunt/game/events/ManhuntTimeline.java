@@ -11,6 +11,7 @@ import org.bukkit.World;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.lobby.Team;
+import com.deaboy.manhunt.map.SpawnType;
 
 public class ManhuntTimeline implements Timeline
 {
@@ -160,8 +161,8 @@ public class ManhuntTimeline implements Timeline
 		 */
 		
 		event = new ManhuntEvent(time += 5000);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, Manhunt.getLobby(lobby_id).getCurrentMap().getPreySpawns()));
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getSetupSpawns()));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, Manhunt.getLobby(lobby_id).getCurrentMap().getSpawns(SpawnType.PREY)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getSpawns(SpawnType.SETUP)));
 		timeline.registerEvent(event);
 		
 		/*
@@ -207,7 +208,7 @@ public class ManhuntTimeline implements Timeline
 		timeline.registerEvent(event);
 		
 		event = new ManhuntEvent(time += 5000);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getHunterSpawns()));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getSpawns(SpawnType.HUNTER)));
 		timeline.registerEvent(event);
 		
 		event = new ManhuntEvent(time += 3000);
@@ -231,7 +232,7 @@ public class ManhuntTimeline implements Timeline
 		timeline.registerEvent(event);
 		
 		event = new ManhuntEvent(time += 1000);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getHunterSpawns()));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, Manhunt.getLobby(lobby_id).getCurrentMap().getSpawns(SpawnType.HUNTER)));
 		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + Manhunt.getSettings().TIME_LIMIT.getValue() + " minutes."));
 		event.addAction(new BroadcastAction(lobby_id, "Beware! The hunters have been released!", Team.PREY));
 		event.addAction(new BroadcastAction(lobby_id, "Now's you're chance! Hunt the prey!", Team.HUNTERS));

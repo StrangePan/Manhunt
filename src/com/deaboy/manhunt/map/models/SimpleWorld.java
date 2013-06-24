@@ -22,6 +22,8 @@ public class SimpleWorld
 	public SimpleWorld()
 	{
 		this.Version = ManhuntPlugin.getVersion();
+		this.Name = new String();
+		this.Spawn = null;
 		this.Maps = new ArrayList<SimpleMap>();
 	}
 	

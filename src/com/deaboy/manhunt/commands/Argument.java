@@ -119,7 +119,7 @@ public class Argument
 					break;
 				}
 			}
-			return null;
+			break;
 			
 		case CHECK:
 			if (params.size() == 0)

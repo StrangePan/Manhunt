@@ -11,6 +11,8 @@ import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Spawn;
+import com.deaboy.manhunt.map.SpawnType;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneFlag;
 
@@ -52,9 +54,12 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").finalize_();
-	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("remap", ArgumentType.FLAG).addAlias("redef").addAlias("remap").finalize_();
+	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("teleport", ArgumentType.TEXT).addAlias("tp").finalize_();
+	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
+	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("remap", ArgumentType.FLAG).addAlias("redef").addAlias("define").addAlias("def").addAlias("remap").addAlias("move").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
+	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
 	static {
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
@@ -63,6 +68,10 @@ public class CommandUtil
 		for (LobbyType type : LobbyType.values())
 			arg_lobbytype.addParameter(type.getName().toLowerCase());
 		arg_lobbytype.finalize_();
+		
+		for (SpawnType type : SpawnType.values())
+			arg_pointtype.addParameter(type.getName().toLowerCase());
+		arg_pointtype.finalize_();
 	}
 	
 	
@@ -108,7 +117,20 @@ public class CommandUtil
 			.addArgument(arg_zoneflags)
 			.addArgument(arg_redefine)
 			.finalize_();
-	
+	public static final CommandTemplate cmd_mpoint	= new CommandTemplate("mpoint")
+			.addAlias("point")
+			.addAlias("mhpoint")
+			.addArgument(arg_help)
+			.addArgument(arg_select)
+			.addArgument(arg_list)
+			.addArgument(arg_page)
+			.addArgument(arg_create)
+			.addArgument(arg_create)
+			.addArgument(arg_name)
+			.addArgument(arg_pointtype)
+			.addArgument(arg_redefine)
+			.addArgument(arg_range)
+			.finalize_();
 	
 	
 	
@@ -116,6 +138,7 @@ public class CommandUtil
 	private HashMap<String, String> selected_maps;
 	private HashMap<String, Long> selected_lobbies;
 	private HashMap<String, String> selected_zones;
+	private HashMap<String, String> selected_spawns;
 	private HashMap<CommandSender, String> vcommands;
 	private HashMap<CommandSender, Boolean> verified;
 	
@@ -127,6 +150,7 @@ public class CommandUtil
 		this.selected_maps = new HashMap<String, String>();
 		this.selected_lobbies = new HashMap<String, Long>();
 		this.selected_zones = new HashMap<String, String>();
+		this.selected_spawns = new HashMap<String, String>();
 		this.vcommands = new HashMap<CommandSender, String>();
 		this.verified = new HashMap<CommandSender, Boolean>();
 	}
@@ -187,6 +211,27 @@ public class CommandUtil
 		if (Manhunt.getCommandUtil().selected_zones.containsKey(name))
 			if (getSelectedMap(name) != null)
 				return getSelectedMap(name).getZone(Manhunt.getCommandUtil().selected_zones.get(name));
+			else
+				return null;
+		else
+			return null;
+	}
+	
+	
+	//---------------- Spawn Selection ----------------//
+	public static void setSelectedSpawn(CommandSender sender, Spawn spawn)
+	{
+		Manhunt.getCommandUtil().selected_spawns.put(sender.getName(), spawn.getName());
+	}
+	public static Spawn getSelectedSpawn(CommandSender sender)
+	{
+		return getSelectedSpawn(sender.getName());
+	}
+	public static Spawn getSelectedSpawn(String name)
+	{
+		if (Manhunt.getCommandUtil().selected_spawns.containsKey(name))
+			if (getSelectedMap(name) != null)
+				return getSelectedMap(name).getSpawn(Manhunt.getCommandUtil().selected_spawns.get(name));
 			else
 				return null;
 		else

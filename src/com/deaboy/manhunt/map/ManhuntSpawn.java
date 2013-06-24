@@ -6,19 +6,23 @@ import org.bukkit.World;
 public class ManhuntSpawn implements Spawn
 {
 	//---------------- Properties ----------------//
+	private String name;
+	private final SpawnType type;
 	private Location location;
 	private int range;
 	
 	
 	
 	//---------------- Constructors ----------------//
-	public ManhuntSpawn(Location loc)
+	public ManhuntSpawn(String name, SpawnType type, Location loc)
 	{
-		this(loc, 0);
+		this(name, type, loc, 0);
 	}
 	
-	public ManhuntSpawn(Location loc, int range)
+	public ManhuntSpawn(String name, SpawnType type, Location loc, int range)
 	{
+		this.name = name;
+		this.type = type;
 		this.location = loc.clone();
 		if (range < 0)
 			this.range = 0;
@@ -29,6 +33,18 @@ public class ManhuntSpawn implements Spawn
 	
 	
 	//---------------- Getters ----------------//
+	@Override
+	public String getName()
+	{
+		return this.name;
+	}
+	
+	@Override
+	public SpawnType getType()
+	{
+		return this.type;
+	}
+	
 	@Override
 	public Location getLocation()
 	{
@@ -50,6 +66,14 @@ public class ManhuntSpawn implements Spawn
 	
 	
 	//---------------- Setters ----------------//
+	@Override
+	public void setName(String name)
+	{
+		if (name == null)
+			return;
+		this.name = name;
+	}
+	
 	@Override
 	public void setLocation(Location loc)
 	{

@@ -37,7 +37,7 @@ public class ManhuntWorld implements World
 		}
 		
 		this.world = world;
-		this.spawn = new ManhuntSpawn(world.getSpawnLocation());
+		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, world.getSpawnLocation());
 		this.maps = new HashMap<String, Map>();
 		
 		load();
@@ -121,15 +121,14 @@ public class ManhuntWorld implements World
 	//---------------- Private Methods ----------------//
 	private void setupAsDefault()
 	{
-		this.spawn = new ManhuntSpawn(world.getSpawnLocation());
+		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, world.getSpawnLocation());
 		
 		Map map = new ManhuntMap("default", this);
 		maps.clear();
 		maps.put("default", map);
-		map.addHunterSpawn(new ManhuntSpawn(world.getSpawnLocation()));
-		map.addPreySpawn(new ManhuntSpawn(world.getSpawnLocation()));
-		map.addSetupSpawn(new ManhuntSpawn(world.getSpawnLocation()));
-		
+		map.createSpawn("setup", SpawnType.SETUP, world.getSpawnLocation());
+		map.createSpawn("hunter", SpawnType.HUNTER, world.getSpawnLocation());
+		map.createSpawn("prey", SpawnType.PREY, world.getSpawnLocation());
 	}
 	
 	

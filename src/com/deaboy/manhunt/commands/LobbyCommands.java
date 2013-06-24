@@ -87,7 +87,6 @@ public abstract class LobbyCommands
 		
 		
 	}
-	
 	public static boolean mstopgame(CommandSender sender, String[] args)
 	{
 		boolean console;
@@ -282,7 +281,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Manhunt Lobbies " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) lobbies.size()/perpage)) + ")" + ChatManager.bracket2_);
 		if (!all)
 		{
-			sender.sendMessage(ChatColor.GRAY + "Use /mlobby list [n] to get page n of worlds");
+			sender.sendMessage(ChatColor.GRAY + "Use /mlobby list [n] to get page n of lobbies");
 			lobbies = lobbies.subList(page * perpage, Math.min( (page + 1) * perpage, lobbies.size() ));
 		}
 		

@@ -18,51 +18,31 @@ public class CommandSwitchboard implements CommandExecutor
 	
 	public CommandSwitchboard()
 	{
-		Bukkit.getPluginCommand("mverify").setExecutor(this);
-		Bukkit.getPluginCommand("mcancel").setExecutor(this);
 		Bukkit.getPluginCommand("manhunt").setExecutor(this);
 		Bukkit.getPluginCommand("mspawn").setExecutor(this);
 		Bukkit.getPluginCommand("msetspawn").setExecutor(this);
-		Bukkit.getPluginCommand("mstartgame").setExecutor(this);
-		Bukkit.getPluginCommand("mstopgame").setExecutor(this);
-		Bukkit.getPluginCommand("msettings").setExecutor(this);
-		Bukkit.getPluginCommand("mset").setExecutor(this);
 		Bukkit.getPluginCommand("mworld").setExecutor(this);
 		Bukkit.getPluginCommand("mworlds").setExecutor(this);
-		Bukkit.getPluginCommand("mmap").setExecutor(this);
-		Bukkit.getPluginCommand("mlobby").setExecutor(this);
 		Bukkit.getPluginCommand("manhuntmode").setExecutor(this);
+		
+		Bukkit.getPluginCommand("mlobby").setExecutor(this);
+		
+		Bukkit.getPluginCommand("mmap").setExecutor(this);
 		Bukkit.getPluginCommand("mzone").setExecutor(this);
+		Bukkit.getPluginCommand("mpoint").setExecutor(this);
+		
+		Bukkit.getPluginCommand("mstartgame").setExecutor(this);
+		Bukkit.getPluginCommand("mstopgame").setExecutor(this);
+		Bukkit.getPluginCommand("mverify").setExecutor(this);
+		Bukkit.getPluginCommand("mcancel").setExecutor(this);
+		Bukkit.getPluginCommand("msettings").setExecutor(this);
+		Bukkit.getPluginCommand("mset").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
 	{
-		if (c.getName().equalsIgnoreCase("mverify"))
-			return mverify(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mcancel"))
-			return mcancel(sender, arguments);
-		
 		if (c.getName().equalsIgnoreCase("manhunt"))
 			return HelpCommands.manhunt(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mstartgame"))
-			return LobbyCommands.mstartgame(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mstopgame"))
-			return LobbyCommands.mstopgame(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("msettings"))
-			return SettingCommands.msettings(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mset"))
-			return SettingCommands.mset(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mworld"))
-			return WorldCommands.mworld(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mworlds"))
-			return WorldCommands.mworlds(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("mspawn"))
 			return WorldCommands.mspawn(sender, arguments);
@@ -70,17 +50,50 @@ public class CommandSwitchboard implements CommandExecutor
 		if (c.getName().equalsIgnoreCase("msetspawn"))
 			return WorldCommands.msetspawn(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mmap"))
-			return MapCommands.mmap(sender, cmd, arguments);
+		if (c.getName().equalsIgnoreCase("mworld"))
+			return WorldCommands.mworld(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mlobby"))
-			return LobbyCommands.mlobby(sender, cmd, arguments);
+		if (c.getName().equalsIgnoreCase("mworlds"))
+			return WorldCommands.mworlds(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("manhuntmode"))
 			return PlayerCommands.manhuntmode(sender, arguments);
 		
+		
+		
+		if (c.getName().equalsIgnoreCase("mlobby"))
+			return LobbyCommands.mlobby(sender, cmd, arguments);
+		
+		
+		
+		if (c.getName().equalsIgnoreCase("mmap"))
+			return MapCommands.mmap(sender, cmd, arguments);
+		
 		if (c.getName().equalsIgnoreCase("mzone"))
 			return MapCommands.mzone(sender, cmd, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mpoint"))
+			return MapCommands.mpoint(sender, cmd, arguments);
+		
+		
+		
+		if (c.getName().equalsIgnoreCase("mstartgame"))
+			return LobbyCommands.mstartgame(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mstopgame"))
+			return LobbyCommands.mstopgame(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mverify"))
+			return mverify(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mcancel"))
+			return mcancel(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("msettings"))
+			return SettingCommands.msettings(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mset"))
+			return SettingCommands.mset(sender, arguments);
 		
 		return false;
 		

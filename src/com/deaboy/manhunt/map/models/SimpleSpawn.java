@@ -3,6 +3,7 @@ package com.deaboy.manhunt.map.models;
 import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.map.ManhuntSpawn;
 import com.deaboy.manhunt.map.Spawn;
+import com.deaboy.manhunt.map.SpawnType;
 import com.deaboy.manhunt.map.World;
 
 public class SimpleSpawn
@@ -10,6 +11,8 @@ public class SimpleSpawn
 	//---------------- Properties ----------------//
 	public String Version;
 	
+	public String Name;
+	public int Type;
 	public SimpleLocation Location;
 	public int Range;
 	
@@ -19,6 +22,10 @@ public class SimpleSpawn
 	public SimpleSpawn()
 	{
 		Version = ManhuntPlugin.getVersion();
+		this.Name = new String();
+		this.Type = 0;
+		this.Location = null;
+		this.Range = 0;
 	}
 	
 	
@@ -26,9 +33,7 @@ public class SimpleSpawn
 	//---------------- Public Methods ----------------//
 	public Spawn toSpawn(World world)
 	{
-		Spawn spawn = new ManhuntSpawn(Location.toLocation(world));
-		
-		spawn.setRange(Range);
+		Spawn spawn = new ManhuntSpawn(Name, SpawnType.fromId(Type), Location.toLocation(world), Range);
 		
 		return spawn;
 	}
@@ -40,6 +45,8 @@ public class SimpleSpawn
 	{
 		SimpleSpawn model = new SimpleSpawn();
 		
+		model.Name = spawn.getName();
+		model.Type = spawn.getType().getId();
 		model.Location = SimpleLocation.fromLocation(spawn.getLocation());
 		model.Range = spawn.getRange();
 		

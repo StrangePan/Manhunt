@@ -7,6 +7,18 @@ public interface Spawn
 {
 	//---------------- Getters ----------------//
 	/**
+	 * Gets the name for this Spawn.
+	 * @return The spawn's name.
+	 */
+	public String getName();
+	
+	/**
+	 * Gets the spawn's type.
+	 * @return The spawn's type.
+	 */
+	public SpawnType getType();
+	
+	/**
 	 * Gets the spawn point for this Spawn.
 	 * @return The spawn point.
 	 */
@@ -28,6 +40,12 @@ public interface Spawn
 	
 	//---------------- Setters ----------------//
 	/**
+	 * Sets the spawn's name.
+	 * @param name The new name of the spawn.
+	 */
+	public void setName(String name);
+	
+	/**
 	 * Sets the spawn's location.
 	 * @param loc The location to change the spawn's location to.
 	 */
@@ -48,4 +66,7 @@ public interface Spawn
 	 * @return
 	 */
 	public Location getRandomLocation();
+	
+	
+	
 }
