@@ -3,6 +3,8 @@ package com.deaboy.manhunt.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+
 public class CommandTemplate
 {
 	// Properties
@@ -118,6 +120,25 @@ public class CommandTemplate
 			if (label.equalsIgnoreCase(alias))
 				return true;
 		return false;
+	}
+	
+	
+	// Miscellaneous
+	public String getUsage()
+	{
+		String usage = new String();
+		
+		usage += "Arguments:" + ChatColor.GRAY;
+		if (arguments.isEmpty())
+		{
+			usage += "\n  No arguments";
+		}
+		for (ArgumentTemplate argument : arguments)
+		{
+			usage += "\n  " + argument.getUsage();
+		}
+		
+		return usage;
 	}
 	
 	

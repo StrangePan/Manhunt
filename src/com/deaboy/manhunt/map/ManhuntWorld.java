@@ -126,9 +126,9 @@ public class ManhuntWorld implements World
 		Map map = new ManhuntMap("default", this);
 		maps.clear();
 		maps.put("default", map);
-		map.createSpawn("setup", SpawnType.SETUP, world.getSpawnLocation());
-		map.createSpawn("hunter", SpawnType.HUNTER, world.getSpawnLocation());
-		map.createSpawn("prey", SpawnType.PREY, world.getSpawnLocation());
+		map.createPoint("setup", SpawnType.SETUP, world.getSpawnLocation());
+		map.createPoint("hunter", SpawnType.HUNTER, world.getSpawnLocation());
+		map.createPoint("prey", SpawnType.PREY, world.getSpawnLocation());
 	}
 	
 	

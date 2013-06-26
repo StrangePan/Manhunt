@@ -232,10 +232,16 @@ public class Manhunt implements Closeable, Listener
 	{
 		return getLobby(getInstance().default_lobby);
 	}
-	
-	public static ManhuntSettings getSettings()
+	private static void verifyWorldEdit()
 	{
-		return getInstance().settings;
+		if (worldedit == null)
+			if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+				if (Bukkit.getPluginManager().getPlugin("WorldEdit") instanceof WorldEditPlugin)
+					worldedit = WorldEdit.getInstance();
+		if (worldeditplugin == null)
+			if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
+				if (Bukkit.getPluginManager().getPlugin("WorldEdit") instanceof WorldEditPlugin)
+					worldeditplugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 	}
 	
 	public static Lobby getLobby(long id)
@@ -246,7 +252,6 @@ public class Manhunt implements Closeable, Listener
 			return null;
 		
 	}
-	
 	public static Lobby getLobby(String name)
 	{
 		for (Lobby lobby : getInstance().lobbies.values())
@@ -259,7 +264,6 @@ public class Manhunt implements Closeable, Listener
 		return null;
 		
 	}
-	
 	public static Lobby getLobby(org.bukkit.World world)
 	{
 		for (Lobby l : getLobbies())
@@ -267,7 +271,6 @@ public class Manhunt implements Closeable, Listener
 				return l;
 		return null;
 	}
-	
 	public static Lobby getLobby(World world)
 	{
 		if (world != null)
@@ -275,7 +278,6 @@ public class Manhunt implements Closeable, Listener
 		else
 			return null;
 	}
-	
 	public static List<Lobby> getLobbies(World world)
 	{
 		List<Lobby> lobbies = new ArrayList<Lobby>();
@@ -290,12 +292,10 @@ public class Manhunt implements Closeable, Listener
 		return lobbies;
 		
 	}
-	
 	public static List<Lobby> getLobbies(org.bukkit.World world)
 	{
 		return getLobbies(Manhunt.getWorld(world));
 	}
-	
 	public static List<Lobby> getLobbies()
 	{
 		return new ArrayList<Lobby>(getInstance().lobbies.values());
@@ -308,7 +308,6 @@ public class Manhunt implements Closeable, Listener
 		else
 			return getPlayerLobby(player.getName());
 	}
-	
 	public static Lobby getPlayerLobby(String name)
 	{
 		if (getInstance().player_lobbies.containsKey(name))
@@ -321,7 +320,6 @@ public class Manhunt implements Closeable, Listener
 	{
 		return new ArrayList<World>(getInstance().worlds.values());
 	}
-	
 	public static World getWorld(org.bukkit.World world)
 	{
 		for (World w : getWorlds())
@@ -331,7 +329,6 @@ public class Manhunt implements Closeable, Listener
 		}
 		return null;
 	}
-	
 	public static World getWorld(String name)
 	{
 		if (getInstance().worlds.containsKey(name))
@@ -340,36 +337,25 @@ public class Manhunt implements Closeable, Listener
 			return null;
 	}
 	
+	public static ManhuntSettings getSettings()
+	{
+		return getInstance().settings;
+	}
 	public static TimeoutManager getTimeoutManager()
 	{
 		return getInstance().timeouts;
 	}
-	
 	public static FinderManager getFinders()
 	{
 		return getInstance().finders;
 	}
-	
 	public static CommandUtil getCommandUtil()
 	{
 		return getInstance().command_util;
 	}
-	
 	public static LoadoutManager getLoadouts()
 	{
 		return getInstance().loadouts;
-	}
-	
-	private static void verifyWorldEdit()
-	{
-		if (worldedit == null)
-			if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
-				if (Bukkit.getPluginManager().getPlugin("WorldEdit") instanceof WorldEditPlugin)
-					worldedit = WorldEdit.getInstance();
-		if (worldeditplugin == null)
-			if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
-				if (Bukkit.getPluginManager().getPlugin("WorldEdit") instanceof WorldEditPlugin)
-					worldeditplugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 	}
 	
 	

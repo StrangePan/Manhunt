@@ -164,6 +164,7 @@ public abstract class LobbyCommands
 		if (cmd.containsArgument(CommandUtil.arg_help))
 		{
 			Bukkit.getServer().dispatchCommand(sender, "help " + cmd.getName());
+			sender.sendMessage(CommandUtil.cmd_mlobby.getUsage());
 			action = true;
 		}
 		

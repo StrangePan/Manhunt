@@ -39,10 +39,9 @@ public class SimpleMap
 	{
 		Map map = new ManhuntMap(Name, world);
 		
-		map.setName(Name);
 		map.setSpawn(Spawn.toLocation(world));
 		for (SimpleSpawn spawn : Spawns)
-			map.addSpawn(spawn.toSpawn(world));
+			map.addPoint(spawn.toSpawn(world));
 		for (SimpleZone zone : Zones)
 			map.addZone(zone.toZone(world));
 		
@@ -57,7 +56,7 @@ public class SimpleMap
 		SimpleMap model = new SimpleMap();
 		model.Name = map.getName();
 		model.Spawn = SimpleLocation.fromLocation(map.getSpawnLocation());
-		for (Spawn spawn : map.getSpawns())
+		for (Spawn spawn : map.getPoints())
 			model.Spawns.add(SimpleSpawn.fromSpawn(spawn));
 		for (Zone zone : map.getZones())
 			model.Zones.add(SimpleZone.fromZone(zone));

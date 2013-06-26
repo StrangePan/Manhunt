@@ -34,18 +34,18 @@ public interface Map
 	 * @param name The name of the spawn point.
 	 * @return The spawn.
 	 */
-	public Spawn getSpawn(String name);
+	public Spawn getPoint(String name);
 	/**
 	 * Gets a list of all spawns associated with this map.
 	 * @return A list of all spawn points in this map.
 	 */
-	public List<Spawn> getSpawns();
+	public List<Spawn> getPoints();
 	/**
 	 * Gets a list of all spawns with the specified type.
 	 * @param type The type of spawn to search for.
 	 * @return A list of all spawns with the specified type.
 	 */
-	public List<Spawn> getSpawns(SpawnType type);
+	public List<Spawn> getPoints(SpawnType type);
 	
 	/**
 	 * Gets a zone based on the zone's name.
@@ -82,9 +82,9 @@ public interface Map
 	
 	/**
 	 * Adds a pre-made spawn to the map.
-	 * @param spawn The spawn to add.
+	 * @param point The spawn to add.
 	 */
-	public boolean addSpawn(Spawn spawn);
+	public boolean addPoint(Spawn point);
 	/**
 	 * Creates and adds a spawn point to the map.
 	 * @param name The name of the spawn.
@@ -92,7 +92,7 @@ public interface Map
 	 * @param type The type of spawn.
 	 * @return The newly created spawn or null if it didn't work.
 	 */
-	public Spawn createSpawn(String name, SpawnType type, Location location);
+	public Spawn createPoint(String name, SpawnType type, Location location);
 	/**
 	 * Creates and adds a spawn point to the map.
 	 * @param name The name of the spawn point.
@@ -101,16 +101,16 @@ public interface Map
 	 * @param type The type of spawn.
 	 * @return The newly created spawn or null if it didn't work.
 	 */
-	public Spawn createSpawn(String name, SpawnType type, Location location, int range);
+	public Spawn createPoint(String name, SpawnType type, Location location, int range);
 	/**
 	 * Deletes a spawn from the map.
 	 * @param name The name of the spawn point to delete.
 	 */
-	public void removeSpawn(String name);
+	public void removePoint(String name);
 	/**
 	 * Clears all spawn points from the map.
 	 */
-	public void clearSpawns();
+	public void clearPoints();
 	
 	/**
 	 * Adds a pre-made zone to the map.

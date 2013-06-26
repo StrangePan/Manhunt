@@ -56,7 +56,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").finalize_();
 	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("teleport", ArgumentType.TEXT).addAlias("tp").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
-	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("remap", ArgumentType.FLAG).addAlias("redef").addAlias("define").addAlias("def").addAlias("remap").addAlias("move").finalize_();
+	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
 	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
@@ -138,7 +138,7 @@ public class CommandUtil
 	private HashMap<String, String> selected_maps;
 	private HashMap<String, Long> selected_lobbies;
 	private HashMap<String, String> selected_zones;
-	private HashMap<String, String> selected_spawns;
+	private HashMap<String, String> selected_points;
 	private HashMap<CommandSender, String> vcommands;
 	private HashMap<CommandSender, Boolean> verified;
 	
@@ -150,7 +150,7 @@ public class CommandUtil
 		this.selected_maps = new HashMap<String, String>();
 		this.selected_lobbies = new HashMap<String, Long>();
 		this.selected_zones = new HashMap<String, String>();
-		this.selected_spawns = new HashMap<String, String>();
+		this.selected_points = new HashMap<String, String>();
 		this.vcommands = new HashMap<CommandSender, String>();
 		this.verified = new HashMap<CommandSender, Boolean>();
 	}
@@ -219,19 +219,19 @@ public class CommandUtil
 	
 	
 	//---------------- Spawn Selection ----------------//
-	public static void setSelectedSpawn(CommandSender sender, Spawn spawn)
+	public static void setSelectedPoint(CommandSender sender, Spawn point)
 	{
-		Manhunt.getCommandUtil().selected_spawns.put(sender.getName(), spawn.getName());
+		Manhunt.getCommandUtil().selected_points.put(sender.getName(), point.getName());
 	}
-	public static Spawn getSelectedSpawn(CommandSender sender)
+	public static Spawn getSelectedPoint(CommandSender sender)
 	{
-		return getSelectedSpawn(sender.getName());
+		return getSelectedPoint(sender.getName());
 	}
-	public static Spawn getSelectedSpawn(String name)
+	public static Spawn getSelectedPoint(String name)
 	{
-		if (Manhunt.getCommandUtil().selected_spawns.containsKey(name))
+		if (Manhunt.getCommandUtil().selected_points.containsKey(name))
 			if (getSelectedMap(name) != null)
-				return getSelectedMap(name).getSpawn(Manhunt.getCommandUtil().selected_spawns.get(name));
+				return getSelectedMap(name).getPoint(Manhunt.getCommandUtil().selected_points.get(name));
 			else
 				return null;
 		else

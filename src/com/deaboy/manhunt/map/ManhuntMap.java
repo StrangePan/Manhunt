@@ -12,7 +12,7 @@ public class ManhuntMap implements Map
 	private String name;
 	private World world;
 	private Location spawn;
-	private HashMap<String, Spawn> spawns;
+	private HashMap<String, Spawn> points;
 	private HashMap<String, Zone> zones;
 	
 	
@@ -35,7 +35,7 @@ public class ManhuntMap implements Map
 		this.name = name;
 		this.world = world;
 		this.spawn = loc;
-		this.spawns = new HashMap<String, Spawn>();
+		this.points = new HashMap<String, Spawn>();
 		this.zones = new HashMap<String, Zone>();
 	}
 	
@@ -66,11 +66,11 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public Spawn getSpawn(String name)
+	public Spawn getPoint(String name)
 	{
-		if (this.spawns.containsKey(name))
+		if (this.points.containsKey(name))
 		{
-			return this.spawns.get(name);
+			return this.points.get(name);
 		}
 		else
 		{
@@ -78,15 +78,15 @@ public class ManhuntMap implements Map
 		}
 	}
 	@Override
-	public List<Spawn> getSpawns()
+	public List<Spawn> getPoints()
 	{
-		return (new ArrayList<Spawn>(this.spawns.values()));
+		return (new ArrayList<Spawn>(this.points.values()));
 	}
 	@Override
-	public List<Spawn> getSpawns(SpawnType type)
+	public List<Spawn> getPoints(SpawnType type)
 	{
 		List<Spawn> spawns = new ArrayList<Spawn>();
-		for (Spawn spawn : this.spawns.values())
+		for (Spawn spawn : this.points.values())
 			if (spawn.getType() == type)
 				spawns.add(spawn);
 		return spawns;
@@ -139,11 +139,11 @@ public class ManhuntMap implements Map
 	}
 	
 	@Override
-	public boolean addSpawn(Spawn spawn)
+	public boolean addPoint(Spawn point)
 	{
-		if (!this.spawns.containsKey(spawn.getName()) && !this.spawns.containsValue(spawn) && spawn.getWorld() == this.world)
+		if (!this.points.containsKey(point.getName()) && !this.points.containsValue(point) && point.getWorld() == this.world)
 		{
-			this.spawns.put(spawn.getName(), spawn);
+			this.points.put(point.getName(), point);
 			return true;
 		}
 		else
@@ -152,16 +152,16 @@ public class ManhuntMap implements Map
 		}
 	}
 	@Override
-	public Spawn createSpawn(String name, SpawnType type, Location location)
+	public Spawn createPoint(String name, SpawnType type, Location location)
 	{
-		return createSpawn(name, type, location, 0);
+		return createPoint(name, type, location, 0);
 	}
 	@Override
-	public Spawn createSpawn(String name, SpawnType type, Location location, int range)
+	public Spawn createPoint(String name, SpawnType type, Location location, int range)
 	{
-		Spawn spawn;
+		Spawn point;
 		
-		if (name == null || this.spawns.containsKey(name))
+		if (name == null || this.points.containsKey(name))
 			return null;
 		
 		if (location == null || location.getWorld() != this.world.getWorld())
@@ -173,21 +173,21 @@ public class ManhuntMap implements Map
 		if (type == null)
 			return null;
 		
-		spawn = new ManhuntSpawn(name, type, location, range);
+		point = new ManhuntSpawn(name, type, location, range);
 		
-		this.spawns.put(name, spawn);
-		return spawn;
+		this.points.put(name, point);
+		return point;
 	}
-	public void removeSpawn(String name)
+	public void removePoint(String name)
 	{
-		if (this.spawns.containsKey(name))
+		if (this.points.containsKey(name))
 		{
-			this.spawns.remove(name);
+			this.points.remove(name);
 		}
 	}
-	public void clearSpawns()
+	public void clearPoints()
 	{
-		this.spawns.clear();
+		this.points.clear();
 	}
 	
 	@Override
