@@ -3,7 +3,6 @@ package com.deaboy.manhunt.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -23,7 +22,7 @@ import com.deaboy.manhunt.map.ZoneFlag;
 public abstract class MapCommands
 {
 	// Maps
-	public static boolean mmap(CommandSender sender, String command, String args[])
+	public static boolean mmap(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
 		
@@ -32,15 +31,6 @@ public abstract class MapCommands
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
-		}
-		
-		Command cmd = Command.fromTemplate(CommandUtil.cmd_mmap, command, args);
-		
-		if (cmd.containsArgument(CommandUtil.arg_help))
-		{
-			Bukkit.getServer().dispatchCommand(sender, "help " + cmd.getName());
-			sender.sendMessage(CommandUtil.cmd_mmap.getUsage());
-			action = true;
 		}
 		
 		if (cmd.containsArgument(CommandUtil.arg_list))
@@ -219,7 +209,7 @@ public abstract class MapCommands
 	
 	
 	// Zones
-	public static boolean mzone(CommandSender sender, String command, String args[])
+	public static boolean mzone(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
 		
@@ -228,15 +218,6 @@ public abstract class MapCommands
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
-		}
-		
-		Command cmd = Command.fromTemplate(CommandUtil.cmd_mzone, command, args);
-		
-		if (cmd.containsArgument(CommandUtil.arg_help))
-		{
-			Bukkit.getServer().dispatchCommand(sender, "help mzone");
-			sender.sendMessage(CommandUtil.cmd_mzone.getUsage());
-			action = true;
 		}
 		
 		if (cmd.containsArgument(CommandUtil.arg_list))
@@ -264,7 +245,7 @@ public abstract class MapCommands
 			action |= deletezone(sender, cmd);
 		}
 		
-		if (!action)
+		else if (!action)
 		{
 			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
 		}
@@ -618,7 +599,7 @@ public abstract class MapCommands
 	
 	
 	// Spawns
-	public static boolean mpoint(CommandSender sender, String command, String args[])
+	public static boolean mpoint(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
 
@@ -627,15 +608,6 @@ public abstract class MapCommands
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
-		}
-		
-		Command cmd = Command.fromTemplate(CommandUtil.cmd_mpoint, command, args);
-		
-		if (cmd.containsArgument(CommandUtil.arg_help))
-		{
-			Bukkit.getServer().dispatchCommand(sender, "help mpoint");
-			sender.sendMessage(CommandUtil.cmd_mpoint.getUsage());
-			action = true;
 		}
 		
 		if (cmd.containsArgument(CommandUtil.arg_list))

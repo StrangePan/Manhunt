@@ -3,7 +3,6 @@ package com.deaboy.manhunt.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -149,7 +148,7 @@ public abstract class LobbyCommands
 		
 	}
 	
-	public static boolean mlobby(CommandSender sender, String command, String[] args)
+	public static boolean mlobby(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
 		
@@ -157,15 +156,6 @@ public abstract class LobbyCommands
 		{
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
-		}
-		
-		Command cmd = Command.fromTemplate(CommandUtil.cmd_mlobby, command, args);
-		
-		if (cmd.containsArgument(CommandUtil.arg_help))
-		{
-			Bukkit.getServer().dispatchCommand(sender, "help " + cmd.getName());
-			sender.sendMessage(CommandUtil.cmd_mlobby.getUsage());
-			action = true;
 		}
 		
 		if (cmd.containsArgument(CommandUtil.arg_list))

@@ -10,16 +10,18 @@ public class Command
 	private final String label;
 	private List<Argument> arguments;
 	private List<String> argument_names;
+	private CommandTemplate template;
 	
 	
 	
 	// Constructors
-	public Command(String name, String label, Argument...args)
+	public Command(String name, String label, CommandTemplate template, Argument...args)
 	{
 		this.name = name;
 		this.label = label;
 		this.arguments = new ArrayList<Argument>();
 		this.argument_names = new ArrayList<String>();
+		this.template = template;
 		
 		for (Argument arg : args)
 		{
@@ -86,13 +88,21 @@ public class Command
 	{
 		return getArgument(template.getName());
 	}
+	public int getArgumentCount()
+	{
+		return arguments.size();
+	}
+	public CommandTemplate getTemplate()
+	{
+		return this.template;
+	}
 	
 	
 	
 	// Static Constructors
 	public static Command fromTemplate(CommandTemplate template, String label, String...args)
 	{
-		Command command = new Command(template.getName(), label);
+		Command command = new Command(template.getName(), label, template);
 		
 		String argument = new String();
 		List<String> arguments = new ArrayList<String>();

@@ -1,7 +1,7 @@
 package com.deaboy.manhunt.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
@@ -39,8 +39,16 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mset").setExecutor(this);
 	}
 	
-	public boolean onCommand(CommandSender sender, Command c, String cmd, String[] arguments)
+	public boolean onCommand(CommandSender sender, org.bukkit.command.Command c, String cmd, String[] arguments)
 	{
+		Command command = CommandUtil.parseCommand(c, arguments);
+		
+		if (command != null && (command.containsArgument(CommandUtil.arg_help) || command.getArgumentCount() == 0))
+		{
+			Bukkit.dispatchCommand(sender, "help " + cmd);
+			sender.sendMessage(ChatColor.GRAY + command.getTemplate().getUsage());
+		}
+		
 		if (c.getName().equalsIgnoreCase("manhunt"))
 			return HelpCommands.manhunt(sender, arguments);
 		
@@ -62,18 +70,18 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		
 		if (c.getName().equalsIgnoreCase("mlobby"))
-			return LobbyCommands.mlobby(sender, cmd, arguments);
+			return LobbyCommands.mlobby(sender, command);
 		
 		
 		
 		if (c.getName().equalsIgnoreCase("mmap"))
-			return MapCommands.mmap(sender, cmd, arguments);
+			return MapCommands.mmap(sender, command);
 		
 		if (c.getName().equalsIgnoreCase("mzone"))
-			return MapCommands.mzone(sender, cmd, arguments);
+			return MapCommands.mzone(sender, command);
 		
 		if (c.getName().equalsIgnoreCase("mpoint"))
-			return MapCommands.mpoint(sender, cmd, arguments);
+			return MapCommands.mpoint(sender, command);
 		
 		
 		

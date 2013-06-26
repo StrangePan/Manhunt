@@ -40,6 +40,7 @@ public class CommandUtil
 	//////// COMMAND TEMPLATES ////////
 	// Arguments
 	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG).addAlias("?").finalize_();
+	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG).addAlias("i").finalize_();
 	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
 	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
 	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
@@ -60,7 +61,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
 	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
-	static {
+	static {	// Fill parameters in certain arguments and finalize.
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
 		arg_zoneflags.finalize_();
@@ -74,11 +75,12 @@ public class CommandUtil
 		arg_pointtype.finalize_();
 	}
 	
-	
+
+	private static HashMap<String, CommandTemplate> command_templates;
 	public static final CommandTemplate cmd_mlobby	= new CommandTemplate("mlobby")
 			.addAlias("lobby")
 			.addAlias("mhlobby")
-			.addArgument(arg_help)
+			.addArgument(arg_info)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_page)
@@ -91,23 +93,21 @@ public class CommandUtil
 			.addArgument(arg_close)
 			.addArgument(arg_lsmaps)
 			.addArgument(arg_addmap)
-			.addArgument(arg_remmap)
-			.finalize_();
+			.addArgument(arg_remmap);
 	public static final CommandTemplate cmd_mmap	= new CommandTemplate("mmap")
 			.addAlias("map")
 			.addAlias("mhmap")
-			.addArgument(arg_help)
+			.addArgument(arg_info)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_world)
 			.addArgument(arg_create)
 			.addArgument(arg_delete)
-			.addArgument(arg_name)
-			.finalize_();
+			.addArgument(arg_name);
 	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
 			.addAlias("zone")
 			.addAlias("mhzone")
-			.addArgument(arg_help)
+			.addArgument(arg_info)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_page)
@@ -115,12 +115,11 @@ public class CommandUtil
 			.addArgument(arg_delete)
 			.addArgument(arg_name)
 			.addArgument(arg_zoneflags)
-			.addArgument(arg_redefine)
-			.finalize_();
+			.addArgument(arg_redefine);
 	public static final CommandTemplate cmd_mpoint	= new CommandTemplate("mpoint")
 			.addAlias("point")
 			.addAlias("mhpoint")
-			.addArgument(arg_help)
+			.addArgument(arg_info)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_page)
@@ -129,9 +128,17 @@ public class CommandUtil
 			.addArgument(arg_name)
 			.addArgument(arg_pointtype)
 			.addArgument(arg_redefine)
-			.addArgument(arg_range)
-			.finalize_();
-	
+			.addArgument(arg_range);
+	static {	// Store references to command templates in hashmap and add global arguments
+		command_templates = new HashMap<String, CommandTemplate>();
+		command_templates.put(cmd_mlobby.getName(), cmd_mlobby);
+		command_templates.put(cmd_mmap.getName(), cmd_mmap);
+		command_templates.put(cmd_mzone.getName(), cmd_mzone);
+		command_templates.put(cmd_mpoint.getName(), cmd_mpoint);
+		
+		for (CommandTemplate cmd : command_templates.values())
+			cmd.addArgument(arg_help).finalize_();
+	}
 	
 	
 	//////// PROPERTIES ////////
@@ -156,6 +163,23 @@ public class CommandUtil
 	}
 	
 	
+	
+	//---------------- Command Stuff ----------------//
+	public static Command parseCommand(org.bukkit.command.Command cmd, String[] arguments)
+	{
+		Command command;
+		
+		if (command_templates.containsKey(cmd.getName()))
+		{
+			command = Command.fromTemplate(command_templates.get(cmd.getName()), cmd.getLabel(), arguments);
+		}
+		else
+		{
+			command = null;
+		}
+		
+		return command;
+	}
 	
 	//---------------- Map Selection ----------------//
 	public static void setSelectedMap(CommandSender sender, Map map)
