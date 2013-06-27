@@ -141,7 +141,7 @@ public class ManhuntMap implements Map
 	@Override
 	public boolean addPoint(Spawn point)
 	{
-		if (!this.points.containsKey(point.getName()) && !this.points.containsValue(point) && point.getWorld() == this.world)
+		if (!this.points.containsKey(point.getName()) && !this.points.containsValue(point) && point.getWorld() == this.getWorld().getWorld())
 		{
 			this.points.put(point.getName(), point);
 			return true;
@@ -193,7 +193,7 @@ public class ManhuntMap implements Map
 	@Override
 	public boolean addZone(Zone zone)
 	{
-		if (!this.zones.containsKey(zone.getName()) && !this.zones.containsValue(zone) && zone.getWorld() == this.world)
+		if (!this.zones.containsKey(zone.getName()) && !this.zones.containsValue(zone) && zone.getWorld() == this.getWorld().getWorld())
 		{
 			this.zones.put(zone.getName(), zone);
 			return true;

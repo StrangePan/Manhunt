@@ -124,7 +124,7 @@ public class CommandUtil
 			.addArgument(arg_list)
 			.addArgument(arg_page)
 			.addArgument(arg_create)
-			.addArgument(arg_create)
+			.addArgument(arg_delete)
 			.addArgument(arg_name)
 			.addArgument(arg_pointtype)
 			.addArgument(arg_redefine)

@@ -43,10 +43,12 @@ public class CommandSwitchboard implements CommandExecutor
 	{
 		Command command = CommandUtil.parseCommand(c, arguments);
 		
-		if (command != null && (command.containsArgument(CommandUtil.arg_help) || command.getArgumentCount() == 0))
+		if (command != null && (command.containsArgument(CommandUtil.arg_help) || arguments.length == 0))
 		{
 			Bukkit.dispatchCommand(sender, "help " + cmd);
 			sender.sendMessage(ChatColor.GRAY + command.getTemplate().getUsage());
+			if (arguments.length == 0)
+				return true;
 		}
 		
 		if (c.getName().equalsIgnoreCase("manhunt"))

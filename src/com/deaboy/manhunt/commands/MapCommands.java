@@ -511,7 +511,7 @@ public abstract class MapCommands
 			}
 		}
 		
-		sender.sendMessage(ChatColor.GREEN + "Zone '" + zonename + "' removed from map '" + CommandUtil.getSelectedZone(sender).getName() +"'");
+		sender.sendMessage(ChatColor.GREEN + "Zone '" + zonename + "' removed from map '" + CommandUtil.getSelectedMap(sender).getName() +"'");
 		CommandUtil.getSelectedMap(sender).removeZone(zonename);
 		return true;
 	}
