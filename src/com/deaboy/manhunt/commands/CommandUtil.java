@@ -54,11 +54,12 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
 	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG).finalize_();
 	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
-	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").finalize_();
-	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").finalize_();
+	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").addAlias("map+").finalize_();
+	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
 	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("teleport", ArgumentType.TEXT).addAlias("tp").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
-	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").finalize_();
+	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").addAlias("mv").finalize_();
+	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
 	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
@@ -92,6 +93,8 @@ public class CommandUtil
 			.addArgument(arg_name)
 			.addArgument(arg_open)
 			.addArgument(arg_close)
+			.addArgument(arg_setspawn)
+			.addArgument(arg_range)
 			.addArgument(arg_lsmaps)
 			.addArgument(arg_addmap)
 			.addArgument(arg_remmap);

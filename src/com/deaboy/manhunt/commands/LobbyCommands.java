@@ -174,6 +174,10 @@ public abstract class LobbyCommands
 		{
 			action |= deletelobby(sender, cmd);
 		}
+		if (cmd.containsArgument(CommandUtil.arg_lsmaps))
+		{
+			action |= listmapslobby(sender, cmd);
+		}
 		if (cmd.containsArgument(CommandUtil.arg_addmap))
 		{
 			action |= addmaplobby(sender, cmd);
@@ -197,6 +201,14 @@ public abstract class LobbyCommands
 		if (cmd.containsArgument(CommandUtil.arg_close))
 		{
 			action |= closelobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_setspawn))
+		{
+			action |= movespawnlobby(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_range))
+		{
+			action |= rangespawnlobby(sender, cmd);
 		}
 
 		if (!action)
@@ -459,6 +471,70 @@ public abstract class LobbyCommands
 			return false;
 		}
 	}
+	private static boolean movespawnlobby(CommandSender sender, Command cmd)
+	{
+		Lobby lobby;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(ChatColor.RED + CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		lobby = CommandUtil.getSelectedLobby(sender);
+		if (lobby == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select the lobby you wish to close.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobbyname>");
+			return false;
+		}
+		
+		lobby.setSpawnLocation(((Player) sender).getLocation());
+		sender.sendMessage(ChatManager.leftborder + "Moved " + lobby.getName() + "'s spawn to your current location.");
+		return true;
+	}
+	private static boolean rangespawnlobby(CommandSender sender, Command cmd)
+	{
+		Lobby lobby;
+		int range;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(ChatColor.RED + CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		if (cmd.getArgument(CommandUtil.arg_range).getParameter() != null)
+		{
+			try
+			{
+				range = Integer.parseInt(cmd.getArgument(CommandUtil.arg_range).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + cmd.getArgument(CommandUtil.arg_range).getParameter() + "is not a valid range. Must be a positive integer.");
+				return false;
+			}
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Please include a positive integer when setting the spawn range.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_range).getLabel() + " <int>");
+			return false;
+		}
+		
+		lobby = CommandUtil.getSelectedLobby(sender);
+		if (lobby == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select the lobby you wish to close.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobbyname>");
+			return false;
+		}
+		
+		lobby.setSpawnRange(range);
+		sender.sendMessage(ChatManager.leftborder + "Spawn range of " + lobby.getName() + " set to " + range);
+		return true;
+	}
 	private static boolean closelobby(CommandSender sender, Command cmd)
 	{
 		Lobby lobby;
@@ -530,6 +606,30 @@ public abstract class LobbyCommands
 		
 		CommandUtil.setSelectedLobby(sender, lobby);
 		sender.sendMessage(ChatColor.YELLOW + "Selected lobby '" + lobby.getName() + "'.");
+		return true;
+	}
+	private static boolean listmapslobby(CommandSender sender, Command cmd)
+	{
+		Lobby lobby;
+		List<Map> maps;
+		
+		lobby = CommandUtil.getSelectedLobby(sender);
+		if (lobby == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a lobby to view it's maps.");
+			return false;
+		}
+		
+		maps = lobby.getMaps();
+		sender.sendMessage(ChatManager.bracket1_ + "List of " + lobby.getName() + "'s Maps" + ChatManager.bracket2_);
+		if (maps.isEmpty())
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "No maps. To add a map, use /" + cmd.getLabel() + " -" + CommandUtil.arg_addmap.getName() + " <map1> [map2] [map3] ...");
+		}
+		for (Map map : lobby.getMaps())
+		{
+			sender.sendMessage(ChatManager.leftborder + map.getFullName());
+		}
 		return true;
 	}
 	private static boolean addmaplobby(CommandSender sender, Command cmd)
