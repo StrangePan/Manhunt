@@ -41,6 +41,7 @@ public class CommandUtil
 	// Arguments
 	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG).addAlias("?").finalize_();
 	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG).addAlias("i").finalize_();
+	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
 	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
 	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
 	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
@@ -98,6 +99,7 @@ public class CommandUtil
 			.addAlias("map")
 			.addAlias("mhmap")
 			.addArgument(arg_info)
+			.addArgument(arg_issues)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
 			.addArgument(arg_world)

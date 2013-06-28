@@ -35,19 +35,27 @@ public abstract class MapCommands
 		
 		if (cmd.containsArgument(CommandUtil.arg_list))
 		{
-			action |= listmaps(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_select))
-		{
-			action |= selectmap(sender, cmd);
+			action |= maplist(sender, cmd);
 		}
 		if (cmd.containsArgument(CommandUtil.arg_create))
 		{
-			action |= createmap(sender, cmd);
+			action |= mapcreate(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_select))
+		{
+			action |= mapselect(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_info))
+		{
+			action |= mapinfo(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_issues))
+		{
+			action |= mapissues(sender, cmd);
 		}
 		if (cmd.containsArgument(CommandUtil.arg_delete))
 		{
-			action |= deletemap(sender, cmd);
+			action |= mapdelete(sender, cmd);
 		}
 		
 		if (!action)
@@ -57,7 +65,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean listmaps(CommandSender sender, Command cmd)
+	private static boolean maplist(CommandSender sender, Command cmd)
 	{
 		final String spacing = "   ";
 		
@@ -102,38 +110,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean selectmap(CommandSender sender, Command cmd)
-	{
-		Map map;
-		String mapname;
-		
-		if (cmd.getArgument(CommandUtil.arg_select).getParameter() == null)
-		{
-			sender.sendMessage(ChatColor.RED + "Invalid parameter usage: -" + cmd.getArgument(CommandUtil.arg_select).getLabel());
-			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -select <map name>");
-			return false;
-		}
-		
-		mapname = cmd.getArgument(CommandUtil.arg_select).getParameter();
-		if (!mapname.contains("."))
-		{
-			if (sender instanceof Player)
-				mapname = Manhunt.getWorld(((Player) sender).getWorld()).getName() + '.' + mapname;
-		}
-		
-		map = Manhunt.getMap(mapname);
-		if (map == null)
-		{
-			sender.sendMessage(ChatColor.RED + "No map named '" + mapname + "' exists.");
-			sender.sendMessage(ChatManager.leftborder + "Use /mmap -list [-world <world name>] to see available maps.");
-			return false;
-		}
-		
-		CommandUtil.setSelectedMap(sender, map);
-		sender.sendMessage(ChatColor.YELLOW + "Selected map '" + map.getFullName() + "'.");
-		return true;
-	}
-	private static boolean createmap(CommandSender sender, Command cmd)
+	private static boolean mapcreate(CommandSender sender, Command cmd)
 	{
 		String mapname;
 		Map map;
@@ -182,7 +159,62 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean deletemap(CommandSender sender, Command cmd)
+	private static boolean mapselect(CommandSender sender, Command cmd)
+	{
+		Map map;
+		String mapname;
+		
+		if (cmd.getArgument(CommandUtil.arg_select).getParameter() == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Invalid parameter usage: -" + cmd.getArgument(CommandUtil.arg_select).getLabel());
+			sender.sendMessage(ChatColor.GRAY + " Parameter usage: -select <map name>");
+			return false;
+		}
+		
+		mapname = cmd.getArgument(CommandUtil.arg_select).getParameter();
+		if (!mapname.contains("."))
+		{
+			if (sender instanceof Player)
+				mapname = Manhunt.getWorld(((Player) sender).getWorld()).getName() + '.' + mapname;
+		}
+		
+		map = Manhunt.getMap(mapname);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No map named '" + mapname + "' exists.");
+			sender.sendMessage(ChatManager.leftborder + "Use /mmap -list [-world <world name>] to see available maps.");
+			return false;
+		}
+		
+		CommandUtil.setSelectedMap(sender, map);
+		sender.sendMessage(ChatColor.YELLOW + "Selected map '" + map.getFullName() + "'.");
+		return true;
+	}
+	private static boolean mapinfo(CommandSender sender, Command cmd)
+	{
+		Map map;
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "No map selected.");
+			return false;
+		}
+		
+		sender.sendMessage(ChatManager.bracket1_ + "Map info on " + map.getName() + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.leftborder + "World: " + map.getWorld().getName());
+		sender.sendMessage(ChatManager.leftborder + "Zones: " + map.getZones().size() + "   Points: " + map.getPoints().size());
+		if (map.hasIssues())
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "ISSUES: " + ChatManager.color + "use '/" + CommandUtil.cmd_mmap.getName() + " -" + CommandUtil.arg_issues.getName() + "' to view issues.");
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.leftborder + "This map has no issues.");
+		}
+		return true;
+	}
+	private static boolean mapdelete(CommandSender sender, Command cmd)
 	{
 		Map map;
 		
@@ -205,6 +237,32 @@ public abstract class MapCommands
 		
 		return true;
 	}
+	private static boolean mapissues(CommandSender sender, Command cmd)
+	{
+		Map map;
+		List<String> issues;
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a map first.");
+			return false;
+		}
+		
+		issues = map.getIssues();
+		if (issues.isEmpty())
+		{
+			sender.sendMessage(ChatManager.bracket1_  + "No issues with " + map.getName() +"!" + ChatManager.bracket2_);
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.bracket1_ + "Issues with " + map.getName() + ChatManager.bracket2_);
+			for (String issue : issues)
+				sender.sendMessage(ChatManager.leftborder + issue);
+		}
+		
+		return true;
+	}
 	
 	
 	
@@ -224,13 +282,13 @@ public abstract class MapCommands
 		{
 			action |= listzones(sender, cmd);
 		}
-		if (cmd.containsArgument(CommandUtil.arg_select))
-		{
-			action |= selectzone(sender, cmd);
-		}
 		if (cmd.containsArgument(CommandUtil.arg_create))
 		{
 			action |= createzone(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_select))
+		{
+			action |= selectzone(sender, cmd);
 		}
 		if (cmd.containsArgument(CommandUtil.arg_redefine))
 		{

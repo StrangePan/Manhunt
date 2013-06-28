@@ -263,6 +263,121 @@ public class ManhuntMap implements Map
 	
 	
 	
+	//---------------- Issues ----------------//
+	public boolean hasIssues()
+	{
+		boolean issue = false;
+		for (Spawn point : getPoints())
+		{
+			switch (point.getType())
+			{
+			case OTHER:
+				break;
+			case PREY:
+			case HUNTER:
+				for (Zone zone : getZones(ZoneFlag.BOUNDARY))
+				{
+					if (zone.containsLocation(point.getLocation()))
+					{
+						issue = false;
+						continue;
+					}
+					else
+					{
+						issue = true;
+					}
+				}
+				break;
+			case SETUP:
+				for (Zone zone : getZones(ZoneFlag.SETUP))
+				{
+					if (zone.containsLocation(point.getLocation()))
+					{
+						issue = false;
+						continue;
+					}
+					else
+					{
+						issue = true;
+					}
+				}
+				break;
+			default:
+				break;
+			}
+			if (issue) return true;
+		}
+		return issue;
+	}
+	public List<String> getIssues()
+	{
+		List<String> issues;
+		boolean issue;
+		
+		issues = new ArrayList<String>();
+		issue = false;
+		for (Spawn point : getPoints())
+		{
+			switch (point.getType())
+			{
+			case OTHER:
+				break;
+			case PREY:
+			case HUNTER:
+				for (Zone zone : getZones(ZoneFlag.BOUNDARY))
+				{
+					if (zone.containsLocation(point.getLocation()))
+					{
+						issue = false;
+						continue;
+					}
+					else
+					{
+						issue = true;
+					}
+				}
+				break;
+			case SETUP:
+				for (Zone zone : getZones(ZoneFlag.SETUP))
+				{
+					if (zone.containsLocation(point.getLocation()))
+					{
+						issue = false;
+						continue;
+					}
+					else
+					{
+						issue = true;
+					}
+				}
+				break;
+			default:
+				break;
+			}
+			
+			if (issue)
+			{
+				switch(point.getType())
+				{
+				case PREY:
+				case HUNTER:
+					issues.add("Point " + point.getName() + " is not contained within a " + ZoneFlag.BOUNDARY.getName() + " zone");
+					break;
+				case SETUP:
+					issues.add("Point " + point.getName() + " is not contained within a " + ZoneFlag.SETUP.getName() + " zone");
+					break;
+				default:
+					break;
+				}
+			}
+			
+			return issues;
+		}
+		
+		return issues;
+	}
+	
+	
 	
 	
 }

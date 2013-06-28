@@ -146,5 +146,10 @@ public interface Map
 	public void clearZones();
 	
 	
+	
+	//---------------- Issues ----------------//
+	public boolean hasIssues();
+	public List<String> getIssues();
+	
 		
 }
