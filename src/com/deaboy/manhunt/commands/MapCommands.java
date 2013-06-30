@@ -3,6 +3,7 @@ package com.deaboy.manhunt.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,7 @@ import com.deaboy.manhunt.map.ZoneFlag;
 
 public abstract class MapCommands
 {
-	// Maps
+	//////// Maps ////////
 	public static boolean mmap(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
@@ -48,6 +49,10 @@ public abstract class MapCommands
 		if (cmd.containsArgument(CommandUtil.arg_info))
 		{
 			action |= mapinfo(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_tp))
+		{
+			action |= mapteleport(sender, cmd);
 		}
 		if (cmd.containsArgument(CommandUtil.arg_issues))
 		{
@@ -214,6 +219,51 @@ public abstract class MapCommands
 		}
 		return true;
 	}
+	private static boolean mapteleport(CommandSender sender, Command cmd)
+	{
+		Map map;
+		Player player;
+		String playername;
+		
+		map = CommandUtil.getSelectedMap(sender);
+		if (map == null)
+		{
+			sender.sendMessage(ChatColor.RED + "You must first select a map!");
+			sender.sendMessage(ChatColor.GRAY + " Use /mmap -select <map name>");
+			return false;
+		}
+		
+		playername = cmd.getArgument(CommandUtil.arg_tp).getParameter();
+		if (playername == null || playername.isEmpty())
+		{
+			if (sender instanceof Player)
+			{
+				player = (Player) sender;
+			}
+			else
+			{
+				sender.sendMessage(CommandUtil.IS_SERVER);
+				return false;
+			}
+		}
+		else
+		{
+			player = Bukkit.getPlayerExact(playername);
+			if (player == null)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Unknown player: " + ChatManager.color + "'" + playername + "'");
+				return false;
+			}
+		}
+		
+		player.teleport(map.getSpawnLocation());
+		player.sendMessage(ChatManager.leftborder + "Teleported to " + map.getName());
+		if (player != sender)
+		{
+			sender.sendMessage(ChatManager.leftborder + "Teleported " + playername + " to " + map.getName());
+		}
+		return true;
+	}
 	private static boolean mapdelete(CommandSender sender, Command cmd)
 	{
 		Map map;
@@ -264,9 +314,7 @@ public abstract class MapCommands
 		return true;
 	}
 	
-	
-	
-	// Zones
+	//////// Zones ////////
 	public static boolean mzone(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
@@ -441,7 +489,13 @@ public abstract class MapCommands
 		}
 		
 		CommandUtil.setSelectedZone(sender, zone);
-		sender.sendMessage(ChatColor.YELLOW + "Selected zone '" + zone.getName() + "' in map '" + map.getName() + "'.");
+		sender.sendMessage(ChatManager.leftborder + "Selected zone '" + ChatColor.YELLOW + zone.getName() + ChatManager.color + "' in map '" + ChatColor.YELLOW + map.getName() + ChatManager.color + "'.");
+		if (sender instanceof Player)
+		{
+			Manhunt.setPlayerSelectionPrimaryCorner((Player) sender, zone.getPrimaryCorner());
+			Manhunt.setPlayerSelectionSecondaryCorner((Player) sender, zone.getSecondaryCorner());
+			sender.sendMessage(ChatManager.leftborder + ChatColor.YELLOW + "Selected zone's corner points as well.");
+		}
 		return true;
 	}
 	private static boolean createzone(CommandSender sender, Command cmd)
@@ -654,9 +708,7 @@ public abstract class MapCommands
 		return true;
 	}
 	
-	
-	
-	// Spawns
+	//////// Spawns ////////
 	public static boolean mpoint(CommandSender sender, Command cmd)
 	{
 		boolean action = false;
@@ -997,12 +1049,8 @@ public abstract class MapCommands
 	{
 		Spawn point;
 		Map map;
-		
-		if (!(sender instanceof Player))
-		{
-			sender.sendMessage(CommandUtil.IS_SERVER);
-			return false;
-		}
+		Player player;
+		String playername;
 		
 		if (cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
 		{
@@ -1031,9 +1079,36 @@ public abstract class MapCommands
 				return false;
 			}
 		}
+
+		playername = cmd.getArgument(CommandUtil.arg_tp).getParameter();
+		if (playername == null || playername.isEmpty())
+		{
+			if (sender instanceof Player)
+			{
+				player = (Player) sender;
+			}
+			else
+			{
+				sender.sendMessage(CommandUtil.IS_SERVER);
+				return false;
+			}
+		}
+		else
+		{
+			player = Bukkit.getPlayerExact(playername);
+			if (player == null)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Unknown player: " + ChatManager.color + "'" + playername + "'");
+				return false;
+			}
+		}
 		
-		((Player) sender).teleport(point.getLocation());
-		sender.sendMessage(ChatColor.GREEN + "Teleported to " + point.getName() + ".");
+		player.teleport(point.getLocation());
+		player.sendMessage(ChatManager.leftborder + "Teleported to " + point.getName() + ".");
+		if (player != sender)
+		{
+			sender.sendMessage(ChatManager.leftborder + "Teleported " + playername + " to " + point.getName() + ".");
+		}
 		return true;
 	}
 	private static boolean deletepoint(CommandSender sender, Command cmd)

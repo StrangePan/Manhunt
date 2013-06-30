@@ -56,7 +56,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").addAlias("map+").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
-	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("teleport", ArgumentType.TEXT).addAlias("tp").finalize_();
+	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT).addAlias("teleport").addAlias("spawn").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
 	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
@@ -95,6 +95,7 @@ public class CommandUtil
 			.addArgument(arg_close)
 			.addArgument(arg_setspawn)
 			.addArgument(arg_range)
+			.addArgument(arg_tp)
 			.addArgument(arg_lsmaps)
 			.addArgument(arg_addmap)
 			.addArgument(arg_remmap);
@@ -108,7 +109,9 @@ public class CommandUtil
 			.addArgument(arg_world)
 			.addArgument(arg_create)
 			.addArgument(arg_delete)
-			.addArgument(arg_name);
+			.addArgument(arg_name)
+			.addArgument(arg_setspawn)
+			.addArgument(arg_tp);
 	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
 			.addAlias("zone")
 			.addAlias("mhzone")
@@ -133,6 +136,7 @@ public class CommandUtil
 			.addArgument(arg_name)
 			.addArgument(arg_pointtype)
 			.addArgument(arg_redefine)
+			.addArgument(arg_tp)
 			.addArgument(arg_range);
 	static {	// Store references to command templates in hashmap and add global arguments
 		command_templates = new HashMap<String, CommandTemplate>();

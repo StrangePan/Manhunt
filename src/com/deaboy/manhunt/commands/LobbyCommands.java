@@ -210,6 +210,10 @@ public abstract class LobbyCommands
 		{
 			action |= rangespawnlobby(sender, cmd);
 		}
+		if (cmd.containsArgument(CommandUtil.arg_tp))
+		{
+			action |= teleportlobby(sender, cmd);
+		}
 
 		if (!action)
 		{
@@ -533,6 +537,27 @@ public abstract class LobbyCommands
 		
 		lobby.setSpawnRange(range);
 		sender.sendMessage(ChatManager.leftborder + "Spawn range of " + lobby.getName() + " set to " + range);
+		return true;
+	}
+	private static boolean teleportlobby(CommandSender sender, Command cmd)
+	{
+		Lobby lobby;
+		
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage(CommandUtil.IS_SERVER);
+			return false;
+		}
+		
+		lobby = CommandUtil.getSelectedLobby(sender);
+		if (lobby == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a lobby to teleport to.");
+			return false;
+		}
+		
+		((Player) sender).teleport(lobby.getSpawnLocation());
+		sender.sendMessage(ChatManager.leftborder + "Teleported to " + lobby.getName());
 		return true;
 	}
 	private static boolean closelobby(CommandSender sender, Command cmd)
