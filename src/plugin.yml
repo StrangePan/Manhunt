@@ -20,13 +20,9 @@ commands:
         description: Changes the current world's spawn point to your location.
         aliases: [setspawn]
     mworld:
-        usage: /mworld <command> [arg1] [arg2]...
-        description: Performs various world commands, such as listing loaded worlds.
+        usage: /mworld
+        description: Performs various world commands, such as listing loaded worlds and teleporting to a different world.
         aliases: [world, mhworld]
-    mworlds:
-        usage: /mworlds [page]
-        description: Lists the worlds running on the server. Worlds not being used by Manhunt are grayed out.
-        aliases: [worlds, listworlds, mlistworlds]
     manhuntmode:
         usage: /manhuntmode <mode> [player]
         description: Changes a player's Manhunt mode. Currently available modes - PLAY, EDIT.

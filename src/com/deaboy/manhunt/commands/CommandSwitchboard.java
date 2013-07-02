@@ -22,7 +22,6 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mspawn").setExecutor(this);
 		Bukkit.getPluginCommand("msetspawn").setExecutor(this);
 		Bukkit.getPluginCommand("mworld").setExecutor(this);
-		Bukkit.getPluginCommand("mworlds").setExecutor(this);
 		Bukkit.getPluginCommand("manhuntmode").setExecutor(this);
 		
 		Bukkit.getPluginCommand("mlobby").setExecutor(this);
@@ -61,10 +60,7 @@ public class CommandSwitchboard implements CommandExecutor
 			return WorldCommands.msetspawn(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("mworld"))
-			return WorldCommands.mworld(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mworlds"))
-			return WorldCommands.mworlds(sender, arguments);
+			return WorldCommands.mworld(sender, command);
 		
 		if (c.getName().equalsIgnoreCase("manhuntmode"))
 			return PlayerCommands.manhuntmode(sender, arguments);

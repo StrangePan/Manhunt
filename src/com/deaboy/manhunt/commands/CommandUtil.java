@@ -138,12 +138,24 @@ public class CommandUtil
 			.addArgument(arg_redefine)
 			.addArgument(arg_tp)
 			.addArgument(arg_range);
+	public static final CommandTemplate cmd_mworld	= new CommandTemplate("mworld")
+			.addAlias("world")
+			.addAlias("mhworld")
+			.addArgument(arg_info)
+			.addArgument(arg_list)
+			.addArgument(arg_page)
+			.addArgument(arg_issues)
+			.addArgument(arg_lsmaps)
+			.addArgument(arg_tp)
+			.addArgument(arg_world)
+			.addArgument(arg_setspawn);
 	static {	// Store references to command templates in hashmap and add global arguments
 		command_templates = new HashMap<String, CommandTemplate>();
 		command_templates.put(cmd_mlobby.getName(), cmd_mlobby);
 		command_templates.put(cmd_mmap.getName(), cmd_mmap);
 		command_templates.put(cmd_mzone.getName(), cmd_mzone);
 		command_templates.put(cmd_mpoint.getName(), cmd_mpoint);
+		command_templates.put(cmd_mworld.getName(), cmd_mworld);
 		
 		for (CommandTemplate cmd : command_templates.values())
 			cmd.addArgument(arg_help).finalize_();

@@ -440,7 +440,7 @@ public abstract class MapCommands
 		}
 		
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Map Zones " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) zones.size()/perpage)) + ")" + ChatManager.bracket2_);
-		if (!all)
+		if (!all && zones.size() > perpage)
 		{
 			sender.sendMessage(ChatColor.GRAY + "Use /map zones [n] to get page n of zones");
 			zones = zones.subList(page * perpage, Math.min( (page + 1) * perpage, zones.size() ));
@@ -849,7 +849,7 @@ public abstract class MapCommands
 		}
 		
 		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Map Points " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) points.size()/perpage)) + ")" + ChatManager.bracket2_);
-		if (!all)
+		if (!all && points.size() > perpage)
 		{
 			sender.sendMessage(ChatColor.GRAY + "Use /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_list).getLabel() + " [n] to get page n of points");
 			points = points.subList(page * perpage, Math.min( (page + 1) * perpage, points.size() ));
