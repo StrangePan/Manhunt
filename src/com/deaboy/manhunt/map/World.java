@@ -50,6 +50,12 @@ public interface World
 	
 	//---------------- Setters ----------------//
 	/**
+	 * Sets the world's spawn point.
+	 * @param loc The new location of the world.
+	 */
+	public void setSpawnLocation(Location loc);
+	
+	/**
 	 * Adds a map to this world.
 	 * @param map The map to add to the world.
 	 */

@@ -15,6 +15,17 @@ public class ManhuntMap implements Map
 	private HashMap<String, Spawn> points;
 	private HashMap<String, Zone> zones;
 	
+	private List<Spawn> points_other;
+	private List<Spawn> points_hunter;
+	private List<Spawn> points_prey;
+	private List<Spawn> points_setup;
+	
+	private List<Zone> zones_nobuild;
+	private List<Zone> zones_boundary;
+	private List<Zone> zones_build;
+	private List<Zone> zones_nomobs;
+	private List<Zone> zones_setup;
+	
 	
 	//-------------------- Constructors --------------------//
 	/**
@@ -37,6 +48,17 @@ public class ManhuntMap implements Map
 		this.spawn = loc;
 		this.points = new HashMap<String, Spawn>();
 		this.zones = new HashMap<String, Zone>();
+		
+		points_other = new ArrayList<Spawn>();
+		points_hunter = new ArrayList<Spawn>();
+		points_prey = new ArrayList<Spawn>();
+		points_setup = new ArrayList<Spawn>();
+		
+		zones_nobuild = new ArrayList<Zone>();
+		zones_boundary = new ArrayList<Zone>();
+		zones_build = new ArrayList<Zone>();
+		zones_nomobs = new ArrayList<Zone>();
+		zones_setup = new ArrayList<Zone>();
 	}
 	
 	
@@ -85,11 +107,19 @@ public class ManhuntMap implements Map
 	@Override
 	public List<Spawn> getPoints(SpawnType type)
 	{
-		List<Spawn> spawns = new ArrayList<Spawn>();
-		for (Spawn spawn : this.points.values())
-			if (spawn.getType() == type)
-				spawns.add(spawn);
-		return spawns;
+		switch (type)
+		{
+		case OTHER:
+			return points_other;
+		case HUNTER:
+			return points_hunter;
+		case PREY:
+			return points_prey;
+		case SETUP:
+			return points_setup;
+		default:
+			return null;
+		}
 	}
 	
 	@Override
@@ -109,15 +139,27 @@ public class ManhuntMap implements Map
 	public List<Zone> getZones(ZoneFlag ... flags)
 	{
 		List<Zone> zones = new ArrayList<Zone>();
-		for (Zone zone : this.zones.values())
+		for (ZoneFlag flag : flags)
 		{
-			for (ZoneFlag flag : flags)
+			switch (flag)
 			{
-				if (zone.checkFlag(flag))
-				{
-					zones.add(zone);
-					break;
-				}
+			case NO_BUILD:
+				zones.addAll(zones_nobuild);
+				break;
+			case BOUNDARY:
+				zones.addAll(zones_boundary);
+				break;
+			case BUILD:
+				zones.addAll(zones_build);
+				break;
+			case NO_MOBS:
+				zones.addAll(zones_nomobs);
+				break;
+			case SETUP:
+				zones.addAll(zones_setup);
+				break;
+			default:
+				break;
 			}
 		}
 		return zones;
@@ -144,6 +186,23 @@ public class ManhuntMap implements Map
 		if (!this.points.containsKey(point.getName()) && !this.points.containsValue(point) && point.getWorld() == this.getWorld().getWorld())
 		{
 			this.points.put(point.getName(), point);
+			switch(point.getType())
+			{
+			case OTHER:
+				points_other.add(point);
+				break;
+			case HUNTER:
+				points_hunter.add(point);
+				break;
+			case PREY:
+				points_prey.add(point);
+				break;
+			case SETUP:
+				points_setup.add(point);
+				break;
+			default:
+				break;
+			}
 			return true;
 		}
 		else
@@ -175,13 +234,19 @@ public class ManhuntMap implements Map
 		
 		point = new ManhuntSpawn(name, type, location, range);
 		
-		this.points.put(name, point);
+		addPoint(point);
 		return point;
 	}
 	public void removePoint(String name)
 	{
 		if (this.points.containsKey(name))
 		{
+			Spawn point = points.get(name);
+			if (points_other.contains(point)) points_other.remove(point);
+			if (points_hunter.contains(point)) points_hunter.remove(point);
+			if (points_prey.contains(point)) points_prey.remove(point);
+			if (points_setup.contains(point)) points_setup.remove(point);
+			
 			this.points.remove(name);
 		}
 	}
@@ -196,6 +261,29 @@ public class ManhuntMap implements Map
 		if (!this.zones.containsKey(zone.getName()) && !this.zones.containsValue(zone) && zone.getWorld() == this.getWorld().getWorld())
 		{
 			this.zones.put(zone.getName(), zone);
+			for (ZoneFlag type : ZoneFlag.values())
+			{
+				switch (type)
+				{
+				case NO_BUILD:
+					zones_nobuild.add(zone);
+					break;
+				case BOUNDARY:
+					zones_boundary.add(zone);
+					break;
+				case BUILD:
+					zones_build.add(zone);
+					break;
+				case NO_MOBS:
+					zones_nomobs.add(zone);
+					break;
+				case SETUP:
+					zones_setup.add(zone);
+					break;
+				default:
+					break;
+				}
+			}
 			return true;
 		}
 		else
@@ -245,7 +333,7 @@ public class ManhuntMap implements Map
 		for (ZoneFlag flag : flags)
 			zone.setFlag(flag, true);
 		
-		zones.put(name, zone);
+		addZone(zone);
 		
 		return zone;
 	}
@@ -253,12 +341,27 @@ public class ManhuntMap implements Map
 	public void removeZone(String name)
 	{
 		if (zones.containsKey(name))
+		{
+			Zone zone = zones.get(name);
+			if (zones_nobuild.contains(zone)) zones_nobuild.remove(zone);
+			if (zones_boundary.contains(zone)) zones_boundary.remove(zone);
+			if (zones_build.contains(zone)) zones_build.remove(zone);
+			if (zones_nomobs.contains(zone)) zones_nomobs.remove(zone);
+			if (zones_setup.contains(zone)) zones_setup.remove(zone);
+			
 			zones.remove(name);
+		}
 	}
 	@Override
 	public void clearZones()
 	{
 		this.zones.clear();
+		
+		this.zones_nobuild.clear();
+		this.zones_boundary.clear();
+		this.zones_build.clear();
+		this.zones_nomobs.clear();
+		this.zones_setup.clear();
 	}
 	
 	

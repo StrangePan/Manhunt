@@ -12,7 +12,7 @@ commands:
         description: Access to simple manhunt functions, like help and info.
         aliases: [m, mh]
     mspawn:
-        usage: /mspawn [world_name]
+        usage: /mspawn [player] [world]
         description: Teleports you to a world's spawn point. If no world is specified, uses the current world.
         aliases: [spawn]
     msetspawn:

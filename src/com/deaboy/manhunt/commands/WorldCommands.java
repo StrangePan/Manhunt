@@ -163,7 +163,7 @@ public abstract class WorldCommands
 		}
 		
 		loc = ((Player) sender).getLocation();
-		loc.getWorld().setSpawnLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		Manhunt.getWorld(loc.getWorld()).setSpawnLocation(loc);
 		sender.sendMessage(ChatManager.leftborder + loc.getWorld().getName() + " spawn point " + ChatColor.GREEN + "successfully set.");
 		return true;
 	}
@@ -374,7 +374,24 @@ public abstract class WorldCommands
 	
 	public static boolean mspawn(CommandSender sender, String args[])
 	{
-		Bukkit.dispatchCommand(sender, CommandUtil.cmd_mworld.getName() + " -" + CommandUtil.arg_tp.getName());
+		String worldname = null;
+		String playername = null;
+		
+		if (args.length > 0)
+		{
+			if (Bukkit.getPlayer(args[0]) != null)
+				playername = args[0];
+			else if (Manhunt.getWorld(args[0]) != null)
+				worldname = args[0];
+		}
+		if (args.length > 1)
+		{
+			if (Bukkit.getPlayer(args[1]) != null && playername == null)
+				playername = args[1];
+			if (Manhunt.getWorld(args[1]) != null && worldname == null)
+				worldname = args[1];
+		}
+		Bukkit.dispatchCommand(sender, CommandUtil.cmd_mworld.getName() + " -" + CommandUtil.arg_tp.getName() + (playername != null ? " " + playername : "") + (worldname != null ? " -" + CommandUtil.arg_world.getName() + " " + worldname : ""));
 		return true;
 	}
 	public static boolean msetspawn(CommandSender sender, String args[])

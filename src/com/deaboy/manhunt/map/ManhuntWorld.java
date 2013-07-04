@@ -92,6 +92,12 @@ public class ManhuntWorld implements World
 	
 	
 	//---------------- Setters----------------//
+	public void setSpawnLocation(Location loc)
+	{
+		this.spawn.setLocation(loc);
+		this.world.setSpawnLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+	}
+	
 	@Override
 	public void addMap(String label, Map map)
 	{
