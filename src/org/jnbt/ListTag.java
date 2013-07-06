@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.server.v1_5_R3.NBTTagList;
+import net.minecraft.server.v1_6_R1.NBTTagList;
 
 /**
  * The <code>TAG_List</code> tag.
