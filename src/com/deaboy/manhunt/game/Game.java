@@ -224,6 +224,16 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	/**
+	 * Sets the stage of the game.
+	 * @param stage
+	 */
+	protected void setStage(GameStage stage)
+	{
+		if (stage != null)
+			this.stage = stage;
+	}
+	
+	/**
 	 * Adds a player to the Lobby via their name.
 	 * @param p The Player to add.
 	 */

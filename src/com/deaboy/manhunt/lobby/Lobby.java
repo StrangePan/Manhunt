@@ -193,6 +193,9 @@ public class Lobby implements Closeable
 	 */
 	public List<Player> getOnlinePlayers()
 	{
+		if (gameIsRunning())
+			return getGame().getOnlinePlayers();
+		
 		List<Player> players = new ArrayList<Player>();
 		Player p;
 		
@@ -216,6 +219,9 @@ public class Lobby implements Closeable
 	 */
 	public List<Player> getOnlinePlayers(Team...teams)
 	{
+		if (gameIsRunning())
+			return getGame().getOnlinePlayers(teams);
+		
 		List<Player> players = new ArrayList<Player>();
 		Player p;
 		
@@ -234,6 +240,9 @@ public class Lobby implements Closeable
 	 */
 	public List<String> getPlayerNames()
 	{
+		if (gameIsRunning())
+			return getGame().getPlayerNames();
+		
 		return new ArrayList<String>(teams.keySet());
 	}
 	/**
@@ -245,6 +254,9 @@ public class Lobby implements Closeable
 	 */
 	public List<String> getPlayerNames(Team...teams)
 	{
+		if (gameIsRunning())
+			return getGame().getPlayerNames(teams);
+		
 		List<String> names = new ArrayList<String>();
 		
 		for (String key : this.teams.keySet())
@@ -263,10 +275,16 @@ public class Lobby implements Closeable
 	}
 	public Team getPlayerTeam(Player p)
 	{
+		if (gameIsRunning())
+			return getGame().getPlayerTeam(p);
+		
 		return getPlayerTeam(p.getName());
 	}
 	public Team getPlayerTeam(String name)
 	{
+		if (gameIsRunning())
+			return getGame().getPlayerTeam(name);
+		
 		if (teams.containsKey(name))
 			return teams.get(name);
 		else
