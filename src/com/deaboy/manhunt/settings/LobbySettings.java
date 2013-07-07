@@ -1,5 +1,7 @@
 package com.deaboy.manhunt.settings;
 
+import org.bukkit.Material;
+
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.lobby.LobbyType;
@@ -15,6 +17,12 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 	public final SettingBoolean	LOBBY_OPEN;
 	public final SettingString	GAME_TYPE;
 	public final SettingListString MAPS;
+
+	public final SettingInteger OFFLINE_TIMEOUT;
+	public final SettingInteger FINDER_ITEM;
+	public final SettingInteger TIME_LIMIT;
+	public final SettingInteger TIME_INTERMISSION;
+	public final SettingInteger TIME_SETUP;
 	
 	public final SettingString	SPAWN_WORLD;
 	public final SettingDouble	SPAWN_X;
@@ -47,6 +55,12 @@ public class LobbySettings extends SettingManagerBase implements SettingManager
 		addSetting(LOBBY_OPEN =		new SettingBoolean("open", true, "", ""), false);
 		addSetting(GAME_TYPE =		new SettingString("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
 		addSetting(MAPS =			new SettingListString("maps", ""), false);
+
+		addSetting(OFFLINE_TIMEOUT =	new SettingInteger("timeout", 30, "Seconds before players are disqualified.", "Players will be immediately disqualified."), true);
+		addSetting(FINDER_ITEM =		new SettingInteger("finderitem", Material.COMPASS.getId(), "The item used as the Prey Finder.", ""), false);
+		addSetting(TIME_LIMIT =			new SettingInteger("timelimit", 60, "Minutes that the hunt will last.", "The game will never end."), true );
+		addSetting(TIME_INTERMISSION =	new SettingInteger("intermission", 3, "Minutes between Manhunt games.", ""), true);
+		addSetting(TIME_SETUP =			new SettingInteger("setuptime", 10, "Minutes the prey have to prepare.", "There is no setup time."), true);
 		
 		addSetting(SPAWN_WORLD =	new SettingString("spawnworld", "", ""), false);
 		addSetting(SPAWN_X = 		new SettingDouble("spawnx", 0.0, ""), false);

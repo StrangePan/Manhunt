@@ -432,7 +432,7 @@ public abstract class Game implements Closeable, Listener
 			return;
 		if (!isRunning())
 			return;
-		if (e.getItem().getTypeId() != Manhunt.getSettings().FINDER_ITEM.getValue()
+		if (e.getItem().getTypeId() != getLobby().getSettings().FINDER_ITEM.getValue()
 				|| e.getAction() != Action.RIGHT_CLICK_AIR
 				&& e.getAction() != Action.RIGHT_CLICK_BLOCK
 				&& e.getAction() != Action.LEFT_CLICK_AIR

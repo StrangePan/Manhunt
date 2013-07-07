@@ -35,7 +35,6 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("mverify").setExecutor(this);
 		Bukkit.getPluginCommand("mcancel").setExecutor(this);
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
-		Bukkit.getPluginCommand("mset").setExecutor(this);
 	}
 	
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command c, String cmd, String[] arguments)
@@ -96,10 +95,7 @@ public class CommandSwitchboard implements CommandExecutor
 			return mcancel(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("msettings"))
-			return SettingCommands.msettings(sender, arguments);
-		
-		if (c.getName().equalsIgnoreCase("mset"))
-			return SettingCommands.mset(sender, arguments);
+			return SettingCommands.msettings(sender, command);
 		
 		return false;
 		

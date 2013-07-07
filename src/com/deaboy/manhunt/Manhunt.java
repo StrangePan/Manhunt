@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -115,9 +114,6 @@ public class Manhunt implements Closeable, Listener
 		settings.load();
 		settings.save();
 		
-		if (Material.getMaterial(settings.FINDER_ITEM.getValue()) == null)
-			settings.FINDER_ITEM.resetToDefault();
-		
 		this.timeouts =			new TimeoutManager();
 		this.finders =			new FinderManager();
 		this.command_util =		new CommandUtil();
@@ -143,7 +139,7 @@ public class Manhunt implements Closeable, Listener
 			registerWorld(world);
 		}
 		
-		if (settings.HANDLE_WORLDS.getValue())
+		if (settings.LOAD_WORLDS.getValue())
 		{
 			for (String wname : settings.WORLDS.getValue())
 			{
@@ -211,6 +207,7 @@ public class Manhunt implements Closeable, Listener
 			lobby = createLobby("default", LobbyType.GAME, Bukkit.getWorlds().get(0).getSpawnLocation());
 		
 		setDefaultLobby(lobby);
+		CommandUtil.setSelectedLobby(Bukkit.getConsoleSender(), getDefaultLobby());
 		
 		
 		//////// Start up the command handlers ////////
@@ -574,6 +571,8 @@ public class Manhunt implements Closeable, Listener
 			}
 			lobby.broadcast(p.getName() + " has joined the lobby.");
 			log(p.getName() + " joined lobby " + lobby.getName());
+			
+			CommandUtil.setSelectedLobby(p, lobby);
 		}
 		
 	}
@@ -689,9 +688,9 @@ public class Manhunt implements Closeable, Listener
 			 *  Deleting their stuff in the command util
 		 */
 		
-		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getSettings().OFFLINE_TIMEOUT.getValue() > 0)
+		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getPlayerLobby(p).getSettings().OFFLINE_TIMEOUT.getValue() > 0)
 		{
-			startTimeout(p, getPlayerLobby(p), getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
+			startTimeout(p, getPlayerLobby(p), getPlayerLobby(p).getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
 		}
 		else
 		{
@@ -831,8 +830,8 @@ public class Manhunt implements Closeable, Listener
 	//////////////// TIMEOUTS ////////
 	public static void startTimeout(Player player, Lobby lobby)
 	{
-		if (getSettings().OFFLINE_TIMEOUT.getValue() >= 0)
-			startTimeout(player, lobby, getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
+		if (getPlayerLobby(player) != null && getPlayerLobby(player).getSettings().OFFLINE_TIMEOUT.getValue() >= 0)
+			startTimeout(player, lobby, getPlayerLobby(player).getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
 	}
 	public static void startTimeout(Player player, Lobby lobby, long time)
 	{

@@ -1,5 +1,6 @@
 package com.deaboy.manhunt.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -12,7 +13,33 @@ import com.deaboy.manhunt.settings.Setting;
 public abstract class SettingCommands
 {
 	
-	public static boolean msettings(CommandSender sender, String args[])
+	public static boolean msettings(CommandSender sender, Command cmd)
+	{
+		boolean action = false;
+
+		if (!sender.isOp())
+		{
+			sender.sendMessage(CommandUtil.NO_PERMISSION);
+			return true;
+		}
+		
+		if (cmd.containsArgument(CommandUtil.arg_list))
+		{
+			action |= listsettings(sender, cmd);
+		}
+		if (cmd.containsArgument(CommandUtil.arg_set))
+		{
+			action |= setsetting(sender, cmd);
+		}
+
+		if (!action)
+		{
+			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
+		}
+		
+		return true;
+	}
+	public static boolean listsettings(CommandSender sender, Command cmd)
 	{
 		final int perpage = 8;
 		int page = 1;
@@ -29,15 +56,37 @@ public abstract class SettingCommands
 		
 		
 		// Get the page #
-		if (args.length == 0)
-			page = 1;
-		else if (args[0].equalsIgnoreCase("all"))
-			all = true;
-		else try
+		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
 		{
-			page = Integer.parseInt(args[0]);	
+			try
+			{
+				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				page = 1;
+			}
 		}
-		catch (NumberFormatException e)
+		else if (cmd.getArgument(CommandUtil.arg_list).getParameter() != null)
+		{
+			 if (cmd.getArgument(CommandUtil.arg_list).getParameter().equalsIgnoreCase("all"))
+			 {
+				 all = true;
+				 page = 1;
+			 }
+			 else
+			 {
+				 try
+				 {
+					 page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_list).getParameter());
+				 }
+				 catch (Exception e)
+				 {
+					 page = 1;
+				 }
+			 }
+		}
+		else
 		{
 			page = 1;
 		}
@@ -45,7 +94,10 @@ public abstract class SettingCommands
 		page--;
 		
 		// Assemble list of settings
-		settings = Manhunt.getSettings().getVisibleSettings();
+		settings = new ArrayList<Setting>();
+		settings.addAll( Manhunt.getSettings().getVisibleSettings());
+		if (CommandUtil.getSelectedLobby(sender) != null)
+			settings.addAll(CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings());
 		
 		if (!all)
 		{
@@ -71,50 +123,54 @@ public abstract class SettingCommands
 		}
 		for (Setting setting : settings)
 		{
-			sender.sendMessage(ChatColor.GOLD + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());
+			sender.sendMessage(ChatManager.leftborder + (Manhunt.getSettings().getVisibleSettings().contains(setting) ? ChatColor.GRAY + "[GLOBAL] " + ChatManager.color : "") + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());
 		}
 		return true;
 		
-		
-		
-		
-		
 	}
-	
-	public static boolean mset(CommandSender sender, String args[])
+	public static boolean setsetting(CommandSender sender, Command cmd)
 	{
-		Setting setting = null;
+		List<Setting> settings;
+		Setting setting;
+		String name;
+		String value;
 		
-		// Check permissions
-		if (!sender.isOp())
+		name = cmd.getArgument(CommandUtil.arg_set).getParameter();
+		if (cmd.getArgument(CommandUtil.arg_set).getParameters().size() >= 2)
+			value = cmd.getArgument(CommandUtil.arg_set).getParameters().get(1);
+		else
+			value = null;
+		
+		if (name == null || value == null)
 		{
-			sender.sendMessage(CommandUtil.NO_PERMISSION);
-			return true;
+			sender.sendMessage(ChatColor.RED + "Invalid argument usage: " + CommandUtil.arg_set.getName());
+			sender.sendMessage(ChatColor.GRAY + "  Usage: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_set).getLabel() + " <setting> <value>");
+			return false;
 		}
 		
 		
-		// Check the arguments
-		if (args.length != 2)
+		settings = Manhunt.getSettings().getVisibleSettings();
+		if (CommandUtil.getSelectedLobby(sender) != null)
+			settings.addAll(CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings());
+		
+		
+		setting = null;
+		for (Setting s : settings)
 		{
-			sender.sendMessage(ChatColor.GOLD + "Usage: " + ChatColor.WHITE + "/mset <setting> < value>\nChange a global Manhunt setting. Use " + ChatColor.GOLD + "/msettings" + ChatColor.WHITE + " to view a list of available settings.");
-			return true;
-		}
-		
-		
-		for (Setting s : Manhunt.getSettings().getVisibleSettings())
-			if (s.getLabel().equalsIgnoreCase(args[0]))
+			if (s.getLabel().equalsIgnoreCase(name))
 			{
 				setting = s;
 				break;
 			}
-		
+		}
+
 		if (setting == null)
 		{
 			sender.sendMessage(ChatColor.RED + "That setting does not exist, or is not visible.");
 			return true;
 		}
 		
-		if (setting.setValue(args[1]))
+		if (setting.setValue(value))
 		{
 			sender.sendMessage(ChatColor.GOLD + setting.getLabel() + ChatColor.GREEN + " has been set to " + ChatColor.GOLD + "[" + setting.getValue() + "]");
 			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + setting.getDescription());
@@ -126,7 +182,7 @@ public abstract class SettingCommands
 			return true;
 		}
 		
-		
 	}
+	
 	
 }

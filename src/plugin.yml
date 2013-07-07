@@ -20,7 +20,7 @@ commands:
         description: Changes the current world's spawn point to your location.
         aliases: [setspawn]
     mworld:
-        usage: /mworld
+        usage: /mworld <arg> [param]...
         description: Performs various world commands, such as listing loaded worlds and teleporting to a different world.
         aliases: [world, mhworld]
     manhuntmode:
@@ -30,7 +30,7 @@ commands:
     
     ############ Lobbies ############
     mlobby:
-        usage: /mlobby <command> [arg1] [arg2]...
+        usage: /mlobby <arg> [param]...
         description: Performs various lobby commands, including editing, renaming, creating, and closing.
         aliases: [lobby, mhlobby]
     mjoin:
@@ -48,15 +48,15 @@ commands:
     
     ############ Maps ############
     mmap:
-        usage: /mmap <command> [arg1] [arg2]...
+        usage: /mmap <arg> [param]...
         description: Performs various map commands, such as listing available maps, selecting maps, deleting, creating, etc.
         aliases: [map, mhmap]
     mzone:
-        usage: /mzone
+        usage: /mzone <arg> [param]...
         description: 
         aliases: [zone, mhzone]
     mpoint:
-        usage: /mpoint
+        usage: /mpoint <arg> [param]...
         description:
         aliases: [point, mhpoint]
     
@@ -80,13 +80,9 @@ commands:
         aliases: [cancel, mno, no]
     
     msettings:
-        usage: /msettings [page]
-        description: Lists the global Manhunt settings. Cannot be used to view lobby settings.
-        aliases: [settings, listsettings, mlistsettings]
-    mset:
-        usage: /mset <setting> <value>
-        description: Changes a global Manhunt setting. Cannot be used to change lobby settings.
-        aliases: [set, setting]
+        usage: /msettings <arg> [param]...
+        description:
+        aliases: [settings, mhsettings, msetting, setting, mhsetting, mset, set, mhset]
     
     
     

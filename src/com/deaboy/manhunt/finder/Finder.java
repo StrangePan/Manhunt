@@ -146,7 +146,7 @@ public class Finder
 
 		if (p != null)
 		{
-			if (p.getItemInHand().getTypeId() != Manhunt.getSettings().FINDER_ITEM.getValue() || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.0, true))
+			if (p.getItemInHand().getTypeId() != Manhunt.getLobby(lobby_id).getSettings().FINDER_ITEM.getValue() || !ManhuntUtil.areEqualLocations(p.getLocation(), location, 0.0, true))
 			{
 				FinderUtil.sendMessageFinderCancel(p);
 				Manhunt.getFinders().stopFinder(this, true);

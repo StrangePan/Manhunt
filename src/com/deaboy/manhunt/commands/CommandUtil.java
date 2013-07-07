@@ -49,6 +49,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_leave	= new ArgumentTemplate("leave", ArgumentType.FLAG).addAlias("lv").finalize_();
 	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.TEXT).addAlias("cr").addAlias("new").finalize_();
 	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
+	public static final ArgumentTemplate arg_reload	= new ArgumentTemplate("reload", ArgumentType.FLAG).addAlias("load").finalize_();
 	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
 	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT).addAlias("w").addAlias("worlds").finalize_();
 	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
@@ -58,6 +59,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
 	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT).addAlias("teleport").addAlias("spawn").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
+	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT).addAlias("s").finalize_();
 	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
@@ -149,6 +151,15 @@ public class CommandUtil
 			.addArgument(arg_tp)
 			.addArgument(arg_world)
 			.addArgument(arg_setspawn);
+	public static final CommandTemplate cmd_msettings = new CommandTemplate("msettings")
+			.addAlias("settings")
+			.addAlias("mhsettings")
+			.addAlias("mset")
+			.addAlias("set")
+			.addAlias("mhset")
+			.addArgument(arg_list)
+			.addArgument(arg_page)
+			.addArgument(arg_set);
 	static {	// Store references to command templates in hashmap and add global arguments
 		command_templates = new HashMap<String, CommandTemplate>();
 		command_templates.put(cmd_mlobby.getName(), cmd_mlobby);
@@ -156,6 +167,7 @@ public class CommandUtil
 		command_templates.put(cmd_mzone.getName(), cmd_mzone);
 		command_templates.put(cmd_mpoint.getName(), cmd_mpoint);
 		command_templates.put(cmd_mworld.getName(), cmd_mworld);
+		command_templates.put(cmd_msettings.getName(), cmd_msettings);
 		
 		for (CommandTemplate cmd : command_templates.values())
 			cmd.addArgument(arg_help).finalize_();

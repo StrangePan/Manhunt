@@ -113,46 +113,53 @@ public class ManhuntGame extends Game implements Listener
 		 * 
 		 */
 		
-		event = new ManhuntWorldEvent(getWorld(), time += 60);
-		event.addAction(new BroadcastAction(lobby_id, "Setup begins in 5..."));
-		timeline.registerEvent(event);
-		
-		event = new ManhuntWorldEvent(getWorld(), time += 20);
-		event.addAction(new BroadcastAction(lobby_id, "4..."));
-		timeline.registerEvent(event);
-
-		event = new ManhuntWorldEvent(getWorld(), time += 20);
-		event.addAction(new BroadcastAction(lobby_id, "3..."));
-		timeline.registerEvent(event);
-
-		event = new ManhuntWorldEvent(getWorld(), time += 20);
-		event.addAction(new BroadcastAction(lobby_id, "2..."));
-		timeline.registerEvent(event);
-
-		event = new ManhuntWorldEvent(getWorld(), time += 20);
-		event.addAction(new BroadcastAction(lobby_id, "1..."));
-		timeline.registerEvent(event);
-		
-		event = new ManhuntWorldEvent(getWorld(), time += 20);
-		event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.SETUP); }}));
-		event.addAction(new BroadcastAction(lobby_id, "GO! Use this time to prepare for the hunt!", Team.PREY));
-		event.addAction(new BroadcastAction(lobby_id, "The prey are preparing for the hunt.", Team.HUNTERS));
-		event.addAction(new BroadcastAction(lobby_id, "The hunt will begin at sundown."));
-		timeline.registerEvent(event);
-		
-		/*
-		 * 
-		 * 
-		 * 
-		 */
-
-		event = new ManhuntWorldEvent(getWorld(), time += Manhunt.getSettings().TIME_SETUP.getValue() - 260);
-		event.addAction(new BroadcastAction(lobby_id, "Prepare for teleport!", Team.HUNTERS));
-		timeline.registerEvent(event);
-		
-		event = new ManhuntWorldEvent(getWorld(), time += 100);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
-		timeline.registerEvent(event);
+		if (getLobby().getSettings().TIME_SETUP.getValue() > 0)
+		{
+			
+			event = new ManhuntWorldEvent(getWorld(), time += 60);
+			event.addAction(new BroadcastAction(lobby_id, "Setup begins in 5..."));
+			timeline.registerEvent(event);
+			
+			event = new ManhuntWorldEvent(getWorld(), time += 20);
+			event.addAction(new BroadcastAction(lobby_id, "4..."));
+			timeline.registerEvent(event);
+	
+			event = new ManhuntWorldEvent(getWorld(), time += 20);
+			event.addAction(new BroadcastAction(lobby_id, "3..."));
+			timeline.registerEvent(event);
+	
+			event = new ManhuntWorldEvent(getWorld(), time += 20);
+			event.addAction(new BroadcastAction(lobby_id, "2..."));
+			timeline.registerEvent(event);
+	
+			event = new ManhuntWorldEvent(getWorld(), time += 20);
+			event.addAction(new BroadcastAction(lobby_id, "1..."));
+			timeline.registerEvent(event);
+			
+			event = new ManhuntWorldEvent(getWorld(), time += 20);
+			event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.SETUP); }}));
+			event.addAction(new BroadcastAction(lobby_id, "GO! Use this time to prepare for the hunt!", Team.PREY));
+			event.addAction(new BroadcastAction(lobby_id, "The prey are preparing for the hunt.", Team.HUNTERS));
+			event.addAction(new BroadcastAction(lobby_id, "The hunt will begin at sundown."));
+			timeline.registerEvent(event);
+			
+			//
+			//
+			//
+			time += getLobby().getSettings().TIME_SETUP.getValue() * 1200 - 260;
+			//
+			//
+			//
+	
+			event = new ManhuntWorldEvent(getWorld(), time);
+			event.addAction(new BroadcastAction(lobby_id, "Prepare for teleport!", Team.HUNTERS));
+			timeline.registerEvent(event);
+			
+			event = new ManhuntWorldEvent(getWorld(), time += 100);
+			event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
+			timeline.registerEvent(event);
+			
+		}
 		
 		event = new ManhuntWorldEvent(getWorld(), time += 60);
 		event.addAction(new BroadcastAction(lobby_id, "The hunt begins in 5..."));
@@ -177,7 +184,7 @@ public class ManhuntGame extends Game implements Listener
 		event = new ManhuntWorldEvent(getWorld(), time += 20);
 		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.HUNT); }}));
-		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + Manhunt.getSettings().TIME_LIMIT.getValue() + " minutes."));
+		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + getLobby().getSettings().TIME_LIMIT.getValue() + " minutes."));
 		event.addAction(new BroadcastAction(lobby_id, "Beware! The hunters have been released!", Team.PREY));
 		event.addAction(new BroadcastAction(lobby_id, "Now's you're chance! Hunt the prey!", Team.HUNTERS));
 		event.addAction(new LogAction(Level.INFO, "A Manhunt game was started in lobby " + Manhunt.getLobby(lobby_id).getName()));
@@ -190,7 +197,7 @@ public class ManhuntGame extends Game implements Listener
 		 * 
 		 */
 		
-		event = new ManhuntWorldEvent(getWorld(), time += Manhunt.getSettings().TIME_LIMIT.getValue() * 1200 - 20 * 1200);
+		event = new ManhuntWorldEvent(getWorld(), time += getLobby().getSettings().TIME_LIMIT.getValue() * 1200 - 20 * 1200);
 		event.addAction(new BroadcastAction(lobby_id, "Only one day left in the hunt!"));
 		timeline.registerEvent(event);
 		

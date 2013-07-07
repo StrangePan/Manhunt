@@ -108,12 +108,12 @@ public class ManhuntTimeline implements Timeline
 		{
 			public void run()
 			{
-				if (event < events.size() && new Date().getTime() >= basetime + events.get(event).getTriggerTime())
+				while (event < events.size() && new Date().getTime() >= basetime + events.get(event).getTriggerTime())
 				{
 					events.get(event).execute();
 					event++;
 				}
-				if (worldevent < worldevents.size() && worldevents.get(worldevent).getWorld().getFullTime() >= worldbasetime + worldevents.get(worldevent).getTriggerTime())
+				while (worldevent < worldevents.size() && worldevents.get(worldevent).getWorld().getFullTime() >= worldbasetime + worldevents.get(worldevent).getTriggerTime())
 				{
 					worldevents.get(worldevent).execute();
 					worldevent++;
