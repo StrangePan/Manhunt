@@ -20,7 +20,10 @@ public class BroadcastAction implements Action
 	@Override
 	public void execute()
 	{
-		Manhunt.getLobby(lobby_id).broadcast(message, teams);
+		if (teams.length == 0)
+			Manhunt.getLobby(lobby_id).broadcast(message);
+		else
+			Manhunt.getLobby(lobby_id).broadcast(message, teams);
 	}
 
 }

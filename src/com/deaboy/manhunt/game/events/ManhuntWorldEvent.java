@@ -4,7 +4,6 @@ import org.bukkit.World;
 
 public class ManhuntWorldEvent extends ManhuntEvent implements WorldEvent
 {
-
 	//---------------- Properties ----------------//
 	private World world;
 	
@@ -25,15 +24,6 @@ public class ManhuntWorldEvent extends ManhuntEvent implements WorldEvent
 	}
 	
 	
-	//---------------- Setters ----------------//
-	@Override
-	public void setWorld(World world)
-	{
-		this.world = world;
-	}
-	
-	
-	//---------------- Public Methods ----------------//
-	
-
 }
+
+

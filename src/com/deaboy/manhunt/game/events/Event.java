@@ -2,7 +2,7 @@ package com.deaboy.manhunt.game.events;
 
 import java.util.List;
 
-public interface Event
+public interface Event extends Comparable<Event>
 {
 	
 	//---------------- Getters ----------------//
@@ -67,4 +67,9 @@ public interface Event
 	 * @return True if this event has executed, false if not.
 	 */
 	public boolean isExpired();
+	
+	
 }
+
+
+

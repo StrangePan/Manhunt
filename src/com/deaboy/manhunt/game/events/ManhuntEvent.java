@@ -6,7 +6,6 @@ import java.util.List;
 
 public class ManhuntEvent implements Event
 {
-	
 	//---------------- Properties ----------------//
 	private List<Action> actions;
 	private Long delay;
@@ -31,7 +30,6 @@ public class ManhuntEvent implements Event
 	{
 		return actions;
 	}
-	
 	@Override
 	public Long getTriggerTime()
 	{
@@ -45,13 +43,11 @@ public class ManhuntEvent implements Event
 	{
 		this.delay = time;
 	}
-	
 	@Override
 	public void setExpired(boolean expired)
 	{
 		this.expired = false;
 	}
-	
 	@Override
 	public void reset()
 	{
@@ -66,20 +62,17 @@ public class ManhuntEvent implements Event
 		if (!actions.contains(action))
 			actions.add(action);
 	}
-	
 	@Override
 	public void removeAction(Action action)
 	{
 		if (actions.contains(action))
 			actions.remove(action);
 	}
-	
 	@Override
 	public void clearActions()
 	{
 		this.actions.clear();
 	}
-	
 	@Override
 	public void execute()
 	{
@@ -89,12 +82,19 @@ public class ManhuntEvent implements Event
 		}
 		expired = true;
 	}
-	
 	@Override
 	public boolean isExpired()
 	{
 		return expired;
 	}
+	@Override
+	public int compareTo(Event arg0)
+	{
+		return (int) (this.getTriggerTime() - arg0.getTriggerTime());
+	}
 	
 	
 }
+
+
+
