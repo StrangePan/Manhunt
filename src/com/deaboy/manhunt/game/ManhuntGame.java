@@ -262,8 +262,6 @@ public class ManhuntGame extends Game implements Listener
 		
 		
 		
-		
-		
 		return timeline;
 	}
 	

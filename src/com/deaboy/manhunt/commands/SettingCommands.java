@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
@@ -45,6 +46,7 @@ public abstract class SettingCommands
 		int page = 1;
 		boolean all = false;
 		List<Setting> settings;
+		String message;
 		
 		
 		// Check permissions
@@ -123,7 +125,12 @@ public abstract class SettingCommands
 		}
 		for (Setting setting : settings)
 		{
-			sender.sendMessage(ChatManager.leftborder + (Manhunt.getSettings().getVisibleSettings().contains(setting) ? ChatColor.GRAY + "[GLOBAL] " + ChatManager.color : "") + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());
+			message = (ChatManager.leftborder + (Manhunt.getSettings().getVisibleSettings().contains(setting) ? ChatColor.GRAY + "[G] " + ChatManager.color : "") + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());
+			if (sender instanceof Player && message.length() > 65)
+			{
+				message = message.substring(0, 65) + "...";
+			}
+			sender.sendMessage(message);
 		}
 		return true;
 		

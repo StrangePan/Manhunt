@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Command
 {
-	// Properties
+	//////////////// Properties ////////////////
 	private final String name;
 	private final String label;
 	private List<Argument> arguments;
@@ -13,8 +13,7 @@ public class Command
 	private CommandTemplate template;
 	
 	
-	
-	// Constructors
+	//////////////// Constructors ////////////////
 	public Command(String name, String label, CommandTemplate template, Argument...args)
 	{
 		this.name = name;
@@ -33,8 +32,7 @@ public class Command
 	}
 	
 	
-	
-	// Setters
+	//////////////// Setters ////////////////
 	public boolean addArgument(Argument arg)
 	{
 		if (arg == null || this.arguments.contains(arg))
@@ -50,8 +48,7 @@ public class Command
 	}
 	
 	
-	
-	// Getters
+	//////////////// Getters ////////////////
 	public String getName()
 	{
 		return this.name;
@@ -98,8 +95,7 @@ public class Command
 	}
 	
 	
-	
-	// Static Constructors
+	//////////////// Static Constructors ////////////////
 	public static Command fromTemplate(CommandTemplate template, String label, String...args)
 	{
 		Command command = new Command(template.getName(), label, template);

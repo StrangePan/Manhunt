@@ -225,6 +225,27 @@ public abstract class MapCommands
 		Player player;
 		String playername;
 		
+		if (cmd.containsArgument(CommandUtil.arg_player) || cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
+		{
+			playername = cmd.containsArgument(CommandUtil.arg_player) ? cmd.getArgument(CommandUtil.arg_player).getParameter() : cmd.getArgument(CommandUtil.arg_tp).getParameter();
+			player = Bukkit.getPlayer(playername);
+			if (player == null)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + '\'' + playername + '\'' + ChatManager.color + " is not online.");
+				return false;
+			}
+		}
+		else if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.leftborder + "You must select a player to teleport.");
+			sender.sendMessage(ChatManager.leftborder + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_tp).getLabel() + " <player>");
+			return false;	
+		}
+		
 		map = CommandUtil.getSelectedMap(sender);
 		if (map == null)
 		{
@@ -233,34 +254,11 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		playername = cmd.getArgument(CommandUtil.arg_tp).getParameter();
-		if (playername == null || playername.isEmpty())
-		{
-			if (sender instanceof Player)
-			{
-				player = (Player) sender;
-			}
-			else
-			{
-				sender.sendMessage(CommandUtil.IS_SERVER);
-				return false;
-			}
-		}
-		else
-		{
-			player = Bukkit.getPlayerExact(playername);
-			if (player == null)
-			{
-				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Unknown player: " + ChatManager.color + "'" + playername + "'");
-				return false;
-			}
-		}
-		
 		player.teleport(map.getSpawnLocation());
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + map.getName());
 		if (player != sender)
 		{
-			sender.sendMessage(ChatManager.leftborder + "Teleported " + playername + " to " + map.getName());
+			sender.sendMessage(ChatManager.leftborder + "Teleported " + player.getName() + " to " + map.getName());
 		}
 		return true;
 	}
@@ -1048,66 +1046,43 @@ public abstract class MapCommands
 	private static boolean tppoint(CommandSender sender, Command cmd)
 	{
 		Spawn point;
-		Map map;
 		Player player;
 		String playername;
 		
-		if (cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
+		if (cmd.containsArgument(CommandUtil.arg_player) || cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
 		{
-			map = CommandUtil.getSelectedMap(sender);
-			if (map == null)
-			{
-				sender.sendMessage(ChatColor.RED + "You must first select a map you wish to delete a point from.");
-				sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name");
-				return false;
-			}
-			point = map.getPoint(cmd.getArgument(CommandUtil.arg_tp).getParameter());
-			if (point == null)
-			{
-				sender.sendMessage(ChatColor.RED + "No point with the name '" + cmd.getArgument(CommandUtil.arg_tp).getParameter() + "' exists in map '" + map.getName() + "'");
-				sender.sendMessage(ChatColor.GRAY + "  List points: /" + cmd.getLabel() + " -" + CommandUtil.arg_list.getName());
-				return false;
-			}
-		}
-		else
-		{
-			point = CommandUtil.getSelectedPoint(sender);
-			if (point == null)
-			{
-				sender.sendMessage(ChatColor.RED + "Please select the point you wish to modify.");
-				sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name>");
-				return false;
-			}
-		}
-
-		playername = cmd.getArgument(CommandUtil.arg_tp).getParameter();
-		if (playername == null || playername.isEmpty())
-		{
-			if (sender instanceof Player)
-			{
-				player = (Player) sender;
-			}
-			else
-			{
-				sender.sendMessage(CommandUtil.IS_SERVER);
-				return false;
-			}
-		}
-		else
-		{
-			player = Bukkit.getPlayerExact(playername);
+			playername = cmd.containsArgument(CommandUtil.arg_player) ? cmd.getArgument(CommandUtil.arg_player).getParameter() : cmd.getArgument(CommandUtil.arg_tp).getParameter();
+			player = Bukkit.getPlayer(playername);
 			if (player == null)
 			{
-				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Unknown player: " + ChatManager.color + "'" + playername + "'");
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + '\'' + playername + '\'' + ChatManager.color + " is not online.");
 				return false;
 			}
+		}
+		else if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.leftborder + "You must select a player to teleport.");
+			sender.sendMessage(ChatManager.leftborder + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_tp).getLabel() + " <player>");
+			return false;	
+		}
+		
+		point = CommandUtil.getSelectedPoint(sender);
+		if (point == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select the point you wish to modify.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <point name>");
+			return false;
 		}
 		
 		player.teleport(point.getLocation());
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + point.getName() + ".");
 		if (player != sender)
 		{
-			sender.sendMessage(ChatManager.leftborder + "Teleported " + playername + " to " + point.getName() + ".");
+			sender.sendMessage(ChatManager.leftborder + "Teleported " + player.getName() + " to " + point.getName() + ".");
 		}
 		return true;
 	}

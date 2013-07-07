@@ -32,6 +32,8 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		Bukkit.getPluginCommand("mstartgame").setExecutor(this);
 		Bukkit.getPluginCommand("mstopgame").setExecutor(this);
+		Bukkit.getPluginCommand("mjoin").setExecutor(this);
+		Bukkit.getPluginCommand("mleave").setExecutor(this);
 		Bukkit.getPluginCommand("mverify").setExecutor(this);
 		Bukkit.getPluginCommand("mcancel").setExecutor(this);
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
@@ -87,6 +89,12 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		if (c.getName().equalsIgnoreCase("mstopgame"))
 			return LobbyCommands.mstopgame(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mjoin"))
+			return LobbyCommands.mjoin(sender, arguments);
+		
+		if (c.getName().equalsIgnoreCase("mleave"))
+			return LobbyCommands.mleave(sender, arguments);
 		
 		if (c.getName().equalsIgnoreCase("mverify"))
 			return mverify(sender, arguments);

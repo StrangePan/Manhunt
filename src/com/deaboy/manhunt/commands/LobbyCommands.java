@@ -3,6 +3,7 @@ package com.deaboy.manhunt.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -146,6 +147,17 @@ public abstract class LobbyCommands
 		
 		
 		
+	}
+	
+	public static boolean mjoin(CommandSender sender, String[] args)
+	{
+		Bukkit.dispatchCommand(sender, CommandUtil.cmd_mlobby.getName() + (args.length > 0 ? " -" + CommandUtil.arg_join.getName() + ' ' + args[0] : "") + (args.length > 1 ? " -" + CommandUtil.arg_player.getName() + ' ' + args[1] : ""));
+		return true;
+	}
+	public static boolean mleave(CommandSender sender, String[] args)
+	{
+		Bukkit.dispatchCommand(sender, CommandUtil.cmd_mlobby.getName() + " -" + CommandUtil.arg_leave.getName() + (args.length > 0 ? " -" + CommandUtil.arg_player.getName() + ' ' + args[0] : ""));
+		return true;
 	}
 	
 	public static boolean mlobby(CommandSender sender, Command cmd)
@@ -302,11 +314,26 @@ public abstract class LobbyCommands
 	{
 		Lobby lobby;
 		String lobbyname;
+		Player player;
 		
-		if (!(sender instanceof Player))
+		if (cmd.containsArgument(CommandUtil.arg_player))
 		{
-			sender.sendMessage(CommandUtil.IS_SERVER);
-			return false;
+			player = Bukkit.getPlayer(cmd.getArgument(CommandUtil.arg_player).getParameter());
+			if (player == null)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + '\'' + cmd.getArgument(CommandUtil.arg_player).getParameter() + '\'' + ChatManager.color + " is not online.");
+				return false;
+			}
+		}
+		else if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.leftborder + "You must select a player to join the lobby.");
+			sender.sendMessage(ChatManager.leftborder + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_join).getLabel() + " -" + CommandUtil.arg_player.getName() + " <player>");
+			return false;	
 		}
 		
 		// 1. Check for -name
@@ -542,11 +569,28 @@ public abstract class LobbyCommands
 	private static boolean teleportlobby(CommandSender sender, Command cmd)
 	{
 		Lobby lobby;
+		Player player;
+		String playername;
 		
-		if (!(sender instanceof Player))
+		if (cmd.containsArgument(CommandUtil.arg_player) || cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
 		{
-			sender.sendMessage(CommandUtil.IS_SERVER);
-			return false;
+			playername = cmd.containsArgument(CommandUtil.arg_player) ? cmd.getArgument(CommandUtil.arg_player).getParameter() : cmd.getArgument(CommandUtil.arg_tp).getParameter();
+			player = Bukkit.getPlayer(playername);
+			if (player == null)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + '\'' + playername + '\'' + ChatManager.color + " is not online.");
+				return false;
+			}
+		}
+		else if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.leftborder + "You must select a player to teleport.");
+			sender.sendMessage(ChatManager.leftborder + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_tp).getLabel() + " <player>");
+			return false;	
 		}
 		
 		lobby = CommandUtil.getSelectedLobby(sender);
@@ -560,6 +604,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatManager.leftborder + "Teleported to " + lobby.getName());
 		return true;
 	}
+
 	private static boolean closelobby(CommandSender sender, Command cmd)
 	{
 		Lobby lobby;

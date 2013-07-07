@@ -41,6 +41,7 @@ public class CommandUtil
 	// Arguments
 	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG).addAlias("?").finalize_();
 	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG).addAlias("i").finalize_();
+	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT).addAlias("plr").addAlias("p").finalize_();
 	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
 	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
 	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
@@ -86,6 +87,7 @@ public class CommandUtil
 			.addAlias("mhlobby")
 			.addArgument(arg_info)
 			.addArgument(arg_select)
+			.addArgument(arg_player)
 			.addArgument(arg_list)
 			.addArgument(arg_page)
 			.addArgument(arg_join)
@@ -131,6 +133,7 @@ public class CommandUtil
 			.addAlias("mhpoint")
 			.addArgument(arg_info)
 			.addArgument(arg_select)
+			.addArgument(arg_player)
 			.addArgument(arg_list)
 			.addArgument(arg_page)
 			.addArgument(arg_create)
