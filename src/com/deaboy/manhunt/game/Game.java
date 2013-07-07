@@ -38,7 +38,10 @@ import com.deaboy.manhunt.finder.Finder;
 import com.deaboy.manhunt.finder.FinderUtil;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.Team;
+import com.deaboy.manhunt.map.ManhuntSpawn;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Spawn;
+import com.deaboy.manhunt.map.SpawnType;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneFlag;
 
@@ -208,6 +211,15 @@ public abstract class Game implements Closeable, Listener
 			return teams.get(name);
 		else
 			return null;
+	}
+	
+	public List<Spawn> getPoints(SpawnType type)
+	{
+		List<Spawn> points = new ArrayList<Spawn>();
+		points.addAll(getMap().getPoints(type));
+		if (points.isEmpty())
+			points.add(new ManhuntSpawn("", type, getMap().getSpawnLocation()));
+		return points;
 	}
 	
 	

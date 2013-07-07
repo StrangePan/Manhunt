@@ -17,6 +17,7 @@ public class TeleportTeamAction implements Action
 	private final Team team;
 	private final List<Location> locations;
 	
+	
 	public TeleportTeamAction(long lobby_id, Team team, List<Spawn> spawns)
 	{
 		this.locations = new ArrayList<Location>();
@@ -25,17 +26,20 @@ public class TeleportTeamAction implements Action
 		this.team = team;
 		for (Spawn spawn : spawns)
 			this.locations.add(spawn.getLocation());
-		
 	}
+	
 	
 	@Override
 	public void execute()
 	{
-		for (Player p : Manhunt.getLobby(lobby_id).getOnlinePlayers(team))
+		if (!locations.isEmpty())
 		{
-			if (p.isOnline())
+			for (Player p : Manhunt.getLobby(lobby_id).getOnlinePlayers(team))
 			{
-				p.teleport(locations.get(((int) Math.random()) % locations.size()));
+				if (p.isOnline())
+				{
+					p.teleport(locations.get(((int) Math.random()) % locations.size()));
+				}
 			}
 		}
 	}
