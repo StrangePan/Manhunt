@@ -24,6 +24,27 @@ public class ManhuntWorldEvent extends ManhuntEvent implements WorldEvent
 	}
 	
 	
+	//---------------- Public Methods ----------------//
+	@Override
+	public ManhuntWorldEvent addAction(Action action)
+	{
+		super.addAction(action);
+		return this;
+	}
+	@Override
+	public ManhuntWorldEvent removeAction(Action action)
+	{
+		super.removeAction(action);
+		return this;
+	}
+	@Override
+	public ManhuntWorldEvent clearActions()
+	{
+		super.clearActions();
+		return this;
+	}
+	
+	
 }
 
 

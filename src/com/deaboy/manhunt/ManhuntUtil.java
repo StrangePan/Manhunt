@@ -1,10 +1,18 @@
 package com.deaboy.manhunt;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-public class ManhuntUtil {
+public abstract class ManhuntUtil
+{
+	private static HashMap<String, WorldTimeMachine> worldTimeMachines = new HashMap<String, WorldTimeMachine>();
 	
 	public static Location safeTeleport(Location loc)
 	{
@@ -115,6 +123,136 @@ public class ManhuntUtil {
 		default:
 			return false;
 		}
+	}
+	
+	/**
+	 * Smoothly transitions a world's time to the given day time.
+	 * @param world The world to manipulate
+	 * @param time The time of day you want the cycle to end on
+	 * @param runnable The action to perform at the end of the cycle
+	 */
+	public static void transitionWorldTime(World world, long time, Runnable runnable)
+	{
+		if (world == null) return;
+		
+		new WorldTimeMachine(world, ((world.getFullTime() / 24000) + (world.getTime() > time ? 1 : 0)) * 24000L + time % 24000, runnable);
+	}
+	/**
+	 * Smoothly transitions a world's full time to the given full time.
+	 * @param world The world to manipulate
+	 * @param time The full time you want the cycle to end on
+	 * @param runnable The action to perform at the end of the cycle
+	 */
+	public static void transitionWorldFullTime(World world, long fulltime, Runnable runnable)
+	{
+		if (world == null) return;
+		if (fulltime < 0) return;
+		
+		new WorldTimeMachine(world, fulltime, runnable);
+	}
+	
+	/**
+	 * Cancels a world's time transition.
+	 * @param world
+	 */
+	public static void cancelWorldTimeTransition(World world)
+	{
+		if (worldTimeMachines.containsKey(world.getName()))
+		{
+			worldTimeMachines.get(world.getName()).cancel();
+		}
+	}
+	
+
+	static class WorldTimeMachine
+	{
+		private final World world;
+		private final long starttime;
+		private final long endtime;
+		private final List<Runnable> actions;
+		private final int schedule;
+		
+		private static final int maxspeed = 400; // ticks per tick
+		private static final int acceltime = 2400; // acceleration distance
+		private static final int decceltime = 4800;
+		private static final double accelrate = (double) maxspeed / (double) acceltime;
+		private static final double deccelrate = (double) maxspeed / (double) decceltime;
+		private static final double accelratio = (double) (acceltime + decceltime) / (double) decceltime;
+		
+		public WorldTimeMachine(World world, long fulltime, Runnable runnable)
+		{
+			
+			this.world = world;
+			this.starttime = world.getFullTime();
+			this.endtime = fulltime;
+			this.actions = new ArrayList<Runnable>();
+			
+			if (worldTimeMachines.containsKey(world.getName()))
+			{
+				actions.addAll(worldTimeMachines.get(world.getName()).actions);
+				worldTimeMachines.get(world.getName()).cancel();
+				worldTimeMachines.put(world.getName(), this);
+			}
+			
+			actions.add(runnable);
+			schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
+			{
+				public void run()
+				{
+					step();
+				}
+			}, 0, 0);
+		}
+		
+		private void step()
+		{
+			long time = world.getFullTime();
+			
+			if (Math.abs(endtime - time) <= 1)
+			{
+				end();
+			}
+			else if (Math.abs(time - starttime) > Math.abs(endtime - starttime) / accelratio) //later half
+			{
+				if (Math.abs(endtime - time) < decceltime)
+				{
+					world.setFullTime(time + (long) ((endtime - time) * deccelrate));
+				}
+				else
+				{
+					world.setFullTime(time + (endtime > starttime ? maxspeed : -maxspeed));
+				}
+			}
+			else //first half
+			{
+				if (Math.abs(time - starttime) < acceltime)
+				{
+					world.setFullTime(time + (long) ((time - starttime) * accelrate));
+				}
+				else
+				{
+					world.setFullTime(time + (endtime > starttime ? maxspeed : -maxspeed));
+				}
+			}
+		}
+		
+		public void end()
+		{
+			world.setFullTime(endtime);
+			for (Runnable runnable : actions)
+			{
+				if (runnable != null) runnable.run();
+			}
+			cancel();
+		}
+		public void cancel()
+		{
+			Bukkit.getScheduler().cancelTask(schedule);
+			if (worldTimeMachines.containsKey(world.getName()))
+				worldTimeMachines.remove(world.getName());
+		}
+		
+		
 	}
 	
 }

@@ -57,21 +57,24 @@ public class ManhuntEvent implements Event
 	
 	//---------------- Public Methods ----------------//
 	@Override
-	public void addAction(Action action)
+	public ManhuntEvent addAction(Action action)
 	{
 		if (!actions.contains(action))
 			actions.add(action);
+		return this;
 	}
 	@Override
-	public void removeAction(Action action)
+	public ManhuntEvent removeAction(Action action)
 	{
 		if (actions.contains(action))
 			actions.remove(action);
+		return this;
 	}
 	@Override
-	public void clearActions()
+	public ManhuntEvent clearActions()
 	{
 		this.actions.clear();
+		return this;
 	}
 	@Override
 	public void execute()

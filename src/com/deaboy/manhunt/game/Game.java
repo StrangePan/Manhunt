@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -242,7 +243,11 @@ public abstract class Game implements Closeable, Listener
 	protected void setStage(GameStage stage)
 	{
 		if (stage != null)
+		{
 			this.stage = stage;
+			if (getLobby() != null)
+				Manhunt.log(Level.INFO, getLobby().getName() + " has entered the " + stage.getName() + " stage.");
+		}
 	}
 	
 	/**
@@ -341,6 +346,12 @@ public abstract class Game implements Closeable, Listener
 	public abstract void stopGame();
 	
 	/**
+	 * Officially ends the game and takes actions based on the state of the game at the given time.
+	 * Announces winners and activates any award systems there may be.
+	 */
+	public abstract void endGame();
+	
+	/**
 	 * Activates the game's listeners.
 	 */
 	public abstract void startListening();
@@ -350,10 +361,16 @@ public abstract class Game implements Closeable, Listener
 	 */
 	public abstract void stopListening();
 	
+	/**
+	 * Closes a game and frees up resources.
+	 */
 	public void close()
 	{
 	}
 	
+	/**
+	 * Distributes players in standby into appropriate teams
+	 */
 	public void distributeTeams()
 	{
 		List<String> hunters = new ArrayList<String>();
@@ -391,6 +408,10 @@ public abstract class Game implements Closeable, Listener
 		}
 	}
 	
+	/**
+	 * Forfeits a player from the game.
+	 * @param name
+	 */
 	public void forfeitPlayer(String name)
 	{
 		Player p;
@@ -420,16 +441,26 @@ public abstract class Game implements Closeable, Listener
 		
 		getLobby().broadcast(team.getColor() + name + ChatManager.color + " has " + ChatColor.RED + " forfeit the game.");
 		
-		
-		
+		testGame();
 	}
 	
+	/**
+	 * Imports all players from the given lobby.
+	 * Makes life easier rather than adding each player in one at a time.
+	 * @param lobby
+	 */
 	public void importPlayers(Lobby lobby)
 	{
 		this.teams.clear();
 		
 		for (String name : lobby.getPlayerNames())
 			this.teams.put(name, lobby.getPlayerTeam(name));
+	}
+	
+	public void testGame()
+	{
+		if (getPlayerNames(Team.HUNTERS).isEmpty() || getPlayerNames(Team.PREY).isEmpty())
+			endGame();
 	}
 	
 	
@@ -444,7 +475,8 @@ public abstract class Game implements Closeable, Listener
 			return;
 		if (!isRunning())
 			return;
-		if (e.getItem().getTypeId() != getLobby().getSettings().FINDER_ITEM.getValue()
+		if (e.getItem() == null
+				|| e.getItem().getTypeId() != getLobby().getSettings().FINDER_ITEM.getValue()
 				|| e.getAction() != Action.RIGHT_CLICK_AIR
 				&& e.getAction() != Action.RIGHT_CLICK_BLOCK
 				&& e.getAction() != Action.LEFT_CLICK_AIR
@@ -469,30 +501,33 @@ public abstract class Game implements Closeable, Listener
 		}
 	}
 	
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void onSignInteract(PlayerInteractEvent e)
 	{
 		// TODO Sign interact event! :D
 	}
-
+	
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBlockPlace(BlockPlaceEvent e)
 	{
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlockPlaced().getLocation());
 	}
-
+	
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBlockBreak(BlockBreakEvent e)
 	{
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlock().getLocation());
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBucketFill(PlayerBucketFillEvent e)
 	{
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlockClicked().getLocation());
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBucketEmpty(PlayerBucketEmptyEvent e)
 	{
@@ -522,7 +557,7 @@ public abstract class Game implements Closeable, Listener
 		
 		e.setRespawnLocation(getLobby().getSpawnLocation());
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void baseEntityDamageByEntity(EntityDamageByEntityEvent e)
 	{
@@ -601,7 +636,7 @@ public abstract class Game implements Closeable, Listener
 		
 		
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void basePlayerDeath(PlayerDeathEvent e)
 	{
@@ -635,10 +670,9 @@ public abstract class Game implements Closeable, Listener
 					" has died and is eliminated!");
 		}
 		
-		
-		
+		testGame();
 	}
-
+	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void basePlayerInteract(PlayerInteractEvent e)
 	{
@@ -664,8 +698,9 @@ public abstract class Game implements Closeable, Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public final void baseCreatureSpawn(CreatureSpawnEvent e)
 	{
-		if (e.isCancelled())
+		if (e.isCancelled() || e.getLocation().getWorld() != getWorld())
 			return;
+		
 		if (!isRunning())
 		{
 			e.setCancelled(true);
@@ -731,7 +766,6 @@ public abstract class Game implements Closeable, Listener
 		
 		
 	}
-	
 	
 	
 	

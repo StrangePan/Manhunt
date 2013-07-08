@@ -11,4 +11,13 @@ public interface WorldEvent extends Event
 	 */
 	public World getWorld();
 	
+	
+	//---------------- Public Methods ----------------//
+	@Override
+	public WorldEvent addAction(Action action);
+	@Override
+	public WorldEvent removeAction(Action action);
+	@Override
+	public WorldEvent clearActions();
+	
 }

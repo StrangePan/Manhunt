@@ -44,18 +44,18 @@ public interface Event extends Comparable<Event>
 	 * Adds an action to be executed with this Event.
 	 * @param action The Action to add
 	 */
-	public void addAction(Action action);
+	public Event addAction(Action action);
 
 	/**
 	 * Removes an Action from this Event's Action list.
 	 * @param action The Action to remove
 	 */
-	public void removeAction(Action action);
+	public Event removeAction(Action action);
 
 	/**
 	 * Clears all Actions from this Event's Action list.
 	 */
-	public void clearActions();
+	public Event clearActions();
 
 	/**
 	 * Executes all of the action's events.
