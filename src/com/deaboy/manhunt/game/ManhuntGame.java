@@ -2,6 +2,7 @@ package com.deaboy.manhunt.game;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -39,7 +40,11 @@ public class ManhuntGame extends Game implements Listener
 		
 		timeline = generateTimeline();
 		
-		ManhuntUtil.transitionWorldTime(getWorld(), 12000 - getLobby().getSettings().TIME_SETUP.getValue() * 1200 - 320, new Runnable(){ public void run(){ timeline.run(); }});
+
+		if (getWorld().getEnvironment() == Environment.NORMAL)
+			ManhuntUtil.transitionWorldTime(getWorld(), 12000 - getLobby().getSettings().TIME_SETUP.getValue() * 1200 - 320, new Runnable(){ public void run(){ timeline.run(); }});
+		else
+			timeline.run();
 		
 		startListening();
 	}
@@ -181,7 +186,7 @@ public class ManhuntGame extends Game implements Listener
 			event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.SETUP); }}));
 			event.addAction(new BroadcastAction(lobby_id, "GO! Use this time to prepare for the hunt!", Team.PREY));
 			event.addAction(new BroadcastAction(lobby_id, "The prey are preparing for the hunt.", Team.HUNTERS));
-			event.addAction(new BroadcastAction(lobby_id, "The hunt will begin at sundown. (" + getLobby().getSettings().TIME_SETUP.getValue() + " minutes)"));
+			event.addAction(new BroadcastAction(lobby_id, (getWorld().getEnvironment() == Environment.NORMAL ? "The hunt will begin at sundown. (" + getLobby().getSettings().TIME_SETUP.getValue() + " minutes)" : "The hunt will begin in " + getLobby().getSettings().TIME_SETUP.getValue() + " minutes.")));
 			timeline.registerEvent(event);
 			
 			//////////////// LENGTH OF SETUP ////////////////

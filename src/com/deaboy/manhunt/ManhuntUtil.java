@@ -134,8 +134,8 @@ public abstract class ManhuntUtil
 	public static void transitionWorldTime(World world, long time, Runnable runnable)
 	{
 		if (world == null) return;
-		
-		new WorldTimeMachine(world, ((world.getFullTime() / 24000) + (world.getTime() > time ? 1 : 0)) * 24000L + time % 24000, runnable);
+		time = ((time % 24000) + 24000) % 24000;
+		new WorldTimeMachine(world, ((world.getFullTime() / 24000) + (world.getFullTime() % 24000 > time ? 1 : 0)) * 24000 + time, runnable);
 	}
 	/**
 	 * Smoothly transitions a world's full time to the given full time.
@@ -191,7 +191,6 @@ public abstract class ManhuntUtil
 			{
 				actions.addAll(worldTimeMachines.get(world.getName()).actions);
 				worldTimeMachines.get(world.getName()).cancel();
-				worldTimeMachines.put(world.getName(), this);
 			}
 			
 			actions.add(runnable);
@@ -202,6 +201,7 @@ public abstract class ManhuntUtil
 					step();
 				}
 			}, 0, 0);
+			worldTimeMachines.put(world.getName(), this);
 		}
 		
 		private void step()
