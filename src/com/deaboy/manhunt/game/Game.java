@@ -783,7 +783,7 @@ public abstract class Game implements Closeable, Listener
 	
 	
 	//////// Universal method for block-editing events
-	private void checkBlockActionValidity(Cancellable e, Player p, Location loc)
+	protected void checkBlockActionValidity(Cancellable e, Player p, Location loc)
 	{
 		Team team;
 		
@@ -801,38 +801,54 @@ public abstract class Game implements Closeable, Listener
 			e.setCancelled(true);
 			return;
 		}
-		
-		if (getStage() == GameStage.SETUP && team != Team.PREY)
-		{
-			e.setCancelled(true);
-			return;
-		}
-		else if (getStage() != GameStage.HUNT)
+		if (getStage() != GameStage.HUNT && getStage() != GameStage.SETUP)
 		{
 			e.setCancelled(true);
 			return;
 		}
 		
-		
-		// Take map zones into account
-		for (Zone zone : getMap().getZones(ZoneFlag.BUILD, ZoneFlag.NO_BUILD))
+		// If inside a BUILD zone,  then all's good.
+		for (Zone zone : getMap().getZones(ZoneFlag.BUILD))
 		{
-			if ((!e.isCancelled() || !zone.checkFlag(ZoneFlag.NO_BUILD)) && zone.containsLocation(loc))
+			if (zone.containsLocation(loc))
+				return;
+		}
+		for (Zone zone : getMap().getZones(ZoneFlag.NO_BUILD))
+		{
+			if (zone.containsLocation(loc))
 			{
-				if (zone.checkFlag(ZoneFlag.BUILD))
-				{
-					e.setCancelled(false);
-					break;
-				}
-				else
-				{
-					e.setCancelled(true);
-				}
+				e.setCancelled(true);
+				return;
 			}
 		}
-		if (e.isCancelled())
-			return;
 		
+		
+		if (getStage() == GameStage.SETUP && team == Team.HUNTERS)
+		{
+			for (Zone zone : getMap().getZones(ZoneFlag.SETUP))
+			{
+				if (zone.containsLocation(loc))
+					return;
+			}
+			e.setCancelled(true);
+			return;
+		}
+		else
+		{
+			for (Zone zone : getMap().getZones(ZoneFlag.SETUP))
+			{
+				if (zone.containsLocation(loc))
+				{
+					e.setCancelled(true);
+					return;
+				}
+			}
+			for (Zone zone : getMap().getZones(ZoneFlag.BOUNDARY))
+			{
+				if (zone.containsLocation(loc))
+					return;
+			}
+		}
 	}
 	
 	

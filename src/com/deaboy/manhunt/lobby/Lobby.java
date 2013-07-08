@@ -386,6 +386,7 @@ public class Lobby implements Closeable
 	{
 		if (this.teams.containsKey(name))
 			this.teams.remove(name);
+		getGame().removePlayer(name);
 	}
 	/**
 	 * Removes a player from the lobby.

@@ -366,7 +366,7 @@ public class Manhunt implements Closeable, Listener
 	}
 	private void removePlayer(String name)
 	{
-		timeouts.stopTimeout(name);
+		timeouts.cancelTimeout(name);
 		stopFinder(name, true);
 		getPlayerLobby(name).removePlayer(name);
 		player_lobbies.remove(name);
@@ -456,7 +456,6 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	//---------------- Public Interface Methods ----------------//
-	
 	//////////////// LOBBIES ////////
 	public static Lobby createLobby(String name, LobbyType type, Location location)
 	{
@@ -644,7 +643,6 @@ public class Manhunt implements Closeable, Listener
 	}
 	
 	
-	
 	//////////////// PLAYERS ////////
 	public static void playerJoinServer(Player p)
 	{
@@ -692,7 +690,7 @@ public class Manhunt implements Closeable, Listener
 		
 		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getPlayerLobby(p).getSettings().OFFLINE_TIMEOUT.getValue() > 0)
 		{
-			startTimeout(p, getPlayerLobby(p), getPlayerLobby(p).getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
+			startTimeout(p);
 		}
 		else
 		{
@@ -793,9 +791,10 @@ public class Manhunt implements Closeable, Listener
 	{
 		return CommandUtil.getSelectedMap(p);
 	}
-	
-	
-	
+	public static void forgetPlayer(String playername)
+	{
+		Manhunt.getInstance().removePlayer(playername);
+	}
 	
 	
 	//////////////// WORLDS /////////
@@ -828,29 +827,23 @@ public class Manhunt implements Closeable, Listener
 	}
 	
 	
-	
 	//////////////// TIMEOUTS ////////
-	public static void startTimeout(Player player, Lobby lobby)
+	public static void startTimeout(Player player)
 	{
-		if (getPlayerLobby(player) != null && getPlayerLobby(player).getSettings().OFFLINE_TIMEOUT.getValue() >= 0)
-			startTimeout(player, lobby, getPlayerLobby(player).getSettings().OFFLINE_TIMEOUT.getValue() * 1000);
+		getInstance().timeouts.startTimeout(player);
 	}
-	public static void startTimeout(Player player, Lobby lobby, long time)
+	public static void startTimeout(String name)
 	{
-		if (getInstance().timeouts.hasTimeout(player))
-			getInstance().timeouts.stopTimeout(player);
-		
-		getInstance().timeouts.startTimeout(player, lobby.getId(), time);
+		getInstance().timeouts.startTimeout(name);
 	}
 	public static boolean timeoutExists(Player p)
 	{
-		return getInstance().timeouts.hasTimeout(p);
+		return getInstance().timeouts.containsTimeout(p);
 	}
 	public static void stopTimeout(Player player)
 	{
-		getInstance().timeouts.stopTimeout(player);
+		getInstance().timeouts.cancelTimeout(player);
 	}
-	
 	
 	
 	//////////////// LOGGING ////////
@@ -877,7 +870,6 @@ public class Manhunt implements Closeable, Listener
 		
 		// TODO Get some sort of separate logger set up.
 	}
-	
 	
 	
 	//////////////// REGISTERING GAME TYPES ////////
@@ -930,7 +922,6 @@ public class Manhunt implements Closeable, Listener
 	}
 	
 	
-	
 	//////////////// FINDERS ////////
 	public static void startFinder(Player p, long lobby_id)
 	{
@@ -964,7 +955,6 @@ public class Manhunt implements Closeable, Listener
 	{
 		return getFinders().finderExists(name);
 	}
-	
 	
 	
 	//////////////// SELECTIONS ////////
@@ -1034,7 +1024,6 @@ public class Manhunt implements Closeable, Listener
 	{
 		return getInstance().getPlayerSelection(p).isValid();
 	}
-	
 	
 	
 	//////////////// GLOBAL MANHUNT EVENTS ////////
@@ -1134,6 +1123,8 @@ public class Manhunt implements Closeable, Listener
 	}
 	
 	
+	//////////////// CLOSING ////////
+	
 	
 	//////////////// CLOSING ////////
 	public void close()
@@ -1155,4 +1146,8 @@ public class Manhunt implements Closeable, Listener
 		settings.save();
 	}
 	
+	
 }
+
+
+
