@@ -512,6 +512,9 @@ public abstract class Game implements Closeable, Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBlockPlace(BlockPlaceEvent e)
 	{
+		if (!containsPlayer(e.getPlayer()))
+			return;
+		
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlockPlaced().getLocation());
 	}
 	
@@ -519,26 +522,36 @@ public abstract class Game implements Closeable, Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBlockBreak(BlockBreakEvent e)
 	{
+		if (!containsPlayer(e.getPlayer()))
+			return;
+		
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlock().getLocation());
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBucketFill(PlayerBucketFillEvent e)
 	{
+		if (!containsPlayer(e.getPlayer()))
+			return;
+		
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlockClicked().getLocation());
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void validateBucketEmpty(PlayerBucketEmptyEvent e)
 	{
+		if (!containsPlayer(e.getPlayer()))
+			return;
+		
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlockClicked().getRelative(e.getBlockFace()).getLocation());
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public final void basePlayerTeleport(PlayerTeleportEvent e)
 	{
-		if (!isRunning())
+		if (!isRunning() || !containsPlayer(e.getPlayer()))
 			return;
+		
 		if (e.isCancelled())
 			return;
 		
@@ -552,7 +565,7 @@ public abstract class Game implements Closeable, Listener
 	@EventHandler(priority = EventPriority.LOW)
 	public final void basePlayerRespawn(PlayerRespawnEvent e)
 	{
-		if (!isRunning())
+		if (!isRunning() || !containsPlayer(e.getPlayer()))
 			return;
 		
 		e.setRespawnLocation(getLobby().getSpawnLocation());

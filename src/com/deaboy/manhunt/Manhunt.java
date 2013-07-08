@@ -18,6 +18,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -734,7 +736,7 @@ public class Manhunt implements Closeable, Listener
 				break;
 			}
 			
-			log(message);
+			log('[' + l.getName() + "] " + p.getName() + ": " + message);
 			return;
 		}
 	}
@@ -1055,13 +1057,13 @@ public class Manhunt implements Closeable, Listener
 	@EventHandler
 	public void onPlayerClick(PlayerInteractEvent e)
 	{
+		if (getPlayerMode(e.getPlayer()) != ManhuntMode.EDIT)
+			return;
+		
 		if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 		
 		if (e.getPlayer().getItemInHand().getTypeId() != getSettings().SELECTION_TOOL.getValue())
-			return;
-		
-		if (getPlayerMode(e.getPlayer()) != ManhuntMode.EDIT)
 			return;
 		
 		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))
@@ -1098,7 +1100,42 @@ public class Manhunt implements Closeable, Listener
 		}
 		
 	}
+	@EventHandler
+	public void onEntityTarget(EntityTargetEvent e)
+	{
+		if (e.isCancelled() || !(e.getTarget() instanceof Player))
+			return;
+		
+		if (!getPlayerLobby((Player) e.getTarget()).gameIsRunning())
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else
+		{
+			return;
+		}
+	}
+	@EventHandler
+	public void onPlayerDamage(EntityDamageEvent e)
+	{
+		if (e.isCancelled() || !(e.getEntity() instanceof Player))
+			return;
+		
+		if (!getPlayerLobby((Player) e.getEntity()).gameIsRunning())
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else
+		{
+			return;
+		}
+	}
 	
+	
+	
+	//////////////// CLOSING ////////
 	public void close()
 	{
 		worldedit = null;

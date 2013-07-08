@@ -346,6 +346,10 @@ public class CommandUtil
 			selected_lobbies.remove(player.getName());
 		if (selected_maps.containsKey(player.getName()))
 			selected_maps.remove(player.getName());
+		if (selected_zones.containsKey(player.getName()))
+			selected_zones.remove(player.getName());
+		if (selected_points.containsKey(player.getName()))
+			selected_points.remove(player.getName());
 		if (vcommands.containsKey(player.getName()))
 			vcommands.remove(player.getName());
 		if (verified.containsKey(player.getName()))

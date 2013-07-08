@@ -349,7 +349,6 @@ public class Lobby implements Closeable
 		return true;
 	}
 	
-	//////// ABSTRACT
 	/**
 	 * Adds a player to the Lobby via their name.
 	 * @param p The Player to add.
@@ -594,9 +593,10 @@ public class Lobby implements Closeable
 	}
 	public void forfeitPlayer(String name)
 	{
-		if (!gameIsRunning())
-			return;
 		if (!containsPlayer(name))
+			return;
+		
+		if (!gameIsRunning())
 			return;
 		
 		Player p = Bukkit.getPlayerExact(name);
