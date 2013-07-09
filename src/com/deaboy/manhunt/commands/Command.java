@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Command
@@ -8,43 +9,36 @@ public class Command
 	//////////////// Properties ////////////////
 	private final String name;
 	private final String label;
-	private List<Argument> arguments;
-	private List<String> argument_names;
+	private HashMap<String, Argument> arguments;
+	private List<Subcommand> subcommands;
 	private CommandTemplate template;
 	
 	
 	//////////////// Constructors ////////////////
-	public Command(String name, String label, CommandTemplate template, Argument...args)
+	public Command(String name, String label, CommandTemplate template)
 	{
 		this.name = name;
 		this.label = label;
-		this.arguments = new ArrayList<Argument>();
-		this.argument_names = new ArrayList<String>();
+		this.arguments = new HashMap<String, Argument>();
+		this.subcommands = new ArrayList<Subcommand>();
 		this.template = template;
-		
-		for (Argument arg : args)
-		{
-			if (!this.arguments.contains(arg))
-				this.arguments.add(arg);
-			if (!this.argument_names.contains(arg.getName()))
-				this.argument_names.add(arg.getName());
-		}
 	}
 	
 	
 	//////////////// Setters ////////////////
-	public boolean addArgument(Argument arg)
+	private void addArgument(Argument arg)
 	{
-		if (arg == null || this.arguments.contains(arg))
+		if (arg != null)
 		{
-			return false;
+			this.arguments.put(arg.getName(), arg);
 		}
-		
-		if (!this.arguments.contains(arg))
-			this.arguments.add(arg);
-		if (!this.argument_names.contains(arg.getName()))
-			this.argument_names.add(arg.getName());
-		return true;
+	}
+	private void addSubcommand(Subcommand subcommand)
+	{
+		if (!this.subcommands.contains(subcommand))
+		{
+			this.subcommands.add(subcommand);
+		}
 	}
 	
 	
@@ -59,27 +53,36 @@ public class Command
 	}
 	public boolean containsArgument(String arg)
 	{
-		return argument_names.contains(arg);
-	}
-	public boolean containsArgument(ArgumentTemplate template)
-	{
-		return argument_names.contains(template.getName());
-	}
-	public Argument getArgument(String arg)
-	{
-		if (!argument_names.contains(arg))
+		if (arg != null)
 		{
-			return null;
+			return this.arguments.containsKey(arg);
 		}
 		else
 		{
-			for (Argument argument : arguments)
-			{
-				if (argument.getName().equalsIgnoreCase(arg))
-					return argument;
-			}
+			return false;
 		}
-		return null;
+	}
+	public boolean containsArgument(ArgumentTemplate template)
+	{
+		if (template != null)
+		{
+			return this.arguments.containsKey(template.getName());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public Argument getArgument(String arg)
+	{
+		if (this.arguments.containsKey(arg))
+		{
+			return this.arguments.get(arg);
+		}
+		else
+		{
+			return null;
+		}
 	}
 	public Argument getArgument(ArgumentTemplate template)
 	{
@@ -88,6 +91,10 @@ public class Command
 	public int getArgumentCount()
 	{
 		return arguments.size();
+	}
+	public List<Subcommand> getSubcommands()
+	{
+		return new ArrayList<Subcommand>(this.subcommands);
 	}
 	public CommandTemplate getTemplate()
 	{
@@ -100,15 +107,17 @@ public class Command
 	{
 		Command command = new Command(template.getName(), label, template);
 		
-		String argument = new String();
+		String arg = new String();
+		Subcommand subcommand = null;
+		Argument argument;
 		List<String> arguments = new ArrayList<String>();
 		String temp = new String();
 		
-		for (String arg : args)
+		for (String a : args)
 		{
 			if (!temp.isEmpty())
 			{
-				temp += ' ' + arg;
+				temp += ' ' + a;
 				if (temp.endsWith("\""))
 				{
 					arguments.add(temp.substring(1, temp.length()-1));
@@ -119,50 +128,96 @@ public class Command
 					temp += ' ';
 				}
 			}
-			else if (arg.startsWith("\""))
+			else if (a.startsWith("\""))
 			{
-				temp = arg;
+				temp = a;
 				if (temp.endsWith("\""))
 				{
 					arguments.add(temp.substring(1, temp.length()-1));
 					temp = "";
 				}
 			}
-			else if (arg.startsWith("-"))
+			else if (a.startsWith("-"))
 			{
-				if (!argument.isEmpty())
+				if (!arg.isEmpty())
 				{
 					for (ArgumentTemplate argtemp : template.getArguments())
 					{
-						if (argtemp.matches(argument))
+						if (argtemp.matches(arg))
 						{
-							command.addArgument(Argument.fromTemplate(argtemp, argument, arguments));
+							argument = Argument.fromTemplate(argtemp, arg, arguments);
+							if (argument.isSubcommand())
+							{
+								if (subcommand != null)
+								{
+									command.addSubcommand(subcommand);
+								}
+								subcommand = new Subcommand(command.getName(), command.getLabel(), argument);
+							}
+							else
+							{
+								if (subcommand != null)
+								{
+									subcommand.addArgument(argument);
+								}
+								else
+								{
+									command.addArgument(argument);
+								}
+							}
 							break;
 						}
 					}
 				}
-				argument = arg.substring(1);
+				arg = a.substring(1);
 				arguments.clear();
 				temp = "";
 			}
 			else
 			{
-				arguments.add(arg);
+				arguments.add(a);
 			}
 		}
-		if (!argument.isEmpty())
+		if (!arg.isEmpty())
 		{
 			for (ArgumentTemplate argtemp : template.getArguments())
 			{
-				if (argtemp.matches(argument))
+				if (argtemp.matches(arg))
 				{
-					command.addArgument(Argument.fromTemplate(argtemp, argument, arguments));
+					argument = Argument.fromTemplate(argtemp, arg, arguments);
+					if (argument.isSubcommand())
+					{
+						if (subcommand != null)
+						{
+							command.addSubcommand(subcommand);
+						}
+						subcommand = new Subcommand(command.getName(), command.getLabel(), argument);
+					}
+					else
+					{
+						if (subcommand != null)
+						{
+							subcommand.addArgument(argument);
+						}
+						else
+						{
+							command.addArgument(argument);
+						}
+					}
 					break;
 				}
 			}
+		}
+		if (subcommand != null)
+		{
+			command.addSubcommand(subcommand);
 		}
 		
 		return command;
 	}
 	
+	
 }
+
+
+

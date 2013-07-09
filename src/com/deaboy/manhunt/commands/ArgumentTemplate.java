@@ -11,19 +11,21 @@ public class ArgumentTemplate
 	private List<String> aliases;
 	private List<String> parameters;
 	private boolean required;
+	private boolean subcommand;
 	
 	private boolean locked; 
 	
 	
 	
 	// Constructors
-	public ArgumentTemplate(String name, ArgumentType type)
+	public ArgumentTemplate(String name, ArgumentType type, boolean subcommand)
 	{
 		this.name = name;
 		this.type = type;
 		aliases = new ArrayList<String>();
 		parameters = new ArrayList<String>();
 		required = false;
+		this.subcommand = subcommand;
 		
 		locked = false;
 	}
@@ -45,6 +47,13 @@ public class ArgumentTemplate
 			return this;
 		if (type != null)
 			this.type = type;
+		return this;
+	}
+	public ArgumentTemplate setSubcommand(boolean subcommand)
+	{
+		if (locked)
+			return this;
+		this.subcommand = subcommand;
 		return this;
 	}
 	public ArgumentTemplate addAlias(String alias)
@@ -115,6 +124,10 @@ public class ArgumentTemplate
 	public ArgumentType getType()
 	{
 		return this.type;
+	}
+	public boolean isSubcommand()
+	{
+		return this.subcommand;
 	}
 	public List<String> getAliases()
 	{

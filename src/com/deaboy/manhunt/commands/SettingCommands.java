@@ -24,15 +24,18 @@ public abstract class SettingCommands
 			return true;
 		}
 		
-		if (cmd.containsArgument(CommandUtil.arg_list))
+		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			action |= listsettings(sender, cmd);
+			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			{
+				action |= listsettings(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_set)
+			{
+				action |= setsetting(sender, scmd);
+			}
 		}
-		if (cmd.containsArgument(CommandUtil.arg_set))
-		{
-			action |= setsetting(sender, cmd);
-		}
-
+		
 		if (!action)
 		{
 			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
@@ -40,7 +43,7 @@ public abstract class SettingCommands
 		
 		return true;
 	}
-	public static boolean listsettings(CommandSender sender, Command cmd)
+	public static boolean listsettings(CommandSender sender, Subcommand cmd)
 	{
 		final int perpage = 8;
 		int page = 1;
@@ -135,7 +138,7 @@ public abstract class SettingCommands
 		return true;
 		
 	}
-	public static boolean setsetting(CommandSender sender, Command cmd)
+	public static boolean setsetting(CommandSender sender, Subcommand cmd)
 	{
 		List<Setting> settings;
 		Setting setting;

@@ -34,33 +34,36 @@ public abstract class MapCommands
 			return true;
 		}
 		
-		if (cmd.containsArgument(CommandUtil.arg_list))
+		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			action |= maplist(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_create))
-		{
-			action |= mapcreate(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_select))
-		{
-			action |= mapselect(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_info))
-		{
-			action |= mapinfo(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_tp))
-		{
-			action |= mapteleport(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_issues))
-		{
-			action |= mapissues(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_delete))
-		{
-			action |= mapdelete(sender, cmd);
+			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			{
+				action |= maplist(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			{
+				action |= mapcreate(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			{
+				action |= mapselect(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_info)
+			{
+				action |= mapinfo(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			{
+				action |= mapteleport(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_issues)
+			{
+				action |= mapissues(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			{
+				action |= mapdelete(sender, scmd);
+			}
 		}
 		
 		if (!action)
@@ -70,7 +73,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean maplist(CommandSender sender, Command cmd)
+	private static boolean maplist(CommandSender sender, Subcommand cmd)
 	{
 		final String spacing = "   ";
 		
@@ -115,7 +118,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean mapcreate(CommandSender sender, Command cmd)
+	private static boolean mapcreate(CommandSender sender, Subcommand cmd)
 	{
 		String mapname;
 		Map map;
@@ -164,7 +167,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean mapselect(CommandSender sender, Command cmd)
+	private static boolean mapselect(CommandSender sender, Subcommand cmd)
 	{
 		Map map;
 		String mapname;
@@ -195,7 +198,7 @@ public abstract class MapCommands
 		sender.sendMessage(ChatColor.YELLOW + "Selected map '" + map.getFullName() + "'.");
 		return true;
 	}
-	private static boolean mapinfo(CommandSender sender, Command cmd)
+	private static boolean mapinfo(CommandSender sender, Subcommand cmd)
 	{
 		Map map;
 		
@@ -219,7 +222,7 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	private static boolean mapteleport(CommandSender sender, Command cmd)
+	private static boolean mapteleport(CommandSender sender, Subcommand cmd)
 	{
 		Map map;
 		Player player;
@@ -262,7 +265,7 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	private static boolean mapdelete(CommandSender sender, Command cmd)
+	private static boolean mapdelete(CommandSender sender, Subcommand cmd)
 	{
 		Map map;
 		
@@ -285,7 +288,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean mapissues(CommandSender sender, Command cmd)
+	private static boolean mapissues(CommandSender sender, Subcommand cmd)
 	{
 		Map map;
 		List<String> issues;
@@ -324,39 +327,42 @@ public abstract class MapCommands
 			return true;
 		}
 		
-		if (cmd.containsArgument(CommandUtil.arg_list))
+		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			action |= listzones(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_create))
-		{
-			action |= createzone(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_select))
-		{
-			action |= selectzone(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_redefine))
-		{
-			action |= redefinezone(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_zoneflags))
-		{
-			action |= flagzone(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_delete))
-		{
-			action |= deletezone(sender, cmd);
+			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			{
+				action |= listzones(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			{
+				action |= createzone(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			{
+				action |= selectzone(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_redefine)
+			{
+				action |= redefinezone(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_zoneflags)
+			{
+				action |= flagzone(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			{
+				action |= deletezone(sender, scmd);
+			}
 		}
 		
-		else if (!action)
+		if (!action)
 		{
 			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
 		}
 		
 		return true;
 	}
-	private static boolean listzones(CommandSender sender, Command cmd)
+	private static boolean listzones(CommandSender sender, Subcommand cmd)
 	{
 		int perpage = 8;
 		boolean all = false;
@@ -456,7 +462,7 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	private static boolean selectzone(CommandSender sender, Command cmd)
+	private static boolean selectzone(CommandSender sender, Subcommand cmd)
 	{
 		String zonename;
 		Zone zone;
@@ -496,7 +502,7 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	private static boolean createzone(CommandSender sender, Command cmd)
+	private static boolean createzone(CommandSender sender, Subcommand cmd)
 	{
 		// Declarations.
 		Zone zone;
@@ -581,7 +587,7 @@ public abstract class MapCommands
 			return true;
 		}
 	}
-	private static boolean deletezone(CommandSender sender, Command cmd)
+	private static boolean deletezone(CommandSender sender, Subcommand cmd)
 	{
 		String zonename;
 		
@@ -625,7 +631,7 @@ public abstract class MapCommands
 		CommandUtil.getSelectedMap(sender).removeZone(zonename);
 		return true;
 	}
-	private static boolean flagzone(CommandSender sender, Command cmd)
+	private static boolean flagzone(CommandSender sender, Subcommand cmd)
 	{
 		Zone zone;
 		List<ZoneFlag> flags;
@@ -664,7 +670,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean redefinezone(CommandSender sender, Command cmd)
+	private static boolean redefinezone(CommandSender sender, Subcommand cmd)
 	{
 		Zone zone;
 		Location primary, secondary;
@@ -718,33 +724,36 @@ public abstract class MapCommands
 			return true;
 		}
 		
-		if (cmd.containsArgument(CommandUtil.arg_list))
+		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			action |= listpoints(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_select))
-		{
-			action |= selectpoint(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_create))
-		{
-			action |= createpoint(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_range))
-		{
-			action |= rangepoint(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_redefine))
-		{
-			action |= redefinepoint(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_tp))
-		{
-			action |= tppoint(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_delete))
-		{
-			action |= deletepoint(sender, cmd);
+			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			{
+				action |= listpoints(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			{
+				action |= selectpoint(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			{
+				action |= createpoint(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_range)
+			{
+				action |= rangepoint(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_redefine)
+			{
+				action |= redefinepoint(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			{
+				action |= tppoint(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			{
+				action |= deletepoint(sender, scmd);
+			}
 		}
 		
 		if (!action)
@@ -754,7 +763,7 @@ public abstract class MapCommands
 		
 		return true;
 	}
-	private static boolean listpoints(CommandSender sender, Command cmd)
+	private static boolean listpoints(CommandSender sender, Subcommand cmd)
 	{
 		int perpage = 8;
 		boolean all = false;
@@ -859,7 +868,7 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	private static boolean selectpoint(CommandSender sender, Command cmd)
+	private static boolean selectpoint(CommandSender sender, Subcommand cmd)
 	{
 		String pointname;
 		Spawn point;
@@ -893,7 +902,7 @@ public abstract class MapCommands
 		sender.sendMessage(ChatColor.YELLOW + "Selected point '" + point.getName() + "' in map '" + map.getName() + "'.");
 		return true;
 	}
-	private static boolean createpoint(CommandSender sender, Command cmd)
+	private static boolean createpoint(CommandSender sender, Subcommand cmd)
 	{
 		// Declarations.
 		Spawn point;
@@ -993,7 +1002,7 @@ public abstract class MapCommands
 			return true;
 		}
 	}
-	private static boolean rangepoint(CommandSender sender, Command cmd)
+	private static boolean rangepoint(CommandSender sender, Subcommand cmd)
 	{
 		Spawn point;
 		int range;
@@ -1021,7 +1030,7 @@ public abstract class MapCommands
 		sender.sendMessage(ChatColor.GREEN + "Range of " + point.getName() + " set to " + range + ".");
 		return true;
 	}
-	private static boolean redefinepoint(CommandSender sender, Command cmd)
+	private static boolean redefinepoint(CommandSender sender, Subcommand cmd)
 	{
 		Spawn point;
 		
@@ -1043,7 +1052,7 @@ public abstract class MapCommands
 		sender.sendMessage(ChatColor.GREEN + "Moved point '" + point.getName() + "' to " + ChatColor.WHITE + "[" + point.getLocation().getBlockX() + ", " + point.getLocation().getBlockY() + ", " + point.getLocation().getBlockZ() + ", y:" + point.getLocation().getYaw() + ", p:" + point.getLocation().getPitch() +"]");
 		return true;
 	}
-	private static boolean tppoint(CommandSender sender, Command cmd)
+	private static boolean tppoint(CommandSender sender, Subcommand cmd)
 	{
 		Spawn point;
 		Player player;
@@ -1086,7 +1095,7 @@ public abstract class MapCommands
 		}
 		return true;
 	}
-	private static boolean deletepoint(CommandSender sender, Command cmd)
+	private static boolean deletepoint(CommandSender sender, Subcommand cmd)
 	{
 		Spawn point;
 		Map map;

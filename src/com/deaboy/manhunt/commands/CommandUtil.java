@@ -39,33 +39,33 @@ public class CommandUtil
 	
 	//////// COMMAND TEMPLATES ////////
 	// Arguments
-	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG).addAlias("?").finalize_();
-	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG).addAlias("i").finalize_();
-	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT).addAlias("plr").addAlias("p").finalize_();
-	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
-	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
-	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
-	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
-	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT).addAlias("jn").finalize_();
-	public static final ArgumentTemplate arg_leave	= new ArgumentTemplate("leave", ArgumentType.FLAG).addAlias("lv").finalize_();
-	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.TEXT).addAlias("cr").addAlias("new").finalize_();
-	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
-	public static final ArgumentTemplate arg_reload	= new ArgumentTemplate("reload", ArgumentType.FLAG).addAlias("load").finalize_();
-	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
-	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT).addAlias("w").addAlias("worlds").finalize_();
-	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
-	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG).finalize_();
-	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
-	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").addAlias("map+").finalize_();
-	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
-	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT).addAlias("teleport").addAlias("spawn").finalize_();
-	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
-	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT).addAlias("s").finalize_();
-	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").addAlias("mv").finalize_();
-	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
-	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
-	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
-	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
+	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG, true).addAlias("?").finalize_();
+	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG, true).addAlias("i").finalize_();
+	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT, false).addAlias("plr").addAlias("p").finalize_();
+	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG, true).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
+	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT, true).addAlias("s").addAlias("sel").finalize_();
+	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT, true).addAlias("ls").finalize_();
+	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT, false).addAlias("pg").addAlias("p").finalize_();
+	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT, true).addAlias("jn").finalize_();
+	public static final ArgumentTemplate arg_leave	= new ArgumentTemplate("leave", ArgumentType.FLAG, true).addAlias("lv").finalize_();
+	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.TEXT, true).addAlias("cr").addAlias("new").finalize_();
+	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG, true).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
+	public static final ArgumentTemplate arg_reload	= new ArgumentTemplate("reload", ArgumentType.FLAG, true).addAlias("load").finalize_();
+	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT, false).addAlias("n").addAlias("nm").finalize_();
+	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT, false).addAlias("w").addAlias("worlds").finalize_();
+	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG, true).finalize_();
+	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG, true).finalize_();
+	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT, true).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
+	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT, true).addAlias("addm").addAlias("map+").finalize_();
+	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT, true).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
+	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT, true).addAlias("teleport").addAlias("spawn").finalize_();
+	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT, true).addAlias("r").finalize_();
+	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT, true).addAlias("s").finalize_();
+	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG, true).addAlias("define").addAlias("move").addAlias("mv").finalize_();
+	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG, true).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
+	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK, true).addAlias("flag").addAlias("fl");
+	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
+	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
 	static {	// Fill parameters in certain arguments and finalize.
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
@@ -201,13 +201,13 @@ public class CommandUtil
 	
 	
 	//---------------- Command Stuff ----------------//
-	public static Command parseCommand(org.bukkit.command.Command cmd, String[] arguments)
+	public static Command parseCommand(org.bukkit.command.Command cmd, String label, String[] arguments)
 	{
 		Command command;
 		
 		if (command_templates.containsKey(cmd.getName()))
 		{
-			command = Command.fromTemplate(command_templates.get(cmd.getName()), cmd.getLabel(), arguments);
+			command = Command.fromTemplate(command_templates.get(cmd.getName()), label, arguments);
 		}
 		else
 		{
@@ -216,6 +216,7 @@ public class CommandUtil
 		
 		return command;
 	}
+	
 	
 	//---------------- Map Selection ----------------//
 	public static void setSelectedMap(CommandSender sender, Map map)

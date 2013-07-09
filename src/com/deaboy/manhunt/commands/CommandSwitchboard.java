@@ -41,7 +41,7 @@ public class CommandSwitchboard implements CommandExecutor
 	
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command c, String cmd, String[] arguments)
 	{
-		Command command = CommandUtil.parseCommand(c, arguments);
+		Command command = CommandUtil.parseCommand(c, cmd, arguments);
 		
 		if (command != null && (command.containsArgument(CommandUtil.arg_help) || arguments.length == 0))
 		{

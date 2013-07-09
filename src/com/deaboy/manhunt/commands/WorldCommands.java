@@ -27,29 +27,32 @@ public abstract class WorldCommands
 			return true;
 		}
 		
-		if (cmd.containsArgument(CommandUtil.arg_list))
+		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			action |= worldlist(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_info))
-		{
-			action |= worldinfo(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_lsmaps))
-		{
-			action |= worldlistmaps(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_issues))
-		{
-			action |= worldissues(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_tp))
-		{
-			action |= worldspawn(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_setspawn))
-		{
-			action |= worldsetspawn(sender, cmd);
+			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			{
+				action |= worldlist(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_info)
+			{
+				action |= worldinfo(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_lsmaps)
+			{
+				action |= worldlistmaps(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_issues)
+			{
+				action |= worldissues(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			{
+				action |= worldspawn(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_setspawn)
+			{
+				action |= worldsetspawn(sender, scmd);
+			}
 		}
 		
 		if (!action)
@@ -59,7 +62,7 @@ public abstract class WorldCommands
 		
 		return true;
 	}
-	private static boolean worldlist(CommandSender sender, Command cmd)
+	private static boolean worldlist(CommandSender sender, Subcommand cmd)
 	{
 		final int perpage = 8;
 		int page = 1;
@@ -152,7 +155,7 @@ public abstract class WorldCommands
 		}
 		return true;
 	}
-	private static boolean worldsetspawn(CommandSender sender, Command cmd)
+	private static boolean worldsetspawn(CommandSender sender, Subcommand cmd)
 	{
 		Location loc;
 		
@@ -167,7 +170,7 @@ public abstract class WorldCommands
 		sender.sendMessage(ChatManager.leftborder + loc.getWorld().getName() + " spawn point " + ChatColor.GREEN + "successfully set.");
 		return true;
 	}
-	private static boolean worldspawn(CommandSender sender, Command cmd)
+	private static boolean worldspawn(CommandSender sender, Subcommand cmd)
 	{
 		org.bukkit.World world;
 		String worldname;
@@ -222,7 +225,7 @@ public abstract class WorldCommands
 			sender.sendMessage(ChatManager.leftborder + "Sent " + player.getName() + " to " + world.getName() + "'s spawn.");
 		return true;
 	}
-	private static boolean worldissues(CommandSender sender, Command cmd)
+	private static boolean worldissues(CommandSender sender, Subcommand cmd)
 	{
 		World world;
 		String worldname;
@@ -277,7 +280,7 @@ public abstract class WorldCommands
 		}
 		
 	}
-	private static boolean worldinfo(CommandSender sender, Command cmd)
+	private static boolean worldinfo(CommandSender sender, Subcommand cmd)
 	{
 		World world;
 		String worldname;
@@ -326,7 +329,7 @@ public abstract class WorldCommands
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "No issues.");
 		return true;
 	}
-	private static boolean worldlistmaps(CommandSender sender, Command cmd)
+	private static boolean worldlistmaps(CommandSender sender, Subcommand cmd)
 	{
 		World world;
 		String worldname;

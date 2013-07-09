@@ -169,62 +169,65 @@ public abstract class LobbyCommands
 			sender.sendMessage(CommandUtil.NO_PERMISSION);
 			return true;
 		}
-		
-		if (cmd.containsArgument(CommandUtil.arg_list))
+
+		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			action |= listlobbies(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_select))
-		{
-			action |= selectlobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_create))
-		{
-			action |= createlobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_delete))
-		{
-			action |= deletelobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_lsmaps))
-		{
-			action |= listmapslobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_addmap))
-		{
-			action |= addmaplobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_remmap))
-		{
-			action |= removemaplobby(sender,cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_join))
-		{
-			action |= joinlobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_leave))
-		{
-			action |= leavelobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_open))
-		{
-			action |= openlobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_close))
-		{
-			action |= closelobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_setspawn))
-		{
-			action |= movespawnlobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_range))
-		{
-			action |= rangespawnlobby(sender, cmd);
-		}
-		if (cmd.containsArgument(CommandUtil.arg_tp))
-		{
-			action |= teleportlobby(sender, cmd);
+			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			{
+				action |= listlobbies(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			{
+				action |= selectlobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			{
+				action |= createlobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			{
+				action |= deletelobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_lsmaps)
+			{
+				action |= listmapslobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_addmap)
+			{
+				action |= addmaplobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_remmap)
+			{
+				action |= removemaplobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_join)
+			{
+				action |= joinlobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_leave)
+			{
+				action |= leavelobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_open)
+			{
+				action |= openlobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_close)
+			{
+				action |= closelobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_setspawn)
+			{
+				action |= movespawnlobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_range)
+			{
+				action |= rangespawnlobby(sender, scmd);
+			}
+			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			{
+				action |= teleportlobby(sender, scmd);
+			}
 		}
 
 		if (!action)
@@ -234,7 +237,7 @@ public abstract class LobbyCommands
 		
 		return true;
 	}
-	private static boolean listlobbies(CommandSender sender, Command cmd)
+	private static boolean listlobbies(CommandSender sender, Subcommand cmd)
 	{
 		final int perpage = 8;
 		int page = 1;
@@ -310,7 +313,7 @@ public abstract class LobbyCommands
 		}
 		return true;
 	}
-	private static boolean joinlobby(CommandSender sender, Command cmd)
+	private static boolean joinlobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		String lobbyname;
@@ -387,7 +390,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.YELLOW + "Selected lobby \"" + lobby.getName() + "\"");
 		return true;
 	}
-	private static boolean leavelobby(CommandSender sender, Command cmd)
+	private static boolean leavelobby(CommandSender sender, Subcommand cmd)
 	{
 		Player p;
 		
@@ -410,7 +413,7 @@ public abstract class LobbyCommands
 		Manhunt.changePlayerLobby(p, Manhunt.getDefaultLobby().getId());
 		return true;
 	}
-	private static boolean createlobby(CommandSender sender, Command cmd)
+	private static boolean createlobby(CommandSender sender, Subcommand cmd)
 	{
 		Location loc;
 		String lobbyname;
@@ -479,7 +482,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "  with spawn at [" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "]");
 		return true;
 	}
-	private static boolean deletelobby(CommandSender sender, Command cmd)
+	private static boolean deletelobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		
@@ -502,7 +505,7 @@ public abstract class LobbyCommands
 			return false;
 		}
 	}
-	private static boolean movespawnlobby(CommandSender sender, Command cmd)
+	private static boolean movespawnlobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		
@@ -524,7 +527,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatManager.leftborder + "Moved " + lobby.getName() + "'s spawn to your current location.");
 		return true;
 	}
-	private static boolean rangespawnlobby(CommandSender sender, Command cmd)
+	private static boolean rangespawnlobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		int range;
@@ -566,7 +569,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatManager.leftborder + "Spawn range of " + lobby.getName() + " set to " + range);
 		return true;
 	}
-	private static boolean teleportlobby(CommandSender sender, Command cmd)
+	private static boolean teleportlobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		Player player;
@@ -605,7 +608,7 @@ public abstract class LobbyCommands
 		return true;
 	}
 
-	private static boolean closelobby(CommandSender sender, Command cmd)
+	private static boolean closelobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		
@@ -629,7 +632,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.YELLOW + "Closed lobby '" + lobby.getName() + "'.");
 		return true;
 	}
-	private static boolean openlobby(CommandSender sender, Command cmd)
+	private static boolean openlobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		
@@ -653,7 +656,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.YELLOW+ "Opened lobby '" + lobby.getName() + "'.");
 		return true;
 	}
-	private static boolean selectlobby(CommandSender sender, Command cmd)
+	private static boolean selectlobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		String lobbyname = cmd.getArgument(CommandUtil.arg_select).getParameter();
@@ -678,7 +681,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatColor.YELLOW + "Selected lobby '" + lobby.getName() + "'.");
 		return true;
 	}
-	private static boolean listmapslobby(CommandSender sender, Command cmd)
+	private static boolean listmapslobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		List<Map> maps;
@@ -702,7 +705,7 @@ public abstract class LobbyCommands
 		}
 		return true;
 	}
-	private static boolean addmaplobby(CommandSender sender, Command cmd)
+	private static boolean addmaplobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		List<String> mapnames;
@@ -785,7 +788,7 @@ public abstract class LobbyCommands
 			return true;
 		}
 	}
-	private static boolean removemaplobby(CommandSender sender, Command cmd)
+	private static boolean removemaplobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		List<String> mapnames;
