@@ -12,9 +12,7 @@ public class ArgumentTemplate
 	private List<String> parameters;
 	private boolean required;
 	private boolean subcommand;
-	
 	private boolean locked; 
-	
 	
 	
 	// Constructors
@@ -29,7 +27,6 @@ public class ArgumentTemplate
 		
 		locked = false;
 	}
-	
 	
 	
 	// Setters
@@ -152,59 +149,6 @@ public class ArgumentTemplate
 			if (label.equalsIgnoreCase(alias))
 				return true;
 		return false;
-	}
-	
-	
-	// Miscellaneous
-	public String getUsage()
-	{
-		String usage = new String();
-		
-		// Name
-		usage = "-" + getName();
-		
-		// Aliases
-		if (!aliases.isEmpty())
-		{
-			usage += " (Aliases: ";
-			for (String alias : aliases)
-			{
-				usage += alias + ", ";
-			}
-			usage = usage.substring(0, usage.length()-2);
-			usage += ")";
-		}
-		
-		// Options (type-based)
-		switch(type)
-		{
-		case CHECK:
-			usage += " [";
-			for (String parameter : parameters)
-			{
-				usage += parameter + ", ";
-			}
-			usage = usage.substring(0, usage.length()-2);
-			usage += "]";
-			break;
-		case RADIO:
-			usage += " <";
-			for (String parameter : parameters)
-			{
-				usage += parameter + ", ";
-			}
-			usage = usage.substring(0, usage.length()-2);
-			usage += ">";
-			break;
-		case TEXT:
-		case FLAG:
-			usage += " (type: " + type.name() + ")";
-			break;
-		default:
-			break;
-		}
-		
-		return usage;
 	}
 	
 	

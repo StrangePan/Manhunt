@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.commands;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.Map;
@@ -40,6 +42,7 @@ public class CommandUtil
 	//////// COMMAND TEMPLATES ////////
 	// Arguments
 	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG, true).addAlias("?").finalize_();
+	public static final ArgumentTemplate arg_args	= new ArgumentTemplate("arguments", ArgumentType.TEXT, true).addAlias("args").finalize_();
 	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG, true).addAlias("i").finalize_();
 	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT, false).addAlias("plr").addAlias("p").finalize_();
 	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG, true).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
@@ -173,7 +176,7 @@ public class CommandUtil
 		command_templates.put(cmd_msettings.getName(), cmd_msettings);
 		
 		for (CommandTemplate cmd : command_templates.values())
-			cmd.addArgument(arg_help).finalize_();
+			cmd.addArgument(arg_help).addArgument(arg_args).finalize_();
 	}
 	
 	
@@ -186,7 +189,6 @@ public class CommandUtil
 	private HashMap<CommandSender, Boolean> verified;
 	
 	
-	
 	//---------------- Constructors ----------------//
 	public CommandUtil()
 	{
@@ -197,7 +199,6 @@ public class CommandUtil
 		this.vcommands = new HashMap<CommandSender, String>();
 		this.verified = new HashMap<CommandSender, Boolean>();
 	}
-	
 	
 	
 	//---------------- Command Stuff ----------------//
@@ -215,6 +216,103 @@ public class CommandUtil
 		}
 		
 		return command;
+	}
+	public static boolean sendHelp(CommandSender sender, Subcommand cmd)
+	{
+		Bukkit.dispatchCommand(sender, "help " + cmd.getName());
+		sender.sendMessage(ChatColor.GRAY + "To view arguments, use /" + cmd.getName() + " -" + CommandUtil.arg_args.getName() + " [page]");
+		return true;
+	}
+	public static boolean sendArguments(CommandSender sender, Subcommand cmd)
+	{
+		final int perpage = 8;
+		int page = 1;
+		boolean all = false;
+		List<ArgumentTemplate> args;
+		
+		// Get the page #
+		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
+		{
+			try
+			{
+				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				page = 1;
+			}
+		}
+		else if (cmd.getArgument(CommandUtil.arg_args).getParameter() != null)
+		{
+			 if (cmd.getArgument(CommandUtil.arg_args).getParameter().equalsIgnoreCase("all"))
+			 {
+				 all = true;
+				 page = 1;
+			 }
+			 else
+			 {
+				 try
+				 {
+					 page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_args).getParameter());
+				 }
+				 catch (Exception e)
+				 {
+					 page = 1;
+				 }
+			 }
+		}
+		else
+		{
+			page = 1;
+		}
+		
+		page--;
+		
+		// Assemble list of settings
+		args = cmd.getTemplate().getArguments();
+ 
+		if (!all)
+		{
+			if (page * perpage > args.size() - 1 )
+				page = (args.size()-1) / perpage;
+			
+			if (page < 0)
+				page = 0;
+			
+			if (args.size() == 0)
+			{
+				sender.sendMessage("This command has no arguments.");
+				return true;
+			}
+		}
+		
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + "Registered Arguments for " + cmd.getName() + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) args.size()/perpage)) + ")" + ChatManager.bracket2_);
+		if (!all)
+		{
+			sender.sendMessage(ChatColor.GRAY + "Use /mlobby list [n] to get page n of lobbies");
+			args = args.subList(page * perpage, Math.min( (page + 1) * perpage, args.size() ));
+		}
+		
+		for (ArgumentTemplate arg: args)
+		{
+			String message = ChatManager.color + "  -" + arg.getName() + " ";
+			if (!arg.getAliases().isEmpty())
+			{
+				message += ChatManager.color + "(AKA ";
+				for (int i = 0; i < arg.getAliases().size(); i++)
+				{
+					if (i > 0)
+					{
+						message += ", ";
+					}
+					message += arg.getAliases().get(i);
+				}
+				message += ") ";
+			}
+			message += ChatColor.GRAY + "(" + arg.getType().toString() + ") ";
+			sender.sendMessage(message);
+		}
+		return true;
 	}
 	
 	
@@ -237,7 +335,6 @@ public class CommandUtil
 		else
 			return null;
 	}
-	
 	
 	
 	//---------------- Lobby Selection ----------------//

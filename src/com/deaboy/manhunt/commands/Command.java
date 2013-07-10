@@ -1,41 +1,26 @@
 package com.deaboy.manhunt.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class Command
+public class Command extends Subcommand
 {
 	//////////////// Properties ////////////////
-	private final String name;
-	private final String label;
-	private HashMap<String, Argument> arguments;
 	private List<Subcommand> subcommands;
-	private CommandTemplate template;
 	
 	
 	//////////////// Constructors ////////////////
 	public Command(String name, String label, CommandTemplate template)
 	{
-		this.name = name;
-		this.label = label;
-		this.arguments = new HashMap<String, Argument>();
+		super(name, label, template);
 		this.subcommands = new ArrayList<Subcommand>();
-		this.template = template;
 	}
 	
 	
 	//////////////// Setters ////////////////
-	private void addArgument(Argument arg)
-	{
-		if (arg != null)
-		{
-			this.arguments.put(arg.getName(), arg);
-		}
-	}
 	private void addSubcommand(Subcommand subcommand)
 	{
-		if (!this.subcommands.contains(subcommand))
+		if (!this.subcommands.contains(subcommand) && subcommand != this)
 		{
 			this.subcommands.add(subcommand);
 		}
@@ -43,62 +28,19 @@ public class Command
 	
 	
 	//////////////// Getters ////////////////
-	public String getName()
-	{
-		return this.name;
-	}
-	public String getLabel()
-	{
-		return this.label;
-	}
-	public boolean containsArgument(String arg)
-	{
-		if (arg != null)
-		{
-			return this.arguments.containsKey(arg);
-		}
-		else
-		{
-			return false;
-		}
-	}
-	public boolean containsArgument(ArgumentTemplate template)
-	{
-		if (template != null)
-		{
-			return this.arguments.containsKey(template.getName());
-		}
-		else
-		{
-			return false;
-		}
-	}
-	public Argument getArgument(String arg)
-	{
-		if (this.arguments.containsKey(arg))
-		{
-			return this.arguments.get(arg);
-		}
-		else
-		{
-			return null;
-		}
-	}
-	public Argument getArgument(ArgumentTemplate template)
-	{
-		return getArgument(template.getName());
-	}
+	@Override
 	public int getArgumentCount()
 	{
-		return arguments.size();
+		int argcount = super.getArgumentCount();
+		for (Subcommand subcommand : subcommands)
+		{
+			argcount += subcommand.getArgumentCount();
+		}
+		return argcount;
 	}
 	public List<Subcommand> getSubcommands()
 	{
 		return new ArrayList<Subcommand>(this.subcommands);
-	}
-	public CommandTemplate getTemplate()
-	{
-		return this.template;
 	}
 	
 	
@@ -152,7 +94,8 @@ public class Command
 								{
 									command.addSubcommand(subcommand);
 								}
-								subcommand = new Subcommand(command.getName(), command.getLabel(), argument);
+								subcommand = new Subcommand(command.getName(), command.getLabel(), template);
+								subcommand.addArgument(argument);
 							}
 							else
 							{
@@ -191,7 +134,8 @@ public class Command
 						{
 							command.addSubcommand(subcommand);
 						}
-						subcommand = new Subcommand(command.getName(), command.getLabel(), argument);
+						subcommand = new Subcommand(command.getName(), command.getLabel(), template);
+						subcommand.addArgument(argument);
 					}
 					else
 					{

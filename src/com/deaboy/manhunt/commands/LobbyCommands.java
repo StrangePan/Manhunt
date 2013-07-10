@@ -172,70 +172,65 @@ public abstract class LobbyCommands
 
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listlobbies(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			else if (scmd.containsArgument(CommandUtil.arg_select))
 			{
 				action |= selectlobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			else if (scmd.containsArgument(CommandUtil.arg_create))
 			{
 				action |= createlobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			else if (scmd.containsArgument(CommandUtil.arg_delete))
 			{
 				action |= deletelobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_lsmaps)
+			else if (scmd.containsArgument(CommandUtil.arg_lsmaps))
 			{
 				action |= listmapslobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_addmap)
+			else if (scmd.containsArgument(CommandUtil.arg_addmap))
 			{
 				action |= addmaplobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_remmap)
+			else if (scmd.containsArgument(CommandUtil.arg_remmap))
 			{
 				action |= removemaplobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_join)
+			else if (scmd.containsArgument(CommandUtil.arg_join))
 			{
 				action |= joinlobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_leave)
+			else if (scmd.containsArgument(CommandUtil.arg_leave))
 			{
 				action |= leavelobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_open)
+			else if (scmd.containsArgument(CommandUtil.arg_open))
 			{
 				action |= openlobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_close)
+			else if (scmd.containsArgument(CommandUtil.arg_close))
 			{
 				action |= closelobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_setspawn)
+			else if (scmd.containsArgument(CommandUtil.arg_setspawn))
 			{
 				action |= movespawnlobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_range)
+			else if (scmd.containsArgument(CommandUtil.arg_range))
 			{
 				action |= rangespawnlobby(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			else if (scmd.containsArgument(CommandUtil.arg_tp))
 			{
 				action |= teleportlobby(sender, scmd);
 			}
 		}
-
-		if (!action)
-		{
-			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
-		}
 		
-		return true;
+		return action;
 	}
 	private static boolean listlobbies(CommandSender sender, Subcommand cmd)
 	{

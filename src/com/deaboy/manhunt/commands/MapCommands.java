@@ -36,42 +36,37 @@ public abstract class MapCommands
 		
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= maplist(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			else if (scmd.containsArgument(CommandUtil.arg_create))
 			{
 				action |= mapcreate(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			else if (scmd.containsArgument(CommandUtil.arg_select))
 			{
 				action |= mapselect(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_info)
+			else if (scmd.containsArgument(CommandUtil.arg_info))
 			{
 				action |= mapinfo(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			else if (scmd.containsArgument(CommandUtil.arg_tp))
 			{
 				action |= mapteleport(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_issues)
+			else if (scmd.containsArgument(CommandUtil.arg_issues))
 			{
 				action |= mapissues(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			else if (scmd.containsArgument(CommandUtil.arg_delete))
 			{
 				action |= mapdelete(sender, scmd);
 			}
 		}
 		
-		if (!action)
-		{
-			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
-		}
-		
-		return true;
+		return action;
 	}
 	private static boolean maplist(CommandSender sender, Subcommand cmd)
 	{
@@ -329,38 +324,33 @@ public abstract class MapCommands
 		
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listzones(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			else if (scmd.containsArgument(CommandUtil.arg_create))
 			{
 				action |= createzone(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			else if (scmd.containsArgument(CommandUtil.arg_select))
 			{
 				action |= selectzone(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_redefine)
+			else if (scmd.containsArgument(CommandUtil.arg_redefine))
 			{
 				action |= redefinezone(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_zoneflags)
+			else if (scmd.containsArgument(CommandUtil.arg_zoneflags))
 			{
 				action |= flagzone(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			else if (scmd.containsArgument(CommandUtil.arg_delete))
 			{
 				action |= deletezone(sender, scmd);
 			}
 		}
 		
-		if (!action)
-		{
-			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
-		}
-		
-		return true;
+		return action;
 	}
 	private static boolean listzones(CommandSender sender, Subcommand cmd)
 	{
@@ -726,42 +716,37 @@ public abstract class MapCommands
 		
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listpoints(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_select)
+			else if (scmd.containsArgument(CommandUtil.arg_select))
 			{
 				action |= selectpoint(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_create)
+			else if (scmd.containsArgument(CommandUtil.arg_create))
 			{
 				action |= createpoint(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_range)
+			else if (scmd.containsArgument(CommandUtil.arg_range))
 			{
 				action |= rangepoint(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_redefine)
+			else if (scmd.containsArgument(CommandUtil.arg_redefine))
 			{
 				action |= redefinepoint(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			else if (scmd.containsArgument(CommandUtil.arg_tp))
 			{
 				action |= tppoint(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_delete)
+			else if (scmd.containsArgument(CommandUtil.arg_delete))
 			{
 				action |= deletepoint(sender, scmd);
 			}
 		}
 		
-		if (!action)
-		{
-			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
-		}
-		
-		return true;
+		return action;
 	}
 	private static boolean listpoints(CommandSender sender, Subcommand cmd)
 	{

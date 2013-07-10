@@ -42,71 +42,88 @@ public class CommandSwitchboard implements CommandExecutor
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command c, String cmd, String[] arguments)
 	{
 		Command command = CommandUtil.parseCommand(c, cmd, arguments);
+		boolean action = false;
 		
-		if (command != null && (command.containsArgument(CommandUtil.arg_help) || arguments.length == 0))
+		if (arguments.length == 0)
 		{
-			Bukkit.dispatchCommand(sender, "help " + cmd);
-			sender.sendMessage(ChatColor.GRAY + command.getTemplate().getUsage());
-			if (arguments.length == 0)
-				return true;
+			CommandUtil.sendHelp(sender, command);
+			return true;
+		}
+		for (Subcommand subcommand : command.getSubcommands())
+		{
+			if (subcommand.containsArgument(CommandUtil.arg_help))
+			{
+				action |= CommandUtil.sendHelp(sender, subcommand);
+			}
+			else if (subcommand.containsArgument(CommandUtil.arg_args))
+			{
+				action |= CommandUtil.sendArguments(sender, subcommand);
+			}
 		}
 		
 		if (c.getName().equalsIgnoreCase("manhunt"))
-			return HelpCommands.manhunt(sender, arguments);
+			action |= HelpCommands.manhunt(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mspawn"))
-			return WorldCommands.mspawn(sender, arguments);
+		else if (c.getName().equalsIgnoreCase("mspawn"))
+			action |= WorldCommands.mspawn(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("msetspawn"))
-			return WorldCommands.msetspawn(sender, arguments);
+		else if (c.getName().equalsIgnoreCase("msetspawn"))
+			action |= WorldCommands.msetspawn(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mworld"))
-			return WorldCommands.mworld(sender, command);
+		else if (c.getName().equalsIgnoreCase("mworld"))
+			action |= WorldCommands.mworld(sender, command);
 		
-		if (c.getName().equalsIgnoreCase("manhuntmode"))
-			return PlayerCommands.manhuntmode(sender, arguments);
-		
-		
-		
-		if (c.getName().equalsIgnoreCase("mlobby"))
-			return LobbyCommands.mlobby(sender, command);
+		else if (c.getName().equalsIgnoreCase("manhuntmode"))
+			action |= PlayerCommands.manhuntmode(sender, arguments);
 		
 		
 		
-		if (c.getName().equalsIgnoreCase("mmap"))
-			return MapCommands.mmap(sender, command);
-		
-		if (c.getName().equalsIgnoreCase("mzone"))
-			return MapCommands.mzone(sender, command);
-		
-		if (c.getName().equalsIgnoreCase("mpoint"))
-			return MapCommands.mpoint(sender, command);
+		else if (c.getName().equalsIgnoreCase("mlobby"))
+			action |= LobbyCommands.mlobby(sender, command);
 		
 		
 		
-		if (c.getName().equalsIgnoreCase("mstartgame"))
-			return LobbyCommands.mstartgame(sender, arguments);
+		else if (c.getName().equalsIgnoreCase("mmap"))
+			action |= MapCommands.mmap(sender, command);
 		
-		if (c.getName().equalsIgnoreCase("mstopgame"))
-			return LobbyCommands.mstopgame(sender, arguments);
+		else if (c.getName().equalsIgnoreCase("mzone"))
+			action |= MapCommands.mzone(sender, command);
 		
-		if (c.getName().equalsIgnoreCase("mjoin"))
-			return LobbyCommands.mjoin(sender, arguments);
+		else if (c.getName().equalsIgnoreCase("mpoint"))
+			action |= MapCommands.mpoint(sender, command);
 		
-		if (c.getName().equalsIgnoreCase("mleave"))
-			return LobbyCommands.mleave(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mverify"))
-			return mverify(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("mcancel"))
-			return mcancel(sender, arguments);
+		else if (c.getName().equalsIgnoreCase("mstartgame"))
+			action |= LobbyCommands.mstartgame(sender, arguments);
 		
-		if (c.getName().equalsIgnoreCase("msettings"))
-			return SettingCommands.msettings(sender, command);
+		else if (c.getName().equalsIgnoreCase("mstopgame"))
+			action |= LobbyCommands.mstopgame(sender, arguments);
 		
-		return false;
+		else if (c.getName().equalsIgnoreCase("mjoin"))
+			action |= LobbyCommands.mjoin(sender, arguments);
 		
+		else if (c.getName().equalsIgnoreCase("mleave"))
+			action |= LobbyCommands.mleave(sender, arguments);
+		
+		else if (c.getName().equalsIgnoreCase("mverify"))
+			action |= mverify(sender, arguments);
+		
+		else if (c.getName().equalsIgnoreCase("mcancel"))
+			action |= mcancel(sender, arguments);
+		
+		else if (c.getName().equalsIgnoreCase("msettings"))
+			action |= SettingCommands.msettings(sender, command);
+		
+		else
+			return false;
+		
+		if (!action)
+		{
+			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
+		}
+		
+		return true;
 	}
 	
 	

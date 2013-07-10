@@ -3,17 +3,13 @@ package com.deaboy.manhunt.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
-
 public class CommandTemplate
 {
 	// Properties
 	private String name;
 	private List<String> aliases;
 	private List<ArgumentTemplate> arguments;
-	
 	private boolean locked;
-	
 	
 	
 	// Constructors
@@ -22,7 +18,6 @@ public class CommandTemplate
 		this();
 		this.name = name;
 	}
-	
 	public CommandTemplate()
 	{
 		this.name = new String();
@@ -30,7 +25,6 @@ public class CommandTemplate
 		this.arguments = new ArrayList<ArgumentTemplate>();
 		this.locked = false;
 	}
-	
 	
 	
 	// Setters
@@ -120,25 +114,6 @@ public class CommandTemplate
 			if (label.equalsIgnoreCase(alias))
 				return true;
 		return false;
-	}
-	
-	
-	// Miscellaneous
-	public String getUsage()
-	{
-		String usage = new String();
-		
-		usage += "Arguments:" + ChatColor.GRAY;
-		if (arguments.isEmpty())
-		{
-			usage += "\n  No arguments";
-		}
-		for (ArgumentTemplate argument : arguments)
-		{
-			usage += "\n  " + argument.getUsage();
-		}
-		
-		return usage;
 	}
 	
 	

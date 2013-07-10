@@ -26,22 +26,17 @@ public abstract class SettingCommands
 		
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listsettings(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_set)
+			else if (scmd.containsArgument(CommandUtil.arg_set))
 			{
 				action |= setsetting(sender, scmd);
 			}
 		}
 		
-		if (!action)
-		{
-			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
-		}
-		
-		return true;
+		return action;
 	}
 	public static boolean listsettings(CommandSender sender, Subcommand cmd)
 	{

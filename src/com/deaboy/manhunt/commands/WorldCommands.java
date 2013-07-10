@@ -29,38 +29,33 @@ public abstract class WorldCommands
 		
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_list)
+			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= worldlist(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_info)
+			else if (scmd.containsArgument(CommandUtil.arg_info))
 			{
 				action |= worldinfo(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_lsmaps)
+			else if (scmd.containsArgument(CommandUtil.arg_lsmaps))
 			{
 				action |= worldlistmaps(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_issues)
+			else if (scmd.containsArgument(CommandUtil.arg_issues))
 			{
 				action |= worldissues(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_tp)
+			else if (scmd.containsArgument(CommandUtil.arg_tp))
 			{
 				action |= worldspawn(sender, scmd);
 			}
-			else if (scmd.getRootArgument().getTemplate() == CommandUtil.arg_setspawn)
+			else if (scmd.containsArgument(CommandUtil.arg_setspawn))
 			{
 				action |= worldsetspawn(sender, scmd);
 			}
 		}
 		
-		if (!action)
-		{
-			sender.sendMessage(ChatColor.GRAY + "No actions performed.");
-		}
-		
-		return true;
+		return action;
 	}
 	private static boolean worldlist(CommandSender sender, Subcommand cmd)
 	{
