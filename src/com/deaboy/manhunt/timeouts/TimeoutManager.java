@@ -92,8 +92,6 @@ public class TimeoutManager
 		private final String player_name;
 		private final long lobby_id;
 		private final long forfeit_time;
-		private boolean forfeited;
-		private final long remove_time;
 		private final int schedule;
 
 		public Timeout(String player_name)
@@ -106,36 +104,32 @@ public class TimeoutManager
 			{
 				this.lobby_id = Manhunt.getPlayerLobby(player_name).getId();
 				this.forfeit_time = Manhunt.getPlayerLobby(player_name).getSettings().OFFLINE_TIMEOUT.getValue() * 1000;
-				this.forfeited = false;
 			}
 			else
 			{
-				this.lobby_id = 0L;
-				this.forfeit_time = 0L;
-				this.forfeited = true;
+				lobby_id = -1;
+				forfeit_time = -1;
+				schedule = -1;
+				cancelTimeout(player_name);
+				return;
 			}
-			this.remove_time = forfeit_time + 3 * 60 * 1000;
 			
 			
 			//Start the scheduler
-			this.schedule = Bukkit.getScheduler().runTaskTimer(ManhuntPlugin.getInstance(), new Runnable()
+			this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 			{
 				public void run()
 				{
 					step();
 				}
-			}, 0, 20).getTaskId();
+			}, 0, 20);
 		}
 		
 		public void step()
 		{
-			if (!forfeited && new Date().getTime() >= forfeit_time)
+			if (new Date().getTime() >= forfeit_time)
 			{
 				forfeitPlayer();
-			}
-			if (new Date().getTime() >= remove_time)
-			{
-				removePlayer();
 				cancelTimeout(player_name);
 			}
 		}
@@ -143,11 +137,6 @@ public class TimeoutManager
 		{
 			Lobby lobby = Manhunt.getLobby(lobby_id);
 			lobby.forfeitPlayer(player_name);
-			forfeited = true;
-		}
-		private void removePlayer()
-		{
-			Manhunt.forgetPlayer(player_name);
 			cancelTimeout(player_name);
 		}
 		@Override

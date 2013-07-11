@@ -38,7 +38,7 @@ public class TeleportTeamAction implements Action
 			{
 				if (p.isOnline())
 				{
-					p.teleport(locations.get(((int) Math.random()) % locations.size()));
+					p.teleport(locations.get((int) (Math.random() * locations.size())));
 				}
 			}
 		}

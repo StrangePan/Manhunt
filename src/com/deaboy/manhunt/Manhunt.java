@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -99,6 +100,7 @@ public class Manhunt implements Closeable, Listener
 	private			HashMap<String, Long>	player_lobbies;
 	private			HashMap<String, ManhuntMode> player_modes;
 	private			HashMap<String, String> player_maps;
+	private			HashMap<String, Long> player_logoffs;
 	private			HashMap<String, World>	worlds;
 	private			HashMap<Long, GameType>	games;
 	private			HashMap<String, Selection> selections;
@@ -126,6 +128,7 @@ public class Manhunt implements Closeable, Listener
 		this.player_lobbies =	new HashMap<String, Long>();
 		this.player_modes =		new HashMap<String, ManhuntMode>();
 		this.player_maps =		new HashMap<String, String>();
+		this.player_logoffs =	new HashMap<String, Long>();
 		this.games =			new HashMap<Long, GameType>();
 		this.selections =		new HashMap<String, Selection>();
 		
@@ -368,7 +371,8 @@ public class Manhunt implements Closeable, Listener
 	{
 		timeouts.cancelTimeout(name);
 		stopFinder(name, true);
-		getPlayerLobby(name).removePlayer(name);
+		if (getPlayerLobby(name) != null)
+			getPlayerLobby(name).removePlayer(name);
 		player_lobbies.remove(name);
 		player_maps.remove(name);
 		player_modes.remove(name);
@@ -646,6 +650,28 @@ public class Manhunt implements Closeable, Listener
 	//////////////// PLAYERS ////////
 	public static void playerJoinServer(Player p)
 	{
+		if (getInstance().player_logoffs.containsKey(p.getName()) && new Date().getTime() < getInstance().player_logoffs.get(p.getName()) + getSettings().FORGET_PLAYER.getValue() * 1000)
+		{
+			if (!timeoutExists(p))
+			{
+				Lobby lobby = Manhunt.getLobby(getInstance().player_lobbies.get(p.getName()));
+				if (lobby == null)
+				{
+					getInstance().removePlayer(p.getName());
+					getCommandUtil().deletePlayer(p);
+				}
+				else
+				{
+					lobby.addPlayer(p.getName());
+				}
+			}
+		}
+		else
+		{
+			getInstance().removePlayer(p.getName());
+			getCommandUtil().deletePlayer(p);
+		}
+		
 		if (timeoutExists(p))
 			stopTimeout(p);
 		
@@ -688,6 +714,7 @@ public class Manhunt implements Closeable, Listener
 			 *  Deleting their stuff in the command util
 		 */
 		
+		getInstance().player_logoffs.put(p.getName(), new Date().getTime());
 		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getPlayerLobby(p).getSettings().OFFLINE_TIMEOUT.getValue() > 0)
 		{
 			startTimeout(p);
@@ -699,10 +726,7 @@ public class Manhunt implements Closeable, Listener
 			else if (getPlayerLobby(p) != null)
 				getPlayerLobby(p).removePlayer(p);
 			stopFinder(p.getName(), false);
-			getInstance().removePlayer(p.getName());
 		}
-		
-		getCommandUtil().deletePlayer(p);
 	}
 	public static void playerChat(Player p, String message)
 	{
@@ -853,7 +877,7 @@ public class Manhunt implements Closeable, Listener
 	}
 	public static void log(Level level, String message)
 	{
-		Bukkit.getLogger().log(level, "[Manhunt]  " + message);
+		Bukkit.getLogger().log(level, "[Manhunt]  " + ChatColor.stripColor(message));
 	}
 	public static void log(Exception e)
 	{

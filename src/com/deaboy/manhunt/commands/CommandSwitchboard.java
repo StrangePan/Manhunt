@@ -44,20 +44,23 @@ public class CommandSwitchboard implements CommandExecutor
 		Command command = CommandUtil.parseCommand(c, cmd, arguments);
 		boolean action = false;
 		
-		if (arguments.length == 0)
+		if (command != null)
 		{
-			CommandUtil.sendHelp(sender, command);
-			return true;
-		}
-		for (Subcommand subcommand : command.getSubcommands())
-		{
-			if (subcommand.containsArgument(CommandUtil.arg_help))
+			if (arguments.length == 0 || arguments.length == 1 && (arguments[0].equals("help") || arguments[0].equals("?")))
 			{
-				action |= CommandUtil.sendHelp(sender, subcommand);
+				CommandUtil.sendHelp(sender, command);
+				return true;
 			}
-			else if (subcommand.containsArgument(CommandUtil.arg_args))
+			for (Subcommand subcommand : command.getSubcommands())
 			{
-				action |= CommandUtil.sendArguments(sender, subcommand);
+				if (subcommand.containsArgument(CommandUtil.arg_help))
+				{
+					action |= CommandUtil.sendHelp(sender, subcommand);
+				}
+				else if (subcommand.containsArgument(CommandUtil.arg_args))
+				{
+					action |= CommandUtil.sendArguments(sender, subcommand);
+				}
 			}
 		}
 		

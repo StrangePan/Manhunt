@@ -17,6 +17,7 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 	public final SettingBoolean OP_CONTROL;
 	public final SettingBoolean CONTEXT_LIST;
 	public final SettingBoolean CONTROL_XP;
+	public final SettingInteger FORGET_PLAYER;
 	
 	public final SettingInteger SELECTION_TOOL;
 	
@@ -35,6 +36,7 @@ public class ManhuntSettings extends SettingManagerBase implements SettingManage
 		addSetting(OP_CONTROL =		new SettingBoolean("opcontrol", true, "Only ops have access to basic commands.", "Non-ops have access to basic, safe commands."), true);
 		addSetting(CONTEXT_LIST =	new SettingBoolean("contextlist", true, "Server list hides players in other games.", "Server list displays all players."), true);
 		addSetting(CONTROL_XP =		new SettingBoolean("controlxp", true, "Manhunt will have its way with player XP levels.", "Manhunt will not touch player XP levels."), false);
+		addSetting(FORGET_PLAYER =	new SettingInteger("forgetplayer", 300, "Seconds after logging off Manhunt will remember", ""), false);
 		
 		addSetting(SELECTION_TOOL =		new SettingInteger("selectiontool", 271, "", ""), false);
 		
