@@ -35,8 +35,6 @@ public abstract class Lobby implements Closeable
 	private Map current_map;
 	private Spawn spawn;
 	private boolean open;
-	private Game game;
-	
 	
 	
 	//---------------- Constructors ----------------//
@@ -54,19 +52,6 @@ public abstract class Lobby implements Closeable
 		this.open = true;
 		
 	}
-	public Lobby(long id, String settingsfile)
-	{
-		this.id = id;
-		this.settings = new LobbySettings(settingsfile, true);
-		this.teams = new HashMap<String, Team>();
-		this.maps = new ArrayList<String>();
-		load();
-		if (this.name.isEmpty())
-		{
-			this.name = "lobby";
-		}
-	}
-	
 	
 	
 	//---------------- Getters ----------------//
@@ -300,21 +285,6 @@ public abstract class Lobby implements Closeable
 	{
 		return type;
 	}
-	private Game getGame()
-	{
-		switch (type)
-		{
-		case HUB:
-			return null;
-			
-		case GAME:
-			return this.game;
-			
-		default:
-			return null;
-		}
-	}
-	
 	
 	
 	//---------------- Setters ----------------//
@@ -426,13 +396,7 @@ public abstract class Lobby implements Closeable
 		}
 	}
 	
-	public boolean gameIsRunning()
-	{
-		if (game != null)
-			return game.isRunning();
-		else
-			return false;
-	}
+	public abstract boolean gameIsRunning();
 	protected boolean setCurrentMap(Map map)
 	{
 		if (map == null)
@@ -733,7 +697,7 @@ public abstract class Lobby implements Closeable
 	}
 	public abstract int deleteFiles();
 	public abstract Lobby loadFromFile(File file);
-	protected abstract initializeSettings();
+	protected abstract void initializeSettings();
 	@Override
 	public void close()
 	{
