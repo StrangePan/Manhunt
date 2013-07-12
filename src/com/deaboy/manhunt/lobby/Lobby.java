@@ -20,8 +20,9 @@ import com.deaboy.manhunt.game.GameType;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.map.*;
 import com.deaboy.manhunt.settings.LobbySettings;
+import com.deaboy.manhunt.settings.SettingManager;
 
-public class Lobby implements Closeable
+public abstract class Lobby implements Closeable
 {
 	//---------------- Properties ----------------//
 	private final long id;
@@ -33,18 +34,12 @@ public class Lobby implements Closeable
 	private List<String> maps;
 	private Map current_map;
 	private Spawn spawn;
-	private boolean enabled;
-	
+	private boolean open;
 	private Game game;
-	private LobbySettings settings;
 	
 	
 	
 	//---------------- Constructors ----------------//
-	public Lobby(long id, String name, LobbyType type, World world)
-	{
-		this(id, name, type, world, world.getSpawnLocation());
-	}
 	public Lobby(long id, String name, LobbyType type, World world, Location location)
 	{
 		this.id = id;
@@ -56,10 +51,7 @@ public class Lobby implements Closeable
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
 		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, location);
-		this.enabled = true;
-		
-		this.settings = new LobbySettings(name, false);
-		save();
+		this.open = true;
 		
 	}
 	public Lobby(long id, String settingsfile)
@@ -101,10 +93,6 @@ public class Lobby implements Closeable
 	private Spawn getSpawn()
 	{
 		return spawn;
-	}
-	public File getFile()
-	{
-		return new File(this.settings.getFileLocation());
 	}
 	/**
 	 * Gets this Lobby's main World.
@@ -295,17 +283,14 @@ public class Lobby implements Closeable
 	 * Gets this lobby's settings.
 	 * @return
 	 */
-	public LobbySettings getSettings()
-	{
-		return this.settings;
-	}
+	public abstract SettingManager getSettings();
 	/**
 	 * Checks to see if the Lobby is currently enabled.
 	 * @return True if the Lobby is enabled, false if not.
 	 */
 	public boolean isEnabled()
 	{
-		return enabled;
+		return open;
 	}
 	/**
 	 * Gets the type of this lobby.
@@ -349,28 +334,7 @@ public class Lobby implements Closeable
 		return true;
 	}
 	
-	/**
-	 * Adds a player to the Lobby via their name.
-	 * @param p The Player to add.
-	 */
-	public boolean addPlayer(String name)
-	{
-		switch (type)
-		{
-		case HUB:
-			return addPlayer(name, Team.NONE);
-			
-		case GAME:
-			if (gameIsRunning())
-				return addPlayer(name, Team.SPECTATORS);
-			else
-				return addPlayer(name, Team.STANDBY);
-			
-		default:
-			return false;
-		}
-	}
-	private boolean addPlayer(String name, Team team)
+	protected boolean addPlayer(String name, Team team)
 	{
 		if (teams.containsKey(name))
 			return false;
@@ -382,34 +346,46 @@ public class Lobby implements Closeable
 	 * Removes a Player from the lobby via their name.
 	 * @param p The Player to remove.
 	 */
-	public void removePlayer(String name)
+	protected void removePlayer(String name)
 	{
 		if (this.teams.containsKey(name))
 			this.teams.remove(name);
-		getGame().removePlayer(name);
 	}
 	/**
 	 * Removes a player from the lobby.
 	 * @param player
 	 */
-	public void removePlayer(Player player)
+	protected void removePlayer(Player player)
 	{
 		if (this.teams.containsKey(player.getName()))
 			this.teams.remove(player.getName());
 	}
+	protected void removePlayerComplete(Player player)
+	{
+		if (player != null)
+			removePlayerComplete(player.getName());
+	}
+	protected void removePlayerComplete(String name)
+	{
+		removePlayer(name);
+		getGame().removePlayer(name);
+	}
 	public boolean containsPlayer(Player p)
 	{
-		return containsPlayer(p.getName());
+		if (p == null)
+			return false;
+		else
+			return containsPlayer(p.getName());
 	}
 	public boolean containsPlayer(String name)
 	{
 		return this.teams.containsKey(name);
 	}
-	public boolean setPlayerTeam(Player player, Team team)
+	protected boolean setPlayerTeam(Player player, Team team)
 	{
 		return setPlayerTeam(player.getName(), team);
 	}
-	public boolean setPlayerTeam(String name, Team team)
+	protected boolean setPlayerTeam(String name, Team team)
 	{
 		switch (type)
 		{
@@ -429,7 +405,7 @@ public class Lobby implements Closeable
 			return false;
 		}
 	}
-	public boolean setAllPlayerTeams(Team team)
+	protected boolean setAllPlayerTeams(Team team)
 	{
 		switch (type)
 		{
@@ -452,24 +428,17 @@ public class Lobby implements Closeable
 	
 	public boolean gameIsRunning()
 	{
-		switch (type)
-		{
-		case HUB:
+		if (game != null)
+			return game.isRunning();
+		else
 			return false;
-			
-		case GAME:
-			if (game == null)
-				return false;
-			else
-				return game.isRunning();
-			
-		default:
-			return false;
-		}
 	}
-	public boolean setCurrentMap(Map map)
+	protected boolean setCurrentMap(Map map)
 	{
-		return setCurrentMap(map.getFullName());
+		if (map == null)
+			return false;
+		else
+			return setCurrentMap(map.getFullName());
 	}
 	/**
 	 * Sets the current map for the lobby. If the map is
@@ -477,7 +446,7 @@ public class Lobby implements Closeable
 	 * @param map
 	 * @return
 	 */
-	public boolean setCurrentMap(String mapname)
+	protected boolean setCurrentMap(String mapname)
 	{
 		switch (type)
 		{
@@ -519,25 +488,9 @@ public class Lobby implements Closeable
 		this.type = type;
 	}
 	
-	public boolean addWorld(World world)
-	{
-		if (world == null)
-			return false;
-		if (world.getMaps().isEmpty())
-			return false;
-		boolean success = false;
-		
-		for (Map map : world.getMaps())
-			if (addMap(map))
-				success = true;
-		
-		return success;
-	}
-	public boolean addWorld(String worldname)
-	{
-		return addWorld(Manhunt.getWorld(worldname));
-	}
-	public boolean addMap(Map map)
+	
+	//////// MAPS ////////
+	protected boolean addMap(Map map)
 	{
 		return addMap(map.getFullName());
 	}
@@ -551,7 +504,7 @@ public class Lobby implements Closeable
 			maps.add(mapname);
 		return true;
 	}
-	public boolean removeMap(Map map)
+	protected boolean removeMap(Map map)
 	{
 		return removeMap(map.getFullName());
 	}
@@ -588,43 +541,27 @@ public class Lobby implements Closeable
 	/**
 	 * Clears all Players from this Lobby.
 	 */
-	public void clearPlayers()
+	protected void clearPlayers()
 	{
 		this.teams.clear();
 	}
-	public void forfeitPlayer(String name)
-	{
-		if (!containsPlayer(name))
-			return;
-		
-		if (!gameIsRunning())
-			return;
-		
-		Player p = Bukkit.getPlayerExact(name);
-		
-		if (p == null)
-		{
-			removePlayer(name);
-		}
-		
-		if (getGame() != null)
-			getGame().forfeitPlayer(name);
-	}
+	
 	
 	/**
 	 * Enables the Lobby.
 	 */
-	public void enable()
+	protected void enable()
 	{
-		this.enabled = true;
+		this.open = true;
 	}
 	/**
 	 * Disables the Lobby.
 	 */
-	public void disable()
+	protected void disable()
 	{
-		this.enabled = false;
+		this.open = false;
 	}
+	
 	public void distributeTeams()
 	{
 		switch (type)
@@ -658,19 +595,19 @@ public class Lobby implements Closeable
 
 			for (String p : prey)
 			{
-				setPlayerTeam(p, Team.PREY);
-				Bukkit.getPlayerExact(p).sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.PREY.getColor() + Team.PREY.getName(true));
+				changePlayerTeam(p, Team.PREY);
 			}
 			for (String p : hunters)
 			{
-				setPlayerTeam(p, Team.HUNTERS);
-				Bukkit.getPlayerExact(p).sendMessage(ChatManager.leftborder + "You have been moved to team " + Team.HUNTERS.getColor() + Team.HUNTERS.getName(true));
+				changePlayerTeam(p, Team.HUNTERS);
 			}
 			
 		default:
 			return;
 		}
 	}
+	
+	
 	public Map chooseMap()
 	{
 		Map map;
@@ -701,52 +638,15 @@ public class Lobby implements Closeable
 			return null;
 		}
 	}
-	public void startGame()
-	{
-		switch (type)
-		{
-		case HUB:
-			return;
-			
-		case GAME:
-			if (gameIsRunning())
-				return;
-			
-			if (chooseMap() == null)
-				return;
-			
-			getGame().importPlayers(this);
-			getGame().distributeTeams();
-			getGame().startGame();
-			return;
-			
-		default:
-			return;
-		}
-	}
-	public void stopGame()
-	{
-		switch (type)
-		{
-		case HUB:
-			return;
-			
-		case GAME:
-			if (!gameIsRunning())
-				return;
-			
-			getGame().stopGame();
-			return;
-			
-		default:
-			return;
-		}
-	}
+	
+	public abstract boolean startGame();
+	public abstract boolean endGame();
+	public abstract boolean cancelGame();
 	
 	
 	
 	//---------------- Saving, Loading, Closing ----------------//
-	public void save()
+	public abstract int saveFiles();
 	{
 		List<String> mapnames;
 		
@@ -781,7 +681,7 @@ public class Lobby implements Closeable
 		settings.MAPS.setValue(mapnames);
 		settings.save();
 	}
-	public void load()
+	public abstract int loadFiles();
 	{
 		Location loc;
 		
@@ -816,7 +716,7 @@ public class Lobby implements Closeable
 		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, loc, settings.SPAWN_RANGE.getValue());
 		
 		// Load open state
-		this.enabled = settings.LOBBY_OPEN.getValue();
+		this.open = settings.LOBBY_OPEN.getValue();
 		
 		// Load game
 		if (type == LobbyType.GAME)
@@ -831,6 +731,9 @@ public class Lobby implements Closeable
 		}
 		
 	}
+	public abstract int deleteFiles();
+	public abstract Lobby loadFromFile(File file);
+	protected abstract initializeSettings();
 	@Override
 	public void close()
 	{
