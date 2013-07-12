@@ -37,8 +37,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_6_R1.NBTBase;
-import net.minecraft.server.v1_6_R1.NBTTagCompound;
+import net.minecraft.server.v1_6_R2.NBTBase;
+import net.minecraft.server.v1_6_R2.NBTTagCompound;
 
 /**
  * The <code>TAG_Compound</code> tag.
