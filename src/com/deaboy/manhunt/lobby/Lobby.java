@@ -11,6 +11,7 @@ import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
@@ -24,274 +25,28 @@ import com.deaboy.manhunt.settings.SettingManager;
 
 public abstract class Lobby implements Closeable
 {
-	//---------------- Properties ----------------//
+	//////////////// Properties ////////////////
 	private final long id;
 	private String name;
-	private World world;
 	private LobbyType type;
 	
-	private HashMap<String, Team> teams;
-	private List<String> maps;
-	private Map current_map;
 	private Spawn spawn;
 	private boolean open;
 	
 	
-	//---------------- Constructors ----------------//
+	//////////////// CONSTRUCTORS ////////////////
 	public Lobby(long id, String name, LobbyType type, World world, Location location)
 	{
 		this.id = id;
 		this.name = name;
-		this.world = world;
 		this.type = type;
 		
-		this.teams = new HashMap<String, Team>();
-		this.maps = new ArrayList<String>();
-		this.current_map = null;
 		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, location);
 		this.open = true;
-		
 	}
 	
 	
-	//---------------- Getters ----------------//
-	/**
-	 * Gets the long ID of this lobby.
-	 * @return This lobby's ID.
-	 */
-	public long getId()
-	{
-		return id;
-	}
-	/**
-	 * Gets the name of this lobby.
-	 * @return This lobby's name.
-	 */
-	public String getName()
-	{
-		return name;
-	}
-	/**
-	 * Gets this Lobby's Spawn object.
-	 * @return This Lobby's Spawn.
-	 */
-	private Spawn getSpawn()
-	{
-		return spawn;
-	}
-	/**
-	 * Gets this Lobby's main World.
-	 * @return This Lobby's World.
-	 */
-	public World getWorld()
-	{
-		return world;
-	}
-	/**
-	 * Gets the Manhunt worlds associated with this lobby.
-	 * @return
-	 */
-	public List<World> getWorlds()
-	{
-		Map map;
-		List<World> worlds = new ArrayList<World>();
-		
-		for (String mapname : maps)
-		{
-			map = Manhunt.getMap(mapname);
-			if (map != null)
-				worlds.add(map.getWorld());
-		}
-		
-		if (!worlds.contains(getWorld()))
-			worlds.add(getWorld());
-		
-		return worlds;
-	}
-	public List<Map> getMaps()
-	{
-		List<Map> maplist = new ArrayList<Map>();
-		Map map;
-		
-		for (String mapname : maps)
-		{
-			map = Manhunt.getMap(mapname);
-			if (map != null)
-				maplist.add(map);
-		}
-		
-		return maplist;
-	}
-	public Map getCurrentMap()
-	{
-		switch (type)
-		{
-		case HUB:
-			return null;
-		case GAME:
-			return current_map;
-		default:
-			return null;
-		}
-	}
-
-	/**
-	 * Get this Lobby's main spawn point.
-	 * @return This Lobby's spawn location
-	 */
-	public Location getSpawnLocation()
-	{
-		return world.getSpawnLocation();
-	}
-	public Location getRandomSpawnLocation()
-	{
-		return getSpawn().getRandomLocation();
-	}
-	public int getSpawnRange()
-	{
-		return getSpawn().getRange();
-	}
-	public void setSpawnRange(int range)
-	{
-		getSpawn().setRange(range);
-	}
-	public void setSpawnLocation(Location loc)
-	{
-		getSpawn().setLocation(loc);
-	}
-
-	/**
-	 * Gets a list of this Lobby's Players.
-	 * @return ArrayList of Players in this Lobby
-	 */
-	public List<Player> getOnlinePlayers()
-	{
-		if (gameIsRunning())
-			return getGame().getOnlinePlayers();
-		
-		List<Player> players = new ArrayList<Player>();
-		Player p;
-		
-		for (String key : teams.keySet())
-		{
-			p = Bukkit.getPlayerExact(key);
-			if (p != null)
-				players.add(p);
-		}
-		
-		return players;
-	}
-	/**
-	 * Gets a list of this Lobby's Player handles,
-	 * filtered by team.
-	 * If a player is offline, then they will not
-	 * be included in the returned List.
-	 * @param teams The teams whose members' names
-	 * to return.
-	 * @return
-	 */
-	public List<Player> getOnlinePlayers(Team...teams)
-	{
-		if (gameIsRunning())
-			return getGame().getOnlinePlayers(teams);
-		
-		List<Player> players = new ArrayList<Player>();
-		Player p;
-		
-		for (String name : getPlayerNames(teams))
-		{
-			p = Bukkit.getPlayerExact(name);
-			if (p != null)
-				players.add(p);
-		}
-		
-		return players;
-	}
-	/**
-	 * Gets a list of this Lobby's players' names.
-	 * @return ArrayList of Strings of players' names in this lobby.
-	 */
-	public List<String> getPlayerNames()
-	{
-		if (gameIsRunning())
-			return getGame().getPlayerNames();
-		
-		return new ArrayList<String>(teams.keySet());
-	}
-	/**
-	 * Gets a list of this Lobby's players' names,
-	 * filtered by teams given in the parameters.
-	 * @param teams The teams whose members' names
-	 * to return.
-	 * @return
-	 */
-	public List<String> getPlayerNames(Team...teams)
-	{
-		if (gameIsRunning())
-			return getGame().getPlayerNames(teams);
-		
-		List<String> names = new ArrayList<String>();
-		
-		for (String key : this.teams.keySet())
-		{
-			for (Team team : teams)
-			{
-				if (this.teams.get(key) == team)
-				{
-					names.add(key);
-					break;
-				}
-			}
-		}
-		
-		return names;
-	}
-	public Team getPlayerTeam(Player p)
-	{
-		if (gameIsRunning())
-			return getGame().getPlayerTeam(p);
-		
-		return getPlayerTeam(p.getName());
-	}
-	public Team getPlayerTeam(String name)
-	{
-		if (gameIsRunning())
-			return getGame().getPlayerTeam(name);
-		
-		if (teams.containsKey(name))
-			return teams.get(name);
-		else
-			return null;
-	}
-	
-	/**
-	 * Gets this lobby's settings.
-	 * @return
-	 */
-	public abstract SettingManager getSettings();
-	/**
-	 * Checks to see if the Lobby is currently enabled.
-	 * @return True if the Lobby is enabled, false if not.
-	 */
-	public boolean isEnabled()
-	{
-		return open;
-	}
-	/**
-	 * Gets the type of this lobby.
-	 * @return
-	 */
-	public LobbyType getType()
-	{
-		return type;
-	}
-	
-	
-	//---------------- Setters ----------------//
-	/**
-	 * Sets the name of this lobby.
-	 * @param name
-	 */
+	//////////////// SETTERS ////////////////
 	public boolean setName(String name)
 	{
 		if (name.trim().isEmpty())
@@ -304,312 +59,94 @@ public abstract class Lobby implements Closeable
 		return true;
 	}
 	
-	protected boolean addPlayer(String name, Team team)
+	public void setSpawnRange(int range)
 	{
-		if (teams.containsKey(name))
-			return false;
-		else
-			teams.put(name, team);
-		return true;
+		getSpawn().setRange(range);
 	}
-	/**
-	 * Removes a Player from the lobby via their name.
-	 * @param p The Player to remove.
-	 */
-	protected void removePlayer(String name)
+	public void setSpawnLocation(Location loc)
 	{
-		if (this.teams.containsKey(name))
-			this.teams.remove(name);
-	}
-	/**
-	 * Removes a player from the lobby.
-	 * @param player
-	 */
-	protected void removePlayer(Player player)
-	{
-		if (this.teams.containsKey(player.getName()))
-			this.teams.remove(player.getName());
-	}
-	protected void removePlayerComplete(Player player)
-	{
-		if (player != null)
-			removePlayerComplete(player.getName());
-	}
-	protected void removePlayerComplete(String name)
-	{
-		removePlayer(name);
-		getGame().removePlayer(name);
-	}
-	public boolean containsPlayer(Player p)
-	{
-		if (p == null)
-			return false;
-		else
-			return containsPlayer(p.getName());
-	}
-	public boolean containsPlayer(String name)
-	{
-		return this.teams.containsKey(name);
-	}
-	protected boolean setPlayerTeam(Player player, Team team)
-	{
-		return setPlayerTeam(player.getName(), team);
-	}
-	protected boolean setPlayerTeam(String name, Team team)
-	{
-		switch (type)
-		{
-		case HUB:
-			if (containsPlayer(name))
-				this.teams.put(name, Team.NONE);
-			return false;
-			
-		case GAME:
-			if (team == null)
-				return false;
-			if (containsPlayer(name))
-				this.teams.put(name, team);
-			return true;
-			
-		default:
-			return false;
-		}
-	}
-	protected boolean setAllPlayerTeams(Team team)
-	{
-		switch (type)
-		{
-		case HUB:
-			for (String key : teams.keySet())
-				teams.put(key, Team.NONE);
-			return false;
-			
-		case GAME:
-			if (team == null)
-				return false;
-			for (String key : teams.keySet())
-				teams.put(key, team);
-			return true;
-			
-		default:
-			return false;
-		}
+		getSpawn().setLocation(loc);
 	}
 	
-	public abstract boolean gameIsRunning();
-	protected boolean setCurrentMap(Map map)
-	{
-		if (map == null)
-			return false;
-		else
-			return setCurrentMap(map.getFullName());
-	}
-	/**
-	 * Sets the current map for the lobby. If the map is
-	 * not in a valid world, will return false and not make the assignment.
-	 * @param map
-	 * @return
-	 */
-	protected boolean setCurrentMap(String mapname)
-	{
-		switch (type)
-		{
-		case HUB:
-			return false;
-			
-		case GAME:
-			if (!maps.contains(mapname))
-				return false;
-			else if (Manhunt.getMap(mapname) == null)
-				return false;
-			else
-				current_map = Manhunt.getMap(mapname);
-			return true;
-			
-		default:
-			return false;
-		}
-	}
-	public void setLobbyType(LobbyType type)
-	{
-		if (type == null)
-			return;
-		if (gameIsRunning())
-			return;
-		
-		switch  (type)
-		{
-		case HUB:
-			setAllPlayerTeams(Team.NONE);
-			break;
-		case GAME:
-			setAllPlayerTeams(Team.STANDBY);
-			break;
-		default:
-			break;
-		}
-		
-		this.type = type;
-	}
-	
-	
-	//////// MAPS ////////
-	protected boolean addMap(Map map)
-	{
-		return addMap(map.getFullName());
-	}
-	private boolean addMap(String mapname)
-	{
-		if (maps.contains(mapname))
-			return false;
-		else if (Manhunt.getMap(mapname) == null)
-			return false;
-		else
-			maps.add(mapname);
-		return true;
-	}
-	protected boolean removeMap(Map map)
-	{
-		return removeMap(map.getFullName());
-	}
-	private boolean removeMap(String mapname)
-	{
-		if (!maps.contains(mapname))
-			return false;
-		else
-			maps.remove(mapname);
-		return true;
-	}
-	
-	
-	
-	//---------------- Public Methods ----------------//
-	/**
-	 * Sends a message to all of this Lobby's Players.
-	 * @param message The message to broadcast.
-	 */
-	public void broadcast(String message)
-	{
-		for (Player p : getOnlinePlayers())
-		{
-			p.sendMessage(message);
-		}
-	}
-	public void broadcast(String message, Team...teams)
-	{
-		for (Player p : getOnlinePlayers(teams))
-		{
-			p.sendMessage(message);
-		}
-	}
-	/**
-	 * Clears all Players from this Lobby.
-	 */
-	protected void clearPlayers()
-	{
-		this.teams.clear();
-	}
-	
-	
-	/**
-	 * Enables the Lobby.
-	 */
 	protected void enable()
 	{
 		this.open = true;
 	}
-	/**
-	 * Disables the Lobby.
-	 */
 	protected void disable()
 	{
 		this.open = false;
 	}
 	
-	public void distributeTeams()
+	
+	//////////////// GETTERS ////////////////
+	public long getId()
 	{
-		switch (type)
-		{
-		case HUB:
-			return;
-			
-		case GAME:
-			List<String> hunters = new ArrayList<String>();
-			List<String> prey = new ArrayList<String>();
-			List<String> standby = getPlayerNames(Team.STANDBY);
-			double ratio = getSettings().TEAM_RATIO.getValue();
-			
-			String name;
-
-			while (standby.size() > 0)
-			{
-				name = standby.get(new Random().nextInt(standby.size()));
-
-				if (prey.size() == 0 || (double) hunters.size() / (double) prey.size() > ratio)
-				{
-					prey.add(name);
-				}
-				else
-				{
-					hunters.add(name);
-				}
-
-				standby.remove(name);
-			}
-
-			for (String p : prey)
-			{
-				changePlayerTeam(p, Team.PREY);
-			}
-			for (String p : hunters)
-			{
-				changePlayerTeam(p, Team.HUNTERS);
-			}
-			
-		default:
-			return;
-		}
+		return id;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	private Spawn getSpawn()
+	{
+		return spawn;
+	}
+	public World getWorld()
+	{
+		return Manhunt.getWorld(spawn.getWorld());
+	}
+	
+	public Location getSpawnLocation()
+	{
+		return spawn.getLocation();
+	}
+	public Location getRandomSpawnLocation()
+	{
+		return spawn.getRandomLocation();
+	}
+	public int getSpawnRange()
+	{
+		return getSpawn().getRange();
+	}
+	
+	public boolean isEnabled()
+	{
+		return open;
+	}
+	public LobbyType getType()
+	{
+		return type;
 	}
 	
 	
-	public Map chooseMap()
-	{
-		Map map;
-		
-		if (gameIsRunning())
-			return null;
-		if (maps.isEmpty())
-			return null;
-		
-		switch (type)
-		{
-		case HUB:
-			return null;
-		
-		case GAME:
-			Collections.sort(maps, new Comparator<String>() {
-				public int compare(String s1, String s2) {
-					return s1.compareTo(s2);
-				}
-			} );
-			
-			map = Manhunt.getMap(maps.get((int) (Math.random()*maps.size())));
-			
-			setCurrentMap(map);
-			return map;
-			
-		default:
-			return null;
-		}
-	}
-	
-	public abstract boolean startGame();
-	public abstract boolean endGame();
-	public abstract boolean cancelGame();
+	//////////////// PUBLIC METHODS ////////////////
+	//---------------- INTERFACE ----------------//
+	public abstract boolean playerJoinLobby(Player p);
+	public abstract boolean playerLeaveLobby(Player p);
+	public abstract boolean playerLeaveServer(Player p);
 	
 	
+	//---------------- PLAYERS ----------------//
+	protected abstract boolean addPlayer(Player player);
+	protected abstract boolean addPlayer(String name);
+	public abstract boolean containsPlayer(Player player);
+	public abstract boolean containsPlayer(String name);
+	protected abstract boolean removePlayer(Player player);
+	protected abstract boolean removePlayer(String name);
+	protected abstract void clearPlayers();
+	protected abstract void clearOfflinePlayers();
 	
-	//---------------- Saving, Loading, Closing ----------------//
+	public abstract List<String> getPlayerNames();
+	public abstract List<String> getOnlinePlayerNames();
+	public abstract List<String> getOfflinePlayerNames();
+	public abstract List<Player> getOnlinePlayers();
+	public abstract List<OfflinePlayer> getOfflinePlayers();
+	
+	
+	public abstract void broadcast(String message);
+	
+	
+	//---------------- Files and Config ----------------//
 	public abstract int saveFiles();
 	{
 		List<String> mapnames;
@@ -697,12 +234,14 @@ public abstract class Lobby implements Closeable
 	}
 	public abstract int deleteFiles();
 	public abstract Lobby loadFromFile(File file);
+	
 	protected abstract void initializeSettings();
+	public abstract SettingManager getSettings();
+	
 	@Override
 	public void close()
 	{
 		clearPlayers();
-		current_map = null;
 	}
 	
 	
