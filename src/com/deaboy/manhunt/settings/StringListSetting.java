@@ -7,10 +7,10 @@ import org.jnbt.ListTag;
 import org.jnbt.StringTag;
 import org.jnbt.Tag;
 
-public class SettingListString extends SettingBase<ArrayList<String>> implements Setting, SettingList
+public class StringListSetting extends BaseSetting<ArrayList<String>> implements Setting, ListSetting
 {
 
-	public SettingListString(String label, String description, String...defaultValues)
+	public StringListSetting(String label, String description, String...defaultValues)
 	{
 		super(label, new ArrayList<String>(), SettingType.LIST_STRING, description);
 		

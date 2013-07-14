@@ -2,10 +2,10 @@ package com.deaboy.manhunt.settings;
 
 import org.jnbt.FloatTag;
 
-public class SettingFloat extends SettingBase<Float> implements Setting
+public class FloatSetting extends BaseSetting<Float> implements Setting
 {
 	
-	public SettingFloat(String label, Float defaultValue, String description)
+	public FloatSetting(String label, Float defaultValue, String description)
 	{
 		super( label, defaultValue, SettingType.FLOAT, description);
 	}

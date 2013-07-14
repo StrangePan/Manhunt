@@ -2,10 +2,10 @@ package com.deaboy.manhunt.settings;
 
 import org.jnbt.ByteTag;
 
-public class SettingBoolean extends SettingBase<Boolean> implements Setting
+public class BooleanSetting extends BaseSetting<Boolean> implements Setting
 {
 	
-	public SettingBoolean(String label, Boolean defaultValue, String onMessage, String offMessage)
+	public BooleanSetting(String label, Boolean defaultValue, String onMessage, String offMessage)
 	{
 		super(label, defaultValue, SettingType.BOOLEAN, onMessage, offMessage);
 	}

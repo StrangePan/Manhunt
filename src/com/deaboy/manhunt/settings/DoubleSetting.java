@@ -2,10 +2,10 @@ package com.deaboy.manhunt.settings;
 
 import org.jnbt.DoubleTag;
 
-public class SettingDouble extends SettingBase<Double> implements Setting
+public class DoubleSetting extends BaseSetting<Double> implements Setting
 {
 	
-	public SettingDouble(String label, Double defaultValue, String description)
+	public DoubleSetting(String label, Double defaultValue, String description)
 	{
 		super( label, defaultValue, SettingType.DOUBLE, description);
 	}

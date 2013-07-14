@@ -2,10 +2,10 @@ package com.deaboy.manhunt.settings;
 
 import org.jnbt.IntTag;
 
-public class SettingInteger extends SettingBase<Integer> implements Setting
+public class IntegerSetting extends BaseSetting<Integer> implements Setting
 {
 	
-	public SettingInteger(String label, Integer defaultValue, String onDescription, String offDescription)
+	public IntegerSetting(String label, Integer defaultValue, String onDescription, String offDescription)
 	{
 		super( label, defaultValue, SettingType.INTEGER, onDescription, offDescription );
 	}

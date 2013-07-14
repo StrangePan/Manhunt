@@ -1,6 +1,6 @@
 package com.deaboy.manhunt.settings;
 
-public interface SettingList
+public interface ListSetting
 {
 	public void add(Object o) throws IllegalArgumentException;
 	public void add(Object o, int i) throws IllegalArgumentException;

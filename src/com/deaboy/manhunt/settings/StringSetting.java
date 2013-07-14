@@ -2,10 +2,10 @@ package com.deaboy.manhunt.settings;
 
 import org.jnbt.StringTag;
 
-public class SettingString extends SettingBase<String> implements Setting
+public class StringSetting extends BaseSetting<String> implements Setting
 {
 
-	public SettingString(String label, String defaultValue, String description)
+	public StringSetting(String label, String defaultValue, String description)
 	{
 		super( label, defaultValue, SettingType.STRING, description );
 	}

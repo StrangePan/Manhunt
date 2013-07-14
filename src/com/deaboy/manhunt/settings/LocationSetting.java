@@ -11,10 +11,10 @@ import org.jnbt.DoubleTag;
 import org.jnbt.FloatTag;
 import org.jnbt.Tag;
 
-public class SettingLocation extends SettingBase<Location> implements Setting
+public class LocationSetting extends BaseSetting<Location> implements Setting
 {
 	
-	public SettingLocation(String label, Location defaultValue)
+	public LocationSetting(String label, Location defaultValue)
 	{
 		super(label, defaultValue, SettingType.LOCATION);
 	}

@@ -3,7 +3,7 @@ package com.deaboy.manhunt.settings;
 import java.util.List;
 import java.util.ArrayList;
 
-public abstract class SettingBase<Type> implements Setting
+public abstract class BaseSetting<Type> implements Setting
 {
 
 	private final String label;
@@ -16,7 +16,7 @@ public abstract class SettingBase<Type> implements Setting
 	
 	private Object value;
 	
-	public SettingBase(String label, Type defaultValue, SettingType type, String ... descriptions)
+	public BaseSetting(String label, Type defaultValue, SettingType type, String ... descriptions)
 	{
 		this.label = label;
 		this.description = new ArrayList<String>(descriptions.length);
