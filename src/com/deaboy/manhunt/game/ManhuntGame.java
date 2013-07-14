@@ -1,5 +1,9 @@
 package com.deaboy.manhunt.game;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
@@ -11,21 +15,23 @@ import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.events.*;
-import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.SpawnType;
+import com.deaboy.manhunt.settings.ManhuntGameSettings;
 
 public class ManhuntGame extends Game implements Listener
 {
 	//---------------- Properties ----------------//
-	Timeline timeline;
+	private Timeline timeline;
+	private ManhuntGameSettings settings;
 	
 	
 	//---------------- Constructors ----------------//
-	public ManhuntGame(Lobby lobby)
+	public ManhuntGame(GameLobby lobby)
 	{
 		super(lobby);
-		
+		this.settings = new ManhuntGameSettings();
 		
 	}
 	
@@ -42,7 +48,7 @@ public class ManhuntGame extends Game implements Listener
 		
 
 		if (getWorld().getEnvironment() == Environment.NORMAL)
-			ManhuntUtil.transitionWorldTime(getWorld(), 12000 - getLobby().getSettings().TIME_SETUP.getValue() * 1200 - 320, new Runnable(){ public void run(){ timeline.run(); }});
+			ManhuntUtil.transitionWorldTime(getWorld(), 12000 - getSettings().TIME_SETUP.getValue() * 1200 - 320, new Runnable(){ public void run(){ timeline.run(); }});
 		else
 			timeline.run();
 		
@@ -124,6 +130,49 @@ public class ManhuntGame extends Game implements Listener
 			addPlayer(name, Team.SPECTATORS);
 		return true;
 	}
+	public void distributeTeams()
+	{
+		List<String> hunters = new ArrayList<String>();
+		List<String> prey = new ArrayList<String>();
+		List<String> standby = getPlayerNames(Team.STANDBY);
+		double ratio = getSettings().TEAM_RATIO.getValue();
+
+		String name;
+
+		while (standby.size() > 0)
+		{
+			name = standby.get(new Random().nextInt(standby.size()));
+
+			if (prey.size() == 0 || (double) hunters.size() / (double) prey.size() > ratio)
+			{
+				prey.add(name);
+			}
+			else
+			{
+				hunters.add(name);
+			}
+
+			standby.remove(name);
+		}
+
+		for (String p : prey)
+		{
+			getLobby().playerChangeTeam(p, Team.PREY);
+		}
+		for (String p : hunters)
+		{
+			getLobby().playerChangeTeam(p, Team.HUNTERS);
+		}
+	}
+	@Override
+	public GameLobby getLobby()
+	{
+		return (GameLobby) super.getLobby();
+	}
+	public ManhuntGameSettings getSettings()
+	{
+		return this.settings;
+	}
 	
 	
 	//---------------- Timeline ----------------//
@@ -152,11 +201,11 @@ public class ManhuntGame extends Game implements Listener
 		
 		event = new ManhuntWorldEvent(getWorld(), time - 260);
 		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getPoints(SpawnType.PREY)));
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getPoints(getLobby().getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getPoints(getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
 		timeline.registerEvent(event);
 		
 		
-		if (getLobby().getSettings().TIME_SETUP.getValue() > 0)
+		if (getSettings().TIME_SETUP.getValue() > 0)
 		{
 			event = new ManhuntWorldEvent(getWorld(), time - 200);
 			event.addAction(new BroadcastAction(lobby_id, "Setup begins in 10 seconds."));
@@ -186,20 +235,20 @@ public class ManhuntGame extends Game implements Listener
 			event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.SETUP); }}));
 			event.addAction(new BroadcastAction(lobby_id, "GO! Use this time to prepare for the hunt!", Team.PREY));
 			event.addAction(new BroadcastAction(lobby_id, "The prey are preparing for the hunt.", Team.HUNTERS));
-			event.addAction(new BroadcastAction(lobby_id, (getWorld().getEnvironment() == Environment.NORMAL ? "The hunt will begin at sundown. (" + getLobby().getSettings().TIME_SETUP.getValue() + " minutes)" : "The hunt will begin in " + getLobby().getSettings().TIME_SETUP.getValue() + " minutes.")));
+			event.addAction(new BroadcastAction(lobby_id, (getWorld().getEnvironment() == Environment.NORMAL ? "The hunt will begin at sundown. (" + getSettings().TIME_SETUP.getValue() + " minutes)" : "The hunt will begin in " + getSettings().TIME_SETUP.getValue() + " minutes.")));
 			timeline.registerEvent(event);
 			
 			//////////////// LENGTH OF SETUP ////////////////
 			//
 			//
 			//
-			time += getLobby().getSettings().TIME_SETUP.getValue() * 1200;
+			time += getSettings().TIME_SETUP.getValue() * 1200;
 			//
 			//
 			//
 			/////////////////////////////////////////////////
 			
-			if (getLobby().getSettings().TIME_SETUP.getValue() > 1)
+			if (getSettings().TIME_SETUP.getValue() > 1)
 			{
 				event = new ManhuntWorldEvent(getWorld(), time - 1200);
 				event.addAction(new BroadcastAction(lobby_id, "The hunt will begin in 1 minute!"));

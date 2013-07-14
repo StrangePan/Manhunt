@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.game.events;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
 
 public class BroadcastAction implements Action
@@ -20,10 +21,10 @@ public class BroadcastAction implements Action
 	@Override
 	public void execute()
 	{
-		if (teams.length == 0)
+		if (teams.length == 0 && !(Manhunt.getLobby(lobby_id) instanceof GameLobby))
 			Manhunt.getLobby(lobby_id).broadcast(message);
 		else
-			Manhunt.getLobby(lobby_id).broadcast(message, teams);
+			((GameLobby) Manhunt.getLobby(lobby_id)).broadcast(message, teams);
 	}
 
 }

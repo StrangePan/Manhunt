@@ -45,6 +45,7 @@ import com.deaboy.manhunt.map.Spawn;
 import com.deaboy.manhunt.map.SpawnType;
 import com.deaboy.manhunt.map.Zone;
 import com.deaboy.manhunt.map.ZoneFlag;
+import com.deaboy.manhunt.settings.SettingsPack;
 
 public abstract class Game implements Closeable, Listener
 {
@@ -462,6 +463,8 @@ public abstract class Game implements Closeable, Listener
 		if (getPlayerNames(Team.HUNTERS).isEmpty() || getPlayerNames(Team.PREY).isEmpty())
 			endGame();
 	}
+	
+	public abstract SettingsPack getSettings();
 	
 	
 	

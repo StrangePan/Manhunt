@@ -1,12 +1,10 @@
 package com.deaboy.manhunt.lobby;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,7 +15,7 @@ import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
-import com.deaboy.manhunt.settings.SettingManager;
+import com.deaboy.manhunt.settings.GameLobbySettings;
 
 public abstract class GameLobby extends Lobby
 {
@@ -29,9 +27,9 @@ public abstract class GameLobby extends Lobby
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
-	public GameLobby(long id, String name, World world, Location loc)
+	public GameLobby(long id, String name, Location loc)
 	{
-		super(id, name, LobbyType.GAME, world, loc);
+		super(id, name, LobbyType.GAME, loc);
 		this.game = null;
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
@@ -42,7 +40,7 @@ public abstract class GameLobby extends Lobby
 	//////////////// PUBLIC FUNCTIONS ////////////////
 	//---------------- INTERFACE ----------------//
 	public abstract boolean forfeitPlayer(String name);
-	public abstract boolean playerChangeTeam(Player p, Team team);
+	public abstract boolean playerChangeTeam(String player, Team team);
 	
 	
 	//---------------- PLAYERS ----------------//
@@ -302,37 +300,8 @@ public abstract class GameLobby extends Lobby
 	}
 	protected void distributeTeams()
 	{
-		List<String> hunters = new ArrayList<String>();
-		List<String> prey = new ArrayList<String>();
-		List<String> standby = getPlayerNames(Team.STANDBY);
-		double ratio = getSettings().TEAM_RATIO.getValue();
-		
-		String name;
-
-		while (standby.size() > 0)
-		{
-			name = standby.get(new Random().nextInt(standby.size()));
-
-			if (prey.size() == 0 || (double) hunters.size() / (double) prey.size() > ratio)
-			{
-				prey.add(name);
-			}
-			else
-			{
-				hunters.add(name);
-			}
-
-			standby.remove(name);
-		}
-
-		for (String p : prey)
-		{
-			changePlayerTeam(p, Team.PREY);
-		}
-		for (String p : hunters)
-		{
-			changePlayerTeam(p, Team.HUNTERS);
-		}
+		if (this.game != null)
+			this.game.distributeTeams();
 	}
 	
 	
@@ -479,19 +448,7 @@ public abstract class GameLobby extends Lobby
 	
 	//---------------- SETTINGS ----------------//
 	@Override
-	public abstract SettingManager getSettings();
-	@Override
-	protected abstract void initializeSettings();
+	public abstract GameLobbySettings getSettings();
 	
-	
-	//---------------- FILES ----------------//
-	@Override
-	public abstract int saveFiles();
-	@Override
-	public abstract int loadFiles();
-	@Override
-	public abstract int deleteFiles();
-	@Override
-	public abstract Lobby loadFromFile(File file);
 	
 }

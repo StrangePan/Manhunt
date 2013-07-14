@@ -60,6 +60,10 @@ public class SettingsFile extends Properties implements Closeable
 	{
 		this.packs.clear();
 	}
+	public File getFile()
+	{
+		return new File(file.getAbsolutePath());
+	}
 	
 	
 	//---------------- Files ----------------//

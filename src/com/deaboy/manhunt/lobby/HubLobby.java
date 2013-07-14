@@ -8,8 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import com.deaboy.manhunt.map.World;
-
 public abstract class HubLobby extends Lobby
 {
 	//////////////// PROPERTIES ////////////////
@@ -17,9 +15,9 @@ public abstract class HubLobby extends Lobby
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
-	public HubLobby(long id, String name, World world, Location loc)
+	public HubLobby(long id, String name, Location loc)
 	{
-		super(id, name, LobbyType.HUB, world, loc);
+		super(id, name, LobbyType.HUB, loc);
 		this.players = new ArrayList<String>();
 	}
 	
@@ -164,7 +162,6 @@ public abstract class HubLobby extends Lobby
 		}
 		return players;
 	}
-	
 	
 	@Override
 	public void broadcast(String message)

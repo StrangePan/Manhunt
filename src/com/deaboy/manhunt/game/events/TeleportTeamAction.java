@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.Spawn;
 
@@ -32,9 +33,9 @@ public class TeleportTeamAction implements Action
 	@Override
 	public void execute()
 	{
-		if (!locations.isEmpty())
+		if (!locations.isEmpty() && Manhunt.getLobby(lobby_id) instanceof GameLobby)
 		{
-			for (Player p : Manhunt.getLobby(lobby_id).getOnlinePlayers(team))
+			for (Player p : ((GameLobby) Manhunt.getLobby(lobby_id)).getOnlinePlayers(team))
 			{
 				if (p.isOnline())
 				{
