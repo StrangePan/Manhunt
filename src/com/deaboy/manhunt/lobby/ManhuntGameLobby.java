@@ -2,6 +2,7 @@ package com.deaboy.manhunt.lobby;
 
 import org.bukkit.Location;
 
+import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.settings.GameLobbySettings;
 
 public class ManhuntGameLobby extends GameLobby
@@ -50,7 +51,18 @@ public class ManhuntGameLobby extends GameLobby
 		// TODO Write this
 		return true;
 	}
-	
+	@Override
+	public boolean registerMap(Map map)
+	{
+		// TODO Write this
+		return true;
+	}
+	@Override
+	public boolean unregisterMap(Map map)
+	{
+		// TODO Write this
+		return true;
+	}
 	
 	
 	//---------------- GAMES ----------------//

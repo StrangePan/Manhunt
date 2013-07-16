@@ -41,6 +41,8 @@ public abstract class GameLobby extends Lobby
 	//---------------- INTERFACE ----------------//
 	public abstract boolean forfeitPlayer(String name);
 	public abstract boolean playerChangeTeam(String player, Team team);
+	public abstract boolean registerMap(Map map);
+	public abstract boolean unregisterMap(Map map);
 	
 	
 	//---------------- PLAYERS ----------------//
@@ -296,6 +298,28 @@ public abstract class GameLobby extends Lobby
 			{
 				this.teams.put(name, team);
 			}
+		}
+	}
+	public Team getPlayerTeam(Player p)
+	{
+		if (p != null)
+		{
+			return getPlayerTeam(p.getName());
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public Team getPlayerTeam(String name)
+	{
+		if (this.teams.containsKey(name))
+		{
+			return this.teams.get(name);
+		}
+		else
+		{
+			return null;
 		}
 	}
 	protected void distributeTeams()

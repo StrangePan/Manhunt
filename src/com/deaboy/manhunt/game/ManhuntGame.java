@@ -4,39 +4,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-
-import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
-import com.deaboy.manhunt.game.events.*;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.SpawnType;
 import com.deaboy.manhunt.settings.ManhuntGameSettings;
+import com.deaboy.manhunt.timeline.*;
 
-public class ManhuntGame extends Game implements Listener
+public class ManhuntGame extends Game
 {
-	//---------------- Properties ----------------//
+	//////////////// PROPERTIES ////////////////
 	private Timeline timeline;
 	private ManhuntGameSettings settings;
+	private GameEventListener listener;
 	
 	
-	//---------------- Constructors ----------------//
+	//////////////// CONSTRUCTORS ////////////////
 	public ManhuntGame(GameLobby lobby)
 	{
 		super(lobby);
 		this.settings = new ManhuntGameSettings();
-		
+		this.listener = new ManhuntGameListener(this);
 	}
 	
 	
-	//---------------- Public methods ----------------//
+	//////////////// PUBLIC METHODS ////////////////
+	//---------------- Game Methods ----------------//
 	@Override
 	public void startGame()
 	{
@@ -52,29 +49,29 @@ public class ManhuntGame extends Game implements Listener
 		else
 			timeline.run();
 		
-		startListening();
+		listener.startListening();
 	}
 	@Override
-	public void stopGame()
+	public void cancelGame()
 	{
 		ManhuntUtil.cancelWorldTimeTransition(getWorld());
 		
 		timeline.stop();
 		
-		for (Player p : getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
+		for (Player p : getLobby().getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
 		{
 			p.teleport(getLobby().getRandomSpawnLocation());
 		}
 		
-		stopListening();
+		listener.stopListening();
 		
 		setStage(GameStage.INTERMISSION);
 	}
 	@Override
 	public void endGame()
 	{
-		int hunters = getPlayerNames(Team.HUNTERS).size();
-		int prey = getPlayerNames(Team.PREY).size();
+		int hunters = getLobby().getPlayerNames(Team.HUNTERS).size();
+		int prey = getLobby().getPlayerNames(Team.PREY).size();
 		
 		getLobby().broadcast(ChatManager.bracket1_ + "The Game is OVER!" + ChatManager.bracket2_);
 		// Neither team won.
@@ -104,37 +101,28 @@ public class ManhuntGame extends Game implements Listener
 		
 		getLobby().broadcast(ChatManager.divider);
 		
-		stopGame();
+		endGame();
 	}
-	@Override
-	public void startListening()
+	public void testGame()
 	{
-		Bukkit.getPluginManager().registerEvents(this, ManhuntPlugin.getInstance());
+		if (getLobby().getPlayerNames(Team.HUNTERS).isEmpty() || getLobby().getPlayerNames(Team.PREY).isEmpty())
+			endGame();
 	}
-	@Override
-	public void stopListening()
+	
+	
+	//---------------- Players ----------------//
+	public void forfeitPlayer(String name)
 	{
-		HandlerList.unregisterAll(this);
+		
 	}
-	@Override
-	public void close()
-	{
-		super.close();
-	}
-	@Override
-	public boolean addPlayer(String name)
-	{
-		if (containsPlayer(name))
-			return false;
-		else
-			addPlayer(name, Team.SPECTATORS);
-		return true;
-	}
+	
+	
+	//----------------  ----------------//
 	public void distributeTeams()
 	{
 		List<String> hunters = new ArrayList<String>();
 		List<String> prey = new ArrayList<String>();
-		List<String> standby = getPlayerNames(Team.STANDBY);
+		List<String> standby = getLobby().getPlayerNames(Team.STANDBY);
 		double ratio = getSettings().TEAM_RATIO.getValue();
 
 		String name;
@@ -173,9 +161,14 @@ public class ManhuntGame extends Game implements Listener
 	{
 		return this.settings;
 	}
+	public void close()
+	{
+		listener.close();
+		super.close();
+	}
 	
 	
-	//---------------- Timeline ----------------//
+	//////////////// PRIVATE METHODS ////////////////
 	private Timeline generateTimeline()
 	{
 		// Create the new timeline and placeholder event
@@ -200,8 +193,8 @@ public class ManhuntGame extends Game implements Listener
 		timeline.registerEvent(event);
 		
 		event = new ManhuntWorldEvent(getWorld(), time - 260);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getPoints(SpawnType.PREY)));
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getPoints(getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getMap().getPoints(SpawnType.PREY)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
 		timeline.registerEvent(event);
 		
 		
@@ -260,7 +253,7 @@ public class ManhuntGame extends Game implements Listener
 			timeline.registerEvent(event);
 			
 			event = new ManhuntWorldEvent(getWorld(), time - 260);
-			event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getPoints(SpawnType.HUNTER)));
+			event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
 			timeline.registerEvent(event);
 			
 		}
@@ -290,7 +283,7 @@ public class ManhuntGame extends Game implements Listener
 		timeline.registerEvent(event);
 		
 		event = new ManhuntWorldEvent(getWorld(), time);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getPoints(SpawnType.HUNTER)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.HUNT); }}));
 		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + getLobby().getSettings().TIME_LIMIT.getValue() + " minutes."));
 		event.addAction(new BroadcastAction(lobby_id, "Beware! The hunters have been released!", Team.PREY));

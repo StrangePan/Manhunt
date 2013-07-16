@@ -11,6 +11,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.chat.ChatManager;
@@ -72,7 +73,7 @@ public abstract class LobbyCommands
 			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + (args.length > 0 ? args[0] : "you are in") + " is closed.");
 			return true;
 		}
-		else if (lobby.gameIsRunning())
+		else if (((GameLobby) lobby).gameIsRunning())
 		{
 			sender.sendMessage((console ? "" : ChatColor.RED) + "A game is already running.");
 			return true;
@@ -80,7 +81,7 @@ public abstract class LobbyCommands
 		else
 		{
 			sender.sendMessage((console ? "" : ChatColor.GREEN) + "Game successfully started.");
-			lobby.startGame();
+			((GameLobby) lobby).startGame();
 			return true;
 		}
 		
@@ -133,15 +134,15 @@ public abstract class LobbyCommands
 			sender.sendMessage((console ? "" : ChatColor.RED) + "The lobby " + (args.length > 0 ? args[0] : "you are in") + " is not a game lobby");
 			return false;
 		}
-		else if (!lobby.gameIsRunning())
+		else if (!((GameLobby) lobby).gameIsRunning())
 		{
 			sender.sendMessage((console ? "" : ChatColor.RED) + "There are no games running.");
 			return true;
 		}
 		else
 		{
+			((GameLobby) lobby).cancelGame();
 			sender.sendMessage((console ? "" : ChatColor.GREEN) + "Game successfully stopped.");
-			lobby.stopGame();
 			return true;
 		}
 		
@@ -687,14 +688,19 @@ public abstract class LobbyCommands
 			sender.sendMessage(ChatColor.RED + "Please select a lobby to view it's maps.");
 			return false;
 		}
+		else if (lobby.getType() != LobbyType.GAME)
+		{
+			sender.sendMessage(ChatColor.RED + lobby.getName() + " is not a game lobby");
+			return false;
+		}
 		
-		maps = lobby.getMaps();
+		maps = ((GameLobby) lobby).getMaps();
 		sender.sendMessage(ChatManager.bracket1_ + "List of " + lobby.getName() + "'s Maps" + ChatManager.bracket2_);
 		if (maps.isEmpty())
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "No maps. To add a map, use /" + cmd.getLabel() + " -" + CommandUtil.arg_addmap.getName() + " <map1> [map2] [map3] ...");
 		}
-		for (Map map : lobby.getMaps())
+		for (Map map : maps)
 		{
 			sender.sendMessage(ChatManager.leftborder + map.getFullName());
 		}
@@ -760,14 +766,19 @@ public abstract class LobbyCommands
 				fail++;
 				continue;
 			}
-			if (lobby.getMaps().contains(map))
+			else if (!(lobby instanceof GameLobby))
+			{
+				sender.sendMessage(ChatColor.RED + lobby.getName() + " is not a game lobby.");;
+				return false;
+			}
+			else if (((GameLobby) lobby).getMaps().contains(map))
 			{
 				sender.sendMessage(ChatColor.YELLOW + "Lobby already contains '" + mapname + "'.");
 				fail++;
 				continue;
 			}
 			
-			lobby.addMap(map);
+			((GameLobby) lobby).registerMap(map);
 			sender.sendMessage(ChatColor.GREEN + "Added map '" + mapname + "' to lobby '" + lobby.getName() + "'.");
 			success++;
 		}
@@ -843,14 +854,19 @@ public abstract class LobbyCommands
 				fail++;
 				continue;
 			}
-			if (!lobby.getMaps().contains(map))
+			else if(!(lobby instanceof GameLobby))
+			{
+				sender.sendMessage(ChatColor.RED + lobby.getName() + " is not a game lobby.");
+				return false;
+			}
+			else if (!((GameLobby) lobby).getMaps().contains(map))
 			{
 				sender.sendMessage(ChatColor.YELLOW + "Lobby already does not contain '" + mapname + "'.");
 				fail++;
 				continue;
 			}
 			
-			lobby.removeMap(map);
+			((GameLobby) lobby).unregisterMap(map);
 			sender.sendMessage(ChatColor.GREEN + "Removed map '" + mapname + "' from lobby '" + lobby.getName() + "'.");
 			success++;
 		}

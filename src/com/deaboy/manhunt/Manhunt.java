@@ -30,7 +30,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.commands.CommandSwitchboard;
 import com.deaboy.manhunt.commands.CommandUtil;
-import com.deaboy.manhunt.finder.Finder;
 import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameType;
@@ -44,6 +43,7 @@ import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Selection;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.ManhuntSettings;
+import com.deaboy.manhunt.settings.SettingsFile;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -90,6 +90,7 @@ public class Manhunt implements Closeable, Listener
 	//---------------- Local variables -----------------//
 	private static	Manhunt				instance;
 	private 		ManhuntSettings		settings;
+	private			SettingsFile		settingsfile;
 	private 		TimeoutManager		timeouts;
 	private 		FinderManager		finders;
 	private 		CommandUtil			command_util;
@@ -114,7 +115,7 @@ public class Manhunt implements Closeable, Listener
 	public Manhunt()
 	{
 		Manhunt.instance =		this;
-		this.settings =			new ManhuntSettings(path_settings);
+		this.settings =			new ManhuntSettings();
 		settings.load();
 		settings.save();
 		
@@ -266,27 +267,13 @@ public class Manhunt implements Closeable, Listener
 		return null;
 		
 	}
-	public static Lobby getLobby(org.bukkit.World world)
-	{
-		for (Lobby l : getLobbies())
-			if (l.getCurrentMap() != null && l.gameIsRunning() && l.getCurrentMap().getWorld() == world)
-				return l;
-		return null;
-	}
-	public static Lobby getLobby(World world)
-	{
-		if (world != null)
-			return getLobby(world.getWorld());
-		else
-			return null;
-	}
 	public static List<Lobby> getLobbies(World world)
 	{
 		List<Lobby> lobbies = new ArrayList<Lobby>();
 		
 		for (Lobby lobby : getInstance().lobbies.values())
 		{
-			if (lobby.getWorlds().contains(world))
+			if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).getWorlds().contains(world))
 			{
 				lobbies.add(lobby);
 			}
@@ -1160,14 +1147,14 @@ public class Manhunt implements Closeable, Listener
 			gc.close();
 		
 		for (Lobby l : getInstance().lobbies.values())
-			l.save();
+			l.saveFiles();
 		
 		for (World w : getInstance().worlds.values())
 			w.save();
 
 		HandlerList.unregisterAll(this);
 		
-		settings.save();
+		settingsfile.save();
 	}
 	
 	

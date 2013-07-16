@@ -1,4 +1,4 @@
-package com.deaboy.manhunt.game.events;
+package com.deaboy.manhunt.timeline;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.GameLobby;

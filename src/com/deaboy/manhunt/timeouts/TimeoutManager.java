@@ -9,7 +9,9 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntPlugin;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyType;
 
 /**
  * This class handles all player timeouts, including
@@ -31,19 +33,33 @@ public class TimeoutManager
 	
 	
 	//---------------- Functions ----------------//
-	public void startTimeout(Player p)
+	public boolean startTimeout(Player p)
 	{
 		if (p != null)
-			startTimeout(p.getName());
-	}
-	public void startTimeout(String name)
-	{
-		if (timeouts.containsKey(name))
 		{
-			cancelTimeout(name);
+			return startTimeout(p.getName());
 		}
-		
-		timeouts.put(name, new Timeout(name));
+		else
+		{
+			return false;
+		}
+	}
+	public boolean startTimeout(String name)
+	{
+		if (Manhunt.getPlayerLobby(name).getType() == LobbyType.GAME)
+		{
+			if (timeouts.containsKey(name))
+			{
+				cancelTimeout(name);
+			}
+			
+			timeouts.put(name, new Timeout(name));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	public boolean containsTimeout(Player p)
 	{
@@ -100,10 +116,10 @@ public class TimeoutManager
 				throw new IllegalArgumentException("Argument is null.");
 			
 			this.player_name = player_name;
-			if (Manhunt.getPlayerLobby(player_name) != null)
+			if (Manhunt.getPlayerLobby(player_name) != null && Manhunt.getPlayerLobby(player_name).getType() == LobbyType.GAME)
 			{
 				this.lobby_id = Manhunt.getPlayerLobby(player_name).getId();
-				this.forfeit_time = Manhunt.getPlayerLobby(player_name).getSettings().OFFLINE_TIMEOUT.getValue() * 1000;
+				this.forfeit_time = ((GameLobby) Manhunt.getPlayerLobby(player_name)).getSettings().OFFLINE_TIMEOUT.getValue() * 1000;
 			}
 			else
 			{
@@ -136,7 +152,8 @@ public class TimeoutManager
 		private void forfeitPlayer()
 		{
 			Lobby lobby = Manhunt.getLobby(lobby_id);
-			lobby.forfeitPlayer(player_name);
+			if (lobby.getType() == LobbyType.GAME)
+			((GameLobby) lobby).forfeitPlayer(player_name);
 			cancelTimeout(player_name);
 		}
 		@Override

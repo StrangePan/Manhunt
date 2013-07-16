@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.ManhuntMap;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Spawn;
@@ -272,12 +273,7 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		for (Lobby lobby : Manhunt.getLobbies())
-		{
-			lobby.removeMap(map);
-		}
-		
-		map.getWorld().removeMap(map.getName());
+		Manhunt.deleteMap(map);
 		
 		sender.sendMessage(ChatColor.GREEN + "Map '" + map.getName() + "' has been deleted.");
 		

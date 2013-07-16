@@ -4,7 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.GameLobby;
+import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.lobby.Team;
 
 public class FinderUtil
@@ -12,10 +13,15 @@ public class FinderUtil
 
 	public static void sendMessageNoOnlinePrey(Player p)
 	{
-		Lobby lobby;
+		GameLobby lobby;
 		Team t;
 		
-		lobby = Manhunt.getLobby(p.getName());
+		if (Manhunt.getLobby(p.getName()).getType() != LobbyType.GAME)
+		{
+			return;
+		}
+		
+		lobby = (GameLobby) Manhunt.getLobby(p.getName());
 		
 		if (lobby.getPlayerTeam(p.getName()) == Team.HUNTERS)
 		{

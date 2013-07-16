@@ -1,4 +1,4 @@
-package com.deaboy.manhunt.game.events;
+package com.deaboy.manhunt.timeline;
 
 import java.util.Collections;
 import java.util.Date;
