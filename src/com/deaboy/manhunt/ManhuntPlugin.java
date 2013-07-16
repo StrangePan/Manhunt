@@ -22,7 +22,7 @@ public class ManhuntPlugin extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
-		Manhunt.saveSettings();
+		getManhuntInstance().saveSettings();
 		getManhuntInstance().close();
 		instance = null;
 		manhunt = null;

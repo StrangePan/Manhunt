@@ -13,9 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -35,6 +37,7 @@ import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameType;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.lobby.Team;
@@ -116,8 +119,10 @@ public class Manhunt implements Closeable, Listener
 	{
 		Manhunt.instance =		this;
 		this.settings =			new ManhuntSettings();
-		settings.load();
-		settings.save();
+		this.settingsfile =		new SettingsFile(new File(path_settings));
+		this.settingsfile		.addPack(this.settings);
+		this.settingsfile.load();
+		this.settingsfile.save();
 		
 		this.timeouts =			new TimeoutManager();
 		this.finders =			new FinderManager();
@@ -357,9 +362,9 @@ public class Manhunt implements Closeable, Listener
 	private void removePlayer(String name)
 	{
 		timeouts.cancelTimeout(name);
-		stopFinder(name, true);
+		cancelFinderFor(name);
 		if (getPlayerLobby(name) != null)
-			getPlayerLobby(name).removePlayer(name);
+			getPlayerLobby(name).playerLeaveServer(name);
 		player_lobbies.remove(name);
 		player_maps.remove(name);
 		player_modes.remove(name);
@@ -600,9 +605,9 @@ public class Manhunt implements Closeable, Listener
 			return;
 		}
 		
-		if (lobby.gameIsRunning())
+		if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).gameIsRunning())
 		{
-			lobby.stopGame();
+			((GameLobby) lobby).cancelGame();
 		}
 		
 		// Lobby to close is NOT the default lobby
@@ -614,6 +619,8 @@ public class Manhunt implements Closeable, Listener
 				changePlayerLobby(p, getInstance().default_lobby);
 			}
 		}
+		
+		lobby.disable();
 		
 	}
 	public static void openLobby(long lobbyId)
@@ -712,7 +719,7 @@ public class Manhunt implements Closeable, Listener
 				getPlayerLobby(p).forfeitPlayer(p.getName());
 			else if (getPlayerLobby(p) != null)
 				getPlayerLobby(p).removePlayer(p);
-			stopFinder(p.getName(), false);
+			cancelFinder(p.getName(), false);
 		}
 	}
 	public static void playerChat(Player p, String message)
@@ -726,26 +733,26 @@ public class Manhunt implements Closeable, Listener
 			return;
 		}
 		
-		message = ChatColor.WHITE + "<" + l.getPlayerTeam(p).getColor() + p.getName() + ChatColor.WHITE + "> " + message;
+		message = ChatColor.WHITE + "<" + (l.getType() == LobbyType.GAME ? ((GameLobby) l).getPlayerTeam(p).getColor() : ChatColor.WHITE) + p.getName() + ChatColor.WHITE + "> " + message;
 		
-		if (!l.gameIsRunning() || l.getSettings().ALL_TALK.getValue())
+		if (l.getType() != LobbyType.GAME || !((GameLobby) l).gameIsRunning() || ((GameLobby) l).getSettings().ALL_TALK.getValue())
 		{
 			l.broadcast(message);
 		}
 		else
 		{
-			switch (l.getPlayerTeam(p))
+			switch (((GameLobby) l).getPlayerTeam(p))
 			{
 			case HUNTERS:
 			case PREY:
-				l.broadcast(message, l.getPlayerTeam(p));
+				((GameLobby) l).broadcast(message, ((GameLobby) l).getPlayerTeam(p));
 				break;
 			default:
-				l.broadcast(message, Team.SPECTATORS, Team.STANDBY, Team.NONE);
+				((GameLobby) l).broadcast(message, Team.SPECTATORS, Team.STANDBY, Team.NONE);
 				break;
 			}
 			
-			log('[' + l.getName() + "] " + p.getName() + ": " + message);
+			log('[' + l.getName() + "::" + l.getName() + "] " + p.getName() + ": " + message);
 			return;
 		}
 	}
@@ -934,37 +941,37 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	//////////////// FINDERS ////////
-	public static void startFinder(Player p, long lobby_id)
+	public static boolean startFinder(Player p, long charge_ticks, long cooldown_ticks, Material finder_material, int food_cost, double health_cost, boolean use_xp)
 	{
-		getInstance().finders.startFinder(p, lobby_id);
+		return getInstance().finders.startFinderFor(p, charge_ticks, cooldown_ticks, finder_material, food_cost, health_cost, use_xp);
 	}
-	public static void stopAllFinders(long lobby_id)
+	public static void cancelAllFinders(GameLobby lobby)
 	{
-		getInstance().finders.stopLobbyFinders(lobby_id);
+		getInstance().finders.cancelAllFinders(lobby);
 	}
-	public static void stopFinder(Player p, boolean ignoreUsed)
+	public static void cancelAllFinders(long lobby_id)
 	{
-		stopFinder(p.getName(), ignoreUsed);
+		getInstance().finders.cancelAllFinders(lobby_id);
 	}
-	public static void stopFinder(String name, boolean ignoreUsed)
+	public static void cancelAllFinders()
 	{
-		getInstance().finders.stopFinder(name, ignoreUsed);
+		getInstance().finders.cancelAllFinders();
 	}
-	public static Finder getFinder(Player p)
+	public static void cancelFinderFor(Player p)
 	{
-		return getFinders().getFinder(p);
+		cancelFinderFor(p.getName());
 	}
-	public static Finder getFinder(String name)
+	public static void cancelFinderFor(String name)
 	{
-		return getFinders().getFinder(name);
+		getInstance().finders.cancelFinderFor(name);
 	}
-	public static boolean finderExists(Player p)
+	public static boolean finderExistsFor(Player p)
 	{
-		return getFinders().finderExists(p);
+		return getFinders().finderExistsFor(p);
 	}
-	public static boolean finderExists(String name)
+	public static boolean finderExistsFor(String name)
 	{
-		return getFinders().finderExists(name);
+		return getFinders().finderExistsFor(name);
 	}
 	
 	
@@ -1038,23 +1045,23 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	//////////////// GLOBAL MANHUNT EVENTS ////////
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		playerJoinServer(e.getPlayer());
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
 		playerLeaveServer(e.getPlayer());
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent e)
 	{
 		playerChat(e.getPlayer(), e.getMessage());
 		e.setCancelled(true);
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerClick(PlayerInteractEvent e)
 	{
 		if (getPlayerMode(e.getPlayer()) != ManhuntMode.EDIT)
@@ -1100,29 +1107,25 @@ public class Manhunt implements Closeable, Listener
 		}
 		
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityTarget(EntityTargetEvent e)
 	{
 		if (e.isCancelled() || !(e.getTarget() instanceof Player))
 			return;
 		
-		if (!getPlayerLobby((Player) e.getTarget()).gameIsRunning())
+		if (getPlayerLobby((Player) e.getTarget()).getType() != LobbyType.GAME || !((GameLobby) getPlayerLobby((Player) e.getTarget())).gameIsRunning())
 		{
 			e.setCancelled(true);
 			return;
 		}
-		else
-		{
-			return;
-		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerDamage(EntityDamageEvent e)
 	{
 		if (e.isCancelled() || !(e.getEntity() instanceof Player))
 			return;
 		
-		if (!getPlayerLobby((Player) e.getEntity()).gameIsRunning())
+		if (getPlayerLobby((Player) e.getEntity()).getType() != LobbyType.GAME || !((GameLobby) getPlayerLobby((Player) e.getEntity())).gameIsRunning())
 		{
 			e.setCancelled(true);
 			return;
@@ -1135,6 +1138,16 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	//////////////// CLOSING ////////
+	public void saveSettings()
+	{
+		this.settingsfile.savePacks();
+		this.settingsfile.save();
+	}
+	public void loadSettings()
+	{
+		this.settingsfile.load();
+		this.settingsfile.loadPacks();
+	}
 	
 	
 	//////////////// CLOSING ////////
@@ -1142,6 +1155,8 @@ public class Manhunt implements Closeable, Listener
 	{
 		worldedit = null;
 		worldeditplugin = null;
+		
+		cancelAllFinders();
 		
 		for (GameType gc : games.values())
 			gc.close();

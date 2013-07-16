@@ -102,10 +102,17 @@ public class FinderManager
 		{
 			return;
 		}
+		else
+		{
+			cancelAllFinders(lobby.getId());
+		}
+	}
+	public void cancelAllFinders(long lobby_id)
+	{
 		List<String> players = new ArrayList<String>(this.finders.keySet());
 		for (String player : players)
 		{
-			if (this.finders.get(player).getLobbyId() == lobby.getId())
+			if (this.finders.get(player).getLobbyId() == lobby_id)
 			{
 				this.finders.get(player).cancel();
 				this.finders.remove(player);

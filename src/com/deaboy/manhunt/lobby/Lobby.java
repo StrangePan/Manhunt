@@ -61,12 +61,12 @@ public abstract class Lobby implements Closeable
 		getSettings().SPAWN_LOCATION.setValue(loc);
 	}
 	
-	protected void enable()
+	public void enable()
 	{
 		this.open = true;
 		getSettings().LOBBY_OPEN.setValue(true);
 	}
-	protected void disable()
+	public void disable()
 	{
 		this.open = false;
 		getSettings().LOBBY_OPEN.setValue(false);
