@@ -153,7 +153,7 @@ public class TimeoutManager
 		{
 			Lobby lobby = Manhunt.getLobby(lobby_id);
 			if (lobby.getType() == LobbyType.GAME)
-			((GameLobby) lobby).forfeitPlayer(player_name);
+			((GameLobby) lobby).playerForfeit(player_name);
 			cancelTimeout(player_name);
 		}
 		@Override

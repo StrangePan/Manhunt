@@ -129,9 +129,9 @@ public abstract class Lobby implements Closeable
 	
 	//////////////// PUBLIC METHODS ////////////////
 	//---------------- INTERFACE ----------------//
-	public abstract boolean playerJoinLobby(String p);
-	public abstract boolean playerLeaveLobby(String p);
-	public abstract boolean playerLeaveServer(String p);
+	public abstract boolean playerJoinLobby(Player player);
+	public abstract boolean playerLeaveLobby(String name);
+	public abstract boolean playerLeaveServer(Player player);
 	
 	
 	//---------------- PLAYERS ----------------//

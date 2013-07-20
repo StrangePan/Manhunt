@@ -716,7 +716,7 @@ public class Manhunt implements Closeable, Listener
 		else
 		{
 			if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning())
-				getPlayerLobby(p).forfeitPlayer(p.getName());
+				getPlayerLobby(p).playerForfeit(p.getName());
 			else if (getPlayerLobby(p) != null)
 				getPlayerLobby(p).removePlayer(p);
 			cancelFinder(p.getName(), false);

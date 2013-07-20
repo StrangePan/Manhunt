@@ -39,7 +39,7 @@ public abstract class GameLobby extends Lobby
 	
 	//////////////// PUBLIC FUNCTIONS ////////////////
 	//---------------- INTERFACE ----------------//
-	public abstract boolean forfeitPlayer(String name);
+	public abstract boolean playerForfeit(String name);
 	public abstract boolean playerChangeTeam(String player, Team team);
 	public abstract boolean registerMap(Map map);
 	public abstract boolean unregisterMap(Map map);

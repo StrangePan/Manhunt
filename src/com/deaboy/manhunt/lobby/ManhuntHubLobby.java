@@ -1,6 +1,7 @@
 package com.deaboy.manhunt.lobby;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.settings.LobbySettings;
 
@@ -20,17 +21,17 @@ public class ManhuntHubLobby extends HubLobby
 	
 	///////////////// PUBLIC METHODS /////////////////
 	@Override
-	public boolean playerJoinLobby(String p) {
+	public boolean playerJoinLobby(Player player) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 	@Override
-	public boolean playerLeaveLobby(String p) {
+	public boolean playerLeaveLobby(String name) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 	@Override
-	public boolean playerLeaveServer(String p) {
+	public boolean playerLeaveServer(Player player) {
 		// TODO Auto-generated method stub
 		return false;
 	}
