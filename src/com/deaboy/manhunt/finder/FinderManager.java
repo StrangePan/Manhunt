@@ -129,6 +129,7 @@ public class FinderManager
 	}
 	
 	
+	
 	public class Finder
 	{
 		private Player player;

@@ -2,6 +2,7 @@ package com.deaboy.manhunt.game;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -28,7 +29,6 @@ import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
-import com.deaboy.manhunt.finder.Finder;
 import com.deaboy.manhunt.finder.FinderUtil;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
@@ -213,14 +213,14 @@ public class ManhuntGameListener implements GameEventListener, Listener
 				&& lobby.getPlayerTeam(e.getPlayer()) != Team.PREY)
 			return;
 		
-		if (!Manhunt.finderExists(e.getPlayer()))
+		if (!Manhunt.finderExistsFor(e.getPlayer()))
 		{
-			Manhunt.startFinder(e.getPlayer(), lobby.getId());
+			Manhunt.startFinderFor(e.getPlayer(), 8000L, game.getSettings().FINDER_COOLDOWN.getValue()*1000L, Material.getMaterial(game.getSettings().FINDER_ITEM.getValue()), 4, 0, true);
 			FinderUtil.sendMessageFinderInitialize(e.getPlayer());
 		}
 		else
 		{
-			Manhunt.finderTimeLeft(e.getPlayer());
+			Manhunt.sendFinderTimeRemaining(e.getPlayer());
 		}
 	}
 	@EventHandler

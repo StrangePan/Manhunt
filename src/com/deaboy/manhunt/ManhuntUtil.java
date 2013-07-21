@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -126,6 +127,28 @@ public abstract class ManhuntUtil
 	}
 	
 	/**
+	 * Resets a player's food, hunger, inventory, game mode, etc.
+	 * @param p
+	 */
+	public static void resetPlayer(Player p)
+	{
+		p.getInventory().clear();
+		p.setHealth(p.getMaxHealth());
+		p.setFoodLevel(20);
+		p.setSaturation(20f);
+		p.setExhaustion(20f);
+		p.getEnderChest().clear();
+		p.setBedSpawnLocation(null);
+		p.setCompassTarget(p.getLocation());
+		p.setExp(0f);
+		p.setLevel(0);
+		p.setFlying(false);
+		p.setRemainingAir(10);
+		p.setTotalExperience(0);
+		p.setGameMode(GameMode.ADVENTURE);
+	}
+	
+	/**
 	 * Smoothly transitions a world's time to the given day time.
 	 * @param world The world to manipulate
 	 * @param time The time of day you want the cycle to end on
@@ -163,7 +186,6 @@ public abstract class ManhuntUtil
 		}
 	}
 	
-
 	static class WorldTimeMachine
 	{
 		private final World world;

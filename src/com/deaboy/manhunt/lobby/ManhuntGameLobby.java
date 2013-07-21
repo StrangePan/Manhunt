@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.settings.GameLobbySettings;
@@ -33,6 +34,7 @@ public class ManhuntGameLobby extends GameLobby
 		{
 			addPlayer(player, Team.STANDBY);
 			player.teleport(this.getRandomSpawnLocation());
+			ManhuntUtil.resetPlayer(player);
 		}
 		
 		if (gameIsRunning() && (getPlayerTeam(player) == Team.HUNTERS || getPlayerTeam(player) == Team.PREY))
@@ -100,7 +102,31 @@ public class ManhuntGameLobby extends GameLobby
 	@Override
 	public boolean playerForfeit(String name)
 	{
-		// TODO Write this
+		if (gameIsRunning() && (getPlayerTeam(name) == Team.HUNTERS || getPlayerTeam(name) == Team.PREY))
+		{
+			broadcast(ChatManager.bracket1_ + getPlayerTeam(name).getColor() + name + ChatColor.DARK_RED + " has forfeit the game!" + ChatManager.bracket2_);
+			if (Bukkit.getPlayerExact(name) != null)
+			{
+				Bukkit.getPlayerExact(name).teleport(getRandomSpawnLocation());
+				ManhuntUtil.resetPlayer(Bukkit.getPlayerExact(name));
+			}
+			else
+			{
+				this.removePlayer(name);
+			}
+			getGame().forfeitPlayer(name);
+		}
+		else if (containsPlayer(name))
+		{
+			if (gameIsRunning())
+			{
+				broadcast((getPlayerTeam(name) != null ? getPlayerTeam(name).getColor() : ChatManager.color) + name + ChatManager.color + " left the lobby", Team.SPECTATORS, Team.STANDBY);
+			}
+			else
+			{
+				broadcast((getPlayerTeam(name) != null ? getPlayerTeam(name).getColor() : ChatManager.color) + name + ChatManager.color + " left the lobby");
+			}
+		}
 		return true;
 	}
 	@Override

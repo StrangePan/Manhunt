@@ -375,27 +375,6 @@ public class Manhunt implements Closeable, Listener
 		for (i = 0; lobbies.containsKey(i); i++);
 		return i;
 	}
-	/**
-	 * Resets a player's food, hunger, inventory, game mode, etc.
-	 * @param p
-	 */
-	private static void resetPlayer(Player p)
-	{
-		p.getInventory().clear();
-		p.setHealth(p.getMaxHealth());
-		p.setFoodLevel(20);
-		p.setSaturation(20f);
-		p.setExhaustion(20f);
-		p.getEnderChest().clear();
-		p.setBedSpawnLocation(null);
-		p.setCompassTarget(p.getLocation());
-		p.setExp(0f);
-		p.setLevel(0);
-		p.setFlying(false);
-		p.setRemainingAir(10);
-		p.setTotalExperience(0);
-		p.setGameMode(GameMode.ADVENTURE);
-	}
 	private void registerGameType(Class<? extends Game> gameType, String name)
 	{
 		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
@@ -941,7 +920,7 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	//////////////// FINDERS ////////
-	public static boolean startFinder(Player p, long charge_ticks, long cooldown_ticks, Material finder_material, int food_cost, double health_cost, boolean use_xp)
+	public static boolean startFinderFor(Player p, long charge_ticks, long cooldown_ticks, Material finder_material, int food_cost, double health_cost, boolean use_xp)
 	{
 		return getInstance().finders.startFinderFor(p, charge_ticks, cooldown_ticks, finder_material, food_cost, health_cost, use_xp);
 	}
@@ -972,6 +951,11 @@ public class Manhunt implements Closeable, Listener
 	public static boolean finderExistsFor(String name)
 	{
 		return getFinders().finderExistsFor(name);
+	}
+	public static void sendFinderTimeRemaining(Player p)
+	{
+		// TODO DO THIS
+		p.sendMessage("Your finder is still charging.");
 	}
 	
 	
