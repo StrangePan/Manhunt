@@ -7,19 +7,27 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.Lobby;
 
-public class GameType implements Closeable
+public class GameClass implements Closeable
 {
-	//---------------- Properties ----------------//
+	//////////////// Properties ////////////////
 	private final Class<? extends Game> gameClass;
 	private final long id;
 	private final String name;
 	private JavaPlugin plugin;
 	
 	
-	
-	//---------------- Constructor ----------------//
-	public GameType(Class<? extends Game> gameclass, long id, String name, JavaPlugin plugin)
+	//////////////// Constructor ////////////////
+	public GameClass(Class<? extends Game> gameclass, long id, String name, JavaPlugin plugin)
 	{
+		try
+		{
+			gameclass.getConstructor(Lobby.class);
+		}
+		catch (NoSuchMethodException e)
+		{
+			throw new IllegalArgumentException("Game class must implement constructor(Lobby)");
+		}
+		
 		this.gameClass = gameclass;
 		this.name = name;
 		this.id = id;
@@ -27,23 +35,26 @@ public class GameType implements Closeable
 	}
 	
 	
-	
-	//---------------- Getters ----------------//
+	//////////////// Getters ////////////////
 	public long getId()
 	{
 		return id;
 	}
-	
 	public String getName()
 	{
 		return name;
 	}
-	
 	public Class<? extends Game> getGameClass()
 	{
 		return gameClass;
 	}
+	public JavaPlugin getPlugin()
+	{
+		return plugin;
+	}
 	
+	
+	//////////////// PUBLIC METHODS ////////////////
 	public Game createInstance(Lobby lobby)
 	{
 		try
@@ -57,10 +68,6 @@ public class GameType implements Closeable
 		}
 	}
 	
-	public JavaPlugin getPlugin()
-	{
-		return plugin;
-	}
 	
 	public void close()
 	{

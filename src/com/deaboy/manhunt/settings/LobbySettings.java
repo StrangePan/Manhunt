@@ -6,6 +6,7 @@ public class LobbySettings extends SettingsPack
 {
 	public final IntegerSetting 	MODE;
 	public final StringSetting		LOBBY_NAME;
+	public final StringSetting		LOBBY_CLASS;
 	public final BooleanSetting		LOBBY_OPEN;
 	public final IntegerSetting		MAX_PLAYERS;
 	
@@ -17,6 +18,7 @@ public class LobbySettings extends SettingsPack
 	{
 		addSetting(MODE =			new IntegerSetting("mode", 0, "The mode the plugin is running in.", ""), false);
 		addSetting(LOBBY_NAME =		new StringSetting("lobbyname", "", ""), false);
+		addSetting(LOBBY_CLASS =	new StringSetting("lobbyclass", "", ""), false);
 		addSetting(LOBBY_OPEN =		new BooleanSetting("open", true, "", ""), false);
 		addSetting(MAX_PLAYERS =	new IntegerSetting("maxplayers", 16, "Maximum players allowed in lobby.", "No player cap."), true);
 		

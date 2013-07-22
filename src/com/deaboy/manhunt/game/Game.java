@@ -4,9 +4,12 @@ import java.io.Closeable;
 import java.util.logging.Level;
 
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.lobby.GameLobby;
+import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.settings.SettingsPack;
 
@@ -52,7 +55,7 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	
-	//------------ Setters ------------//
+	//////////////// Setters ////////////////
 	public void setMap(Map map)
 	{
 		if (!isRunning())
@@ -71,11 +74,21 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	
-	//------------ Public Methods ------------//
+	//////////////// Public Methods ////////////////
+	//---------------- Game ----------------//
 	public abstract void startGame();
 	public abstract void cancelGame();
 	public abstract void endGame();
 	public abstract void testGame();
+	
+	
+	//---------------- Interface ----------------//
+	public abstract boolean playerJoinLobby(Player player);
+	public abstract boolean playerLeaveLobby(String name);
+	public abstract boolean playerLeaveServer(Player player);
+	public abstract boolean playerForfeit(String name);
+	public abstract boolean playerChangeTeam(String name, Team team);
+	
 	
 	@Override
 	public void close()
@@ -84,7 +97,6 @@ public abstract class Game implements Closeable, Listener
 	}
 	
 	public abstract void distributeTeams();
-	public abstract void forfeitPlayer(String name);
 	public abstract SettingsPack getSettings();
 	
 }

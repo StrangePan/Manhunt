@@ -11,7 +11,8 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.GameLobby;
+import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.lobby.Team;
 
 public class BlockEventHandler implements Listener
@@ -55,12 +56,12 @@ public class BlockEventHandler implements Listener
 	
 	private boolean canBuildHere(Player p, Block b)
 	{
-		Lobby lobby;
+		GameLobby lobby;
 		
-		lobby = Manhunt.getPlayerLobby(p);
-		
-		if (lobby == null)
+		if (Manhunt.getPlayerLobby(p) == null || Manhunt.getPlayerLobby(p).getType() != LobbyType.GAME)
 			return true;
+		
+		lobby = (GameLobby) Manhunt.getPlayerLobby(p);
 		
 		if (lobby.gameIsRunning())
 		{

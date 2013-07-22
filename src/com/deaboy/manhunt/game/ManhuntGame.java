@@ -7,6 +7,8 @@ import java.util.Random;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
+
+import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.GameLobby;
@@ -111,9 +113,39 @@ public class ManhuntGame extends Game
 	
 	
 	//---------------- Players ----------------//
-	public void forfeitPlayer(String name)
+	@Override
+	public boolean playerJoinLobby(Player player)
 	{
-		
+		return true;
+	}
+	@Override
+	public boolean playerLeaveLobby(String name)
+	{
+		Manhunt.cancelFinderFor(name);
+		return true;
+	}
+	@Override
+	public boolean playerLeaveServer(Player player)
+	{
+		Manhunt.cancelFinderFor(player);
+		return true;
+	}
+	@Override
+	public boolean playerForfeit(String name)
+	{
+		Manhunt.cancelFinderFor(name);
+		return true;
+	}
+	public boolean playerChangeTeam(String name, Team team)
+	{
+		if (!getLobby().containsPlayer(name) || team == null || isRunning() && getLobby().getPlayerTeam(name) != team && (team == Team.HUNTERS || team == Team.PREY))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 	
 	

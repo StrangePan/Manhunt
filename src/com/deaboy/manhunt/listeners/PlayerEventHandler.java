@@ -3,7 +3,6 @@ package com.deaboy.manhunt.listeners;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +13,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.deaboy.manhunt.Manhunt;
-import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.GameLobby;
 
 public class PlayerEventHandler implements Listener
 {
@@ -32,17 +32,29 @@ public class PlayerEventHandler implements Listener
 			return;
 		
 		String message;
-		Lobby lobby = Manhunt.getPlayerLobby(e.getPlayer());
+		GameLobby lobby;
 		List<Player> recipients = new ArrayList<Player>();
 		
-		if (lobby == null)
+		if (Manhunt.getPlayerLobby(e.getPlayer()) == null || Manhunt.getPlayerLobby(e.getPlayer()).getType() != LobbyType.GAME)
+		{
 			recipients.addAll(e.getPlayer().getWorld().getPlayers());
-		else if (!lobby.gameIsRunning() || lobby.getSettings().ALL_TALK.getValue())
+		}
+		
+		lobby = (GameLobby) Manhunt.getPlayerLobby(e.getPlayer());
+		
+		if (!lobby.gameIsRunning() || lobby.getSettings().ALL_TALK.getValue())
+		{
 			recipients.addAll(lobby.getOnlinePlayers());
+		}
 		else
+		{
 			recipients.addAll(lobby.getOnlinePlayers(lobby.getPlayerTeam(e.getPlayer())));
+		}
+		
 		if (!recipients.contains(e.getPlayer()))
+		{
 			recipients.add(e.getPlayer());
+		}
 		
 		message = lobby.getPlayerTeam(e.getPlayer()).getColor() + 
 				e.getPlayer().getName() + ChatColor.WHITE + ": " +
@@ -51,7 +63,7 @@ public class PlayerEventHandler implements Listener
 		for (Player p : recipients)
 			p.sendMessage(message);
 		
-		Bukkit.getServer().getConsoleSender().sendMessage(message);
+		Manhunt.log(message);
 		
 		e.setCancelled(true);
 	}

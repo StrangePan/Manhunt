@@ -34,17 +34,21 @@ import com.deaboy.manhunt.commands.CommandSwitchboard;
 import com.deaboy.manhunt.commands.CommandUtil;
 import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.game.Game;
-import com.deaboy.manhunt.game.GameType;
+import com.deaboy.manhunt.game.GameClass;
 import com.deaboy.manhunt.game.ManhuntGame;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyClass;
 import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.ManhuntGameLobby;
+import com.deaboy.manhunt.lobby.ManhuntHubLobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.ManhuntWorld;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Selection;
 import com.deaboy.manhunt.map.World;
+import com.deaboy.manhunt.settings.LobbySettings;
 import com.deaboy.manhunt.settings.ManhuntSettings;
 import com.deaboy.manhunt.settings.SettingsFile;
 import com.deaboy.manhunt.timeouts.TimeoutManager;
@@ -106,7 +110,8 @@ public class Manhunt implements Closeable, Listener
 	private			HashMap<String, String> player_maps;
 	private			HashMap<String, Long> player_logoffs;
 	private			HashMap<String, World>	worlds;
-	private			HashMap<Long, GameType>	games;
+	private			HashMap<Long, GameClass> gameclasses;
+	private			HashMap<Long, LobbyClass> lobbyclasses;
 	private			HashMap<String, Selection> selections;
 	
 	private static	WorldEdit			worldedit;
@@ -135,7 +140,7 @@ public class Manhunt implements Closeable, Listener
 		this.player_modes =		new HashMap<String, ManhuntMode>();
 		this.player_maps =		new HashMap<String, String>();
 		this.player_logoffs =	new HashMap<String, Long>();
-		this.games =			new HashMap<Long, GameType>();
+		this.gameclasses =			new HashMap<Long, GameClass>();
 		this.selections =		new HashMap<String, Selection>();
 		
 		worldedit = null;
@@ -309,6 +314,15 @@ public class Manhunt implements Closeable, Listener
 		else
 			return null;
 	}
+	public static Lobby getLobby(org.bukkit.World world)
+	{
+		for (Lobby lobby : getLobbies())
+		{
+			if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).gameIsRunning() && ((GameLobby) lobby).getCurrentMap().getWorld().getWorld() == world)
+				return lobby;
+		}
+		return null;
+	}
 	
 	public static List<World> getWorlds()
 	{
@@ -363,8 +377,6 @@ public class Manhunt implements Closeable, Listener
 	{
 		timeouts.cancelTimeout(name);
 		cancelFinderFor(name);
-		if (getPlayerLobby(name) != null)
-			getPlayerLobby(name).playerLeaveServer(name);
 		player_lobbies.remove(name);
 		player_maps.remove(name);
 		player_modes.remove(name);
@@ -380,15 +392,15 @@ public class Manhunt implements Closeable, Listener
 		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
 			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
 		
-		for (GameType gc : getInstance().games.values())
+		for (GameClass gc : getInstance().gameclasses.values())
 			if (gc.getGameClass().equals(gameType))
 				return;
 		
 		long i = 0;
-		while (getInstance().games.containsKey(i))
+		while (getInstance().gameclasses.containsKey(i))
 			i++;
 		
-		getInstance().games.put(i, new GameType(gameType, i, name, ManhuntPlugin.getInstance()));
+		getInstance().gameclasses.put(i, new GameClass(gameType, i, name, ManhuntPlugin.getInstance()));
 		
 	}
 	private void loadLobbies()
@@ -450,7 +462,12 @@ public class Manhunt implements Closeable, Listener
 		if (lobby != null)
 			return null;
 		
-		lobby = new Lobby(id, name, type, manhunt_world, location);
+		if (type == LobbyType.HUB)
+			lobby = new ManhuntHubLobby(id, name, location);
+		else if (type == LobbyType.GAME)
+			lobby = new ManhuntGameLobby(id, name, location);
+		else
+			return null;
 		
 		getInstance().lobbies.put(lobby.getId(), lobby);
 		
@@ -459,7 +476,6 @@ public class Manhunt implements Closeable, Listener
 	public static boolean deleteLobby(long lobbyId)
 	{
 		Lobby lobby = getLobby(lobbyId);
-		File lobby_settings;
 		
 		if (lobby == null)
 		{
@@ -488,12 +504,8 @@ public class Manhunt implements Closeable, Listener
 				}
 			}
 		}
-		
-		lobby_settings = lobby.getFile();
-		if (lobby_settings != null && lobby_settings.exists())
-		{
-			lobby_settings.delete();
-		}
+
+		lobby.deleteFiles();
 		
 		return true;
 	}
@@ -505,19 +517,28 @@ public class Manhunt implements Closeable, Listener
 		}
 		
 		Lobby lobby;
-		int i;
+		SettingsFile file;
+		LobbySettings settings;
 		
-		lobby = new Lobby(getInstance().getNextLobbyId(), f.getAbsolutePath());
+		file = new SettingsFile(f);
+		settings = new LobbySettings();
+		file.addPack(settings);
+		file.load();
+		file.loadPacks();
+		file.close();
 		
-		if (getLobby(lobby.getName()) != null)
+		if (getLobbyClassByCanonicalName(settings.LOBBY_CLASS.getValue()) != null)
 		{
-			i = 1;
-			while (getLobby(lobby.getName() + i) != null)
-				i++;
-			lobby.setName(lobby.getName() + i);
+			lobby = getLobbyClassByCanonicalName(settings.LOBBY_CLASS.getValue()).createInstance(f);
+		}
+		else
+		{
+			return null;
 		}
 		
-		getInstance().lobbies.put(lobby.getId(), lobby);
+		
+		if (lobby != null)
+			getInstance().lobbies.put(lobby.getId(), lobby);
 		
 		return lobby;
 	}
@@ -534,18 +555,15 @@ public class Manhunt implements Closeable, Listener
 			return;
 		
 		p.teleport(lobby.getRandomSpawnLocation());
-		resetPlayer(p);
 		
 		getInstance().player_lobbies.put(p.getName(), lobby_id);
 		
-		if (lobby.addPlayer(p.getName()))
+		if (lobby.playerJoinLobby(p))
 		{
 			if (old_lobby != null)
 			{
-				old_lobby.broadcast(p.getName() + " has left the lobby.");
-				old_lobby.removePlayer(p);
+				old_lobby.playerLeaveLobby(p.getName());
 			}
-			lobby.broadcast(p.getName() + " has joined the lobby.");
 			log(p.getName() + " joined lobby " + lobby.getName());
 			
 			CommandUtil.setSelectedLobby(p, lobby);
@@ -623,20 +641,15 @@ public class Manhunt implements Closeable, Listener
 	//////////////// PLAYERS ////////
 	public static void playerJoinServer(Player p)
 	{
-		if (getInstance().player_logoffs.containsKey(p.getName()) && new Date().getTime() < getInstance().player_logoffs.get(p.getName()) + getSettings().FORGET_PLAYER.getValue() * 1000)
+		if (timeoutExists(p) || getInstance().player_logoffs.containsKey(p.getName()) && new Date().getTime() < getInstance().player_logoffs.get(p.getName()) + getSettings().FORGET_PLAYER.getValue() * 1000)
 		{
-			if (!timeoutExists(p))
+			if (getPlayerLobby(p) == null)
 			{
-				Lobby lobby = Manhunt.getLobby(getInstance().player_lobbies.get(p.getName()));
-				if (lobby == null)
-				{
-					getInstance().removePlayer(p.getName());
-					getCommandUtil().deletePlayer(p);
-				}
-				else
-				{
-					lobby.addPlayer(p.getName());
-				}
+				changePlayerLobby(p, getInstance().default_lobby);
+			}
+			else
+			{
+				getPlayerLobby(p).playerJoinLobby(p);
 			}
 		}
 		else
@@ -644,9 +657,6 @@ public class Manhunt implements Closeable, Listener
 			getInstance().removePlayer(p.getName());
 			getCommandUtil().deletePlayer(p);
 		}
-		
-		if (timeoutExists(p))
-			stopTimeout(p);
 		
 		// Reset the player's current lobby
 		if (!getInstance().player_lobbies.containsKey(p.getName()))
@@ -672,34 +682,12 @@ public class Manhunt implements Closeable, Listener
 	}
 	public static void playerLeaveServer(Player p)
 	{
-		/*
-		 * Protocol when a player leaves Manhunt
-		 * 
-		 * When a player leaves,...
-		 * 		Starts a timeout,
-		 * 		Or just plain kicks him
-		 * 
-		 * Completely removing a player involves...
-			 * 	Stopping their timeout
-			 * 	Stopping their finder
-			 * 	Removing them from lobbies
-			 * 	Forfeiting them from games
-			 *  Deleting their stuff in the command util
-		 */
-		
 		getInstance().player_logoffs.put(p.getName(), new Date().getTime());
-		if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning() && getPlayerLobby(p).getSettings().OFFLINE_TIMEOUT.getValue() > 0)
+		if (getPlayerLobby(p) != null && getPlayerLobby(p).getType() == LobbyType.GAME && ((GameLobby) getPlayerLobby(p)).gameIsRunning())
 		{
-			startTimeout(p);
+			((GameLobby) getPlayerLobby(p)).playerLeaveServer(p);
 		}
-		else
-		{
-			if (getPlayerLobby(p) != null && getPlayerLobby(p).gameIsRunning())
-				getPlayerLobby(p).playerForfeit(p.getName());
-			else if (getPlayerLobby(p) != null)
-				getPlayerLobby(p).removePlayer(p);
-			cancelFinder(p.getName(), false);
-		}
+		cancelFinderFor(p);
 	}
 	public static void playerChat(Player p, String message)
 	{
@@ -822,6 +810,31 @@ public class Manhunt implements Closeable, Listener
 		
 		return map;
 	}
+	public static boolean deleteMap(Map map)
+	{
+		if (map != null && map.getWorld().getMaps().contains(map))
+		{
+			for (Lobby lobby : getLobbies())
+			{
+				if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).containsMap(map) && ((GameLobby) lobby).gameIsRunning() && ((GameLobby) lobby).getCurrentMap() != map)
+				{
+					return false;
+				}
+			}
+			for (Lobby lobby : getLobbies())
+			{
+				if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).containsMap(map))
+				{
+					((GameLobby) lobby).unregisterMap(map);
+				}
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
 	
 	//////////////// TIMEOUTS ////////
@@ -875,7 +888,7 @@ public class Manhunt implements Closeable, Listener
 		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
 			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
 		
-		for (GameType gc : getInstance().games.values())
+		for (GameClass gc : getInstance().gameclasses.values())
 			if (gc.getGameClass().equals(gameType))
 				return false;
 		
@@ -883,22 +896,22 @@ public class Manhunt implements Closeable, Listener
 			throw new IllegalArgumentException("\"plugin\" arugment cannot be the Manhunt plugin itself.");
 		
 		long i = 0;
-		while (getInstance().games.containsKey(i))
+		while (getInstance().gameclasses.containsKey(i))
 			i++;
 		
-		getInstance().games.put(i, new GameType(gameType, i, name, plugin));
+		getInstance().gameclasses.put(i, new GameClass(gameType, i, name, plugin));
 		
 		return true;
 		
 	}
-	public static List<GameType> getRegisteredGameTypes()
+	public static List<GameClass> getRegisteredGameTypes()
 	{
-		return new ArrayList<GameType>(getInstance().games.values());
+		return new ArrayList<GameClass>(getInstance().gameclasses.values());
 	}
-	public static GameType getGameType(long id)
+	public static GameClass getGameType(long id)
 	{
-		if (getInstance().games.containsKey(id))
-			return getInstance().games.get(id);
+		if (getInstance().gameclasses.containsKey(id))
+			return getInstance().gameclasses.get(id);
 		else
 			return null;
 	}
@@ -908,12 +921,65 @@ public class Manhunt implements Closeable, Listener
 	 * @param class_canonical_name
 	 * @return
 	 */
-	public static GameType getGameTypeByClassCanonicalName(String class_canonical_name)
+	public static GameClass getGameTypeByClassCanonicalName(String class_canonical_name)
 	{
-		for (GameType gt : getRegisteredGameTypes())
+		for (GameClass gt : getRegisteredGameTypes())
 		{
 			if (gt.getGameClass().getCanonicalName().equals(class_canonical_name))
 				return gt;
+		}
+		return null;
+	}
+	
+	
+	//////////////// REGISTERING LOBBY TYPES ////////
+	public static boolean registerLobbyClass(Class<? extends Lobby> lobbyclass, LobbyType lobbytype, String name, JavaPlugin plugin)
+	{
+		if (lobbyclass.isInterface() || Modifier.isAbstract(lobbyclass.getModifiers()))
+			throw new IllegalArgumentException("Lobby class cannot be abstract nor an interface.");
+		
+		try
+		{
+			lobbyclass.getConstructor(long.class, String.class, Location.class);
+		}
+		catch (NoSuchMethodException e)
+		{
+			return false;
+		}
+		
+		for (LobbyClass lc : getInstance().lobbyclasses.values())
+			if (lc.getLobbyClass().equals(lobbyclass))
+				return false;
+		
+		if (plugin == ManhuntPlugin.getInstance())
+			throw new IllegalArgumentException("\"plugin\" arugment cannot be the Manhunt plugin itself.");
+		
+		long i = 0;
+		while (getInstance().lobbyclasses.containsKey(i))
+			i++;
+		
+		getInstance().lobbyclasses.put(i, new LobbyClass(i, name, lobbytype, lobbyclass, plugin));
+		
+		return true;
+		
+	}
+	public static List<LobbyClass> getRegisteredLobbyClasses()
+	{
+		return new ArrayList<LobbyClass>(getInstance().lobbyclasses.values());
+	}
+	public static LobbyClass getLobbyClass(long id)
+	{
+		if (getInstance().lobbyclasses.containsKey(id))
+			return getInstance().lobbyclasses.get(id);
+		else
+			return null;
+	}
+	public static LobbyClass getLobbyClassByCanonicalName(String class_canonical_name)
+	{
+		for (LobbyClass lc : getRegisteredLobbyClasses())
+		{
+			if (lc.getLobbyClass().getCanonicalName().equals(class_canonical_name))
+				return lc;
 		}
 		return null;
 	}
@@ -1142,7 +1208,7 @@ public class Manhunt implements Closeable, Listener
 		
 		cancelAllFinders();
 		
-		for (GameType gc : games.values())
+		for (GameClass gc : gameclasses.values())
 			gc.close();
 		
 		for (Lobby l : getInstance().lobbies.values())

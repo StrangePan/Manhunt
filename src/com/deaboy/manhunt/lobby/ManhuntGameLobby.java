@@ -18,7 +18,7 @@ public class ManhuntGameLobby extends GameLobby
 	
 	
 	//////////////// CONSTRUCTORS /////////////////
-	public ManhuntGameLobby(String name, long id, Location loc)
+	public ManhuntGameLobby(long id, String name, Location loc)
 	{
 		super(id, name, loc);
 		this.settings = new GameLobbySettings();
@@ -30,6 +30,8 @@ public class ManhuntGameLobby extends GameLobby
 	@Override
 	public boolean playerJoinLobby(Player player)
 	{
+		getGame().playerJoinLobby(player);
+		
 		if (!containsPlayer(player))
 		{
 			addPlayer(player, Team.STANDBY);
@@ -40,6 +42,7 @@ public class ManhuntGameLobby extends GameLobby
 		if (gameIsRunning() && (getPlayerTeam(player) == Team.HUNTERS || getPlayerTeam(player) == Team.PREY))
 		{
 			broadcast(getPlayerTeam(player).getColor() + player.getName() + ChatManager.color + " is back in the game!");
+			Manhunt.stopTimeout(player);
 		}
 		else if (gameIsRunning())
 		{
@@ -54,6 +57,8 @@ public class ManhuntGameLobby extends GameLobby
 	@Override
 	public boolean playerLeaveLobby(String name)
 	{
+		getGame().playerLeaveLobby(name);
+		
 		if (gameIsRunning() && (getPlayerTeam(name) == Team.HUNTERS || getPlayerTeam(name) == Team.PREY))
 		{
 			playerForfeit(name);
@@ -77,6 +82,8 @@ public class ManhuntGameLobby extends GameLobby
 	@Override
 	public boolean playerLeaveServer(Player player)
 	{
+		getGame().playerLeaveServer(player);
+		
 		if (gameIsRunning() && (getPlayerTeam(player.getName()) == Team.HUNTERS || getPlayerTeam(player.getName()) == Team.PREY))
 		{
 			broadcast(ChatManager.bracket1_ + getPlayerTeam(player).getColor() + player.getName() + ChatManager.color + " has disconnected" + (getSettings().OFFLINE_TIMEOUT.getValue() > 0 ? ". Forfeit in " + getSettings().OFFLINE_TIMEOUT.getValue() + " seconds." : "") + ChatManager.bracket2_);
@@ -102,6 +109,8 @@ public class ManhuntGameLobby extends GameLobby
 	@Override
 	public boolean playerForfeit(String name)
 	{
+		getGame().playerForfeit(name);
+		
 		if (gameIsRunning() && (getPlayerTeam(name) == Team.HUNTERS || getPlayerTeam(name) == Team.PREY))
 		{
 			broadcast(ChatManager.bracket1_ + getPlayerTeam(name).getColor() + name + ChatColor.DARK_RED + " has forfeit the game!" + ChatManager.bracket2_);
@@ -114,7 +123,7 @@ public class ManhuntGameLobby extends GameLobby
 			{
 				this.removePlayer(name);
 			}
-			getGame().forfeitPlayer(name);
+			getGame().playerForfeit(name);
 		}
 		else if (containsPlayer(name))
 		{
@@ -132,20 +141,46 @@ public class ManhuntGameLobby extends GameLobby
 	@Override
 	public boolean playerChangeTeam(String name, Team team)
 	{
-		// TODO Write this
+		if (!getGame().playerChangeTeam(name, team))
+		{
+			return false;
+		}
+		
+		if (containsPlayer(name) && team != null && getPlayerTeam(name) != team)
+		{
+			this.setPlayerTeam(name, team);
+			if (!gameIsRunning())
+			{
+				broadcast(team.getColor() + name + ChatManager.color + " joined team " + team.getColor() + team.getName(false));
+			}
+		}
 		return true;
 	}
 	@Override
 	public boolean registerMap(Map map)
 	{
-		// TODO Write this
-		return true;
+		if (!this.containsMap(map))
+		{
+			this.addMap(map);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	@Override
 	public boolean unregisterMap(Map map)
 	{
-		// TODO Write this
-		return true;
+		if (map == null || gameIsRunning() && getCurrentMap() == map || !containsMap(map))
+		{
+			return false;
+		}
+		else
+		{
+			removeMap(map);
+			return true;
+		}
 	}
 	
 	

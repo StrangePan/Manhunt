@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
-import com.deaboy.manhunt.lobby.Lobby;
-import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.ManhuntMap;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Spawn;
