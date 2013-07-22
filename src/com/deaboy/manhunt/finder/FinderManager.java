@@ -127,7 +127,72 @@ public class FinderManager
 		}
 		this.finders.clear();
 	}
-	
+	public long getFinderChargeTicksRemainingFor(Player p)
+	{
+		if (p != null)
+		{
+			return getFinderChargeTicksRemainingFor(p.getName());
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	public long getFinderChargeTicksRemainingFor(String name)
+	{
+		if (finderExistsFor(name))
+		{
+			return this.finders.get(name).getChargeTicksRemaining();
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	public long getFinderCooldownTicksRemainingFor(Player p)
+	{
+		if (p != null)
+		{
+			return getFinderCooldownTicksRemainingFor(p.getName());
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	public long getFinderCooldownTicksRemainingFor(String name)
+	{
+		if (finderExistsFor(name))
+		{
+			return this.finders.get(name).getCooldownTicksRemaining();
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	public boolean finderIsUsed(Player p)
+	{
+		if (p != null)
+		{
+			return finderIsUsed(p.getName());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public boolean finderIsUsed(String name)
+	{
+		if (finderExistsFor(name))
+		{
+			return this.finders.get(name).isUsed();
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
 	
 	public class Finder
@@ -173,6 +238,20 @@ public class FinderManager
 				}
 			}, 0, 0);
 		}
+		
+		public boolean isUsed()
+		{
+			return used;
+		}
+		public long getChargeTicksRemaining()
+		{
+			return charge_time - world.getFullTime();
+		}
+		public long getCooldownTicksRemaining()
+		{
+			return cooldown_time - world.getFullTime();
+		}
+		
 		private void step()
 		{
 			if (!player.isOnline())
@@ -324,6 +403,8 @@ public class FinderManager
 			world = null;
 			Bukkit.getScheduler().cancelTask(schedule);
 		}
+		
+		
 	}
 	
 }

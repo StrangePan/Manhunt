@@ -140,7 +140,8 @@ public class Manhunt implements Closeable, Listener
 		this.player_modes =		new HashMap<String, ManhuntMode>();
 		this.player_maps =		new HashMap<String, String>();
 		this.player_logoffs =	new HashMap<String, Long>();
-		this.gameclasses =			new HashMap<Long, GameClass>();
+		this.gameclasses =		new HashMap<Long, GameClass>();
+		this.lobbyclasses = 	new HashMap<Long, LobbyClass>();
 		this.selections =		new HashMap<String, Selection>();
 		
 		worldedit = null;
@@ -171,10 +172,13 @@ public class Manhunt implements Closeable, Listener
 		
 		
 		//////// Register game types
-		registerGameType(ManhuntGame.class, "Manhunt");
+		registerGameClass(ManhuntGame.class, "Manhunt");
 		// registerGameType(JuggernautGame.class, "Juggerhunt");
 		// registerGameType(GhostGame.class, "Manhaunt");
 		
+		//////// Register lobby types
+		registerLobbyClass(ManhuntGameLobby.class, LobbyType.GAME, "Manhunt");
+		registerLobbyClass(ManhuntHubLobby.class, LobbyType.HUB, "Hub");
 		
 		
 		///////// Set up the lobbies ////////
@@ -387,21 +391,52 @@ public class Manhunt implements Closeable, Listener
 		for (i = 0; lobbies.containsKey(i); i++);
 		return i;
 	}
-	private void registerGameType(Class<? extends Game> gameType, String name)
+	private void registerGameClass(Class<? extends Game> gameclass, String name)
 	{
-		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
+		if (gameclass.isInterface() || Modifier.isAbstract(gameclass.getModifiers()))
+		{
 			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
+		}
 		
 		for (GameClass gc : getInstance().gameclasses.values())
-			if (gc.getGameClass().equals(gameType))
+		{
+			if (gc.getGameClass().equals(gameclass))
+			{
 				return;
+			}
+		}
 		
 		long i = 0;
 		while (getInstance().gameclasses.containsKey(i))
+		{
 			i++;
+		}
 		
-		getInstance().gameclasses.put(i, new GameClass(gameType, i, name, ManhuntPlugin.getInstance()));
+		getInstance().gameclasses.put(i, new GameClass(i, name, gameclass, ManhuntPlugin.getInstance()));
 		
+	}
+	private void registerLobbyClass(Class<? extends Lobby> lobbyclass, LobbyType type, String name)
+	{
+		if (lobbyclass.isInterface() || Modifier.isAbstract(lobbyclass.getModifiers()))
+		{
+			throw new IllegalArgumentException("Lobby class cannot be abstract or an interface.");
+		}
+		
+		for (LobbyClass lc : getInstance().lobbyclasses.values())
+		{
+			if (lc.getLobbyClass().equals(lobbyclass))
+			{
+				return;
+			}
+		}
+		
+		long i = 0;
+		while (getInstance().lobbyclasses.containsKey(i))
+		{
+			i++;
+		}
+		
+		getInstance().lobbyclasses.put(i, new LobbyClass(i, name, type, lobbyclass, ManhuntPlugin.getInstance()));
 	}
 	private void loadLobbies()
 	{
@@ -883,13 +918,13 @@ public class Manhunt implements Closeable, Listener
 	
 	
 	//////////////// REGISTERING GAME TYPES ////////
-	public static boolean registerGameType(Class<? extends Game> gameType, String name, JavaPlugin plugin)
+	public static boolean registerGameClass(Class<? extends Game> gameclass, String name, JavaPlugin plugin)
 	{
-		if (gameType.isInterface() || Modifier.isAbstract(gameType.getModifiers()))
+		if (gameclass.isInterface() || Modifier.isAbstract(gameclass.getModifiers()))
 			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
 		
 		for (GameClass gc : getInstance().gameclasses.values())
-			if (gc.getGameClass().equals(gameType))
+			if (gc.getGameClass().equals(gameclass))
 				return false;
 		
 		if (plugin == ManhuntPlugin.getInstance())
@@ -899,7 +934,7 @@ public class Manhunt implements Closeable, Listener
 		while (getInstance().gameclasses.containsKey(i))
 			i++;
 		
-		getInstance().gameclasses.put(i, new GameClass(gameType, i, name, plugin));
+		getInstance().gameclasses.put(i, new GameClass(i, name, gameclass, plugin));
 		
 		return true;
 		
@@ -1020,8 +1055,17 @@ public class Manhunt implements Closeable, Listener
 	}
 	public static void sendFinderTimeRemaining(Player p)
 	{
-		// TODO DO THIS
-		p.sendMessage("Your finder is still charging.");
+		if (p != null && finderExistsFor(p))
+		{
+			if (!getInstance().finders.finderIsUsed(p.getName()))
+			{
+				p.sendMessage(ChatManager.bracket1_ + ((getInstance().finders.getFinderChargeTicksRemainingFor(p) + 19) / 20) + " seconds until finder is charged." + ChatManager.bracket2_);
+			}
+			else
+			{
+				p.sendMessage(ChatManager.bracket1_ + ((getInstance().finders.getFinderCooldownTicksRemainingFor(p) + 19) / 20) + " seconds until finder has cooled down." + ChatManager.bracket2_);
+			}
+		}
 	}
 	
 	

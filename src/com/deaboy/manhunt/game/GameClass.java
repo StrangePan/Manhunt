@@ -5,6 +5,7 @@ import java.io.Closeable;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Lobby;
 
 public class GameClass implements Closeable
@@ -17,11 +18,11 @@ public class GameClass implements Closeable
 	
 	
 	//////////////// Constructor ////////////////
-	public GameClass(Class<? extends Game> gameclass, long id, String name, JavaPlugin plugin)
+	public GameClass(long id, String name, Class<? extends Game> gameclass, JavaPlugin plugin)
 	{
 		try
 		{
-			gameclass.getConstructor(Lobby.class);
+			gameclass.getConstructor(GameLobby.class);
 		}
 		catch (NoSuchMethodException e)
 		{
