@@ -23,19 +23,11 @@ public class LobbyClass implements Closeable
 	{
 		try
 		{
-			lobbyclass.getConstructor(long.class, String.class, Location.class);
+			lobbyclass.getConstructor(long.class, File.class);
 		}
 		catch (NoSuchMethodException e)
 		{
-			throw new IllegalArgumentException("Lobby class must implement constructor(long, String, Location)");
-		}
-		try
-		{
-			lobbyclass.getConstructor(File.class);
-		}
-		catch (NoSuchMethodException e)
-		{
-			throw new IllegalArgumentException("Lobby class must implement constructor(File)");
+			throw new IllegalArgumentException("Lobby class must implement constructor(long, File)");
 		}
 		
 		this.lobbyClass = lobbyclass;

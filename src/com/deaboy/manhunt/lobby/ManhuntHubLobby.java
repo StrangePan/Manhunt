@@ -1,5 +1,7 @@
 package com.deaboy.manhunt.lobby;
 
+import java.io.File;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -43,5 +45,10 @@ public class ManhuntHubLobby extends HubLobby
 	}
 	
 	
+	//---------------- Files ----------------//
+	public ManhuntHubLobby fromFile(File file)
+	{
+		// TODO WRITE THIS
+	}
 	
 }

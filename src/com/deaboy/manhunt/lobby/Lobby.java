@@ -1,8 +1,10 @@
 package com.deaboy.manhunt.lobby;
 
 import java.io.Closeable;
+import java.io.File;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -17,22 +19,32 @@ public abstract class Lobby implements Closeable
 	//////////////// Properties ////////////////
 	private final long id;
 	private String name;
-	private LobbyType type;
 	
 	private Spawn spawn;
-	private boolean open;
+	private boolean is_open;
+	private int max_players;
 	private SettingsFile file;
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
-	public Lobby(long id, String name, LobbyType type, Location location)
+	public Lobby(long id, File file)
 	{
+		this(id, file, "", Bukkit.getWorlds().get(0).getSpawnLocation());
+	}
+	public Lobby(long id, File file, String name, Location location)
+	{
+		if (file == null || name == null || location == null)
+		{
+			throw new IllegalArgumentException("Arguments cannot be null.");
+		}
+		
 		this.id = id;
 		this.name = name;
-		this.type = type;
+		this.max_players = 0;
 		
 		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, location);
-		this.open = true;
+		this.is_open = true;
+		this.file = new SettingsFile(file);
 	}
 	
 	
@@ -46,34 +58,29 @@ public abstract class Lobby implements Closeable
 			return false;
 		
 		this.name = name;
-		getSettings().LOBBY_NAME.setValue(name);
 		return true;
 	}
 	
 	public void setSpawnRange(int range)
 	{
 		getSpawn().setRange(range);
-		getSettings().SPAWN_RANGE.setValue(range);
 	}
 	public void setSpawnLocation(Location loc)
 	{
 		getSpawn().setLocation(loc);
-		getSettings().SPAWN_LOCATION.setValue(loc);
 	}
 	
 	public void enable()
 	{
-		this.open = true;
-		getSettings().LOBBY_OPEN.setValue(true);
+		this.is_open = true;
 	}
 	public void disable()
 	{
-		this.open = false;
-		getSettings().LOBBY_OPEN.setValue(false);
+		this.is_open = false;
 	}
 	public void setMaxPlayers(int num)
 	{
-		getSettings().MAX_PLAYERS.setValue(num);
+		this.max_players = (num < 0 ? 0 : num);
 	}
 	
 	
@@ -110,16 +117,13 @@ public abstract class Lobby implements Closeable
 	
 	public boolean isEnabled()
 	{
-		return open;
+		return is_open;
 	}
-	public LobbyType getType()
-	{
-		return type;
-	}
+	public abstract LobbyType getType();
 	
 	public int getMaxPlayers()
 	{
-		return getSettings().MAX_PLAYERS.getValue();
+		return this.max_players;
 	}
 	public boolean allowAllPlayers()
 	{
@@ -157,6 +161,12 @@ public abstract class Lobby implements Closeable
 	//---------------- Files and Config ----------------//
 	public int saveFiles()
 	{
+		getSettings().LOBBY_NAME.setValue(this.name);
+		getSettings().SPAWN_RANGE.setValue(this.spawn.getRange());
+		getSettings().SPAWN_LOCATION.setValue(this.spawn.getLocation());
+		getSettings().LOBBY_OPEN.setValue(this.is_open);
+		getSettings().MAX_PLAYERS.setValue(this.max_players);
+		
 		this.file.clearPacks();
 		if (this instanceof GameLobby)
 		{
@@ -178,9 +188,10 @@ public abstract class Lobby implements Closeable
 		this.file.loadPacks();
 		
 		this.name = getSettings().LOBBY_NAME.getValue();
-		this.spawn.setLocation(getSettings().SPAWN_LOCATION.getValue());
 		this.spawn.setRange(getSettings().SPAWN_RANGE.getValue());
-		this.open = getSettings().LOBBY_OPEN.getValue();
+		this.spawn.setLocation(getSettings().SPAWN_LOCATION.getValue());
+		this.is_open = getSettings().LOBBY_OPEN.getValue();
+		this.max_players = getSettings().MAX_PLAYERS.getValue();
 		return 0;
 	}
 	public int deleteFiles()

@@ -1,5 +1,6 @@
 package com.deaboy.manhunt.lobby;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +16,14 @@ public abstract class HubLobby extends Lobby
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
-	public HubLobby(long id, String name, Location loc)
+	public HubLobby(long id, File file)
 	{
-		super(id, name, LobbyType.HUB, loc);
+		super(id, file);
+		this.players = new ArrayList<String>();
+	}
+	public HubLobby(long id, File file, String name, Location loc)
+	{
+		super(id, file, name, loc);
 		this.players = new ArrayList<String>();
 	}
 	
@@ -175,6 +181,12 @@ public abstract class HubLobby extends Lobby
 		}
 	}
 	
+	
+	//---------------- Miscellaneous ----------------//
+	public LobbyType getType()
+	{
+		return LobbyType.HUB;
+	}
 	
 	
 }

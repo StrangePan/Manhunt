@@ -6,7 +6,7 @@ public class GameLobbySettings extends LobbySettings
 {
 	//////////////// PROPERTIES ////////////////
 	public final BooleanSetting		USE_AMBER;
-	public final StringSetting		GAME_TYPE;
+	public final StringSetting		GAME_CLASS;
 	public final StringListSetting	MAPS;
 	public final IntegerSetting 	OFFLINE_TIMEOUT;
 	
@@ -22,7 +22,7 @@ public class GameLobbySettings extends LobbySettings
 	public GameLobbySettings()
 	{
 		addSetting(USE_AMBER =		new BooleanSetting("useamber", true, "Manhunt will record/restore the world with Amber.", "Manhunt will not restore the world."), true);
-		addSetting(GAME_TYPE =		new StringSetting("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
+		addSetting(GAME_CLASS =		new StringSetting("gametype", ManhuntGame.class.getCanonicalName(), ""), false);
 		addSetting(MAPS =			new StringListSetting("maps", ""), false);
 		addSetting(OFFLINE_TIMEOUT =	new IntegerSetting("timeout", 30, "Seconds before players are disqualified.", "Players will be immediately disqualified."), true);
 		

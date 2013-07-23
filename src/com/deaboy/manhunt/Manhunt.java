@@ -975,7 +975,7 @@ public class Manhunt implements Closeable, Listener
 		
 		try
 		{
-			lobbyclass.getConstructor(long.class, String.class, Location.class);
+			lobbyclass.getConstructor(long.class, File.class);
 		}
 		catch (NoSuchMethodException e)
 		{

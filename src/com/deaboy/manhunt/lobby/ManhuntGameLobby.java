@@ -1,5 +1,7 @@
 package com.deaboy.manhunt.lobby;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,21 +11,20 @@ import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.map.Map;
-import com.deaboy.manhunt.settings.GameLobbySettings;
+import com.deaboy.manhunt.settings.ManhuntGameLobbySettings;
 
 public class ManhuntGameLobby extends GameLobby
 {
 	//////////////// PROPERTIES ////////////////
-	private GameLobbySettings settings;
+	private ManhuntGameLobbySettings settings;
 	
 	
 	//////////////// CONSTRUCTORS /////////////////
 	public ManhuntGameLobby(long id, String name, Location loc)
 	{
 		super(id, name, loc);
-		this.settings = new GameLobbySettings();
+		this.settings = new ManhuntGameLobbySettings();
 	}
-	
 	
 	//////////////// PUBLIC FUNCTIONS ////////////////
 	//---------------- INTERFACE ----------------//
@@ -213,7 +214,7 @@ public class ManhuntGameLobby extends GameLobby
 	
 	//---------------- SETTINGS ----------------//
 	@Override
-	public GameLobbySettings getSettings()
+	public ManhuntGameLobbySettings getSettings()
 	{
 		return this.settings;
 	}
@@ -223,6 +224,11 @@ public class ManhuntGameLobby extends GameLobby
 	protected void initializeSettings()
 	{
 		
+	}
+	@Override
+	public static ManhuntGameLobby fromFile(File file)
+	{
+		// TODO WRITE THIS
 	}
 	
 	

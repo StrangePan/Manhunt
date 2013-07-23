@@ -21,6 +21,11 @@ public class ManhuntSpawn implements Spawn
 	
 	public ManhuntSpawn(String name, SpawnType type, Location loc, int range)
 	{
+		if (name == null || type == null || loc == null)
+		{
+			throw new IllegalArgumentException("Arguments must not be null.");
+		}
+		
 		this.name = name;
 		this.type = type;
 		this.location = loc.clone();

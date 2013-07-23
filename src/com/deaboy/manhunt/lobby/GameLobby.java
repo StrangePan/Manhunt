@@ -1,5 +1,6 @@
 package com.deaboy.manhunt.lobby;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,9 +28,17 @@ public abstract class GameLobby extends Lobby
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
-	public GameLobby(long id, String name, Location loc)
+	public GameLobby(long id, File file)
 	{
-		super(id, name, LobbyType.GAME, loc);
+		super(id, file);
+		this.game = null;
+		this.maps = new ArrayList<String>();
+		this.current_map = null;
+		this.teams = new HashMap<String, Team>();
+	}
+	public GameLobby(long id, File file, String name, Location loc)
+	{
+		super(id, file, name, loc);
 		this.game = null;
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
@@ -473,6 +482,14 @@ public abstract class GameLobby extends Lobby
 	//---------------- SETTINGS ----------------//
 	@Override
 	public abstract GameLobbySettings getSettings();
+	
+	
+	//---------------- MISCELLANEOUS ----------------//
+	@Override
+	public LobbyType getType()
+	{
+		return LobbyType.GAME;
+	}
 	
 	
 }
