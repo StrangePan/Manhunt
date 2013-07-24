@@ -34,11 +34,11 @@ public class SettingsPack
 	}
 	public List<Setting> getVisibleSettings()
 	{
-		return new ArrayList<Setting>(this.settings);
+		return new ArrayList<Setting>(this.settings_visible);
 	}
 	public List<Setting> getAllSettings()
 	{
-		return new ArrayList<Setting>(this.settings_visible);
+		return new ArrayList<Setting>(this.settings);
 	}
 	public boolean containsSetting(String label)
 	{

@@ -158,51 +158,55 @@ public abstract class Lobby implements Closeable
 	public abstract void broadcast(String message);
 	
 	
-	//---------------- Files and Config ----------------//
-	public int saveFiles()
+	//---------------- Settings ----------------//
+	public abstract LobbySettings getSettings();
+	public void saveFiles()
 	{
 		getSettings().LOBBY_NAME.setValue(this.name);
+		getSettings().LOBBY_CLASS.setValue(this.getClass().getCanonicalName());
 		getSettings().SPAWN_RANGE.setValue(this.spawn.getRange());
 		getSettings().SPAWN_LOCATION.setValue(this.spawn.getLocation());
 		getSettings().LOBBY_OPEN.setValue(this.is_open);
 		getSettings().MAX_PLAYERS.setValue(this.max_players);
 		
+		save();
+	}
+	private void save()
+	{
 		this.file.clearPacks();
-		if (this instanceof GameLobby)
+		if (this instanceof GameLobby && ((GameLobby) this).getGame() != null)
 		{
 			this.file.addPack(((GameLobby) this).getGame().getSettings());
 		}
 		this.file.addPack(getSettings());
 		this.file.save();
-		return 0;
 	}
-	public int loadFiles()
+	public void loadFiles()
 	{
-		this.file.clearPacks();
-		if (this instanceof GameLobby)
-		{
-			this.file.addPack(((GameLobby) this).getGame().getSettings());
-		}
-		this.file.addPack(getSettings());
-		this.file.load();
-		this.file.loadPacks();
+		load();
 		
 		this.name = getSettings().LOBBY_NAME.getValue();
 		this.spawn.setRange(getSettings().SPAWN_RANGE.getValue());
 		this.spawn.setLocation(getSettings().SPAWN_LOCATION.getValue());
 		this.is_open = getSettings().LOBBY_OPEN.getValue();
 		this.max_players = getSettings().MAX_PLAYERS.getValue();
-		return 0;
 	}
-	public int deleteFiles()
+	private void load()
 	{
-		if (this.file.getFile().delete())
-			return 0;
-		else
-			return 1;
+		this.file.clearPacks();
+		if (this instanceof GameLobby && ((GameLobby) this).getGame() != null)
+		{
+			this.file.addPack(((GameLobby) this).getGame().getSettings());
+		}
+		this.file.addPack(getSettings());
+		this.file.load();
+		this.file.loadPacks();
+	}
+	public boolean deleteFiles()
+	{
+		return this.file.getFile().delete();
 	}
 	
-	public abstract LobbySettings getSettings();
 	
 	@Override
 	public void close()

@@ -484,27 +484,31 @@ public class Manhunt implements Closeable, Listener
 		if (name == null || type == null || location == null)
 			return null;
 		
-		Lobby lobby = null;
+		Lobby lobby;
+		File file;
+		long id;
 		
-		World manhunt_world = getWorld(location.getWorld());
+		id = 0;
+		file = new File(path_lobbies + '/' + name + extension_lobbies);
+		while (file.exists())
+		{
+			file = new File(path_lobbies + '/' + name + id++ + extension_lobbies);
+		}
 		
-		if (manhunt_world == null)
-			return null;
-		
-		long id = getInstance().getNextLobbyId();
-		
+		id = getInstance().getNextLobbyId();
 		lobby = getLobby(name);
 		if (lobby != null)
 			return null;
 		
 		if (type == LobbyType.HUB)
-			lobby = new ManhuntHubLobby(id, name, location);
+			lobby = new ManhuntHubLobby(id, file, name, location);
 		else if (type == LobbyType.GAME)
-			lobby = new ManhuntGameLobby(id, name, location);
+			lobby = new ManhuntGameLobby(id, file, name, location);
 		else
 			return null;
 		
 		getInstance().lobbies.put(lobby.getId(), lobby);
+		lobby.saveFiles();
 		
 		return lobby;
 	}
@@ -564,7 +568,7 @@ public class Manhunt implements Closeable, Listener
 		
 		if (getLobbyClassByCanonicalName(settings.LOBBY_CLASS.getValue()) != null)
 		{
-			lobby = getLobbyClassByCanonicalName(settings.LOBBY_CLASS.getValue()).createInstance(f);
+			lobby = getLobbyClassByCanonicalName(settings.LOBBY_CLASS.getValue()).createInstance(getInstance().getNextLobbyId(), f);
 		}
 		else
 		{
@@ -573,7 +577,10 @@ public class Manhunt implements Closeable, Listener
 		
 		
 		if (lobby != null)
+		{
 			getInstance().lobbies.put(lobby.getId(), lobby);
+			lobby.loadFiles();
+		}
 		
 		return lobby;
 	}
@@ -923,12 +930,21 @@ public class Manhunt implements Closeable, Listener
 		if (gameclass.isInterface() || Modifier.isAbstract(gameclass.getModifiers()))
 			throw new IllegalArgumentException("Game class cannot be abstract or an interface.");
 		
+		try
+		{
+			gameclass.getConstructor(GameLobby.class);
+		}
+		catch (NoSuchMethodException e)
+		{
+			return false;
+		}
+		
 		for (GameClass gc : getInstance().gameclasses.values())
 			if (gc.getGameClass().equals(gameclass))
 				return false;
 		
 		if (plugin == ManhuntPlugin.getInstance())
-			throw new IllegalArgumentException("\"plugin\" arugment cannot be the Manhunt plugin itself.");
+			throw new IllegalArgumentException("plugin arugment cannot be the Manhunt plugin itself.");
 		
 		long i = 0;
 		while (getInstance().gameclasses.containsKey(i))
@@ -939,26 +955,20 @@ public class Manhunt implements Closeable, Listener
 		return true;
 		
 	}
-	public static List<GameClass> getRegisteredGameTypes()
+	public static List<GameClass> getRegisteredGameClasses()
 	{
 		return new ArrayList<GameClass>(getInstance().gameclasses.values());
 	}
-	public static GameClass getGameType(long id)
+	public static GameClass getGameClass(long id)
 	{
 		if (getInstance().gameclasses.containsKey(id))
 			return getInstance().gameclasses.get(id);
 		else
 			return null;
 	}
-	/**
-	 * Used for lobby loading. Allows lobbies to get the GameType based
-	 * off the Game class's canonical name.
-	 * @param class_canonical_name
-	 * @return
-	 */
-	public static GameClass getGameTypeByClassCanonicalName(String class_canonical_name)
+	public static GameClass getGameClassByCanonicalName(String class_canonical_name)
 	{
-		for (GameClass gt : getRegisteredGameTypes())
+		for (GameClass gt : getRegisteredGameClasses())
 		{
 			if (gt.getGameClass().getCanonicalName().equals(class_canonical_name))
 				return gt;
@@ -976,6 +986,7 @@ public class Manhunt implements Closeable, Listener
 		try
 		{
 			lobbyclass.getConstructor(long.class, File.class);
+			lobbyclass.getConstructor(long.class, File.class, String.class, Location.class);
 		}
 		catch (NoSuchMethodException e)
 		{
@@ -987,7 +998,7 @@ public class Manhunt implements Closeable, Listener
 				return false;
 		
 		if (plugin == ManhuntPlugin.getInstance())
-			throw new IllegalArgumentException("\"plugin\" arugment cannot be the Manhunt plugin itself.");
+			throw new IllegalArgumentException("plugin arugment cannot be the Manhunt plugin itself.");
 		
 		long i = 0;
 		while (getInstance().lobbyclasses.containsKey(i))

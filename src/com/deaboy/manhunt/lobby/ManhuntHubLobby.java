@@ -14,14 +14,20 @@ public class ManhuntHubLobby extends HubLobby
 	
 	
 	///////////////// CONSTRUCTORS /////////////////
-	public ManhuntHubLobby(long id, String name, Location loc)
+	public ManhuntHubLobby(long id, File file)
 	{
-		super(id, name, loc);
+		super(id, file);
+		this.settings = new LobbySettings();
+	}
+	public ManhuntHubLobby(long id, File file, String name, Location loc)
+	{
+		super(id, file, name, loc);
 		this.settings = new LobbySettings();
 	}
 	
 	
 	///////////////// PUBLIC METHODS /////////////////
+	//---------------- Interface ----------------//
 	@Override
 	public boolean playerJoinLobby(Player player) {
 		// TODO Auto-generated method stub
@@ -37,18 +43,14 @@ public class ManhuntHubLobby extends HubLobby
 		// TODO Auto-generated method stub
 		return false;
 	}
-
+	
+	
+	//---------------- Settings -----------------//
 	@Override
 	public LobbySettings getSettings()
 	{
 		return this.settings;
 	}
 	
-	
-	//---------------- Files ----------------//
-	public ManhuntHubLobby fromFile(File file)
-	{
-		// TODO WRITE THIS
-	}
 	
 }

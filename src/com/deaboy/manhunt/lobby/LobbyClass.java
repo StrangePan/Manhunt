@@ -62,11 +62,11 @@ public class LobbyClass implements Closeable
 	
 	
 	//////////////// PUBLIC METHODS ////////////////
-	public Lobby createInstance(long id, String name, Location loc)
+	public Lobby createInstance(long id, File file)
 	{
 		try
 		{
-			return (Lobby) lobbyClass.getConstructor(Lobby.class).newInstance(id, name, loc);
+			return (Lobby) lobbyClass.getConstructor(long.class, File.class).newInstance(id, file);
 		}
 		catch (Exception e)
 		{
@@ -74,11 +74,11 @@ public class LobbyClass implements Closeable
 			return null;
 		}
 	}
-	public Lobby createInstance(File file)
+	public Lobby createInstance(long id, File file, String name, Location loc)
 	{
 		try
 		{
-			return (Lobby) lobbyClass.getConstructor(File.class).newInstance(file);
+			return (Lobby) lobbyClass.getConstructor(long.class, File.class, String.class, Location.class).newInstance(id, file, name, loc);
 		}
 		catch (Exception e)
 		{

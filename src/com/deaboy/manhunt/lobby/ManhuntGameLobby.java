@@ -20,9 +20,14 @@ public class ManhuntGameLobby extends GameLobby
 	
 	
 	//////////////// CONSTRUCTORS /////////////////
-	public ManhuntGameLobby(long id, String name, Location loc)
+	public ManhuntGameLobby(long id, File file)
 	{
-		super(id, name, loc);
+		super(id, file);
+		this.settings = new ManhuntGameLobbySettings();
+	}
+	public ManhuntGameLobby(long id, File file, String name, Location loc)
+	{
+		super(id, file, name, loc);
 		this.settings = new ManhuntGameLobbySettings();
 	}
 	
@@ -220,22 +225,12 @@ public class ManhuntGameLobby extends GameLobby
 	}
 	
 	
-	//---------------- FILES ----------------//
-	protected void initializeSettings()
-	{
-		
-	}
-	@Override
-	public static ManhuntGameLobby fromFile(File file)
-	{
-		// TODO WRITE THIS
-	}
-	
-	
 	//---------------- CLOSE ----------------//
 	@Override
 	public void close()
 	{
 		super.close();
 	}
+	
+	
 }

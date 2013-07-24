@@ -482,6 +482,23 @@ public abstract class GameLobby extends Lobby
 	//---------------- SETTINGS ----------------//
 	@Override
 	public abstract GameLobbySettings getSettings();
+	@Override
+	public void saveFiles()
+	{
+		getSettings().GAME_CLASS.setValue(this.game != null ? game.getClass().getCanonicalName() : "");
+		getSettings().MAPS.setValue(this.maps);
+		
+		super.saveFiles();
+	}
+	@Override
+	public void loadFiles()
+	{
+		super.loadFiles();
+		
+		this.maps = new ArrayList<String>(getSettings().MAPS.getValue());
+		if (Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()) != null)
+			this.game = Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()).createInstance(this);
+	}
 	
 	
 	//---------------- MISCELLANEOUS ----------------//
