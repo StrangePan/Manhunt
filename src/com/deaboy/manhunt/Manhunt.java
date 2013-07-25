@@ -224,7 +224,7 @@ public class Manhunt implements Closeable, Listener
 		}
 		
 		if (lobby == null)
-			lobby = createLobby("default", LobbyType.GAME, Bukkit.getWorlds().get(0).getSpawnLocation());
+			lobby = createLobby("default", Manhunt.getLobbyClass(0), Bukkit.getWorlds().get(0).getSpawnLocation());
 		
 		setDefaultLobby(lobby);
 		CommandUtil.setSelectedLobby(Bukkit.getConsoleSender(), getDefaultLobby());
@@ -479,9 +479,13 @@ public class Manhunt implements Closeable, Listener
 	
 	//---------------- Public Interface Methods ----------------//
 	//////////////// LOBBIES ////////
-	public static Lobby createLobby(String name, LobbyType type, Location location)
+	public static Lobby createLobby(String name, LobbyClass lobbyclass, Location location)
 	{
-		if (name == null || type == null || location == null)
+		return createLobby(name, lobbyclass, location, Manhunt.getGameClass(0));
+	}
+	public static Lobby createLobby(String name, LobbyClass lobbyclass, Location location, GameClass gameclass)
+	{
+		if (name == null || lobbyclass == null || lobbyclass.getLobbyClass() == null || location == null)
 			return null;
 		
 		Lobby lobby;
@@ -500,12 +504,9 @@ public class Manhunt implements Closeable, Listener
 		if (lobby != null)
 			return null;
 		
-		if (type == LobbyType.HUB)
-			lobby = new ManhuntHubLobby(id, file, name, location);
-		else if (type == LobbyType.GAME)
-			lobby = new ManhuntGameLobby(id, file, name, location);
-		else
-			return null;
+		lobby = lobbyclass.createInstance(id, file, name, location);
+		if (lobby.getType() == LobbyType.GAME && gameclass != null && gameclass.getGameClass() != null)
+			((GameLobby) lobby).setGameClass(gameclass);
 		
 		getInstance().lobbies.put(lobby.getId(), lobby);
 		lobby.saveFiles();

@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
-import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Spawn;
 import com.deaboy.manhunt.map.SpawnType;
@@ -67,16 +66,16 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG, true).addAlias("define").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG, true).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK, true).addAlias("flag").addAlias("fl");
-	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
+	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.TEXT, false).addAlias("t");
 	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
 	static {	// Fill parameters in certain arguments and finalize.
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
 		arg_zoneflags.finalize_();
 		
-		for (LobbyType type : LobbyType.values())
+		/* for (LobbyType type : LobbyType.values())
 			arg_lobbytype.addParameter(type.getName().toLowerCase());
-		arg_lobbytype.finalize_();
+		arg_lobbytype.finalize_(); */
 		
 		for (SpawnType type : SpawnType.values())
 			arg_pointtype.addParameter(type.getName().toLowerCase());

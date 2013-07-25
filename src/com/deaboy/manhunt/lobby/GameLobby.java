@@ -8,12 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.Game;
+import com.deaboy.manhunt.game.GameClass;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.GameLobbySettings;
@@ -357,6 +360,21 @@ public abstract class GameLobby extends Lobby
 	public abstract boolean startGame();
 	public abstract boolean endGame();
 	public abstract boolean cancelGame();
+	public boolean setGameClass(GameClass gameclass)
+	{
+		if (gameIsRunning())
+			return false;
+		
+		Game game = gameclass.createInstance(this);
+		if (game == null)
+			return false;
+		this.game = game;
+		
+		broadcast(ChatManager.leftborder + "Game has been changed to " + ChatColor.DARK_BLUE + gameclass.getName());
+		Manhunt.log('[' + getName() + "] Game changed to " + gameclass.getName());
+		saveFiles();
+		return true;
+	}
 	
 	
 	//---------------- MAPS ----------------//

@@ -16,6 +16,7 @@ import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyClass;
 import com.deaboy.manhunt.lobby.LobbyType;
 
 public abstract class LobbyCommands
@@ -413,7 +414,8 @@ public abstract class LobbyCommands
 	{
 		Location loc;
 		String lobbyname;
-		LobbyType type;
+		LobbyClass lobbyclass;
+		int type;
 		
 		if (!(sender instanceof Player))
 		{
@@ -452,28 +454,38 @@ public abstract class LobbyCommands
 		
 		if (cmd.containsArgument(CommandUtil.arg_lobbytype))
 		{
-			type = LobbyType.fromName(cmd.getArgument(CommandUtil.arg_lobbytype).getParameter());
-			if (type == null)
+			if (cmd.getArgument(CommandUtil.arg_lobbytype).getParameter() == null)
 			{
-				if (cmd.getArgument(CommandUtil.arg_lobbytype).getParameter() != null)
-				{
-					sender.sendMessage(ChatColor.RED + "Unable to parse '" + cmd.getArgument(CommandUtil.arg_lobbytype).getParameter() + "' as a lobby type.");
-					sender.sendMessage(ChatColor.GRAY + "  Argument usage: -" + cmd.getArgument(CommandUtil.arg_lobbytype).getLabel() + " <hub|game>");
-				}
-				else
-				{
-					sender.sendMessage(ChatColor.RED + "Invalid use of the " + CommandUtil.arg_lobbytype + " parameter.");
-					sender.sendMessage(ChatColor.GRAY + "  Argument usage: -" + cmd.getArgument(CommandUtil.arg_lobbytype).getLabel() + " <hub|game>");
-				}
+				sender.sendMessage(ChatColor.RED + "Invalid use of the " + CommandUtil.arg_lobbytype + " parameter.");
+				sender.sendMessage(ChatColor.GRAY + "  Argument usage: -" + cmd.getArgument(CommandUtil.arg_lobbytype).getLabel() + " <hub|game>");
+				return false;
+			}
+			try
+			{
+				type = Integer.parseInt(cmd.getArgument(CommandUtil.arg_lobbytype).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				sender.sendMessage(ChatManager.leftborder + cmd.getArgument(CommandUtil.arg_lobbytype).getParameter() + " is not a valid integer.");
+				return false;
+			}
+			lobbyclass = Manhunt.getLobbyClass(type);
+			if (lobbyclass == null)
+			{
+				sender.sendMessage(ChatColor.RED + "No lobby type exists with id " + type + '.');
+				// TODO WRITE THIS   sender.sendMessage(ChatColor.GRAY + "  To view registered lobby types, ");
 				return false;
 			}
 		}
 		else
 		{
-			type = LobbyType.GAME;
+			lobbyclass = Manhunt.getLobbyClass(0);
 		}
 		
-		Manhunt.createLobby(lobbyname, type, loc);
+		if (lobbyclass == null)
+			return false;
+		
+		Manhunt.createLobby(lobbyname, lobbyclass, loc);
 		sender.sendMessage(ChatColor.GREEN + "Created lobby '" + lobbyname + "' in world '" + ((Player) sender).getWorld().getName() + "'.");
 		sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "  with spawn at [" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "]");
 		return true;
