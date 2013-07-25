@@ -41,7 +41,7 @@ public class ManhuntGameLobby extends GameLobby
 		if (!containsPlayer(player))
 		{
 			addPlayer(player, Team.STANDBY);
-			player.teleport(this.getRandomSpawnLocation());
+			player.teleport(ManhuntUtil.safeTeleport(this.getRandomSpawnLocation()));
 			ManhuntUtil.resetPlayer(player);
 		}
 		
@@ -122,7 +122,7 @@ public class ManhuntGameLobby extends GameLobby
 			broadcast(ChatManager.bracket1_ + getPlayerTeam(name).getColor() + name + ChatColor.DARK_RED + " has forfeit the game!" + ChatManager.bracket2_);
 			if (Bukkit.getPlayerExact(name) != null)
 			{
-				Bukkit.getPlayerExact(name).teleport(getRandomSpawnLocation());
+				Bukkit.getPlayerExact(name).teleport(ManhuntUtil.safeTeleport(getRandomSpawnLocation()));
 				ManhuntUtil.resetPlayer(Bukkit.getPlayerExact(name));
 			}
 			else
@@ -191,30 +191,6 @@ public class ManhuntGameLobby extends GameLobby
 	
 	
 	//---------------- GAMES ----------------//
-	@Override
-	public boolean startGame()
-	{
-		
-		return true;
-	}
-	@Override
-	public boolean endGame()
-	{
-		
-		stopGame();
-		return true;
-	}
-	@Override
-	public boolean cancelGame()
-	{
-		
-		stopGame();
-		return true;
-	}
-	private void stopGame()
-	{
-		
-	}
 	
 	
 	//---------------- SETTINGS ----------------//

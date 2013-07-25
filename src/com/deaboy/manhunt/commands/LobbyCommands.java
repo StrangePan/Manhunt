@@ -11,6 +11,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
@@ -81,8 +82,14 @@ public abstract class LobbyCommands
 		}
 		else
 		{
-			sender.sendMessage((console ? "" : ChatColor.GREEN) + "Game successfully started.");
-			((GameLobby) lobby).startGame();
+			if (!((GameLobby) lobby).startGame())
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Could not start the game.");
+			}
+			else
+			{
+				sender.sendMessage((console ? "" : ChatColor.GREEN) + "Game successfully started.");
+			}
 			return true;
 		}
 		
@@ -611,7 +618,7 @@ public abstract class LobbyCommands
 			return false;
 		}
 		
-		((Player) sender).teleport(lobby.getSpawnLocation());
+		((Player) sender).teleport(ManhuntUtil.safeTeleport(lobby.getSpawnLocation()));
 		sender.sendMessage(ChatManager.leftborder + "Teleported to " + lobby.getName());
 		return true;
 	}

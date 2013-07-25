@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.map.ManhuntMap;
 import com.deaboy.manhunt.map.Map;
@@ -1066,7 +1067,7 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		player.teleport(point.getLocation());
+		player.teleport(ManhuntUtil.safeTeleport(point.getLocation()));
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + point.getName() + ".");
 		if (player != sender)
 		{

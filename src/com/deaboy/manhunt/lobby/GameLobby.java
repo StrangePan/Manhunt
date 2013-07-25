@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameClass;
@@ -357,9 +358,51 @@ public abstract class GameLobby extends Lobby
 			return false;
 		}
 	}
-	public abstract boolean startGame();
-	public abstract boolean endGame();
-	public abstract boolean cancelGame();
+	public boolean startGame()
+	{
+		if (game == null || gameIsRunning())
+		{
+			return false;
+		}
+		chooseMap();
+		if (getCurrentMap() == null)
+		{
+			return false;
+		}
+		distributeTeams();
+		game.setMap(getCurrentMap());
+		game.startGame();
+		return true;
+	}
+	public boolean endGame()
+	{
+		if (game == null || !gameIsRunning())
+		{
+			return false;
+		}
+		game.endGame();
+		stopGame();
+		return true;
+	}
+	public boolean cancelGame()
+	{
+		if (game == null || !gameIsRunning())
+		{
+			return false;
+		}
+		game.cancelGame();
+		stopGame();
+		return true;
+	}
+	private void stopGame()
+	{
+		clearOfflinePlayers();
+		for (Player player : getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
+		{
+			player.teleport(ManhuntUtil.safeTeleport(getRandomSpawnLocation()));
+			ManhuntUtil.resetPlayer(player);
+		}
+	}
 	public boolean setGameClass(GameClass gameclass)
 	{
 		if (gameIsRunning())

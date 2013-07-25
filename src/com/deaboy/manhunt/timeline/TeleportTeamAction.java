@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.Spawn;
@@ -39,7 +40,7 @@ public class TeleportTeamAction implements Action
 			{
 				if (p.isOnline())
 				{
-					p.teleport(locations.get((int) (Math.random() * locations.size())));
+					p.teleport(ManhuntUtil.safeTeleport(locations.get((int) (Math.random() * locations.size()))));
 				}
 			}
 		}

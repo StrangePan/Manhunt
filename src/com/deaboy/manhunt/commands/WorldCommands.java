@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.chat.ChatManager;
@@ -214,7 +215,7 @@ public abstract class WorldCommands
 			}
 		}
 		
-		player.teleport(world.getSpawnLocation());
+		player.teleport(ManhuntUtil.safeTeleport(world.getSpawnLocation()));
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + world.getName() + "'s spawn.");
 		if (player != sender)
 			sender.sendMessage(ChatManager.leftborder + "Sent " + player.getName() + " to " + world.getName() + "'s spawn.");
