@@ -21,6 +21,7 @@ import com.deaboy.manhunt.game.GameClass;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.GameLobbySettings;
+import com.deaboy.manhunt.settings.SettingsPack;
 
 public abstract class GameLobby extends Lobby
 {
@@ -268,6 +269,12 @@ public abstract class GameLobby extends Lobby
 	}
 	public void broadcast(String message, Team...teams)
 	{
+		if (teams.length == 0)
+		{
+			broadcast(message);
+			return;
+		}
+		
 		Player player;
 		for (String name : this.teams.keySet())
 		{
@@ -543,6 +550,17 @@ public abstract class GameLobby extends Lobby
 	//---------------- SETTINGS ----------------//
 	@Override
 	public abstract GameLobbySettings getSettings();
+	public SettingsPack getGameSettings()
+	{
+		if (game != null)
+		{
+			return game.getSettings();
+		}
+		else
+		{
+			return null;
+		}
+	}
 	@Override
 	public void saveFiles()
 	{

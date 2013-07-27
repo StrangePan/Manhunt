@@ -56,6 +56,9 @@ public class ManhuntGame extends Game
 	@Override
 	public void cancelGame()
 	{
+		if (!isRunning())
+			return;
+		
 		ManhuntUtil.cancelWorldTimeTransition(getWorld());
 		
 		timeline.stop();
@@ -65,13 +68,15 @@ public class ManhuntGame extends Game
 			p.teleport(getLobby().getRandomSpawnLocation());
 		}
 		
-		listener.stopListening();
-		
-		setStage(GameStage.INTERMISSION);
+		stopGame();
+		getLobby().cancelGame();
 	}
 	@Override
 	public void endGame()
 	{
+		if (!isRunning())
+			return;
+		
 		int hunters = getLobby().getPlayerNames(Team.HUNTERS).size();
 		int prey = getLobby().getPlayerNames(Team.PREY).size();
 		
@@ -101,9 +106,13 @@ public class ManhuntGame extends Game
 			getLobby().broadcast(ChatManager.leftborder + Team.PREY.getColor() + "The " + Team.PREY.getName(true) + " have won the game!");
 		}
 		
-		getLobby().broadcast(ChatManager.divider);
-		
-		endGame();
+		stopGame();
+		getLobby().endGame();
+	}
+	private void stopGame()
+	{
+		listener.stopListening();
+		setStage(GameStage.INTERMISSION);
 	}
 	public void testGame()
 	{

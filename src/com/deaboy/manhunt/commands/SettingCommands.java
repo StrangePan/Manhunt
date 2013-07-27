@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
+import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.settings.Setting;
 
 public abstract class SettingCommands
@@ -95,9 +97,11 @@ public abstract class SettingCommands
 		
 		// Assemble list of settings
 		settings = new ArrayList<Setting>();
-		settings.addAll( Manhunt.getSettings().getVisibleSettings());
+		settings.addAll(Manhunt.getSettings().getVisibleSettings());
 		if (CommandUtil.getSelectedLobby(sender) != null)
 			settings.addAll(CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings());
+		if (CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
+			settings.addAll(((GameLobby) CommandUtil.getSelectedLobby(sender)).getGameSettings().getVisibleSettings());
 		
 		if (!all)
 		{
@@ -123,7 +127,7 @@ public abstract class SettingCommands
 		}
 		for (Setting setting : settings)
 		{
-			message = (ChatManager.leftborder + (Manhunt.getSettings().getVisibleSettings().contains(setting) ? ChatColor.GRAY + "[G] " + ChatManager.color : "") + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());
+			message = (ChatManager.leftborder + ChatColor.GRAY + (Manhunt.getSettings().getVisibleSettings().contains(setting) ? "[M] " : CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings().contains(setting) ? "[L] " : "[G] ") + ChatManager.color + setting.getLabel() + " " + ChatColor.GREEN + "[" + setting.getValue().toString() + "]  " + ChatColor.WHITE + setting.getDescription());
 			if (sender instanceof Player && message.length() > 65)
 			{
 				message = message.substring(0, 65) + "...";
