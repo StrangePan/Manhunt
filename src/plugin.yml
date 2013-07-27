@@ -11,6 +11,14 @@ commands:
         usage: /manhunt [help | info]
         description: Access to simple manhunt functions, like help and info.
         aliases: [m, mh]
+    mlobbyclasses:
+        usage: /mlobbyclasses [page]
+        description: Lists all lobby classes registered with Manhunt.
+        aliases: [lobbyclasses, mlobbyclass, lobbyclass]
+    mgameclasses:
+        usage: /mgameclasses [page]
+        description: Lists all game classes registered with Manhunt.
+        aliases: [gameclasses, mgameclass, gameclass]
     mspawn:
         usage: /mspawn [player] [world]
         description: Teleports you to a world's spawn point. If no world is specified, uses the current world.
