@@ -17,18 +17,37 @@ public abstract class ManhuntUtil
 	
 	public static Location safeTeleport(Location loc)
 	{
-		Location location1 = loc.clone();
-		location1.setY(location1.getY() - 1);
-		Location location2 = loc.clone();
-		location2.setY(location2.getY() - 1);
-
-		while (location1.getBlock().getType().isSolid()
-				&& !location2.getBlock().getType().isSolid())
+		Location location;
+		location = loc.clone();
+		location.setX(location.getX() - 0.3);
+		location.setY(location.getY() - 2);
+		location.setZ(location.getZ() - 0.3);
+		
+		while (true)
 		{
-			location1.setY(location1.getY() + 1);
-			location2.setY(location2.getY() + 1);
+			location.setY(location.getY() + 1);
+			if (location.getBlock().getType().isSolid() || location.getBlock().getRelative(0, 1, 0).getType().isSolid())
+			{
+				continue;
+			}
+			else if (location.getX() > 0.4 && (location.getBlock().getRelative(1, 0, 0).getType().isSolid() || location.getBlock().getRelative(1, 1, 0).getType().isSolid()))
+			{
+				continue;
+			}
+			else if (location.getZ() > 0.4 && (location.getBlock().getRelative(0, 0, 1).getType().isSolid() || location.getBlock().getRelative(0, 1, 1).getType().isSolid()))
+			{
+				continue;
+			}
+			else if (location.getX() > 0.4 && location.getZ() > 0.4 && (location.getBlock().getRelative(1, 0, 1).getType().isSolid() || location.getBlock().getRelative(1, 1, 1).getType().isSolid()))
+			{
+				continue;
+			}
+			break;
 		}
-		return location1;
+		
+		location.setX(location.getX() + 0.3);
+		location.setZ(location.getZ() + 0.3);
+		return location;
 	}
 	
 	public static void stepPlayer(Player player, Double distance, Location target)
