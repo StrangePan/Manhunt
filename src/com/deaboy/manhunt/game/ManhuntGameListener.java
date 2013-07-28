@@ -16,6 +16,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -252,6 +254,37 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		Team player_team = lobby.getPlayerTeam(e.getPlayer());
 		
 		if (player_team == Team.STANDBY || player_team == null)
+		{
+			e.setCancelled(true);
+			return;
+		}
+	}
+	@EventHandler
+	public final void onEntityDamage(EntityDamageEvent e)
+	{
+		Player player;
+		Team team;
+		
+		if (e.isCancelled())
+			return;
+		if (e.getEntity().getType() != EntityType.PLAYER)
+			return;
+		if (e.getCause() == DamageCause.ENTITY_ATTACK)
+			return;
+		
+		player = (Player) e.getEntity();
+		team = game.getLobby().getPlayerTeam(player);
+		
+		if (!game.getLobby().containsPlayer(player))
+		{
+			return;
+		}
+		if (game.getStage() == GameStage.PREGAME  || game.getStage() == GameStage.INTERMISSION)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		if (team != Team.HUNTERS && team != Team.PREY)
 		{
 			e.setCancelled(true);
 			return;

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 
@@ -54,24 +55,6 @@ public class ManhuntGame extends Game
 		listener.startListening();
 	}
 	@Override
-	public void cancelGame()
-	{
-		if (!isRunning())
-			return;
-		
-		ManhuntUtil.cancelWorldTimeTransition(getWorld());
-		
-		timeline.stop();
-		
-		for (Player p : getLobby().getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
-		{
-			p.teleport(getLobby().getRandomSpawnLocation());
-		}
-		
-		stopGame();
-		getLobby().cancelGame();
-	}
-	@Override
 	public void endGame()
 	{
 		if (!isRunning())
@@ -109,8 +92,19 @@ public class ManhuntGame extends Game
 		stopGame();
 		getLobby().endGame();
 	}
+	@Override
+	public void cancelGame()
+	{
+		if (!isRunning())
+			return;
+		
+		stopGame();
+		getLobby().cancelGame();
+	}
 	private void stopGame()
 	{
+		ManhuntUtil.cancelWorldTimeTransition(getWorld());
+		timeline.stop();
 		listener.stopListening();
 		setStage(GameStage.INTERMISSION);
 	}
@@ -238,6 +232,9 @@ public class ManhuntGame extends Game
 		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
 		timeline.registerEvent(event);
 		
+		event = new ManhuntWorldEvent(getWorld(), time);
+		event.addAction(new RunnableAction(new Runnable(){ public void run(){ for (Player player : getLobby().getOnlinePlayers(Team.HUNTERS, Team.PREY)) player.setGameMode(GameMode.SURVIVAL); }}));
+		timeline.registerEvent(event);
 		
 		if (getSettings().TIME_SETUP.getValue() > 0)
 		{
@@ -324,7 +321,6 @@ public class ManhuntGame extends Game
 		timeline.registerEvent(event);
 		
 		event = new ManhuntWorldEvent(getWorld(), time);
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.HUNT); }}));
 		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + getLobby().getSettings().TIME_LIMIT.getValue() + " minutes."));
 		event.addAction(new BroadcastAction(lobby_id, "Beware! The hunters have been released!", Team.PREY));

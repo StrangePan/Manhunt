@@ -161,6 +161,8 @@ public abstract class SettingCommands
 		settings = Manhunt.getSettings().getVisibleSettings();
 		if (CommandUtil.getSelectedLobby(sender) != null)
 			settings.addAll(CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings());
+		if (CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
+			settings.addAll(((GameLobby) CommandUtil.getSelectedLobby(sender)).getGameSettings().getVisibleSettings());
 		
 		
 		setting = null;

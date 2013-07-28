@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 public abstract class ManhuntUtil
 {
@@ -152,6 +153,7 @@ public abstract class ManhuntUtil
 	public static void resetPlayer(Player p)
 	{
 		p.getInventory().clear();
+		for (PotionEffect potion : p.getActivePotionEffects()) p.removePotionEffect(potion.getType());
 		p.setHealth(p.getMaxHealth());
 		p.setFoodLevel(20);
 		p.setSaturation(20f);

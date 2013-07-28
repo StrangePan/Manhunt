@@ -144,12 +144,10 @@ public class SettingsFile extends Properties implements Closeable
 		{
 			for (Setting setting : pack.getAllSettings())
 			{
-				if (!this.containsKey(setting.getLabel()))
+				if (this.containsKey(setting.getLabel()))
 				{
-					continue;
+					setting.setValue((String) this.get(setting.getLabel()));
 				}
-				
-				setting.setValue((String) this.get(setting.getLabel()));
 			}
 		}
 	}

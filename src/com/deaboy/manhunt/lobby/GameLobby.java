@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -414,6 +415,7 @@ public abstract class GameLobby extends Lobby
 			player.teleport(ManhuntUtil.safeTeleport(getRandomSpawnLocation()));
 			setPlayerTeam(player, Team.STANDBY);
 			ManhuntUtil.resetPlayer(player);
+			player.setGameMode(GameMode.ADVENTURE);
 		}
 		if (getSettings().USE_AMBER.getValue())
 		{

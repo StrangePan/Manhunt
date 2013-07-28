@@ -22,7 +22,6 @@ public abstract class Lobby implements Closeable
 	
 	private Spawn spawn;
 	private boolean is_open;
-	private int max_players;
 	private SettingsFile file;
 	
 	
@@ -40,7 +39,6 @@ public abstract class Lobby implements Closeable
 		
 		this.id = id;
 		this.name = name;
-		this.max_players = 0;
 		
 		this.spawn = new ManhuntSpawn("spawn", SpawnType.OTHER, location);
 		this.is_open = true;
@@ -80,7 +78,7 @@ public abstract class Lobby implements Closeable
 	}
 	public void setMaxPlayers(int num)
 	{
-		this.max_players = (num < 0 ? 0 : num);
+		this.getSettings().MAX_PLAYERS.setValue(num < 0 ? 0 : num);
 	}
 	
 	
@@ -123,7 +121,7 @@ public abstract class Lobby implements Closeable
 	
 	public int getMaxPlayers()
 	{
-		return this.max_players;
+		return this.getSettings().MAX_PLAYERS.getValue();
 	}
 	public boolean allowAllPlayers()
 	{
@@ -167,7 +165,6 @@ public abstract class Lobby implements Closeable
 		getSettings().SPAWN_RANGE.setValue(this.spawn.getRange());
 		getSettings().SPAWN_LOCATION.setValue(this.spawn.getLocation());
 		getSettings().LOBBY_OPEN.setValue(this.is_open);
-		getSettings().MAX_PLAYERS.setValue(this.max_players);
 		
 		save();
 	}
@@ -189,7 +186,6 @@ public abstract class Lobby implements Closeable
 		this.spawn.setRange(getSettings().SPAWN_RANGE.getValue());
 		this.spawn.setLocation(getSettings().SPAWN_LOCATION.getValue());
 		this.is_open = getSettings().LOBBY_OPEN.getValue();
-		this.max_players = getSettings().MAX_PLAYERS.getValue();
 	}
 	private void load()
 	{
@@ -200,7 +196,6 @@ public abstract class Lobby implements Closeable
 		}
 		this.file.addPack(getSettings());
 		this.file.load();
-		this.file.loadPacks();
 	}
 	public boolean deleteFiles()
 	{

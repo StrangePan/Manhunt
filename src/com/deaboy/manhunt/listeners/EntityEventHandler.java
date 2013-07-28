@@ -26,14 +26,13 @@ public class EntityEventHandler implements Listener
 		if (e.getEntityType() != EntityType.PLAYER)
 			return;
 		
-		Lobby lobby = Manhunt.getLobby(e.getEntity().getWorld());
+		Lobby lobby = Manhunt.getPlayerLobby((Player) e.getEntity());
 		
-		if (lobby != null && lobby.getType() == LobbyType.GAME && !((GameLobby) lobby).gameIsRunning())
+		if (lobby != null && (lobby.getType() != LobbyType.GAME || !((GameLobby) lobby).gameIsRunning()))
 		{
 			e.setCancelled(true);
 			return;
 		}
-		
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityTarget(EntityTargetEvent e)

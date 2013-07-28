@@ -480,7 +480,7 @@ public abstract class LobbyCommands
 			if (lobbyclass == null)
 			{
 				sender.sendMessage(ChatColor.RED + "No lobby type exists with id " + type + '.');
-				// TODO WRITE THIS   sender.sendMessage(ChatColor.GRAY + "  To view registered lobby types, ");
+				sender.sendMessage(ChatColor.GRAY + "  To view registered lobby classes, use /mlobbyclasses");
 				return false;
 			}
 		}
