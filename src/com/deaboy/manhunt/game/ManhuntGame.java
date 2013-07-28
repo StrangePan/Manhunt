@@ -90,7 +90,6 @@ public class ManhuntGame extends Game
 		}
 		
 		stopGame();
-		getLobby().endGame();
 	}
 	@Override
 	public void cancelGame()
@@ -99,7 +98,6 @@ public class ManhuntGame extends Game
 			return;
 		
 		stopGame();
-		getLobby().cancelGame();
 	}
 	private void stopGame()
 	{
@@ -111,7 +109,7 @@ public class ManhuntGame extends Game
 	public void testGame()
 	{
  		if (getLobby().getPlayerNames(Team.HUNTERS).isEmpty() || getLobby().getPlayerNames(Team.PREY).isEmpty())
-			endGame();
+			getLobby().endGame();
 	}
 	
 	

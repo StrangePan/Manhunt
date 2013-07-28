@@ -187,6 +187,21 @@ public abstract class Lobby implements Closeable
 		this.spawn.setLocation(getSettings().SPAWN_LOCATION.getValue());
 		this.is_open = getSettings().LOBBY_OPEN.getValue();
 	}
+	protected void softLoad()
+	{
+		this.file.clearPacks();
+		if (this instanceof GameLobby && ((GameLobby) this).getGame() != null)
+		{
+			this.file.addPack(((GameLobby) this).getGame().getSettings());
+		}
+		this.file.addPack(getSettings());
+		this.file.loadPacks();
+		
+		this.name = getSettings().LOBBY_NAME.getValue();
+		this.spawn.setRange(getSettings().SPAWN_RANGE.getValue());
+		this.spawn.setLocation(getSettings().SPAWN_LOCATION.getValue());
+		this.is_open = getSettings().LOBBY_OPEN.getValue();
+	}
 	private void load()
 	{
 		this.file.clearPacks();

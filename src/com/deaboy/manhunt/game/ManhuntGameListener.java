@@ -310,12 +310,6 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		if (!checkBaseActionValidityCancellable(e, damagee))
 			return;
 		
-		if (game.getStage() != GameStage.HUNT)
-		{
-			e.setCancelled(true);
-			return;
-		}
-		
 		if (e.getDamager() instanceof Projectile) // Deal with projectiles
 		{
 			if (((Projectile) e.getDamager()).getShooter().getType() == EntityType.PLAYER)
@@ -344,10 +338,15 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		damager_team = lobby.getPlayerTeam(damager);
 		damagee_team = lobby.getPlayerTeam(damagee);
 		
-		if (damager_team == null)
+		if (damagee_team == null && damager_team == null)
+		{
 			return;
-		if (damagee_team == null)
+		}
+		
+		if (damager_team == null && (game.getStage() == GameStage.HUNT || game.getStage() == GameStage.SETUP && damagee_team == Team.PREY))
+		{
 			return;
+		}
 		
 		if (damager_team != Team.HUNTERS && damager_team != Team.PREY || damagee_team != Team.HUNTERS && damagee_team != Team.PREY)
 		{
@@ -364,13 +363,13 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			}
 		}
 		
-		if (damager_team == damagee_team && lobby.getSettings().FRIENDLY_FIRE.getValue() == false)
+		if (damager != damagee && damager_team == damagee_team && lobby.getSettings().FRIENDLY_FIRE.getValue() == false)
 		{
 			e.setCancelled(true);
 			return;
 		}
 		
-		if (game.getSettings().INSTANT_DEATH.getValue())
+		if (game.getSettings().INSTANT_DEATH.getValue() && damager != damagee)
 		{
 			damagee.setHealth(0.0);
 		}
@@ -464,7 +463,11 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			return;
 		}
 		
-		if (e.getTarget().getType() == EntityType.PLAYER)
+		if (e.getTarget() == null)
+		{
+			return;
+		}
+		else if (e.getTarget().getType() == EntityType.PLAYER)
 		{
 			target = (Player) (e.getTarget());
 		}

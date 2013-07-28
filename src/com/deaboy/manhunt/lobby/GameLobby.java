@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.amber.Amber;
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntPlugin;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.Game;
@@ -374,17 +375,24 @@ public abstract class GameLobby extends Lobby
 			return false;
 		}
 		chooseMap();
-		if (getCurrentMap() == null)
+		if (getCurrentMap() == null || Manhunt.getLobby(getCurrentMap().getWorld().getWorld()) != null && Manhunt.getLobby(getCurrentMap().getWorld().getWorld()).getType() == LobbyType.GAME && ((GameLobby) Manhunt.getLobby(getCurrentMap().getWorld().getWorld())).gameIsRunning())
 		{
 			return false;
+		}
+		if (getSettings().USE_AMBER.getValue())
+		{
+			if (Amber.getWorldRecorder(getCurrentMap().getWorld().getWorld()).isIdle())
+			{
+				Amber.startRecordingWorld(getCurrentMap().getWorld().getWorld(), ManhuntPlugin.getInstance());
+			}
+			else
+			{
+				return false;
+			}
 		}
 		distributeTeams();
 		game.setMap(getCurrentMap());
 		game.startGame();
-		if (getSettings().USE_AMBER.getValue())
-		{
-			Amber.startRecordingWorld(getCurrentMap().getWorld().getWorld());
-		}
 		return true;
 	}
 	public boolean endGame()
@@ -420,7 +428,7 @@ public abstract class GameLobby extends Lobby
 		if (getSettings().USE_AMBER.getValue())
 		{
 			Amber.stopRecordingWorld(getCurrentMap().getWorld().getWorld());
-			Amber.startRestoringWorld(getCurrentMap().getWorld().getWorld());
+			Amber.startRestoringWorld(getCurrentMap().getWorld().getWorld(), ManhuntPlugin.getInstance());
 		}
 	}
 	public boolean setGameClass(GameClass gameclass)
@@ -435,6 +443,7 @@ public abstract class GameLobby extends Lobby
 		
 		broadcast(ChatManager.leftborder + "Game has been changed to " + ChatColor.DARK_BLUE + gameclass.getName());
 		Manhunt.log('[' + getName() + "] Game changed to " + gameclass.getName());
+		loadFiles();
 		saveFiles();
 		return true;
 	}
@@ -588,8 +597,11 @@ public abstract class GameLobby extends Lobby
 		super.loadFiles();
 		
 		this.maps = new ArrayList<String>(getSettings().MAPS.getValue());
-		if (Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()) != null)
+		if ((this.game == null || !this.game.getClass().getCanonicalName().equals(getSettings().GAME_CLASS.getValue())) && Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()) != null)
+		{
 			this.game = Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()).createInstance(this);
+			super.softLoad();
+		}
 	}
 	
 	
