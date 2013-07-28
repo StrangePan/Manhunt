@@ -277,7 +277,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		if (!checkBaseActionValidityCancellable(e, damagee))
 			return;
 		
-		if (game.getStage() == GameStage.INTERMISSION || game.getStage() == GameStage.PREGAME)
+		if (game.getStage() != GameStage.HUNT)
 		{
 			e.setCancelled(true);
 			return;
@@ -316,7 +316,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		if (damagee_team == null)
 			return;
 		
-		if (damager_team != Team.HUNTERS && damager_team != Team.PREY || damagee_team != Team.HUNTERS && damager_team != Team.PREY)
+		if (damager_team != Team.HUNTERS && damager_team != Team.PREY || damagee_team != Team.HUNTERS && damagee_team != Team.PREY)
 		{
 			e.setCancelled(true);
 			return;
@@ -374,9 +374,9 @@ public class ManhuntGameListener implements GameEventListener, Listener
 					" was killed by " + damager_team.getColor() + damager.getName() + ChatManager.color + " and is eliminated!");
 		}
 		
+		game.getLobby().playerChangeTeam(damagee.getName(), Team.STANDBY);
 		game.testGame();
 	}
-	
 	@EventHandler
 	public final void onCreatureSpawn(CreatureSpawnEvent e)
 	{

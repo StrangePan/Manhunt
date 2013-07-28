@@ -116,7 +116,7 @@ public class ManhuntGame extends Game
 	}
 	public void testGame()
 	{
-		if (getLobby().getPlayerNames(Team.HUNTERS).isEmpty() || getLobby().getPlayerNames(Team.PREY).isEmpty())
+ 		if (getLobby().getPlayerNames(Team.HUNTERS).isEmpty() || getLobby().getPlayerNames(Team.PREY).isEmpty())
 			endGame();
 	}
 	

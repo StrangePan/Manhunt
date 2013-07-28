@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.deaboy.amber.Amber;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
@@ -379,6 +380,10 @@ public abstract class GameLobby extends Lobby
 		distributeTeams();
 		game.setMap(getCurrentMap());
 		game.startGame();
+		if (getSettings().USE_AMBER.getValue())
+		{
+			Amber.startRecordingWorld(getCurrentMap().getWorld().getWorld());
+		}
 		return true;
 	}
 	public boolean endGame()
@@ -407,7 +412,13 @@ public abstract class GameLobby extends Lobby
 		for (Player player : getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
 		{
 			player.teleport(ManhuntUtil.safeTeleport(getRandomSpawnLocation()));
+			setPlayerTeam(player, Team.STANDBY);
 			ManhuntUtil.resetPlayer(player);
+		}
+		if (getSettings().USE_AMBER.getValue())
+		{
+			Amber.stopRecordingWorld(getCurrentMap().getWorld().getWorld());
+			Amber.startRestoringWorld(getCurrentMap().getWorld().getWorld());
 		}
 	}
 	public boolean setGameClass(GameClass gameclass)
