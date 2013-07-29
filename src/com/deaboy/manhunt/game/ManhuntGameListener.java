@@ -77,7 +77,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		{
 			return false;
 		}
-		else if (!lobby.containsPlayer(p))
+		else if (lobby == null || !lobby.containsPlayer(p))
 		{
 			return false;
 		}
@@ -199,6 +199,8 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	@EventHandler
 	public final void onFinderActivate(PlayerInteractEvent e)
 	{
+		if (e.getAction() == Action.RIGHT_CLICK_AIR && e.isCancelled())
+			e.setCancelled(false);
 		if (!checkBaseActionValidityCancellable(e, e.getPlayer()))
 			return;
 		
@@ -217,7 +219,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		
 		if (!Manhunt.finderExistsFor(e.getPlayer()))
 		{
-			Manhunt.startFinderFor(e.getPlayer(), 8000L, game.getSettings().FINDER_COOLDOWN.getValue()*1000L, Material.getMaterial(game.getSettings().FINDER_ITEM.getValue()), 4, 0, true);
+			Manhunt.startFinderFor(e.getPlayer(), 160, game.getSettings().FINDER_COOLDOWN.getValue()*20, Material.getMaterial(game.getSettings().FINDER_ITEM.getValue()), 4, 0, true);
 			FinderUtil.sendMessageFinderInitialize(e.getPlayer());
 		}
 		else
@@ -265,6 +267,9 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		Player player;
 		Team team;
 		
+		if (e.getEntity() instanceof Player && !checkBaseActionValidityCancellable(e, (Player) e.getEntity()))
+			return;
+		
 		if (e.isCancelled())
 			return;
 		if (e.getEntity().getType() != EntityType.PLAYER)
@@ -279,7 +284,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		{
 			return;
 		}
-		if (game.getStage() == GameStage.PREGAME  || game.getStage() == GameStage.INTERMISSION)
+		if (game.getStage() == GameStage.PREGAME  || game.getStage() == GameStage.INTERMISSION || game.getStage() == GameStage.SETUP && team != Team.PREY)
 		{
 			e.setCancelled(true);
 			return;
@@ -298,18 +303,19 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		Team damager_team;
 		Team damagee_team;
 		
+		if (e.isCancelled())
+			return;
+		if (!game.isRunning() || game.getWorld() != e.getEntity().getWorld())
+			return;
+		
 		if (e.getEntity().getType() == EntityType.PLAYER)
 		{
-			damagee = (Player) e.getEntity();
+			damagee = ((Player) e.getEntity());
 		}
 		else
 		{
-			return;
+			damagee = null;
 		}
-		
-		if (!checkBaseActionValidityCancellable(e, damagee))
-			return;
-		
 		if (e.getDamager() instanceof Projectile) // Deal with projectiles
 		{
 			if (((Projectile) e.getDamager()).getShooter().getType() == EntityType.PLAYER)
@@ -318,7 +324,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			}
 			else
 			{
-				return;
+				damager = null;
 			}
 		}
 		else if (e.getDamager().getType() == EntityType.PLAYER)
@@ -332,7 +338,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		}
 		else
 		{
-			return;
+			damager = null;
 		}
 		
 		damager_team = lobby.getPlayerTeam(damager);
@@ -348,15 +354,20 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			return;
 		}
 		
-		if (damager_team != Team.HUNTERS && damager_team != Team.PREY || damagee_team != Team.HUNTERS && damagee_team != Team.PREY)
+		if (damager_team != Team.HUNTERS && damager_team != Team.PREY || damagee_team != Team.HUNTERS && damagee_team != Team.PREY && damagee_team != null)
 		{
 			e.setCancelled(true);
 			return;
 		}
 		
+		if (game.getStage() == GameStage.PREGAME)
+		{
+			e.setCancelled(true);
+			return;
+		}
 		if (game.getStage() == GameStage.SETUP)
 		{
-			if (damagee_team == Team.HUNTERS)
+			if (damagee_team != null && damager_team != null && damagee_team != damager_team)
 			{
 				e.setCancelled(true);
 				return;

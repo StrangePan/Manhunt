@@ -287,7 +287,6 @@ public abstract class GameLobby extends Lobby
 				if (player != null)
 				{
 					player.sendMessage(message);
-					break;
 				}
 			}
 		}

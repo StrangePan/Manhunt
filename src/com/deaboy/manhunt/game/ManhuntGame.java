@@ -68,13 +68,13 @@ public class ManhuntGame extends Game
 		if (hunters == 0 && prey == 0)
 		{
 			getLobby().broadcast(ChatManager.leftborder + "Both teams died!");
-			getLobby().broadcast(ChatManager.leftborder + ChatColor.RED + "You all FAIL!");
+			getLobby().broadcast(ChatManager.leftborder + ChatColor.RED + "You all FAIL! Booooo!");
 		}
 		// The hunters won
 		else if (prey == 0)
 		{
 			getLobby().broadcast(ChatManager.leftborder + "The " + Team.PREY.getColor() + Team.PREY.getName(true) + ChatManager.color + " have all died!");
-			getLobby().broadcast(ChatManager.leftborder + Team.HUNTERS.getColor() + "the " + Team.HUNTERS.getName(true) + " have won the game!");
+			getLobby().broadcast(ChatManager.leftborder + Team.HUNTERS.getColor() + "The " + Team.HUNTERS.getName(true) + " have won the game!");
 		}
 		// The prey won
 		else if (hunters == 0)
@@ -123,6 +123,7 @@ public class ManhuntGame extends Game
 	public boolean playerLeaveLobby(String name)
 	{
 		Manhunt.cancelFinderFor(name);
+		this.testGame();
 		return true;
 	}
 	@Override
@@ -135,6 +136,7 @@ public class ManhuntGame extends Game
 	public boolean playerForfeit(String name)
 	{
 		Manhunt.cancelFinderFor(name);
+		this.testGame();
 		return true;
 	}
 	public boolean playerChangeTeam(String name, Team team)
@@ -320,9 +322,10 @@ public class ManhuntGame extends Game
 		
 		event = new ManhuntWorldEvent(getWorld(), time);
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.HUNT); }}));
+		event.addAction(new RunnableAction(new Runnable(){ public void run(){ for (Player player : getLobby().getOnlinePlayers(Team.HUNTERS, Team.PREY)) player.setExp(1f); }}));
 		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + getLobby().getSettings().TIME_LIMIT.getValue() + " minutes."));
 		event.addAction(new BroadcastAction(lobby_id, "Beware! The hunters have been released!", Team.PREY));
-		event.addAction(new BroadcastAction(lobby_id, "Now's you're chance! Hunt the prey!", Team.HUNTERS));
+		event.addAction(new BroadcastAction(lobby_id, "Now's your chance! Hunt the prey!", Team.HUNTERS));
 		timeline.registerEvent(event);
 		
 		//////////////// LENGTH OF THE HUNT ////////////////

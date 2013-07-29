@@ -85,7 +85,7 @@ public abstract class ManhuntUtil
 
 	public static double getDistance(Location loc1, Location loc2, boolean ignoreY)
 	{
-		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getZ(), loc2.getZ(), ignoreY);
+		return getDistance(loc1.getX(), loc1.getY(), loc1.getZ(), loc2.getX(), loc2.getY(), loc2.getZ(), ignoreY);
 	}
 	
 	/**

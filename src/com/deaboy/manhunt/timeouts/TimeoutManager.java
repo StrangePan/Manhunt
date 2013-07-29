@@ -119,7 +119,7 @@ public class TimeoutManager
 			if (Manhunt.getPlayerLobby(player_name) != null && Manhunt.getPlayerLobby(player_name).getType() == LobbyType.GAME)
 			{
 				this.lobby_id = Manhunt.getPlayerLobby(player_name).getId();
-				this.forfeit_time = ((GameLobby) Manhunt.getPlayerLobby(player_name)).getSettings().OFFLINE_TIMEOUT.getValue() * 1000;
+				this.forfeit_time = new Date().getTime() + ((GameLobby) Manhunt.getPlayerLobby(player_name)).getSettings().OFFLINE_TIMEOUT.getValue() * 1000;
 			}
 			else
 			{

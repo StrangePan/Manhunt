@@ -23,7 +23,7 @@ import com.deaboy.manhunt.lobby.Team;
 public class FinderManager
 {
 	//////////////// CONSTANTS ////////////////
-	private static final String FINDER_CANCEL = "";
+	private static final String FINDER_CANCEL = ChatManager.leftborder + "The PreyFinder was cancelled.";
 	
 	
 	//////////////// PROPERTIES ////////////////
@@ -257,11 +257,13 @@ public class FinderManager
 			if (!player.isOnline())
 			{
 				cancel();
+				return;
 			}
-			if (!ManhuntUtil.areEqualLocations(player.getLocation(), origin, 0.4, false) || player.getItemInHand() == null || player.getItemInHand().getType() != finder_material)
+			if (!used && (!ManhuntUtil.areEqualLocations(player.getLocation(), origin, 0.4, false) || player.getItemInHand() == null || player.getItemInHand().getType() != finder_material))
 			{
 				player.sendMessage(FINDER_CANCEL);
 				cancel();
+				return;
 			}
 			
 			if (!used)
@@ -277,7 +279,7 @@ public class FinderManager
 				{
 					if (use_xp)
 					{
-						player.setExp(1f);
+						player.setExp(0f);
 					}
 					activate();
 				}
@@ -295,10 +297,11 @@ public class FinderManager
 				{
 					if (use_xp)
 					{
-						player.setExp(0f);
+						player.setExp(1f);
 					}
 					player.sendMessage(ChatManager.bracket1_ + "Your Prey Finder is ready to be used." + ChatManager.bracket2_);
 					cancel();
+					return;
 				}
 			}
 		}
@@ -399,6 +402,7 @@ public class FinderManager
 		}
 		private void stop()
 		{
+			player.setExp(1f);
 			player = null;
 			world = null;
 			Bukkit.getScheduler().cancelTask(schedule);
