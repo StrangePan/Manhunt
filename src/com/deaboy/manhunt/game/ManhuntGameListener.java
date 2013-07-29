@@ -20,9 +20,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -250,14 +254,14 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	@EventHandler
 	public final void onPlayerInteract(PlayerInteractEvent e)
 	{
-		if (e.isCancelled() || !checkBaseActionValidity(e, e.getPlayer()))
+		if (!checkBaseActionValidityCancellable(e, e.getPlayer()))
 			return;
 		
-		Team player_team = lobby.getPlayerTeam(e.getPlayer());
+		Team team = lobby.getPlayerTeam(e.getPlayer());
 		
-		if (player_team == Team.STANDBY || player_team == null)
+		if (team != Team.HUNTERS && team != Team.PREY)
 		{
-			e.setCancelled(true);
+			e.setCancelled(true);;
 			return;
 		}
 	}
@@ -419,6 +423,102 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		
 		game.getLobby().playerChangeTeam(damagee.getName(), Team.STANDBY);
 		game.testGame();
+	}
+	@EventHandler
+	public final void onPlayerGainExp(PlayerExpChangeEvent e)
+	{
+		if (!checkBaseActionValidity(e, e.getPlayer()))
+		{
+			e.setAmount(0);
+			return;
+		}
+		
+		Team team;
+		
+		if (game.getSettings().PREY_FINDER.getValue())
+		{
+			e.setAmount(0);
+			return;
+		}
+		
+		team = lobby.getPlayerTeam(e.getPlayer());
+		if (game.getStage() != GameStage.HUNT && game.getStage() != GameStage.SETUP)
+		{
+			e.setAmount(0);
+			return;
+		}
+		else if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			e.setAmount(0);
+			return;
+		}
+	}
+	@EventHandler
+	public final void onPlayerPickupItem(PlayerPickupItemEvent e)
+	{
+		if (!checkBaseActionValidityCancellable(e, e.getPlayer()))
+		{
+			return;
+		}
+		
+		Team team = lobby.getPlayerTeam(e.getPlayer());
+		if (game.getStage() != GameStage.HUNT && game.getStage() != GameStage.SETUP)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+	}
+	@EventHandler
+	public final void onPlayerDropItem(PlayerDropItemEvent e)
+	{
+		if (!checkBaseActionValidityCancellable(e, e.getPlayer()))
+		{
+			return;
+		}
+		
+		Team team = lobby.getPlayerTeam(e.getPlayer());
+		if (game.getStage() != GameStage.HUNT && game.getStage() != GameStage.SETUP)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+	}
+	@EventHandler
+	public final void onPlayerLaunchProjectile(ProjectileLaunchEvent e)
+	{
+		Player player;
+		Team team;
+		
+		if (e.getEntity().getShooter().getType() == EntityType.PLAYER)
+		{
+			player = ((Player) e.getEntity());
+			team = lobby.getPlayerTeam(player);
+		}
+		else
+		{
+			return;
+		}
+		
+		if (team != Team.HUNTERS && team != Team.PREY)
+		{
+			e.setCancelled(true);
+			return;
+		}
+		else if (game.getStage() != GameStage.HUNT && game.getStage() != GameStage.SETUP)
+		{
+			e.setCancelled(true);
+			return;
+		}
 	}
 	@EventHandler
 	public final void onCreatureSpawn(CreatureSpawnEvent e)
