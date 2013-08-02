@@ -63,6 +63,8 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT, true).addAlias("teleport").addAlias("spawn").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT, true).addAlias("r").finalize_();
 	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT, true).addAlias("s").finalize_();
+	public static final ArgumentTemplate arg_load	= new ArgumentTemplate("load", ArgumentType.FLAG, true).addAlias("ld").finalize_();
+	public static final ArgumentTemplate arg_save	= new ArgumentTemplate("save", ArgumentType.FLAG, true).addAlias("sv").finalize_();
 	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG, true).addAlias("define").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG, true).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK, true).addAlias("flag").addAlias("fl");
@@ -165,6 +167,24 @@ public class CommandUtil
 			.addArgument(arg_list)
 			.addArgument(arg_page)
 			.addArgument(arg_set);
+	public static final CommandTemplate cmd_mloadout= new CommandTemplate("mloadout")
+			.addAlias("loadout")
+			.addAlias("load")
+			.addAlias("mhloadout")
+			.addAlias("mloadouts")
+			.addAlias("loadouts")
+			.addAlias("mhloadouts")
+			.addAlias("mload")
+			.addAlias("mhload")
+			.addArgument(arg_info)
+			.addArgument(arg_select)
+			.addArgument(arg_list)
+			.addArgument(arg_page)
+			.addArgument(arg_create)
+			.addArgument(arg_delete)
+			.addArgument(arg_name)
+			.addArgument(arg_load)
+			.addArgument(arg_save);
 	static {	// Store references to command templates in hashmap and add global arguments
 		command_templates = new HashMap<String, CommandTemplate>();
 		command_templates.put(cmd_mlobby.getName(), cmd_mlobby);
@@ -173,6 +193,7 @@ public class CommandUtil
 		command_templates.put(cmd_mpoint.getName(), cmd_mpoint);
 		command_templates.put(cmd_mworld.getName(), cmd_mworld);
 		command_templates.put(cmd_msettings.getName(), cmd_msettings);
+		command_templates.put(cmd_mloadout.getName(), cmd_mloadout);
 		
 		for (CommandTemplate cmd : command_templates.values())
 			cmd.addArgument(arg_help).addArgument(arg_args).finalize_();

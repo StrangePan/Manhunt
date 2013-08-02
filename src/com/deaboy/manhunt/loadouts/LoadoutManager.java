@@ -34,7 +34,6 @@ public class LoadoutManager
 	{
 		return loadouts.get(name);
 	}
-	
 	public List<Loadout> getAllLoadouts()
 	{
 		List<Loadout> results = new ArrayList<Loadout>();
@@ -51,7 +50,6 @@ public class LoadoutManager
 		if (!loadouts.containsKey(loadout.getName()) && !loadouts.containsValue(loadout))
 			loadouts.put(loadout.getName(), loadout);
 	}
-	
 	public boolean deleteLoadout(String name)
 	{
 		if (loadouts.containsKey(name))

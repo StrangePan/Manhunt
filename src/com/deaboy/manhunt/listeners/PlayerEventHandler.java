@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -109,6 +111,16 @@ public class PlayerEventHandler implements Listener
 		e.setQuitMessage(null);
 		
 		Manhunt.playerLeaveServer(e.getPlayer());
+	}
+	
+	@EventHandler
+	public void onPlayerLoseFood(FoodLevelChangeEvent e)
+	{
+		if (e.getEntityType() == EntityType.PLAYER && (Manhunt.getPlayerLobby((Player) e.getEntity()).getType() != LobbyType.GAME || !((GameLobby) Manhunt.getPlayerLobby((Player) e.getEntity())).gameIsRunning()))
+		{
+			e.setFoodLevel(20);
+			((Player) e.getEntity()).setSaturation(20);
+		}
 	}
 	
 }

@@ -54,6 +54,11 @@ commands:
         description: Performs various team commands, like joining  team and clearing a team.
         aliases: [team]
     
+    mloadout:
+        usage: /mloadout <arg> [param]...
+        description: Performs various loadout commands, including creating, editing, renaming, and deleting.
+        aliases: [loadout, load, mhloadout, mloadouts, loadouts, mhloadouts, mload, mhload]
+    
     ############ Maps ############
     mmap:
         usage: /mmap <arg> [param]...
