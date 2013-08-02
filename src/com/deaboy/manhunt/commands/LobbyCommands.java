@@ -679,7 +679,7 @@ public abstract class LobbyCommands
 		if (lobbyname == null)
 		{
 			sender.sendMessage(ChatColor.RED + "You must include the name of the lobby you want to select.");
-			sender.sendMessage(ChatColor.GRAY + " /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_select).getLabel() + " <zonename>");
+			sender.sendMessage(ChatColor.GRAY + " /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_select).getLabel() + " <lobby name>");
 			return false;
 		}
 		

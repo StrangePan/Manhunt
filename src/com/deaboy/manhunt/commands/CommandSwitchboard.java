@@ -27,6 +27,7 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("manhuntmode").setExecutor(this);
 		
 		Bukkit.getPluginCommand("mlobby").setExecutor(this);
+		Bukkit.getPluginCommand("mloadout").setExecutor(this);
 		
 		Bukkit.getPluginCommand("mmap").setExecutor(this);
 		Bukkit.getPluginCommand("mzone").setExecutor(this);
@@ -91,6 +92,9 @@ public class CommandSwitchboard implements CommandExecutor
 		
 		else if (c.getName().equalsIgnoreCase("mlobby"))
 			action |= LobbyCommands.mlobby(sender, command);
+		
+		else if (c.getName().equalsIgnoreCase("mloadout"))
+			action |= LoadoutCommands.mloadout(sender, command);
 		
 		
 		

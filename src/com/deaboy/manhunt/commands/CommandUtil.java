@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
+import com.deaboy.manhunt.loadouts.Loadout;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Spawn;
@@ -205,6 +206,7 @@ public class CommandUtil
 	private HashMap<String, Long> selected_lobbies;
 	private HashMap<String, String> selected_zones;
 	private HashMap<String, String> selected_points;
+	private HashMap<String, String> selected_loadouts;
 	private HashMap<CommandSender, String> vcommands;
 	private HashMap<CommandSender, Boolean> verified;
 	
@@ -216,6 +218,7 @@ public class CommandUtil
 		this.selected_lobbies = new HashMap<String, Long>();
 		this.selected_zones = new HashMap<String, String>();
 		this.selected_points = new HashMap<String, String>();
+		this.selected_loadouts = new HashMap<String, String>();
 		this.vcommands = new HashMap<CommandSender, String>();
 		this.verified = new HashMap<CommandSender, Boolean>();
 	}
@@ -399,7 +402,10 @@ public class CommandUtil
 	//---------------- Spawn Selection ----------------//
 	public static void setSelectedPoint(CommandSender sender, Spawn point)
 	{
-		Manhunt.getCommandUtil().selected_points.put(sender.getName(), point.getName());
+		if (sender != null && point != null)
+		{
+			Manhunt.getCommandUtil().selected_points.put(sender.getName(), point.getName());
+		}
 	}
 	public static Spawn getSelectedPoint(CommandSender sender)
 	{
@@ -416,6 +422,37 @@ public class CommandUtil
 			return null;
 	}
 	
+	
+	//---------------- Loadout Selection ----------------//
+	public static void setSelectedLoadout(CommandSender sender, Loadout loadout)
+	{
+		if (sender != null && loadout != null)
+		{
+			Manhunt.getCommandUtil().selected_loadouts.put(sender.getName(), loadout.getName());
+		}
+	}
+	public static Loadout getSelectedLoadout(CommandSender sender)
+	{
+		if (sender != null)
+		{
+			return getSelectedLoadout(sender.getName());
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public static Loadout getSelectedLoadout(String name)
+	{
+		if (name != null && Manhunt.getCommandUtil().selected_loadouts.containsKey(name))
+		{
+			return Manhunt.getLoadouts().getLoadout(Manhunt.getCommandUtil().selected_loadouts.get(name));
+		}
+		else
+		{
+			return null;
+		}
+	}
 	
 	
 	//---------------- Verification ----------------//
