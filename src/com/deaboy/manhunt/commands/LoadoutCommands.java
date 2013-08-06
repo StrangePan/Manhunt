@@ -202,6 +202,7 @@ public class LoadoutCommands
 		
 		loadout = new Loadout(loadoutname, filename, ((Player) sender).getInventory().getContents(), ((Player) sender).getInventory().getArmorContents());
 		Manhunt.getLoadouts().addLoadout(loadout);
+		CommandUtil.setSelectedLoadout(sender, loadout);
 		
 		sender.sendMessage(ChatManager.leftborder + "Created loadout '" + ChatColor.GREEN + "'   " + ChatColor.GRAY + ChatColor.ITALIC + "file: " + filename);
 		return true;

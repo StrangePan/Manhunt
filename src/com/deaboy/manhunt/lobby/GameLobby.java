@@ -21,6 +21,7 @@ import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameClass;
+import com.deaboy.manhunt.loadouts.Loadout;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
 import com.deaboy.manhunt.settings.GameLobbySettings;
@@ -33,6 +34,8 @@ public abstract class GameLobby extends Lobby
 	private List<String> maps;
 	private Map current_map;
 	private HashMap<String, Team> teams;
+	private List<String> prey_loadouts;
+	private List<String> hunter_loadouts;
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
@@ -43,6 +46,8 @@ public abstract class GameLobby extends Lobby
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
 		this.teams = new HashMap<String, Team>();
+		this.prey_loadouts = new ArrayList<String>();
+		this.hunter_loadouts = new ArrayList<String>();
 	}
 	public GameLobby(long id, File file, String name, Location loc)
 	{
@@ -51,6 +56,8 @@ public abstract class GameLobby extends Lobby
 		this.maps = new ArrayList<String>();
 		this.current_map = null;
 		this.teams = new HashMap<String, Team>();
+		this.prey_loadouts = new ArrayList<String>();
+		this.hunter_loadouts = new ArrayList<String>();
 	}
 	
 	
@@ -568,6 +575,168 @@ public abstract class GameLobby extends Lobby
 	}
 	
 	
+	//---------------- LOADOUTS ----------------//
+	public boolean addHunterLoadout(Loadout loadout)
+	{
+		if (loadout == null)
+			return false;
+		if (this.hunter_loadouts.contains(loadout.getName()))
+			return false;
+		
+		this.hunter_loadouts.add(loadout.getName());
+		return true;
+	}
+	public boolean addPreyLoadout(Loadout loadout)
+	{
+		if (loadout == null)
+			return false;
+		if (this.prey_loadouts.contains(loadout.getName()))
+			return false;
+		
+		this.prey_loadouts.add(loadout.getName());
+		return true;
+	}
+	public boolean removeLoadout(String name)
+	{
+		if (name != null && (this.hunter_loadouts.contains(name) || this.prey_loadouts.contains(name)))
+		{
+			if (this.hunter_loadouts.contains(name))
+				this.hunter_loadouts.remove(name);
+			if (this.prey_loadouts.contains(name))
+				this.prey_loadouts.remove(name);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public boolean removeHunterLoadout(String name)
+	{
+		if (name != null && this.hunter_loadouts.contains(name))
+		{
+			this.hunter_loadouts.remove(name);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public boolean removePreyLoadout(String name)
+	{
+		if (name != null && this.prey_loadouts.contains(name))
+		{
+			this.prey_loadouts.remove(name);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public List<Loadout> getLoadouts()
+	{
+		List<Loadout> loadouts = new ArrayList<Loadout>();
+		loadouts.addAll(getHunterLoadouts());
+		for (Loadout loadout : getPreyLoadouts())
+		{
+			if (!loadouts.contains(loadout))
+			{
+				loadouts.add(loadout);
+			}
+		}
+		return loadouts;
+	}
+	public List<Loadout> getHunterLoadouts()
+	{
+		List<Loadout> loadouts = new ArrayList<Loadout>();
+		for (String loadoutname : this.hunter_loadouts)
+		{
+			if (Manhunt.getLoadouts().getLoadout(loadoutname) != null && !loadouts.contains(Manhunt.getLoadouts().getLoadout(loadoutname)))
+			{
+				loadouts.add(Manhunt.getLoadouts().getLoadout(loadoutname));
+			}
+		}
+		return loadouts;
+	}
+	public List<Loadout> getPreyLoadouts()
+	{
+		List<Loadout> loadouts = new ArrayList<Loadout>();
+		for (String loadoutname : this.prey_loadouts)
+		{
+			if (Manhunt.getLoadouts().getLoadout(loadoutname) != null && !loadouts.contains(Manhunt.getLoadouts().getLoadout(loadoutname)))
+			{
+				loadouts.add(Manhunt.getLoadouts().getLoadout(loadoutname));
+			}
+		}
+		return loadouts;
+	}
+	public List<String> getLoadoutNames()
+	{
+		List<String> loadoutnames = new ArrayList<String>();
+		loadoutnames.addAll(this.hunter_loadouts);
+		for (String loadoutname : this.prey_loadouts)
+		{
+			if (!loadoutnames.contains(loadoutname))
+			{
+				loadoutnames.add(loadoutname);
+			}
+		}
+		return loadoutnames;
+	}
+	public List<String> getHunterLoadoutNames()
+	{
+		return new ArrayList<String>(this.hunter_loadouts);
+	}
+	public List<String> getPreyLoadoutNames()
+	{
+		return new ArrayList<String>(this.prey_loadouts);
+	}
+	public Loadout getRandomLoadout()
+	{
+		return randomLoadout(getLoadoutNames());
+	}
+	public Loadout getRandomHunterLoadout()
+	{
+		return randomLoadout(getHunterLoadoutNames());
+	}
+	public Loadout getRandomPreyLoadout()
+	{
+		return randomLoadout(getPreyLoadoutNames());
+	}
+	private Loadout randomLoadout(List<String> loadouts)
+	{
+		Loadout loadout;
+		int i;
+
+		if (loadouts.size() == 0)
+			return null;
+		
+		do
+		{
+			i = (int) (Math.random() * loadouts.size());
+			loadout = Manhunt.getLoadouts().getLoadout(loadouts.get(i));
+			loadouts.remove(i);
+		}
+		while (loadout == null && loadouts.size() > 0);
+		
+		return loadout;
+	}
+	public boolean containsLoadout(String loadoutname)
+	{
+		return containsHunterLoadout(loadoutname) || containsPreyLoadout(loadoutname);
+	}
+	public boolean containsHunterLoadout(String loadoutname)
+	{
+		return this.hunter_loadouts.contains(loadoutname);
+	}
+	public boolean containsPreyLoadout(String loadoutname)
+	{
+		return this.prey_loadouts.contains(loadoutname);
+	}
+	
+	
 	//---------------- SETTINGS ----------------//
 	@Override
 	public abstract GameLobbySettings getSettings();
@@ -587,6 +756,8 @@ public abstract class GameLobby extends Lobby
 	{
 		getSettings().GAME_CLASS.setValue(this.game != null ? game.getClass().getCanonicalName() : "");
 		getSettings().MAPS.setValue(this.maps);
+		getSettings().HUNTER_LOADOUTS.setValue(this.hunter_loadouts);
+		getSettings().PREY_LOADOUTS.setValue(this.prey_loadouts);
 		
 		super.saveFiles();
 	}
@@ -596,6 +767,8 @@ public abstract class GameLobby extends Lobby
 		super.loadFiles();
 		
 		this.maps = new ArrayList<String>(getSettings().MAPS.getValue());
+		this.hunter_loadouts = new ArrayList<String>(getSettings().HUNTER_LOADOUTS.getValue());
+		this.prey_loadouts = new ArrayList<String>(getSettings().PREY_LOADOUTS.getValue());
 		if ((this.game == null || !this.game.getClass().getCanonicalName().equals(getSettings().GAME_CLASS.getValue())) && Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()) != null)
 		{
 			this.game = Manhunt.getGameClassByCanonicalName(getSettings().GAME_CLASS.getValue()).createInstance(this);

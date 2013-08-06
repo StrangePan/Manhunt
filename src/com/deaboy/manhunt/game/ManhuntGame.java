@@ -228,8 +228,44 @@ public class ManhuntGame extends Game
 		timeline.registerEvent(event);
 		
 		event = new ManhuntWorldEvent(getWorld(), time - 260);
+		event.addAction(new RunnableAction(new Runnable()	// Forfeit offline players
+		{
+			public void run()
+			{
+				for (String playername : getLobby().getOfflinePlayerNames(Team.HUNTERS, Team.PREY))
+				{
+					getLobby().playerForfeit(playername);
+				}
+			}
+		}));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getMap().getPoints(SpawnType.PREY)));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
+		event.addAction(new RunnableAction(new Runnable()	// Give random loadouts to hunters
+		{
+			public void run()
+			{
+				if (getLobby().getHunterLoadouts().size() > 0)
+				{
+					for (Player player : getLobby().getOnlinePlayers(Team.HUNTERS))
+					{
+						getLobby().getRandomHunterLoadout().applyToPlayer(player);
+					}
+				}
+			}
+		}));
+		event.addAction(new RunnableAction(new Runnable()	// Give random loadouts to prey
+		{
+			public void run()
+			{
+				if (getLobby().getPreyLoadouts().size() > 0)
+				{
+					for (Player player : getLobby().getOnlinePlayers(Team.PREY))
+					{
+						getLobby().getRandomPreyLoadout().applyToPlayer(player);
+					}
+				}
+			}
+		}));
 		timeline.registerEvent(event);
 		
 		event = new ManhuntWorldEvent(getWorld(), time);
@@ -291,6 +327,16 @@ public class ManhuntGame extends Game
 			timeline.registerEvent(event);
 			
 			event = new ManhuntWorldEvent(getWorld(), time - 260);
+			event.addAction(new RunnableAction(new Runnable()	// Forfeit offline players
+			{
+				public void run()
+				{
+					for (String playername : getLobby().getOfflinePlayerNames(Team.HUNTERS))
+					{
+						getLobby().playerForfeit(playername);
+					}
+				}
+			}));
 			event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
 			timeline.registerEvent(event);
 			

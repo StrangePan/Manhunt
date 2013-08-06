@@ -6,7 +6,7 @@ public enum Team
 {
 	HUNTERS, PREY, SPECTATORS, STANDBY, NONE;
 	
-	public Team fromString(String team)
+	public static Team fromString(String team)
 	{
 		if (team.equalsIgnoreCase("hunter") || team.equalsIgnoreCase("hunters"))
 			return HUNTERS;

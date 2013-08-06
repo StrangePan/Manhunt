@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
+import com.deaboy.manhunt.loadouts.Loadout;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.World;
@@ -19,6 +20,7 @@ import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.lobby.Lobby;
 import com.deaboy.manhunt.lobby.LobbyClass;
 import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.Team;
 
 public abstract class LobbyCommands
 {
@@ -208,6 +210,18 @@ public abstract class LobbyCommands
 			else if (scmd.containsArgument(CommandUtil.arg_remmap))
 			{
 				action |= removemaplobby(sender, scmd);
+			}
+			else if (scmd.containsArgument(CommandUtil.arg_lsload))
+			{
+				action |= listloadoutslobby(sender, scmd);
+			}
+			else if (scmd.containsArgument(CommandUtil.arg_addload))
+			{
+				action |= addloadoutlobby(sender, scmd);
+			}
+			else if (scmd.containsArgument(CommandUtil.arg_remload))
+			{
+				action |= removeloadoutlobby(sender, scmd);
 			}
 			else if (scmd.containsArgument(CommandUtil.arg_join))
 			{
@@ -622,7 +636,7 @@ public abstract class LobbyCommands
 		sender.sendMessage(ChatManager.leftborder + "Teleported to " + lobby.getName());
 		return true;
 	}
-
+	
 	private static boolean closelobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
@@ -704,7 +718,7 @@ public abstract class LobbyCommands
 		lobby = CommandUtil.getSelectedLobby(sender);
 		if (lobby == null)
 		{
-			sender.sendMessage(ChatColor.RED + "Please select a lobby to view it's maps.");
+			sender.sendMessage(ChatColor.RED + "Please select a lobby to view its maps.");
 			return false;
 		}
 		else if (lobby.getType() != LobbyType.GAME)
@@ -718,6 +732,7 @@ public abstract class LobbyCommands
 		if (maps.isEmpty())
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "No maps. To add a map, use /" + cmd.getLabel() + " -" + CommandUtil.arg_addmap.getName() + " <map1> [map2] [map3] ...");
+			return true;
 		}
 		for (Map map : maps)
 		{
@@ -900,6 +915,179 @@ public abstract class LobbyCommands
 		{
 			return true;
 		}
+	}
+	private static boolean listloadoutslobby(CommandSender sender, Subcommand cmd)
+	{
+		Lobby lobby;
+		List<Loadout> loadouts;
+		
+		lobby = CommandUtil.getSelectedLobby(sender);
+		if (lobby == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a lobby to view its loadouts.");
+			return false;
+		}
+		else if (lobby.getType() != LobbyType.GAME)
+		{
+			sender.sendMessage(ChatColor.RED + lobby.getName() + " is not a game lobby");
+			return false;
+		}
+		
+		loadouts = ((GameLobby) lobby).getLoadouts();
+		sender.sendMessage(ChatManager.bracket1_ + "List of " + lobby.getName() + "'s Loadouts" + ChatManager.bracket2_);
+		if (loadouts.isEmpty())
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "No loadouts. To add a loadout, use /" + cmd.getLabel() + " -" + CommandUtil.arg_addmap.getName() + " <loadout> -" + CommandUtil.arg_team.getName() + " <team>");
+			return true;
+		}
+		for (Loadout loadout : loadouts)
+		{
+			sender.sendMessage(ChatManager.leftborder + loadout.getName() + ChatColor.GRAY + "  " + (((GameLobby) lobby).containsHunterLoadout(loadout.getName()) ? ' ' + Team.HUNTERS.getName(false) : "") + (((GameLobby) lobby).containsPreyLoadout(loadout.getName()) ? ' ' + Team.PREY.getName(false) : ""));
+		}
+		return true;
+	}
+	private static boolean addloadoutlobby(CommandSender sender, Subcommand cmd)
+	{
+		GameLobby lobby;
+		String loadoutname;
+		Loadout loadout;
+		Team team;
+		boolean action;
+		
+		if (CommandUtil.getSelectedLobby(sender) == null || CommandUtil.getSelectedLobby(sender).getType() != LobbyType.GAME)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must select a game lobby to do that.");
+			return false;
+		}
+		else
+		{
+			lobby = (GameLobby) CommandUtil.getSelectedLobby(sender);
+		}
+		
+		loadoutname = cmd.getArgument(CommandUtil.arg_addload).getParameter();
+		if (loadoutname == null)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please specify the loadout to add.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: -" + cmd.getArgument(CommandUtil.arg_addload).getLabel() + " <loadout>");
+			return false;
+		}
+		else if (Manhunt.getLoadouts().getLoadout(loadoutname) == null)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + loadoutname + " is not an existing loadout.");
+			return false;
+		}
+		else
+		{
+			loadout = Manhunt.getLoadouts().getLoadout(loadoutname);
+		}
+		
+		action = false;
+		if (!cmd.containsArgument(CommandUtil.arg_team) || cmd.getArgument(CommandUtil.arg_team).getParameters().isEmpty())
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must specify the teams that can use this loadout.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: -" + CommandUtil.arg_team.getName() + " <hunter | prey>");
+			return false;
+		}
+		else for (String teamname : cmd.getArgument(CommandUtil.arg_team).getParameters())
+		{
+			team = Team.fromString(teamname);
+			switch (team)
+			{
+			case HUNTERS:
+				if (lobby.containsHunterLoadout(loadoutname))
+				{
+					sender.sendMessage(ChatManager.leftborder + ChatColor.RED + loadout.getName() + " is already a Hunter loadout.");
+				}
+				else
+				{
+					sender.sendMessage(ChatManager.leftborder + loadout.getName() + " added as a Hunter loadout.");
+					lobby.addHunterLoadout(loadout);
+					action = true;
+				}
+				break;
+				
+			case PREY:
+				if (lobby.containsHunterLoadout(loadoutname))
+				{
+					sender.sendMessage(ChatManager.leftborder + ChatColor.RED + loadout.getName() + " is already a Prey loadout.");
+				}
+				else
+				{
+					sender.sendMessage(ChatManager.leftborder + loadout.getName() + " added as a Prey loadout.");
+					lobby.addHunterLoadout(loadout);
+					action = true;
+				}
+				break;
+				
+			default:
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + teamname + " is not a valid team. Choose \"Hunter\" or \"Prey\"");
+				break;
+			}
+		}
+		
+		return action;
+	}
+	private static boolean removeloadoutlobby(CommandSender sender, Subcommand cmd)
+	{
+		GameLobby lobby;
+		String loadoutname;
+		Team team;
+		boolean action;
+		
+		if (CommandUtil.getSelectedLobby(sender) == null || CommandUtil.getSelectedLobby(sender).getType() != LobbyType.GAME)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must select a game lobby to do that.");
+			return false;
+		}
+		else
+		{
+			lobby = (GameLobby) CommandUtil.getSelectedLobby(sender);
+		}
+		
+		loadoutname = cmd.getArgument(CommandUtil.arg_addload).getParameter();
+		if (loadoutname == null)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please specify the loadout to add.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: -" + cmd.getArgument(CommandUtil.arg_addload).getLabel() + " <loadout>");
+			return false;
+		}
+		else if (!lobby.containsLoadout(loadoutname))
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + loadoutname + " does not contain that loadout.");
+			return false;
+		}
+		
+		action = false;
+		if (!cmd.containsArgument(CommandUtil.arg_team) || cmd.getArgument(CommandUtil.arg_team).getParameters().isEmpty())
+		{
+			lobby.removeLoadout(loadoutname);
+			sender.sendMessage(ChatManager.leftborder + "Removed loadout '" + loadoutname + "' from " + lobby.getName() + ".");
+			return true;
+		}
+		else for (String teamname : cmd.getArgument(CommandUtil.arg_team).getParameters())
+		{
+			team = Team.fromString(teamname);
+			switch (team)
+			{
+			case HUNTERS:
+				lobby.removeHunterLoadout(loadoutname);
+				sender.sendMessage(ChatManager.leftborder + loadoutname + " is no longer a Hunter loadout.");
+				action = true;
+				break;
+				
+			case PREY:
+				lobby.removePreyLoadout(loadoutname);
+				sender.sendMessage(ChatManager.leftborder + loadoutname + " is no longer a Prey loadout.");
+				action = true;
+				break;
+				
+			default:
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + teamname + " is not a valid team. Choose \"Hunter\" or \"Prey\"");
+				break;
+			}
+		}
+		
+		return action;
 	}
 	
 }

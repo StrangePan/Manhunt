@@ -12,6 +12,7 @@ import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.loadouts.Loadout;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.Team;
 import com.deaboy.manhunt.map.Map;
 import com.deaboy.manhunt.map.Spawn;
 import com.deaboy.manhunt.map.SpawnType;
@@ -61,6 +62,9 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT, true).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT, true).addAlias("addm").addAlias("map+").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT, true).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
+	public static final ArgumentTemplate arg_addload= new ArgumentTemplate("addloadout", ArgumentType.TEXT, true).addAlias("addload").addAlias("addl").addAlias("loadout+").addAlias("load+").finalize_();
+	public static final ArgumentTemplate arg_remload= new ArgumentTemplate("removeloadout", ArgumentType.TEXT, true).addAlias("remloadout").addAlias("removeload").addAlias("remload").addAlias("reml").addAlias("loadout-").addAlias("load-").finalize_();
+	public static final ArgumentTemplate arg_lsload	= new ArgumentTemplate("listloadouts", ArgumentType.TEXT, true).addAlias("listload").addAlias("lsl").addAlias("lsloadouts").addAlias("lsloadout").finalize_();
 	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT, true).addAlias("teleport").addAlias("spawn").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT, true).addAlias("r").finalize_();
 	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT, true).addAlias("s").finalize_();
@@ -71,6 +75,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK, true).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.TEXT, false).addAlias("t");
 	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
+	public static final ArgumentTemplate arg_team			= new ArgumentTemplate("team", ArgumentType.CHECK, false).addAlias("t");
 	static {	// Fill parameters in certain arguments and finalize.
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
@@ -83,6 +88,13 @@ public class CommandUtil
 		for (SpawnType type : SpawnType.values())
 			arg_pointtype.addParameter(type.getName().toLowerCase());
 		arg_pointtype.finalize_();
+		
+		for (Team team : Team.values())
+		{
+			arg_team.addParameter(team.getName(false).toLowerCase());
+			arg_team.addParameter(team.getName(true).toLowerCase());
+		}
+		arg_team.finalize_();
 	}
 	
 
@@ -107,7 +119,11 @@ public class CommandUtil
 			.addArgument(arg_tp)
 			.addArgument(arg_lsmaps)
 			.addArgument(arg_addmap)
-			.addArgument(arg_remmap);
+			.addArgument(arg_remmap)
+			.addArgument(arg_lsload)
+			.addArgument(arg_addload)
+			.addArgument(arg_remload)
+			.addArgument(arg_team);
 	public static final CommandTemplate cmd_mmap	= new CommandTemplate("mmap")
 			.addAlias("map")
 			.addAlias("mhmap")

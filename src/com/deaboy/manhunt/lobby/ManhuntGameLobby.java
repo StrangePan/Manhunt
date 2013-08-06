@@ -129,7 +129,7 @@ public class ManhuntGameLobby extends GameLobby
 			{
 				this.removePlayer(name);
 			}
-			getGame().playerForfeit(name);
+			Manhunt.getTimeoutManager().cancelTimeout(name);
 		}
 		else if (containsPlayer(name))
 		{
