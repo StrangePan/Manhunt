@@ -153,6 +153,11 @@ public abstract class ManhuntUtil
 	public static void resetPlayer(Player p)
 	{
 		p.getInventory().clear();
+		p.getInventory().setHelmet(null);
+		p.getInventory().setChestplate(null);
+		p.getInventory().setLeggings(null);
+		p.getInventory().setBoots(null);
+		
 		for (PotionEffect potion : p.getActivePotionEffects()) p.removePotionEffect(potion.getType());
 		p.setHealth(p.getMaxHealth());
 		p.setFoodLevel(20);

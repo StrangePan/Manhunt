@@ -501,7 +501,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		
 		if (e.getEntity().getShooter().getType() == EntityType.PLAYER)
 		{
-			player = ((Player) e.getEntity());
+			player = ((Player) e.getEntity().getShooter());
 			team = lobby.getPlayerTeam(player);
 		}
 		else

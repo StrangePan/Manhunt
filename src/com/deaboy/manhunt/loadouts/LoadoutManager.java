@@ -48,7 +48,10 @@ public class LoadoutManager
 	public void addLoadout(Loadout loadout)
 	{
 		if (!loadouts.containsKey(loadout.getName()) && !loadouts.containsValue(loadout))
+		{
 			loadouts.put(loadout.getName(), loadout);
+			loadout.save();
+		}
 	}
 	public boolean deleteLoadout(String name)
 	{

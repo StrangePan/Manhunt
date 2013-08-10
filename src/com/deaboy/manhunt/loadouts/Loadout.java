@@ -33,12 +33,13 @@ public class Loadout
 
 	public Loadout(String name, String filename, ItemStack[] contents, ItemStack[] armor, List<PotionEffect> effects)
 	{
-		this.name = null;
+		this.name = name;
 		this.filename = filename;
 		
 		setContents(contents, armor);
 		
 		this.effects = effects;
+		this.randoms = new ArrayList<RandomStack>();
 	}
 	
 	

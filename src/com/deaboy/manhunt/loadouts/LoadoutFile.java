@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.minecraft.server.v1_6_R2.NBTTagCompound;
+
 import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -214,13 +216,15 @@ public class LoadoutFile
 		contents = new ArrayList<Tag>();
 		for (ItemStack stack : loadout.getContents())
 		{
-			contents.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).getTag()));
+			if (stack != null && stack.getType().getId() != 0)
+				contents.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).save(new NBTTagCompound())));
 		}
 		
 		armor = new ArrayList<Tag>();
 		for (ItemStack stack : loadout.getArmorContents())
 		{
-			armor.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).getTag()));
+			if (stack != null && stack.getType().getId() != 0)
+				armor.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).save(new NBTTagCompound())));
 		}
 		
 		effects = new ArrayList<Tag>();
@@ -228,13 +232,14 @@ public class LoadoutFile
 		{
 			// Uses the "simple effect" object because there are no built-in
 			//		craftbukkit methods for serializing potion effects into tags.
+			
 			effects.add(CompoundTag.fromObject(SimpleEffect.fromPotionEffect(effect)));
 		}
 		
 		randoms = new ArrayList<Tag>();
 		for (RandomStack random : loadout.getAllRandomItemStacks())
 		{
-			CompoundTag tag = CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(random.getItemStack()).getTag());
+			CompoundTag tag = CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(random.getItemStack()).save(new NBTTagCompound()));
 			tag.getValue().put(tag_chance, new DoubleTag(tag_chance, random.getChance()));
 			
 			randoms.add(tag);

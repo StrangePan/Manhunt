@@ -163,6 +163,7 @@ public class LoadoutCommands
 		Loadout loadout;
 		int i;
 		
+
 		if (!(sender instanceof Player))
 		{
 			sender.sendMessage(CommandUtil.IS_SERVER);
@@ -264,6 +265,7 @@ public class LoadoutCommands
 		}
 		
 		loadout.setContents(((Player) sender).getInventory().getContents(), ((Player) sender).getInventory().getArmorContents());
+		loadout.save();
 		sender.sendMessage(ChatManager.leftborder + "Loadout saved!");
 		return true;
 	}

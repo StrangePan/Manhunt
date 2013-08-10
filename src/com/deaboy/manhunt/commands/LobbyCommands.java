@@ -1007,14 +1007,14 @@ public abstract class LobbyCommands
 				break;
 				
 			case PREY:
-				if (lobby.containsHunterLoadout(loadoutname))
+				if (lobby.containsPreyLoadout(loadoutname))
 				{
 					sender.sendMessage(ChatManager.leftborder + ChatColor.RED + loadout.getName() + " is already a Prey loadout.");
 				}
 				else
 				{
 					sender.sendMessage(ChatManager.leftborder + loadout.getName() + " added as a Prey loadout.");
-					lobby.addHunterLoadout(loadout);
+					lobby.addPreyLoadout(loadout);
 					action = true;
 				}
 				break;
@@ -1044,11 +1044,11 @@ public abstract class LobbyCommands
 			lobby = (GameLobby) CommandUtil.getSelectedLobby(sender);
 		}
 		
-		loadoutname = cmd.getArgument(CommandUtil.arg_addload).getParameter();
+		loadoutname = cmd.getArgument(CommandUtil.arg_remload).getParameter();
 		if (loadoutname == null)
 		{
-			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please specify the loadout to add.");
-			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: -" + cmd.getArgument(CommandUtil.arg_addload).getLabel() + " <loadout>");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please specify the loadout to remove.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: -" + cmd.getArgument(CommandUtil.arg_remload).getLabel() + " <loadout>");
 			return false;
 		}
 		else if (!lobby.containsLoadout(loadoutname))
