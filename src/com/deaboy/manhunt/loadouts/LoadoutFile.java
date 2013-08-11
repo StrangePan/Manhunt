@@ -157,8 +157,8 @@ public class LoadoutFile
 	
 	private static CompoundTag loadLoadoutFile(String filename)
 	{
-		File file = new File(Manhunt.dirname_loadouts + "/" + filename + Manhunt.extension_loadouts);
-		File dir = new File(Manhunt.dirname_loadouts);
+		File file = new File(Manhunt.path_loadouts + "/" + filename + Manhunt.extension_loadouts);
+		File dir = new File(Manhunt.path_loadouts);
 		
 		if (!dir.exists())
 		{
@@ -259,8 +259,8 @@ public class LoadoutFile
 	
 	private static void saveFile(Loadout loadout, CompoundTag tag)
 	{
-		File file = new File(Manhunt.dirname_loadouts + "/" + loadout.getFilename() + Manhunt.extension_loadouts);
-		File dir = new File(Manhunt.dirname_loadouts);
+		File file = new File(Manhunt.path_loadouts + "/" + loadout.getFilename());
+		File dir = new File(Manhunt.path_loadouts);
 		
 		if (!dir.exists())
 		{

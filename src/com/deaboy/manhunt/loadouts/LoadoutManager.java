@@ -34,6 +34,10 @@ public class LoadoutManager
 	{
 		return loadouts.get(name);
 	}
+	public boolean containsLoadout(String name)
+	{
+		return this.loadouts.containsKey(name);
+	}
 	public List<Loadout> getAllLoadouts()
 	{
 		List<Loadout> results = new ArrayList<Loadout>();

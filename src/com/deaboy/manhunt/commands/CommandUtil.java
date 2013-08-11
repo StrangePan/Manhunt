@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
@@ -70,12 +71,16 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT, true).addAlias("s").finalize_();
 	public static final ArgumentTemplate arg_load	= new ArgumentTemplate("load", ArgumentType.FLAG, true).addAlias("ld").finalize_();
 	public static final ArgumentTemplate arg_save	= new ArgumentTemplate("save", ArgumentType.FLAG, true).addAlias("sv").finalize_();
+	public static final ArgumentTemplate arg_addpotion		= new ArgumentTemplate("addpotion", ArgumentType.TEXT, true).addAlias("addpot").addAlias("addp").addAlias("potion+").addAlias("pot+").finalize_();
+	public static final ArgumentTemplate arg_rempotion		= new ArgumentTemplate("rempotion", ArgumentType.TEXT, true).addAlias("rempot").addAlias("remp").addAlias("potion-").addAlias("pot-").finalize_();
+	public static final ArgumentTemplate arg_duration		= new ArgumentTemplate("duration", ArgumentType.TEXT, false).addAlias("dur").addAlias("d").addAlias("time").addAlias("length").addAlias("l").finalize_();
 	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG, true).addAlias("define").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG, true).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK, true).addAlias("flag").addAlias("fl");
 	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.TEXT, false).addAlias("t");
 	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
 	public static final ArgumentTemplate arg_team			= new ArgumentTemplate("team", ArgumentType.CHECK, false).addAlias("t");
+	public static final ArgumentTemplate arg_potiontype		= new ArgumentTemplate("type", ArgumentType.TEXT, false).addAlias("t").finalize_();
 	static {	// Fill parameters in certain arguments and finalize.
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
@@ -88,6 +93,11 @@ public class CommandUtil
 		for (SpawnType type : SpawnType.values())
 			arg_pointtype.addParameter(type.getName().toLowerCase());
 		arg_pointtype.finalize_();
+		
+		for (PotionEffectType type : PotionEffectType.values())
+			if (type != null)
+				arg_potiontype.addParameter(type.getName().toLowerCase());
+		arg_potiontype.finalize_();
 		
 		for (Team team : Team.values())
 		{
@@ -201,7 +211,11 @@ public class CommandUtil
 			.addArgument(arg_delete)
 			.addArgument(arg_name)
 			.addArgument(arg_load)
-			.addArgument(arg_save);
+			.addArgument(arg_save)
+			.addArgument(arg_addpotion)
+			.addArgument(arg_rempotion)
+			.addArgument(arg_potiontype)
+			.addArgument(arg_duration);
 	static {	// Store references to command templates in hashmap and add global arguments
 		command_templates = new HashMap<String, CommandTemplate>();
 		command_templates.put(cmd_mlobby.getName(), cmd_mlobby);
@@ -462,7 +476,7 @@ public class CommandUtil
 	{
 		if (name != null && Manhunt.getCommandUtil().selected_loadouts.containsKey(name))
 		{
-			return Manhunt.getLoadouts().getLoadout(Manhunt.getCommandUtil().selected_loadouts.get(name));
+			return Manhunt.getLoadout(Manhunt.getCommandUtil().selected_loadouts.get(name));
 		}
 		else
 		{

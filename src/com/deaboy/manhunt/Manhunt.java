@@ -27,6 +27,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.deaboy.manhunt.chat.ChatManager;
@@ -36,6 +37,7 @@ import com.deaboy.manhunt.finder.FinderManager;
 import com.deaboy.manhunt.game.Game;
 import com.deaboy.manhunt.game.GameClass;
 import com.deaboy.manhunt.game.ManhuntGame;
+import com.deaboy.manhunt.loadouts.Loadout;
 import com.deaboy.manhunt.loadouts.LoadoutManager;
 import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Lobby;
@@ -169,6 +171,10 @@ public class Manhunt implements Closeable, Listener
 				registerWorld(Bukkit.createWorld(WorldCreator.name(wname)));
 			}
 		}
+		
+		
+		//////// Setup Loadouts ////////
+		this.loadouts.loadLoadoutFiles();
 		
 		
 		//////// Register game types
@@ -364,10 +370,6 @@ public class Manhunt implements Closeable, Listener
 	public static CommandUtil getCommandUtil()
 	{
 		return getInstance().command_util;
-	}
-	public static LoadoutManager getLoadouts()
-	{
-		return getInstance().loadouts;
 	}
 	
 	
@@ -925,7 +927,7 @@ public class Manhunt implements Closeable, Listener
 	}
 	
 	
-	//////////////// REGISTERING GAME TYPES ////////
+	//////////////// REGISTERING GAME CLASSES ////////
 	public static boolean registerGameClass(Class<? extends Game> gameclass, String name, JavaPlugin plugin)
 	{
 		if (gameclass.isInterface() || Modifier.isAbstract(gameclass.getModifiers()))
@@ -978,7 +980,7 @@ public class Manhunt implements Closeable, Listener
 	}
 	
 	
-	//////////////// REGISTERING LOBBY TYPES ////////
+	//////////////// REGISTERING LOBBY CLASSES ////////
 	public static boolean registerLobbyClass(Class<? extends Lobby> lobbyclass, LobbyType lobbytype, String name, JavaPlugin plugin)
 	{
 		if (lobbyclass.isInterface() || Modifier.isAbstract(lobbyclass.getModifiers()))
@@ -1029,6 +1031,49 @@ public class Manhunt implements Closeable, Listener
 				return lc;
 		}
 		return null;
+	}
+	
+	
+	//////////////// LOADOUTS ////////
+	public static Loadout getLoadout(String name)
+	{
+		return getInstance().loadouts.getLoadout(name);
+	}
+	public static boolean containsLoadout(String name)
+	{
+		return getInstance().loadouts.containsLoadout(name);
+	}
+	public static List<Loadout> getAllLoadouts()
+	{
+		return getInstance().loadouts.getAllLoadouts();
+	}
+	public static Loadout createLoadout(String name, ItemStack[] inventory, ItemStack[] armor)
+	{
+		Loadout loadout;
+		String filename;
+		int i;
+		
+		if (name == null || inventory == null || armor == null || getInstance().loadouts.containsLoadout(name))
+			return null;
+		
+		filename = name;
+		i = 0;
+		if (new File(path_loadouts + '/' + filename + extension_loadouts).exists())
+		{
+			while (new File(path_loadouts + '/' + filename + i++ + extension_loadouts).exists());
+			filename += i;
+		}
+		
+		loadout = new Loadout(name, filename, inventory, armor);
+		getInstance().loadouts.addLoadout(loadout);
+		return loadout;
+	}
+	public static boolean deleteLoadout(String name)
+	{
+		if (name == null)
+			return false;
+		
+		return getInstance().loadouts.deleteLoadout(name);
 	}
 	
 	

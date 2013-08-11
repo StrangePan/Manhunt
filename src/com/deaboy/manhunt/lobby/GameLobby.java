@@ -653,9 +653,9 @@ public abstract class GameLobby extends Lobby
 		List<Loadout> loadouts = new ArrayList<Loadout>();
 		for (String loadoutname : this.hunter_loadouts)
 		{
-			if (Manhunt.getLoadouts().getLoadout(loadoutname) != null && !loadouts.contains(Manhunt.getLoadouts().getLoadout(loadoutname)))
+			if (Manhunt.getLoadout(loadoutname) != null && !loadouts.contains(Manhunt.getLoadout(loadoutname)))
 			{
-				loadouts.add(Manhunt.getLoadouts().getLoadout(loadoutname));
+				loadouts.add(Manhunt.getLoadout(loadoutname));
 			}
 		}
 		return loadouts;
@@ -665,9 +665,9 @@ public abstract class GameLobby extends Lobby
 		List<Loadout> loadouts = new ArrayList<Loadout>();
 		for (String loadoutname : this.prey_loadouts)
 		{
-			if (Manhunt.getLoadouts().getLoadout(loadoutname) != null && !loadouts.contains(Manhunt.getLoadouts().getLoadout(loadoutname)))
+			if (Manhunt.getLoadout(loadoutname) != null && !loadouts.contains(Manhunt.getLoadout(loadoutname)))
 			{
-				loadouts.add(Manhunt.getLoadouts().getLoadout(loadoutname));
+				loadouts.add(Manhunt.getLoadout(loadoutname));
 			}
 		}
 		return loadouts;
@@ -716,7 +716,7 @@ public abstract class GameLobby extends Lobby
 		do
 		{
 			i = (int) (Math.random() * loadouts.size());
-			loadout = Manhunt.getLoadouts().getLoadout(loadouts.get(i));
+			loadout = Manhunt.getLoadout(loadouts.get(i));
 			loadouts.remove(i);
 		}
 		while (loadout == null && loadouts.size() > 0);

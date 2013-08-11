@@ -971,14 +971,14 @@ public abstract class LobbyCommands
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: -" + cmd.getArgument(CommandUtil.arg_addload).getLabel() + " <loadout>");
 			return false;
 		}
-		else if (Manhunt.getLoadouts().getLoadout(loadoutname) == null)
+		else if (Manhunt.getLoadout(loadoutname) == null)
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + loadoutname + " is not an existing loadout.");
 			return false;
 		}
 		else
 		{
-			loadout = Manhunt.getLoadouts().getLoadout(loadoutname);
+			loadout = Manhunt.getLoadout(loadoutname);
 		}
 		
 		action = false;
