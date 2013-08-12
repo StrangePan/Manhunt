@@ -8,6 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.lobby.GameLobby;
+import com.deaboy.manhunt.lobby.LobbyType;
+
 public class Loadout
 {
 	private String name;
@@ -80,7 +84,7 @@ public class Loadout
 	 * @param amplifier The strength of the effect
 	 * @param ambient Whether the effect will create more, transluscent, particles or not.
 	 */
-	public void addPotionEffect(PotionEffectType type, int duration, int amplifier, boolean ambient)
+	public void addPotionEffect(PotionEffectType type, int duration, int amplifier)
 	{
 		for (PotionEffect effect : effects)
 		{
@@ -91,7 +95,7 @@ public class Loadout
 			}
 		}
 		
-		effects.add(new PotionEffect(type, duration, amplifier, ambient));
+		effects.add(new PotionEffect(type, duration, amplifier, false));
 	}
 	
 	/**
@@ -262,15 +266,35 @@ public class Loadout
 	 */
 	public void applyToPlayer(Player player)
 	{
+		if (player == null)
+			return;
+		
 		player.getInventory().setContents(getContents());
 		player.getInventory().setArmorContents(getArmorContents());
 		
+		for (PotionEffect effect : player.getActivePotionEffects()) player.removePotionEffect(effect.getType());
 		for (PotionEffect effect : effects)
-			player.addPotionEffect(effect);
+		{
+			if (effect.getDuration() < 0)
+			{
+				int duration = (Manhunt.getPlayerLobby(player) != null && Manhunt.getPlayerLobby(player).getType() == LobbyType.GAME && ((GameLobby) Manhunt.getPlayerLobby(player)).gameIsRunning() ? (((GameLobby) Manhunt.getPlayerLobby(player)).getSettings().TIME_LIMIT.getValue()*60 + ((GameLobby) Manhunt.getPlayerLobby(player)).getSettings().TIME_SETUP.getValue()*60) : 60);
+				duration++;
+				duration *= 20;
+				player.addPotionEffect(new PotionEffect(effect.getType(), duration, effect.getAmplifier(), false));
+			}
+			else
+			{
+				player.addPotionEffect(effect);
+			}
+		}
 		
 		for (RandomStack random : randoms)
+		{
 			if (random.tryChance())
+			{
 				player.getInventory().addItem(random.getItemStack());
+			}
+		}
 	}
 	
 	

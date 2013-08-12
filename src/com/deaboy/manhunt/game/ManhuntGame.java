@@ -48,7 +48,7 @@ public class ManhuntGame extends Game
 		
 
 		if (getWorld().getEnvironment() == Environment.NORMAL)
-			ManhuntUtil.transitionWorldTime(getWorld(), 12000 - getSettings().TIME_SETUP.getValue() * 1200 - 320, new Runnable(){ public void run(){ timeline.run(); }});
+			ManhuntUtil.transitionWorldTime(getWorld(), 12000 - getLobby().getSettings().TIME_SETUP.getValue() * 1200 - 320, new Runnable(){ public void run(){ timeline.run(); }});
 		else
 			timeline.run();
 		
@@ -239,7 +239,7 @@ public class ManhuntGame extends Game
 			}
 		}));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getMap().getPoints(SpawnType.PREY)));
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getLobby().getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
 		event.addAction(new RunnableAction(new Runnable()	// Give random loadouts to hunters
 		{
 			public void run()
@@ -272,7 +272,7 @@ public class ManhuntGame extends Game
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ for (Player player : getLobby().getOnlinePlayers(Team.HUNTERS, Team.PREY)) player.setGameMode(GameMode.SURVIVAL); }}));
 		timeline.registerEvent(event);
 		
-		if (getSettings().TIME_SETUP.getValue() > 0)
+		if (getLobby().getSettings().TIME_SETUP.getValue() > 0)
 		{
 			event = new ManhuntWorldEvent(getWorld(), time - 200);
 			event.addAction(new BroadcastAction(lobby_id, "Setup begins in 10 seconds."));
@@ -302,20 +302,20 @@ public class ManhuntGame extends Game
 			event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.SETUP); }}));
 			event.addAction(new BroadcastAction(lobby_id, "GO! Use this time to prepare for the hunt!", Team.PREY));
 			event.addAction(new BroadcastAction(lobby_id, "The prey are preparing for the hunt.", Team.HUNTERS));
-			event.addAction(new BroadcastAction(lobby_id, (getWorld().getEnvironment() == Environment.NORMAL ? "The hunt will begin at sundown. (" + getSettings().TIME_SETUP.getValue() + " minutes)" : "The hunt will begin in " + getSettings().TIME_SETUP.getValue() + " minutes.")));
+			event.addAction(new BroadcastAction(lobby_id, (getWorld().getEnvironment() == Environment.NORMAL ? "The hunt will begin at sundown. (" + getLobby().getSettings().TIME_SETUP.getValue() + " minutes)" : "The hunt will begin in " + getLobby().getSettings().TIME_SETUP.getValue() + " minutes.")));
 			timeline.registerEvent(event);
 			
 			//////////////// LENGTH OF SETUP ////////////////
 			//
 			//
 			//
-			time += getSettings().TIME_SETUP.getValue() * 1200;
+			time += getLobby().getSettings().TIME_SETUP.getValue() * 1200;
 			//
 			//
 			//
 			/////////////////////////////////////////////////
 			
-			if (getSettings().TIME_SETUP.getValue() > 1)
+			if (getLobby().getSettings().TIME_SETUP.getValue() > 1)
 			{
 				event = new ManhuntWorldEvent(getWorld(), time - 1200);
 				event.addAction(new BroadcastAction(lobby_id, "The hunt will begin in 1 minute!"));

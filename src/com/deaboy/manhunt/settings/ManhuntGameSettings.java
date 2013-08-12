@@ -5,7 +5,6 @@ import org.bukkit.Material;
 public class ManhuntGameSettings extends SettingsPack
 {
 	//////////////// PROPERTIES ////////////////
-	public final IntegerSetting 	TIME_SETUP;
 	public final IntegerSetting 	FINDER_COOLDOWN;
 	public final BooleanSetting 	INSTANT_DEATH;
 	public final IntegerSetting		FINDER_ITEM;
@@ -17,7 +16,6 @@ public class ManhuntGameSettings extends SettingsPack
 	//////////////// CONSTRUCTORS ////////////////
 	public ManhuntGameSettings()
 	{
-		addSetting(TIME_SETUP =		new IntegerSetting("setuptime", 10, "Minutes the prey have to prepare.", "There is no setup time."), true);
 		addSetting(FINDER_COOLDOWN =new IntegerSetting("findercooldown", 60, "Seconds until the Prey Finder is recharged.", "The Prey Finder has no cooldown."), true);
 		addSetting(INSTANT_DEATH =	new BooleanSetting("instantdeath", false, "Every attack is a one-hit-kill.", "Attack damage is normal."), true);
 		addSetting(FINDER_ITEM =	new IntegerSetting("finderitem", Material.COMPASS.getId(), "The item used as the Prey Finder.", ""), false);

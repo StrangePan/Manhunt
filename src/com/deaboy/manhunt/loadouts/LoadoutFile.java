@@ -79,7 +79,7 @@ public class LoadoutFile
 		// Read in items and potion effects
 		if (main_tag.getValue().containsKey(tag_contents)
 				&& main_tag.getValue().get(tag_contents).getTagType() == TagType.LIST
-				&& ((ListTag) main_tag.getValue().get(tag_contents)).getDataType() == CompoundTag.class)
+				&& ((ListTag) main_tag.getValue().get(tag_contents)).getListType() == CompoundTag.class)
 		{
 			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_contents)).getValue())
 			{
@@ -91,13 +91,19 @@ public class LoadoutFile
 					{
 						contents[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue()] = stack;
 					}
+					else
+					{
+						int i = 0;
+						while (contents.length < i && contents[i] != null) i++;
+						contents[i] = stack;
+					}
 				}
 			}
 		}
 
 		if (main_tag.getValue().containsKey(tag_armor)
 				&& main_tag.getValue().get(tag_armor).getTagType() == TagType.LIST
-				&& ((ListTag) main_tag.getValue().get(tag_armor)).getDataType() == CompoundTag.class)
+				&& ((ListTag) main_tag.getValue().get(tag_armor)).getListType() == CompoundTag.class)
 		{
 			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_armor)).getValue())
 			{
@@ -107,7 +113,7 @@ public class LoadoutFile
 					
 					if (((CompoundTag) tag).getValue().containsKey("Slot") && ((CompoundTag) tag).getValue().get("Slot").getTagType() == TagType.BYTE)
 					{
-						armor[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue() - 100] = stack;
+						armor[((ByteTag) ((CompoundTag) tag).getValue().get("Slot")).getValue()] = stack;
 					}
 				}
 			}
@@ -115,7 +121,7 @@ public class LoadoutFile
 
 		if (main_tag.getValue().containsKey(tag_effects)
 				&& main_tag.getValue().get(tag_effects).getTagType() == TagType.LIST
-				&& ((ListTag) main_tag.getValue().get(tag_effects)).getDataType() == CompoundTag.class)
+				&& ((ListTag) main_tag.getValue().get(tag_effects)).getListType() == CompoundTag.class)
 		{
 			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_effects)).getValue())
 			{
@@ -133,7 +139,7 @@ public class LoadoutFile
 		//Read in random items
 		if (main_tag.getValue().containsKey(tag_randoms)
 				&& main_tag.getValue().get(tag_randoms).getTagType() == TagType.LIST
-				&& ((ListTag) main_tag.getValue().get(tag_randoms)).getDataType() == CompoundTag.class)
+				&& ((ListTag) main_tag.getValue().get(tag_randoms)).getListType() == CompoundTag.class)
 		{
 			for (Tag tag : ((ListTag) main_tag.getValue().get(tag_randoms)).getValue())
 			{
@@ -208,23 +214,37 @@ public class LoadoutFile
 		
 		
 		// Insert essential values
-		main_tag.getValue().put(tag_version, new StringTag("version", ManhuntPlugin.getInstance().getDescription().getVersion()));
-		main_tag.getValue().put(tag_name, new StringTag("name", loadout.getName()));
+		main_tag.getValue().put(tag_version, new StringTag(tag_version, ManhuntPlugin.getInstance().getDescription().getVersion()));
+		main_tag.getValue().put(tag_name, new StringTag(tag_name, loadout.getName()));
 		
 		
 		// Build item and effect lists
 		contents = new ArrayList<Tag>();
-		for (ItemStack stack : loadout.getContents())
+		for (int i = 0; i < loadout.getContents().length; i++)
 		{
-			if (stack != null && stack.getType().getId() != 0)
-				contents.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).save(new NBTTagCompound())));
+			ItemStack stack = loadout.getContents()[i];
+			if (stack != null && stack.getTypeId() != 0)
+			{
+				CompoundTag tag = CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).save(new NBTTagCompound()));
+				if (!tag.getValue().containsKey("Slot"))
+					tag.getValue().put("Slot", new ByteTag("Slot", (byte) i));
+				if (stack != null && stack.getType().getId() != 0)
+					contents.add(tag);
+			}
 		}
 		
 		armor = new ArrayList<Tag>();
-		for (ItemStack stack : loadout.getArmorContents())
+		for (int i = 0; i < loadout.getArmorContents().length; i++)
 		{
-			if (stack != null && stack.getType().getId() != 0)
-				armor.add(CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).save(new NBTTagCompound())));
+			ItemStack stack = loadout.getArmorContents()[i];
+			if (stack != null && stack.getTypeId() != 0)
+			{
+				CompoundTag tag = CompoundTag.fromNBTTag(CraftItemStack.asNMSCopy(stack).save(new NBTTagCompound()));
+				if (!tag.getValue().containsKey("Slot"))
+					tag.getValue().put("Slot", new ByteTag("Slot", (byte) i));
+				if (stack != null && stack.getType().getId() != 0)
+					armor.add(tag);
+			}
 		}
 		
 		effects = new ArrayList<Tag>();
@@ -259,7 +279,7 @@ public class LoadoutFile
 	
 	private static void saveFile(Loadout loadout, CompoundTag tag)
 	{
-		File file = new File(Manhunt.path_loadouts + "/" + loadout.getFilename());
+		File file = new File(Manhunt.path_loadouts + "/" + loadout.getFilename() + Manhunt.extension_loadouts);
 		File dir = new File(Manhunt.path_loadouts);
 		
 		if (!dir.exists())

@@ -90,20 +90,19 @@ public class LoadoutManager
 		{
 			if (f.getName().endsWith(Manhunt.extension_loadouts))
 			{
-				Loadout loadout = new Loadout("", f.getName());
+				Loadout loadout = new Loadout("", f.getName().substring(0, f.getName().lastIndexOf(Manhunt.extension_loadouts)));
 				loadout.load();
-				loadout.setName(loadout.getName().replaceAll(" ", "_"));
 				
 				if (this.loadouts.containsKey(loadout.getName()))
 				{
 					int i = 2;
-					while (loadouts.containsKey(loadout.getName() + "_" + i))
+					while (loadouts.containsKey(loadout.getName() + i))
 						i++;
 					
 					Manhunt.log(Level.SEVERE, "A loadout with the name \"" + loadout.getName() + "\" already exists.\n" +
-							"Renaming loadout in file \"" + file.getName() + "\" to \"" + loadout.getName() + "_" + i + "\"");
+							"Renaming loadout in file \"" + file.getName() + "\" to \"" + loadout.getName() + i + "\"");
 					
-					loadout.setName(loadout.getName() + "_" + i);
+					loadout.setName(loadout.getName() + i);
 				}
 				
 				addLoadout(loadout);

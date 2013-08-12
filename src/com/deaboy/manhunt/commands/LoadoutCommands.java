@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.deaboy.manhunt.Manhunt;
@@ -51,11 +52,15 @@ public class LoadoutCommands
 			{
 				action |= saveloadout(sender, scmd);
 			}
+			else if (scmd.containsArgument(CommandUtil.arg_lspotions))
+			{
+				action |= listpotionsloadout(sender, scmd);
+			}
 			else if (scmd.containsArgument(CommandUtil.arg_addpotion))
 			{
 				action |= addpotionloadout(sender, scmd);
 			}
-			else if (cmd.containsArgument(CommandUtil.arg_rempotion))
+			else if (scmd.containsArgument(CommandUtil.arg_rempotion))
 			{
 				action |= removepotionloadout(sender, scmd);
 			}
@@ -266,6 +271,92 @@ public class LoadoutCommands
 		sender.sendMessage(ChatManager.leftborder + "Loadout saved!");
 		return true;
 	}
+	private static boolean listpotionsloadout(CommandSender sender, Subcommand cmd)
+	{
+		Loadout loadout;
+		final int perpage = 8;
+		int page = 1;
+		boolean all = false;
+		List<PotionEffect> effects;
+		
+		loadout = CommandUtil.getSelectedLoadout(sender);
+		if (loadout == null)
+		{
+			sender.sendMessage(ChatColor.RED + "Please select a loadout to list potions.");
+			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <loadout name>");
+			return false;
+		}
+		
+		// Get the page #
+		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
+		{
+			try
+			{
+				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+			}
+			catch (NumberFormatException e)
+			{
+				page = 1;
+			}
+		}
+		else if (cmd.getArgument(CommandUtil.arg_lspotions).getParameter() != null)
+		{
+			 if (cmd.getArgument(CommandUtil.arg_lspotions).getParameter().equalsIgnoreCase("all"))
+			 {
+				 all = true;
+				 page = 1;
+			 }
+			 else
+			 {
+				 try
+				 {
+					 page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_list).getParameter());
+				 }
+				 catch (Exception e)
+				 {
+					 page = 1;
+				 }
+			 }
+		}
+		else
+		{
+			page = 1;
+		}
+		
+		page--;
+		
+		// Assemble list of settings
+		effects = loadout.getEffects();
+ 
+		if (!all)
+		{
+			if (page * perpage > effects.size() - 1 )
+				page = (effects.size()-1) / perpage;
+			
+			if (page < 0)
+				page = 0;
+			
+			if (effects.size() == 0)
+			{
+				sender.sendMessage("There are no potion effects to display.");
+				return true;
+			}
+		}
+		
+		sender.sendMessage(ChatManager.bracket1_ + ChatColor.RED + loadout.getName() + "'s Potion Effects " + ChatManager.color + "(" + (all ? "All" : (page+1) + "/" + (int) Math.ceil((double) effects.size()/perpage)) + ")" + ChatManager.bracket2_);
+		if (!all && effects.size() > perpage)
+		{
+			sender.sendMessage(ChatColor.GRAY + "Use /mloadout -list [n] to get page n of loadouts");
+			effects = effects.subList(page * perpage, Math.min( (page + 1) * perpage, effects.size() ));
+		}
+		
+		for (PotionEffect effect : effects)
+		{
+			int duration = effect.getDuration() / (effect.getDuration() <= 0 ? 1 : 20);
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + effect.getType().getName() + " " + (effect.getAmplifier()+1) + "   " + ChatColor.GRAY + (duration < 0 ? "Auto" : duration/60 + ":" + (duration%60 < 10 ? "0" : "") + duration%60));
+		}
+		return true;
+	}
 	private static boolean addpotionloadout(CommandSender sender, Subcommand cmd)
 	{
 		Loadout loadout;
@@ -279,13 +370,13 @@ public class LoadoutCommands
 		loadout = CommandUtil.getSelectedLoadout(sender);
 		if (loadout == null)
 		{
-			sender.sendMessage(ChatColor.RED + "Please select a loadout to save.");
+			sender.sendMessage(ChatColor.RED + "Please select a loadout to add a potion to.");
 			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <loadout name>");
 			return false;
 		}
 		
 		amplifier_string = null;
-		amplifier = 1;
+		amplifier = 0;
 		if (cmd.containsArgument(CommandUtil.arg_potiontype))
 		{
 			type_string = cmd.getArgument(CommandUtil.arg_potiontype).getParameter();
@@ -299,7 +390,7 @@ public class LoadoutCommands
 			type_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameter();
 			if (cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 2)
 			{
-				amplifier_string = cmd.getArgument(CommandUtil.arg_potiontype).getParameters().get(1);
+				amplifier_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameters().get(1);
 			}
 		}
 		else
@@ -319,6 +410,7 @@ public class LoadoutCommands
 			try
 			{
 				amplifier = Integer.parseInt(amplifier_string);
+				amplifier--;
 			}
 			catch (NumberFormatException e)
 			{
@@ -334,7 +426,7 @@ public class LoadoutCommands
 		}
 		else if (cmd.getArgument(CommandUtil.arg_addpotion).getParameter() != null && cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 1)
 		{
-			duration_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameters().get(cmd.containsArgument(CommandUtil.arg_potiontype) ? 0 : cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 2 ? 2 : 1);
+			duration_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameters().get(cmd.containsArgument(CommandUtil.arg_potiontype) ? 0 : (cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 2 ? 2 : 1));
 		}
 		else
 		{
@@ -343,7 +435,11 @@ public class LoadoutCommands
 		}
 		if (duration_string != null)
 		{
-			try
+			if (duration_string.equalsIgnoreCase("auto"))
+			{
+				duration = -1;
+			}
+			else try
 			{
 				duration = Integer.parseInt(duration_string);
 			}
@@ -354,18 +450,23 @@ public class LoadoutCommands
 			}
 		}
 		
-		if (amplifier < 1)
+		if (amplifier < 0)
 		{
-			amplifier = 1;
+			amplifier = 0;
 		}
+		
+		sender.sendMessage(ChatManager.leftborder + "Added potion effect. " + ChatColor.GRAY + type.getName() + ' ' + (amplifier+1) + ' ' + (duration <= 0 ? "Auto" : (duration/60 + ":" + (duration%60 < 10 ? "0" : "") + duration%60)));
 		if (duration <= 0)
 		{
 			duration = -1;
 		}
+		else
+		{
+			duration *= 20;
+		}
 		
-		loadout.addPotionEffect(type, duration, amplifier, false);
+		loadout.addPotionEffect(type, duration, amplifier);
 		loadout.save();
-		sender.sendMessage(ChatManager.leftborder + "Added potion effect. " + ChatColor.GRAY + type.getName() + ' ' + amplifier + ' ' + (duration <= 0 ? "Infinite" : (duration/60 + ':' + duration%60)));
 		return true;
 	}
 	private static boolean removepotionloadout(CommandSender sender, Subcommand cmd)
@@ -377,7 +478,7 @@ public class LoadoutCommands
 		loadout = CommandUtil.getSelectedLoadout(sender);
 		if (loadout == null)
 		{
-			sender.sendMessage(ChatColor.RED + "Please select a loadout to save.");
+			sender.sendMessage(ChatColor.RED + "Please select a loadout to remove a potion from.");
 			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <loadout name>");
 			return false;
 		}
@@ -386,9 +487,9 @@ public class LoadoutCommands
 		{
 			type_string = cmd.getArgument(CommandUtil.arg_potiontype).getParameter();
 		}
-		else if (cmd.getArgument(CommandUtil.arg_addpotion).getParameter() != null)
+		else if (cmd.getArgument(CommandUtil.arg_rempotion).getParameter() != null)
 		{
-			type_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameter();
+			type_string = cmd.getArgument(CommandUtil.arg_rempotion).getParameter();
 		}
 		else
 		{

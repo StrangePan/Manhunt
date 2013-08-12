@@ -60,19 +60,20 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT, false).addAlias("w").addAlias("worlds").finalize_();
 	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG, true).finalize_();
 	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG, true).finalize_();
-	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT, true).addAlias("listm").addAlias("lsmaps").addAlias("lsm").finalize_();
+	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT, true).addAlias("listm").addAlias("lsmaps").addAlias("lsm").addAlias("maps").finalize_();
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT, true).addAlias("addm").addAlias("map+").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT, true).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
 	public static final ArgumentTemplate arg_addload= new ArgumentTemplate("addloadout", ArgumentType.TEXT, true).addAlias("addload").addAlias("addl").addAlias("loadout+").addAlias("load+").finalize_();
 	public static final ArgumentTemplate arg_remload= new ArgumentTemplate("removeloadout", ArgumentType.TEXT, true).addAlias("remloadout").addAlias("removeload").addAlias("remload").addAlias("reml").addAlias("loadout-").addAlias("load-").finalize_();
-	public static final ArgumentTemplate arg_lsload	= new ArgumentTemplate("listloadouts", ArgumentType.TEXT, true).addAlias("listload").addAlias("lsl").addAlias("lsloadouts").addAlias("lsloadout").finalize_();
+	public static final ArgumentTemplate arg_lsload	= new ArgumentTemplate("listloadouts", ArgumentType.TEXT, true).addAlias("listload").addAlias("lsl").addAlias("lsloadouts").addAlias("lsloadout").addAlias("loadouts").addAlias("loads").addAlias("listkits").addAlias("lskits").addAlias("listk").addAlias("lsk").addAlias("kits").finalize_();
 	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT, true).addAlias("teleport").addAlias("spawn").finalize_();
 	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT, true).addAlias("r").finalize_();
 	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT, true).addAlias("s").finalize_();
 	public static final ArgumentTemplate arg_load	= new ArgumentTemplate("load", ArgumentType.FLAG, true).addAlias("ld").finalize_();
 	public static final ArgumentTemplate arg_save	= new ArgumentTemplate("save", ArgumentType.FLAG, true).addAlias("sv").finalize_();
+	public static final ArgumentTemplate arg_lspotions		= new ArgumentTemplate("listpotions", ArgumentType.TEXT, true).addAlias("listp").addAlias("lspotions").addAlias("lsp").addAlias("potions").finalize_();
 	public static final ArgumentTemplate arg_addpotion		= new ArgumentTemplate("addpotion", ArgumentType.TEXT, true).addAlias("addpot").addAlias("addp").addAlias("potion+").addAlias("pot+").finalize_();
-	public static final ArgumentTemplate arg_rempotion		= new ArgumentTemplate("rempotion", ArgumentType.TEXT, true).addAlias("rempot").addAlias("remp").addAlias("potion-").addAlias("pot-").finalize_();
+	public static final ArgumentTemplate arg_rempotion		= new ArgumentTemplate("removepotion", ArgumentType.TEXT, true).addAlias("rempotion").addAlias("rempot").addAlias("remp").addAlias("potion-").addAlias("pot-").finalize_();
 	public static final ArgumentTemplate arg_duration		= new ArgumentTemplate("duration", ArgumentType.TEXT, false).addAlias("dur").addAlias("d").addAlias("time").addAlias("length").addAlias("l").finalize_();
 	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG, true).addAlias("define").addAlias("move").addAlias("mv").finalize_();
 	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG, true).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
@@ -212,6 +213,7 @@ public class CommandUtil
 			.addArgument(arg_name)
 			.addArgument(arg_load)
 			.addArgument(arg_save)
+			.addArgument(arg_lspotions)
 			.addArgument(arg_addpotion)
 			.addArgument(arg_rempotion)
 			.addArgument(arg_potiontype)
