@@ -3,6 +3,7 @@ package com.deaboy.manhunt.loadouts;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -194,6 +195,17 @@ public class Loadout
 		return contents;
 	}
 	
+	public int getContentCount()
+	{
+		int count = 0;
+		for (ItemStack stack : this.contents)
+		{
+			if (stack != null && stack.getType() != Material.AIR && stack.getAmount() > 0)
+				count++;
+		}
+		return count;
+	}
+	
 	public ItemStack[] getArmorContents()
 	{
 		ItemStack[] armor = new ItemStack[this.armor.length];
@@ -207,6 +219,17 @@ public class Loadout
 		}
 		
 		return armor;
+	}
+	
+	public int getArmorContentCount()
+	{
+		int count = 0;
+		for (ItemStack stack : this.armor)
+		{
+			if (stack != null && stack.getType() != Material.AIR && stack.getAmount() > 0)
+				count++;
+		}
+		return count;
 	}
 	
 	public List<PotionEffect> getEffects()

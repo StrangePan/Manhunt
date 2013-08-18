@@ -11,6 +11,9 @@ import org.bukkit.potion.PotionEffectType;
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.loadouts.Loadout;
+import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyType;
+import com.deaboy.manhunt.lobby.GameLobby;
 
 public class LoadoutCommands
 {
@@ -28,6 +31,10 @@ public class LoadoutCommands
 		
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
+			if (scmd.containsArgument(CommandUtil.arg_info))
+			{
+				action |= infoloadout(sender ,scmd);
+			}
 			if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listloadouts(sender, scmd);
@@ -67,6 +74,32 @@ public class LoadoutCommands
 		}
 		
 		return action;
+	}
+	private static boolean infoloadout(CommandSender sender, Subcommand cmd)
+	{
+		Loadout loadout;
+		
+		loadout = CommandUtil.getSelectedLoadout(sender);
+		if (loadout == null)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must select a loadout first.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <loadout>");
+			return false;
+		}
+		
+		sender.sendMessage(ChatManager.bracket1_ + "Loadout Info: " + loadout.getName() + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY  + "Items: " + loadout.getContentCount() + "   Armor: " + loadout.getArmorContentCount());
+		sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY  + "Random Items: " + loadout.getAllRandomItemStacks().size() + "   Potions: " + loadout.getEffects().size());
+		
+		String lobbies = new String();
+		for (Lobby lobby : Manhunt.getLobbies())
+		{
+			if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).containsLoadout(loadout.getName()))
+				lobbies += (lobbies.isEmpty() ? "" : ", ") + lobby.getName();
+		}
+		if (!lobbies.isEmpty())
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "Used in: " + lobbies);
+		return true;
 	}
 	private static boolean listloadouts(CommandSender sender, Subcommand cmd)
 	{
@@ -140,7 +173,16 @@ public class LoadoutCommands
 		
 		for (Loadout loadout: loadouts)
 		{
-			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + loadout.getName() + "    " + ChatColor.GRAY + loadout.getEffects().size() + " potion effects.");
+			boolean used = false;
+			for (Lobby lobby : Manhunt.getLobbies())
+			{
+				if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).containsLoadout(loadout.getName()))
+				{
+					used = true;
+					break;
+				}
+			}
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + loadout.getName() + "   " + ChatColor.GRAY + "Items: " + (loadout.getContentCount() + loadout.getArmorContentCount()) + (!used ? "  Unused" : ""));
 		}
 		return true;
 	}
