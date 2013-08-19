@@ -40,6 +40,14 @@ public abstract class MapCommands
 			{
 				action |= maplist(sender, scmd);
 			}
+			else if (scmd.containsArgument(CommandUtil.arg_lspoints))
+			{
+				action |= maplistpoints(sender, scmd);
+			}
+			else if (scmd.containsArgument(CommandUtil.arg_lszones))
+			{
+				action |= maplistzones(sender, scmd);
+			}
 			else if (scmd.containsArgument(CommandUtil.arg_create))
 			{
 				action |= mapcreate(sender, scmd);
@@ -304,6 +312,39 @@ public abstract class MapCommands
 		
 		return true;
 	}
+	private static boolean maplistpoints(CommandSender sender, Subcommand cmd)
+	{
+		String command = CommandUtil.cmd_mpoint.getName() + " -" + CommandUtil.arg_list.getName();
+		for (String parameter : cmd.getArgument(CommandUtil.arg_lspoints).getParameters())
+			command += " " + parameter;
+		
+		if (cmd.containsArgument(CommandUtil.arg_page))
+		{
+			command += " -" + CommandUtil.arg_page.getName();
+			for (String parameter : cmd.getArgument(CommandUtil.arg_page).getParameters())
+				command += " " + parameter;
+		}
+		
+		Bukkit.dispatchCommand(sender, command);
+		return true;
+	}
+	private static boolean maplistzones(CommandSender sender, Subcommand cmd)
+	{
+		String command = CommandUtil.cmd_mzone.getName() + " -" + CommandUtil.arg_list.getName();
+		for (String parameter : cmd.getArgument(CommandUtil.arg_lszones).getParameters())
+			command += " " + parameter;
+		
+		if (cmd.containsArgument(CommandUtil.arg_page))
+		{
+			command += " -" + CommandUtil.arg_page.getName();
+			for (String parameter : cmd.getArgument(CommandUtil.arg_page).getParameters())
+				command += " " + parameter;
+		}
+		
+		Bukkit.dispatchCommand(sender, command);
+		return true;
+	}
+	
 	
 	//////// Zones ////////
 	public static boolean mzone(CommandSender sender, Command cmd)

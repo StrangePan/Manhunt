@@ -9,6 +9,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.deaboy.manhunt.Manhunt;
+import com.deaboy.manhunt.ManhuntUtil;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.loadouts.Loadout;
 import com.deaboy.manhunt.lobby.Lobby;
@@ -35,7 +36,7 @@ public class LoadoutCommands
 			{
 				action |= infoloadout(sender ,scmd);
 			}
-			if (scmd.containsArgument(CommandUtil.arg_list))
+			else if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listloadouts(sender, scmd);
 			}
@@ -441,7 +442,7 @@ public class LoadoutCommands
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_addpotion).getLabel() + " <potion type> [level] [duration]");
 			return false;
 		}
-		type = PotionEffectType.getByName(type_string);
+		type = ManhuntUtil.effectTypeFromString(type_string);
 		if (type == null)
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Invalid potion type " + type_string);
@@ -539,7 +540,7 @@ public class LoadoutCommands
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_rempotion).getLabel() + " <potion type>");
 			return false;
 		}
-		type = PotionEffectType.getByName(type_string);
+		type = ManhuntUtil.effectTypeFromString(type_string);
 		if (type == null)
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Invalid potion type " + type_string);

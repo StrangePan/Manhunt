@@ -45,7 +45,7 @@ public class CommandUtil
 	// Arguments
 	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG, true).addAlias("?").finalize_();
 	public static final ArgumentTemplate arg_args	= new ArgumentTemplate("arguments", ArgumentType.TEXT, true).addAlias("args").finalize_();
-	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.FLAG, true).addAlias("i").finalize_();
+	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.TEXT, true).addAlias("i").finalize_();
 	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT, false).addAlias("plr").addAlias("p").finalize_();
 	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG, true).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
 	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT, true).addAlias("s").addAlias("sel").finalize_();
@@ -61,6 +61,8 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG, true).finalize_();
 	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG, true).finalize_();
 	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT, true).addAlias("listm").addAlias("lsmaps").addAlias("lsm").addAlias("maps").finalize_();
+	public static final ArgumentTemplate arg_lspoints=new ArgumentTemplate("listpoints", ArgumentType.TEXT, true).addAlias("listp").addAlias("lspoints").addAlias("lsp").addAlias("points").finalize_();
+	public static final ArgumentTemplate arg_lszones= new ArgumentTemplate("listzones", ArgumentType.TEXT, true).addAlias("listz").addAlias("lszones").addAlias("lsz").addAlias("zones").finalize_();
 	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT, true).addAlias("addm").addAlias("map+").finalize_();
 	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT, true).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
 	public static final ArgumentTemplate arg_addload= new ArgumentTemplate("addloadout", ArgumentType.TEXT, true).addAlias("addload").addAlias("addl").addAlias("loadout+").addAlias("load+").finalize_();
@@ -142,6 +144,9 @@ public class CommandUtil
 			.addArgument(arg_issues)
 			.addArgument(arg_select)
 			.addArgument(arg_list)
+			.addArgument(arg_lspoints)
+			.addArgument(arg_lszones)
+			.addArgument(arg_page)
 			.addArgument(arg_world)
 			.addArgument(arg_create)
 			.addArgument(arg_delete)

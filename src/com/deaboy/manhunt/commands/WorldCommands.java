@@ -285,7 +285,7 @@ public abstract class WorldCommands
 		if (cmd.containsArgument(CommandUtil.arg_world))
 			worldname = cmd.getArgument(CommandUtil.arg_world).getParameter();
 		else
-			worldname = cmd.getArgument(CommandUtil.arg_issues).getParameter();
+			worldname = cmd.getArgument(CommandUtil.arg_info).getParameter();
 
 		if (worldname == null && !(sender instanceof Player))
 		{
@@ -308,7 +308,7 @@ public abstract class WorldCommands
 			}
 		}
 		
-		sender.sendMessage(ChatManager.bracket1_ + world.getName() + "'s Info" + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.bracket1_ + "World Info: " + world.getName() + ChatManager.bracket2_);
 		sender.sendMessage(ChatManager.leftborder + "Spawn: [" + world.getSpawn().getLocation().getBlockX() + "," + world.getSpawn().getLocation().getBlockY() + "," + world.getSpawn().getLocation().getBlockZ() + "] (" + world.getSpawn().getRange() + " blocks)");
 		sender.sendMessage(ChatManager.leftborder + "Maps: " + (world.getMaps().isEmpty() ? ChatColor.GRAY + "none" : world.getMaps().size()));
 		for (Map map : world.getMaps())

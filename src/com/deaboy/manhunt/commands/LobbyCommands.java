@@ -183,7 +183,11 @@ public abstract class LobbyCommands
 
 		for (Subcommand scmd : cmd.getSubcommands())
 		{
-			if (scmd.containsArgument(CommandUtil.arg_list))
+			if (scmd.containsArgument(CommandUtil.arg_info))
+			{
+				action |= infolobby(sender, scmd);
+			}
+			else if (scmd.containsArgument(CommandUtil.arg_list))
 			{
 				action |= listlobbies(sender, scmd);
 			}
@@ -254,6 +258,27 @@ public abstract class LobbyCommands
 		}
 		
 		return action;
+	}
+	private static boolean infolobby(CommandSender sender, Subcommand cmd)
+	{
+		Lobby lobby;
+		
+		lobby = CommandUtil.getSelectedLobby(sender);
+		if (lobby == null)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must select a lobby first.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobby>");
+			return false;
+		}
+		
+		sender.sendMessage(ChatManager.bracket1_ + "Lobby Info: " + lobby.getName() + ChatManager.bracket2_);
+		sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "Type: " + lobby.getType().getName() + "   World: " + lobby.getWorld().getName() + (lobby.isEnabled() ? ChatColor.GREEN + "   OPENED" : ChatColor.RED + "   CLOSED"));
+		sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "Players: " + lobby.getOnlinePlayerNames().size() + "/" + lobby.getMaxPlayers() + (lobby.getType() == LobbyType.GAME ? "  Stage: " + (((GameLobby) lobby).gameIsRunning() ? "Running" : "Intermission") : ""));
+		if (lobby.getType() == LobbyType.GAME)
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "Maps: " + ((GameLobby) lobby).getMaps().size() + "   Loadouts: " + ((GameLobby) lobby).getLoadoutNames().size());
+		}
+		return true;
 	}
 	private static boolean listlobbies(CommandSender sender, Subcommand cmd)
 	{
@@ -327,7 +352,7 @@ public abstract class LobbyCommands
 		
 		for (Lobby lobby: lobbies)
 		{
-			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + lobby.getName() + "    " + ChatColor.GRAY + lobby.getType().name());
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + lobby.getName() + "   " + ChatColor.GRAY + "Type: " + lobby.getType().name() + "  World: " + lobby.getWorld().getName());
 		}
 		return true;
 	}

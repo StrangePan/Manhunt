@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public abstract class ManhuntUtil
 {
@@ -301,6 +302,104 @@ public abstract class ManhuntUtil
 		}
 		
 		
+	}
+	
+	public static PotionEffectType effectTypeFromString(String string)
+	{
+		if (PotionEffectType.getByName(string) != null)
+		{
+			return PotionEffectType.getByName(string);
+		}
+		
+		switch (string.toLowerCase().replace("_", "").replace(" ", ""))
+		{
+		case "absorption":
+			return PotionEffectType.ABSORPTION;
+			
+		case "blindness":
+		case "blind":
+			return PotionEffectType.BLINDNESS;
+			
+		case "confusion":
+		case "confuse":
+		case "dizziness":
+		case "dizzy":
+			return PotionEffectType.CONFUSION;
+			
+		case "damageresistance":
+		case "resistdamage":
+		case "protection":
+			return PotionEffectType.DAMAGE_RESISTANCE;
+			
+		case "haste":
+		case "fastdigging":
+		case "digfast":
+			return PotionEffectType.FAST_DIGGING;
+			
+		case "fireresistance":
+		case "fireproof":
+			return PotionEffectType.FIRE_RESISTANCE;
+			
+		case "healthboost":
+		case "soulhearts":
+		case "extrahearts":
+			return PotionEffectType.HEALTH_BOOST;
+			
+		case "hunger":
+		case "sick":
+			return PotionEffectType.HUNGER;
+			
+		case "strength":
+		case "damageincrease":
+		case "increasedamage":
+			return PotionEffectType.INCREASE_DAMAGE;
+			
+		case "invisible":
+		case "invisibility":
+			return PotionEffectType.INVISIBILITY;
+			
+		case "jump":
+		case "leap":
+			return PotionEffectType.JUMP;
+			
+		case "nightvision":
+			return PotionEffectType.NIGHT_VISION;
+			
+		case "poison":
+			return PotionEffectType.POISON;
+			
+		case "regen":
+		case "regeneration":
+			return PotionEffectType.REGENERATION;
+		
+		case "slow":
+		case "slowness":
+			return PotionEffectType.SLOW;
+			
+		case "slowdigging":
+		case "digslow":
+		case "antihaste":
+			return PotionEffectType.SLOW_DIGGING;
+			
+		case "speed":
+		case "swiftness":
+			return PotionEffectType.SPEED;
+			
+		case "respiration":
+		case "waterbreathing":
+		case "respirate":
+			return PotionEffectType.WATER_BREATHING;
+			
+		case "weakness":
+		case "weak":
+			return PotionEffectType.WEAKNESS;
+			
+		case "wither":
+			return PotionEffectType.WITHER;
+			
+		default:
+			return null;
+		}
 	}
 	
 }
