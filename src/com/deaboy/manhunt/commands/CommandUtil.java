@@ -277,6 +277,17 @@ public class CommandUtil
 		
 		return command;
 	}
+	public static CommandTemplate matchCommand(String command)
+	{
+		if (command_templates.containsKey(command))
+		{
+			return command_templates.get(command);
+		}
+		else
+		{
+			return null;
+		}
+	}
 	public static boolean sendHelp(CommandSender sender, Subcommand cmd)
 	{
 		Bukkit.dispatchCommand(sender, "help " + cmd.getName());

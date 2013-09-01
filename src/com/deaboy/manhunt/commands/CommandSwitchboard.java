@@ -1,9 +1,13 @@
 package com.deaboy.manhunt.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
 import com.deaboy.manhunt.chat.ChatManager;
 
@@ -12,7 +16,7 @@ import com.deaboy.manhunt.chat.ChatManager;
  * @author Deaboy
  *
  */
-public class CommandSwitchboard implements CommandExecutor
+public class CommandSwitchboard implements CommandExecutor, TabCompleter
 {
 	
 	
@@ -42,6 +46,7 @@ public class CommandSwitchboard implements CommandExecutor
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
 	}
 	
+	@Override
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command c, String cmd, String[] arguments)
 	{
 		Command command = CommandUtil.parseCommand(c, cmd, arguments);
@@ -141,6 +146,130 @@ public class CommandSwitchboard implements CommandExecutor
 		return true;
 	}
 	
+	@Override
+	public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command cmd, String alias, String[] args)
+	{
+		List<String> list;
+		CommandTemplate command;
+		List<ArgumentTemplate> subcommands;
+		ArgumentTemplate subcommand;
+		
+		list = new ArrayList<String>();
+		
+		// Combine arguments wrapped in quotes.
+		args = handleQuotes(args);
+		
+		command = CommandUtil.matchCommand(cmd.getName());
+		if (command == null)
+			return null;
+		
+		subcommands = new ArrayList<ArgumentTemplate>();
+		for (ArgumentTemplate argument : command.getArguments())
+		{
+			if (argument.isSubcommand())
+			{
+				subcommands.add(argument);
+			}
+		}
+		
+		
+		if (args[args.length-1].startsWith("-") && !args[args.length-1].contains(" ")) // Complete the argument
+		{
+			for (ArgumentTemplate template : command.getArguments())
+			{
+				list.add("-" + template.getName());
+			}
+		}
+		else	// Could be the name of a zone, map, etc.
+		{
+			// Get the last subcommand used
+			subcommand = null;
+			for (int i = args.length - 2; i >= 0 && subcommand == null; i--)
+			{
+				if (args[i].startsWith("-"))
+				{
+					for (ArgumentTemplate sub : subcommands)
+					{
+						if (sub.matches(args[i].substring(1)))
+						{
+							subcommand = sub;
+							break;
+						}
+					}
+				}
+			}
+			if (subcommand == null)
+			{
+				return null;
+			}
+		}
+		
+		
+		// Remove anything that doesn't match
+		for (int i = 0; i < list.size(); i++)
+		{
+			while (i < list.size() && !list.get(i).startsWith(args[args.length-1]))
+			{
+				list.remove(i);
+			}
+		}
+		
+		
+		// If any elements contain spaces, wrap argument in quotes.
+		for (int i = 0; i < list.size(); i++)
+		{
+			if (!list.get(i).startsWith("-") && list.get(i).contains(" "))
+			{
+				list.set(i, list.get(i).replace(' ', '_'));
+			}
+		}
+		
+		return list;
+	}
+	
+	private static String[] handleQuotes(String[] args_preprocessed)
+	{
+		boolean quoted = false;
+		int i;
+		int j;
+		String[] args;
+		j = 0;
+		for (i = 0; i < args_preprocessed.length; i++)
+		{
+			if (!quoted)
+			{
+				args_preprocessed[j] = args_preprocessed[i];
+				if (args_preprocessed[i].startsWith("\""))
+				{
+					quoted = true;
+					if (args_preprocessed[i].length() > 1 && args_preprocessed[i].endsWith("\""))
+					{
+						quoted = false;
+						args_preprocessed[j] = args_preprocessed[j].substring(1, args_preprocessed[j].length() - 1);
+					}
+				}
+			}
+			else
+			{
+				args_preprocessed[j] = args_preprocessed[j] + ' ' + args_preprocessed[i];
+				if (args_preprocessed[i].endsWith("\""))
+				{
+					quoted = false;
+					args_preprocessed[j] = args_preprocessed[j].substring(1, args_preprocessed[j].length() - 1);
+				}
+			}
+			if (!quoted)
+			{
+				j++;
+			}
+		}
+		args = new String[j];
+		for (i = 0; i < args.length; i++)
+		{
+			args[i] = args_preprocessed[i];
+		}
+		return args;
+	}
 	
 	private static boolean mverify(CommandSender sender, String[] arguments)
 	{
