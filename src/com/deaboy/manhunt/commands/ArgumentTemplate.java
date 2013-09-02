@@ -10,7 +10,6 @@ public class ArgumentTemplate
 	private ArgumentType type;
 	private List<String> aliases;
 	private List<String> parameters;
-	private boolean required;
 	private boolean subcommand;
 	private boolean locked; 
 	
@@ -22,7 +21,6 @@ public class ArgumentTemplate
 		this.type = type;
 		aliases = new ArrayList<String>();
 		parameters = new ArrayList<String>();
-		required = false;
 		this.subcommand = subcommand;
 		
 		locked = false;
@@ -99,13 +97,6 @@ public class ArgumentTemplate
 		this.parameters.clear();
 		return this;
 	}
-	public ArgumentTemplate setRequired(boolean required)
-	{
-		if (locked)
-			return this;
-		this.required = required;
-		return this;
-	}
 	public ArgumentTemplate finalize_()
 	{
 		this.locked = true;
@@ -133,10 +124,6 @@ public class ArgumentTemplate
 	public List<String> getParameters()
 	{
 		return this.parameters;
-	}
-	public boolean isRequired()
-	{
-		return this.required;
 	}
 	
 	

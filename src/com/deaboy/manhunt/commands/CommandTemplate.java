@@ -9,6 +9,7 @@ public class CommandTemplate
 	private String name;
 	private List<String> aliases;
 	private List<ArgumentTemplate> arguments;
+	private List<SubcommandTemplate> subcommands;
 	private boolean locked;
 	
 	
@@ -82,6 +83,36 @@ public class CommandTemplate
 		this.arguments.clear();
 		return this;
 	}
+	public CommandTemplate addSubcommand(SubcommandTemplate subcommand)
+	{
+		if (locked)
+			return this;
+		
+		if (subcommand != null && !this.subcommands.contains(subcommand))
+		{
+			this.subcommands.add(subcommand);
+		}
+		return this;
+	}
+	public CommandTemplate removeSubcommand(SubcommandTemplate subcommand)
+	{
+		if (locked)
+			return this;
+		
+		if (subcommand != null && this.subcommands.contains(subcommand))
+		{
+			this.subcommands.remove(subcommand);
+		}
+		return this;
+	}
+	public CommandTemplate clearSubcommands()
+	{
+		if (locked)
+			return this;
+		
+		this.subcommands.clear();
+		return this;
+	}
 	public CommandTemplate finalize_()
 	{
 		this.locked = true;
@@ -102,6 +133,10 @@ public class CommandTemplate
 	public List<ArgumentTemplate> getArguments()
 	{
 		return this.arguments;
+	}
+	public List<SubcommandTemplate> getSubcommands()
+	{
+		return this.subcommands;
 	}
 	
 	

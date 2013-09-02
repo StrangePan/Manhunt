@@ -110,33 +110,33 @@ public class CommandUtil
 		arg_team.finalize_();
 	}
 	
+	
+	public static final SubcommandTemplate scmd_info	= new SubcommandTemplate(arg_info).finalize_();
+	public static final SubcommandTemplate scmd_list	= new SubcommandTemplate(arg_list).addArgument(arg_page).finalize_();
+	public static final SubcommandTemplate scmd_select	= new SubcommandTemplate(arg_select).finalize_();
+	public static final SubcommandTemplate scmd_delete	= new SubcommandTemplate(arg_delete).finalize_();
 
 	private static HashMap<String, CommandTemplate> command_templates;
 	public static final CommandTemplate cmd_mlobby	= new CommandTemplate("mlobby")
 			.addAlias("lobby")
 			.addAlias("mhlobby")
-			.addArgument(arg_info)
-			.addArgument(arg_select)
-			.addArgument(arg_player)
-			.addArgument(arg_list)
-			.addArgument(arg_page)
-			.addArgument(arg_join)
-			.addArgument(arg_create)
-			.addArgument(arg_delete)
-			.addArgument(arg_lobbytype)
-			.addArgument(arg_name)
-			.addArgument(arg_open)
-			.addArgument(arg_close)
-			.addArgument(arg_setspawn)
-			.addArgument(arg_range)
-			.addArgument(arg_tp)
-			.addArgument(arg_lsmaps)
-			.addArgument(arg_addmap)
-			.addArgument(arg_remmap)
-			.addArgument(arg_lsload)
-			.addArgument(arg_addload)
-			.addArgument(arg_remload)
-			.addArgument(arg_team);
+			.addSubcommand(scmd_info)
+			.addSubcommand(scmd_list)
+			.addSubcommand(scmd_select)
+			.addSubcommand(new SubcommandTemplate(arg_create).addArgument(arg_name).addArgument(arg_lobbytype).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_join).addArgument(arg_name).addArgument(arg_player).finalize_())
+			.addSubcommand(scmd_delete)
+			.addSubcommand(new SubcommandTemplate(arg_lsmaps).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_addmap).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_remmap).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_lsload).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_addload).addArgument(arg_team).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_remload).addArgument(arg_team).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_setspawn).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_range).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_tp).addArgument(arg_player).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_open).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_close).finalize_());
 	public static final CommandTemplate cmd_mmap	= new CommandTemplate("mmap")
 			.addAlias("map")
 			.addAlias("mhmap")
