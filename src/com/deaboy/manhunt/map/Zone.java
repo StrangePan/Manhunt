@@ -211,14 +211,14 @@ public abstract class Zone
 	 */
 	public boolean containsLocation(Location loc)
 	{
-		return (loc.getWorld() == getWorld()
-				&&((loc.getX() < corner1.getX() && loc.getX() > corner2.getX())
-				|| (loc.getX() > corner1.getX() && loc.getX() < corner2.getX()))
-				&& ((loc.getZ() < corner1.getZ() && loc.getZ() > corner2.getZ())
-				|| (loc.getZ() > corner1.getZ() && loc.getZ() < corner2.getZ()))
-				&& ignoreY ? true :
-					((loc.getY() < corner1.getY() && loc.getY() > corner2.getY())
-					|| (loc.getY() > corner1.getY() && loc.getY() < corner2.getY())));
+		return loc.getWorld() == getWorld()
+				&& loc.getX() < Math.max(corner1.getX(), corner2.getX())
+				&& loc.getX() > Math.min(corner1.getX(), corner2.getX())
+				&& loc.getZ() < Math.max(corner1.getZ(), corner2.getZ())
+				&& loc.getZ() > Math.min(corner1.getZ(), corner2.getZ())
+				&& (ignoreY || 
+					(loc.getY() < Math.max(corner1.getY(), corner2.getY())
+					&& loc.getY() > Math.min(corner1.getY(), corner2.getY())));
 	}
 	
 	/**

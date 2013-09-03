@@ -478,7 +478,7 @@ public abstract class GameLobby extends Lobby
 	{
 		if (map != null)
 		{
-			return containsMap(map.getName());
+			return containsMap(map.getFullName());
 		}
 		else
 		{
@@ -493,7 +493,7 @@ public abstract class GameLobby extends Lobby
 	{
 		if (map != null)
 		{
-			return removeMap(map.getName());
+			return removeMap(map.getFullName());
 		}
 		else
 		{

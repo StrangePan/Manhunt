@@ -146,6 +146,9 @@ public class ManhuntMap implements Map
 			case NO_BUILD:
 				zones.addAll(zones_nobuild);
 				break;
+			case SETUP:
+				zones.addAll(zones_setup);
+				break;
 			case BOUNDARY:
 				zones.addAll(zones_boundary);
 				break;
@@ -154,9 +157,6 @@ public class ManhuntMap implements Map
 				break;
 			case NO_MOBS:
 				zones.addAll(zones_nomobs);
-				break;
-			case SETUP:
-				zones.addAll(zones_setup);
 				break;
 			default:
 				break;

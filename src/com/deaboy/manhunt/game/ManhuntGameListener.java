@@ -1,6 +1,11 @@
 package com.deaboy.manhunt.game;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -49,6 +54,13 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	private GameLobby lobby;
 	private Map map;
 	
+	private HashMap<String, Integer> boundary_state;
+	private int schedule;
+	private List<Zone> boundary;
+	private List<Zone> setup;
+	
+	
+	
 	
 	//////////////// CONSTRUCTORS ////////////////
 	public ManhuntGameListener(ManhuntGame game)
@@ -57,6 +69,10 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			throw new IllegalArgumentException("Argument cannot be null.");
 		
 		this.game = game;
+		
+		this.boundary_state = new HashMap<String, Integer>();
+		this.boundary = new ArrayList<Zone>();
+		this.setup = new ArrayList<Zone>();
 	}
 	
 	
@@ -67,10 +83,12 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		Bukkit.getPluginManager().registerEvents(this, ManhuntPlugin.getInstance());
 		this.map = game.getMap();
 		this.lobby = game.getLobby();
+		startMonitoringBoundaries();
 	}
 	public void stopListening()
 	{
 		HandlerList.unregisterAll(this);
+		stopMonitoringBoundaries();
 		this.lobby = null;
 		this.map = null;
 	}
@@ -608,6 +626,150 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		
 	}
 	
+	
+	private void startMonitoringBoundaries()
+	{
+		this.boundary_state.clear();
+		for (String playername : lobby.getPlayerNames(Team.HUNTERS, Team.PREY))
+		{
+			this.boundary_state.put(playername, 0);
+		}
+		this.boundary = map.getZones(ZoneFlag.BOUNDARY);
+		this.setup = map.getZones(ZoneFlag.SETUP);
+		if (this.boundary.size() == 0 && this.setup.size() == 0)
+		{
+			return;
+		}
+		this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
+		{
+			public void run()
+			{
+				checkBoundaries();
+			}
+		}, 20, 20);
+	}
+	private void stopMonitoringBoundaries()
+	{
+		Bukkit.getScheduler().cancelTask(this.schedule);
+		this.boundary_state.clear();
+		this.boundary.clear();
+		this.setup.clear();
+	}
+	private void checkBoundaries()
+	{
+		if (!game.isRunning())
+		{
+			return;
+		}
+		
+		int i = 0;
+		for (final Player player : lobby.getOnlinePlayers(Team.HUNTERS, Team.PREY))
+		{
+			Bukkit.getScheduler().scheduleSyncDelayedTask(ManhuntPlugin.getInstance(), new Runnable()
+			{
+				public void run()
+				{
+					checkPlayer(player);
+				}
+			}, i);
+		}
+	}
+	private void checkPlayer(Player player)
+	{
+		boolean within;
+		
+		if (!game.isRunning() || player == null || !player.isOnline() || Manhunt.playerIsLocked(player.getName()) || player.isDead())
+		{
+			return;
+		}
+		
+		within = true;
+		if (this.setup.size() > 0 && game.getStage() == GameStage.SETUP && lobby.getPlayerTeam(player) == Team.HUNTERS)
+		{
+			within = false;
+			for (Zone zone : this.setup)
+			{
+				if (zone.containsLocation(player.getLocation()))
+				{
+					within = true;
+					break;
+				}
+			}
+		}
+		else if (this.boundary.size() > 0 && (game.getStage() == GameStage.SETUP || game.getStage() == GameStage.HUNT) && (lobby.getPlayerTeam(player) == Team.HUNTERS || lobby.getPlayerTeam(player) == Team.PREY))
+		{
+			within = false;
+			for (Zone zone : this.boundary)
+			{
+				if (zone.containsLocation(player.getLocation()))
+				{
+					within = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			return;
+		}
+		
+		
+		if (!this.boundary_state.containsKey(player.getName()))
+		{
+			this.boundary_state.put(player.getName(), 0);
+		}
+		if (within)
+		{
+			if (this.boundary_state.get(player.getName()) != 0)
+			{
+				if (this.boundary_state.get(player.getName()) > 0)
+				{
+					player.sendMessage(ChatColor.GREEN + "You have returned to the game area.");
+					this.boundary_state.put(player.getName(), -this.boundary_state.get(player.getName()));
+				}
+				this.boundary_state.put(player.getName(), this.boundary_state.get(player.getName()) + 1);
+			}
+		}
+		else
+		{
+			if (this.boundary_state.get(player.getName()) < 0)
+			{
+				this.boundary_state.put(player.getName(), -this.boundary_state.get(player.getName()));
+				player.sendMessage(ChatColor.RED + "You have left the game area! Return immediately!");
+			}
+			this.boundary_state.put(player.getName(), this.boundary_state.get(player.getName()) + 1);
+			
+			if (boundary_state.get(player.getName()) == 5)
+			{
+				player.sendMessage(ChatColor.RED + "Return to the game area, or I will resort to violence!");
+			}
+			else if (boundary_state.get(player.getName()) >= 10 && boundary_state.get(player.getName()) < 15)
+			{
+				if (boundary_state.get(player.getName()) == 10)
+				{
+					player.sendMessage(ChatColor.RED + "Take this!");
+				}
+				player.damage(1);
+			}
+			else if (boundary_state.get(player.getName()) >= 15 && boundary_state.get(player.getName()) < 20)
+			{
+				if (boundary_state.get(player.getName()) == 15)
+				{
+					player.sendMessage(ChatColor.RED + "And that!");
+				}
+				player.damage(2);
+			}
+			else if (boundary_state.get(player.getName()) >= 20)
+			{
+				player.sendMessage(ChatColor.RED + "I warned you...");
+				player.setHealth(0);
+			}
+			else if (boundary_state.get(player.getName()) >= 21)
+			{
+				lobby.playerForfeit(player.getName());
+			}
+		}
+	}
 	
 	
 	public void close()
