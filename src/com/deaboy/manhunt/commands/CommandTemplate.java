@@ -24,6 +24,7 @@ public class CommandTemplate
 		this.name = new String();
 		this.aliases = new ArrayList<String>();
 		this.arguments = new ArrayList<ArgumentTemplate>();
+		this.subcommands = new ArrayList<SubcommandTemplate>();
 		this.locked = false;
 	}
 	

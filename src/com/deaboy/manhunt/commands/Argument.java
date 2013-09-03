@@ -9,19 +9,17 @@ public class Argument
 	private final String name;
 	private final String label;
 	private final ArgumentType type;
-	private final boolean subcommand;
 	private final ArgumentTemplate template;
 	private List<String> paramters;
 	
 	
 	
 	// Constructors
-	public Argument(String name, String label, ArgumentType type, ArgumentTemplate template, boolean subcommand)
+	public Argument(String name, String label, ArgumentType type, ArgumentTemplate template)
 	{
 		this.name = name;
 		this.label = label;
 		this.type = type;
-		this.subcommand = subcommand;
 		this.template = template;
 		this.paramters = new ArrayList<String>();
 	}
@@ -72,10 +70,6 @@ public class Argument
 	{
 		return this.type;
 	}
-	public boolean isSubcommand()
-	{
-		return this.subcommand;
-	}
 	public List<String> getParameters()
 	{
 		return this.paramters;
@@ -109,7 +103,7 @@ public class Argument
 	// Static Constructors
 	public static Argument fromTemplate(ArgumentTemplate template, String label, List<String> params)
 	{
-		Argument argument = new Argument(template.getName(), label, template.getType(), template, template.isSubcommand());
+		Argument argument = new Argument(template.getName(), label, template.getType(), template);
 		
 		switch (template.getType())
 		{

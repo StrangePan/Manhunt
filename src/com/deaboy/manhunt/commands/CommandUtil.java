@@ -43,55 +43,55 @@ public class CommandUtil
 	
 	//////// COMMAND TEMPLATES ////////
 	// Arguments
-	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG, true).addAlias("?").finalize_();
-	public static final ArgumentTemplate arg_args	= new ArgumentTemplate("arguments", ArgumentType.TEXT, true).addAlias("args").finalize_();
-	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.TEXT, true).addAlias("i").finalize_();
-	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT, false).addAlias("plr").addAlias("p").finalize_();
-	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG, true).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
-	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT, true).addAlias("s").addAlias("sel").finalize_();
-	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT, true).addAlias("ls").finalize_();
-	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT, false).addAlias("pg").addAlias("p").finalize_();
-	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT, true).addAlias("jn").finalize_();
-	public static final ArgumentTemplate arg_leave	= new ArgumentTemplate("leave", ArgumentType.FLAG, true).addAlias("lv").finalize_();
-	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.TEXT, true).addAlias("cr").addAlias("new").finalize_();
-	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG, true).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
-	public static final ArgumentTemplate arg_reload	= new ArgumentTemplate("reload", ArgumentType.FLAG, true).addAlias("load").finalize_();
-	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT, false).addAlias("n").addAlias("nm").finalize_();
-	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT, false).addAlias("w").addAlias("worlds").finalize_();
-	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG, true).finalize_();
-	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG, true).finalize_();
-	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT, true).addAlias("listm").addAlias("lsmaps").addAlias("lsm").addAlias("maps").finalize_();
-	public static final ArgumentTemplate arg_lspoints=new ArgumentTemplate("listpoints", ArgumentType.TEXT, true).addAlias("listp").addAlias("lspoints").addAlias("lsp").addAlias("points").finalize_();
-	public static final ArgumentTemplate arg_lszones= new ArgumentTemplate("listzones", ArgumentType.TEXT, true).addAlias("listz").addAlias("lszones").addAlias("lsz").addAlias("zones").finalize_();
-	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT, true).addAlias("addm").addAlias("map+").finalize_();
-	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT, true).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
-	public static final ArgumentTemplate arg_addload= new ArgumentTemplate("addloadout", ArgumentType.TEXT, true).addAlias("addload").addAlias("addl").addAlias("loadout+").addAlias("load+").finalize_();
-	public static final ArgumentTemplate arg_remload= new ArgumentTemplate("removeloadout", ArgumentType.TEXT, true).addAlias("remloadout").addAlias("removeload").addAlias("remload").addAlias("reml").addAlias("loadout-").addAlias("load-").finalize_();
-	public static final ArgumentTemplate arg_lsload	= new ArgumentTemplate("listloadouts", ArgumentType.TEXT, true).addAlias("listload").addAlias("lsl").addAlias("lsloadouts").addAlias("lsloadout").addAlias("loadouts").addAlias("loads").addAlias("listkits").addAlias("lskits").addAlias("listk").addAlias("lsk").addAlias("kits").finalize_();
-	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT, true).addAlias("teleport").addAlias("spawn").finalize_();
-	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT, true).addAlias("r").finalize_();
-	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT, true).addAlias("s").finalize_();
-	public static final ArgumentTemplate arg_load	= new ArgumentTemplate("load", ArgumentType.FLAG, true).addAlias("ld").finalize_();
-	public static final ArgumentTemplate arg_save	= new ArgumentTemplate("save", ArgumentType.FLAG, true).addAlias("sv").finalize_();
-	public static final ArgumentTemplate arg_lspotions		= new ArgumentTemplate("listpotions", ArgumentType.TEXT, true).addAlias("listp").addAlias("lspotions").addAlias("lsp").addAlias("potions").finalize_();
-	public static final ArgumentTemplate arg_addpotion		= new ArgumentTemplate("addpotion", ArgumentType.TEXT, true).addAlias("addpot").addAlias("addp").addAlias("potion+").addAlias("pot+").finalize_();
-	public static final ArgumentTemplate arg_rempotion		= new ArgumentTemplate("removepotion", ArgumentType.TEXT, true).addAlias("rempotion").addAlias("rempot").addAlias("remp").addAlias("potion-").addAlias("pot-").finalize_();
-	public static final ArgumentTemplate arg_duration		= new ArgumentTemplate("duration", ArgumentType.TEXT, false).addAlias("dur").addAlias("d").addAlias("time").addAlias("length").addAlias("l").finalize_();
-	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG, true).addAlias("define").addAlias("move").addAlias("mv").finalize_();
-	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG, true).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
-	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK, true).addAlias("flag").addAlias("fl");
-	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.TEXT, false).addAlias("t");
-	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO, false).addAlias("t");
-	public static final ArgumentTemplate arg_team			= new ArgumentTemplate("team", ArgumentType.CHECK, false).addAlias("t");
-	public static final ArgumentTemplate arg_potiontype		= new ArgumentTemplate("type", ArgumentType.TEXT, false).addAlias("t").finalize_();
+	public static final ArgumentTemplate arg_help	= new ArgumentTemplate("help", ArgumentType.FLAG).addAlias("?").finalize_();
+	public static final ArgumentTemplate arg_args	= new ArgumentTemplate("arguments", ArgumentType.TEXT).addAlias("args").finalize_();
+	public static final ArgumentTemplate arg_info	= new ArgumentTemplate("info", ArgumentType.TEXT).addAlias("i").finalize_();
+	public static final ArgumentTemplate arg_player	= new ArgumentTemplate("player", ArgumentType.TEXT).addAlias("plr").addAlias("p").finalize_();
+	public static final ArgumentTemplate arg_issues	= new ArgumentTemplate("issues", ArgumentType.FLAG).addAlias("issue").addAlias("is").addAlias("problem").addAlias("problems").finalize_();
+	public static final ArgumentTemplate arg_select	= new ArgumentTemplate("select", ArgumentType.TEXT).addAlias("s").addAlias("sel").finalize_();
+	public static final ArgumentTemplate arg_list	= new ArgumentTemplate("list", ArgumentType.TEXT).addAlias("ls").finalize_();
+	public static final ArgumentTemplate arg_page	= new ArgumentTemplate("page", ArgumentType.TEXT).addAlias("pg").addAlias("p").finalize_();
+	public static final ArgumentTemplate arg_join	= new ArgumentTemplate("join", ArgumentType.TEXT).addAlias("jn").finalize_();
+	public static final ArgumentTemplate arg_leave	= new ArgumentTemplate("leave", ArgumentType.FLAG).addAlias("lv").finalize_();
+	public static final ArgumentTemplate arg_create	= new ArgumentTemplate("create", ArgumentType.TEXT).addAlias("cr").addAlias("new").finalize_();
+	public static final ArgumentTemplate arg_delete	= new ArgumentTemplate("delete", ArgumentType.FLAG).addAlias("del").addAlias("remove").addAlias("rm").finalize_();
+	public static final ArgumentTemplate arg_reload	= new ArgumentTemplate("reload", ArgumentType.FLAG).addAlias("load").finalize_();
+	public static final ArgumentTemplate arg_name	= new ArgumentTemplate("name", ArgumentType.TEXT).addAlias("n").addAlias("nm").finalize_();
+	public static final ArgumentTemplate arg_world	= new ArgumentTemplate("world", ArgumentType.TEXT).addAlias("w").addAlias("worlds").finalize_();
+	public static final ArgumentTemplate arg_close	= new ArgumentTemplate("close", ArgumentType.FLAG).finalize_();
+	public static final ArgumentTemplate arg_open	= new ArgumentTemplate("open", ArgumentType.FLAG).finalize_();
+	public static final ArgumentTemplate arg_lsmaps	= new ArgumentTemplate("listmaps", ArgumentType.TEXT).addAlias("listm").addAlias("lsmaps").addAlias("lsm").addAlias("maps").finalize_();
+	public static final ArgumentTemplate arg_lspoints=new ArgumentTemplate("listpoints", ArgumentType.TEXT).addAlias("listp").addAlias("lspoints").addAlias("lsp").addAlias("points").finalize_();
+	public static final ArgumentTemplate arg_lszones= new ArgumentTemplate("listzones", ArgumentType.TEXT).addAlias("listz").addAlias("lszones").addAlias("lsz").addAlias("zones").finalize_();
+	public static final ArgumentTemplate arg_addmap	= new ArgumentTemplate("addmap", ArgumentType.TEXT).addAlias("addm").addAlias("map+").finalize_();
+	public static final ArgumentTemplate arg_remmap	= new ArgumentTemplate("removemap", ArgumentType.TEXT).addAlias("remmap").addAlias("remm").addAlias("map-").finalize_();
+	public static final ArgumentTemplate arg_addload= new ArgumentTemplate("addloadout", ArgumentType.TEXT).addAlias("addload").addAlias("addl").addAlias("loadout+").addAlias("load+").finalize_();
+	public static final ArgumentTemplate arg_remload= new ArgumentTemplate("removeloadout", ArgumentType.TEXT).addAlias("remloadout").addAlias("removeload").addAlias("remload").addAlias("reml").addAlias("loadout-").addAlias("load-").finalize_();
+	public static final ArgumentTemplate arg_lsload	= new ArgumentTemplate("listloadouts", ArgumentType.TEXT).addAlias("listload").addAlias("lsl").addAlias("lsloadouts").addAlias("lsloadout").addAlias("loadouts").addAlias("loads").addAlias("listkits").addAlias("lskits").addAlias("listk").addAlias("lsk").addAlias("kits").finalize_();
+	public static final ArgumentTemplate arg_tp		= new ArgumentTemplate("tp", ArgumentType.TEXT).addAlias("teleport").addAlias("spawn").finalize_();
+	public static final ArgumentTemplate arg_range	= new ArgumentTemplate("range", ArgumentType.TEXT).addAlias("r").finalize_();
+	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT).addAlias("s").finalize_();
+	public static final ArgumentTemplate arg_load	= new ArgumentTemplate("load", ArgumentType.FLAG).addAlias("ld").finalize_();
+	public static final ArgumentTemplate arg_save	= new ArgumentTemplate("save", ArgumentType.FLAG).addAlias("sv").finalize_();
+	public static final ArgumentTemplate arg_lspotions		= new ArgumentTemplate("listpotions", ArgumentType.TEXT).addAlias("listp").addAlias("lspotions").addAlias("lsp").addAlias("potions").finalize_();
+	public static final ArgumentTemplate arg_addpotion		= new ArgumentTemplate("addpotion", ArgumentType.TEXT).addAlias("addpot").addAlias("addp").addAlias("potion+").addAlias("pot+").finalize_();
+	public static final ArgumentTemplate arg_rempotion		= new ArgumentTemplate("removepotion", ArgumentType.TEXT).addAlias("rempotion").addAlias("rempot").addAlias("remp").addAlias("potion-").addAlias("pot-").finalize_();
+	public static final ArgumentTemplate arg_duration		= new ArgumentTemplate("duration", ArgumentType.TEXT).addAlias("dur").addAlias("d").addAlias("time").addAlias("length").addAlias("l").finalize_();
+	public static final ArgumentTemplate arg_redefine		= new ArgumentTemplate("redefine", ArgumentType.FLAG).addAlias("define").addAlias("move").addAlias("mv").finalize_();
+	public static final ArgumentTemplate arg_setspawn		= new ArgumentTemplate("setspawn", ArgumentType.FLAG).addAlias("setsp").addAlias("move").addAlias("mv").finalize_();
+	public static final ArgumentTemplate arg_zoneflags		= new ArgumentTemplate("flags", ArgumentType.CHECK).addAlias("flag").addAlias("fl");
+	public static final ArgumentTemplate arg_lobbytype		= new ArgumentTemplate("type", ArgumentType.TEXT).addAlias("t");
+	public static final ArgumentTemplate arg_pointtype		= new ArgumentTemplate("type", ArgumentType.RADIO).addAlias("t");
+	public static final ArgumentTemplate arg_team			= new ArgumentTemplate("team", ArgumentType.CHECK).addAlias("t");
+	public static final ArgumentTemplate arg_potiontype		= new ArgumentTemplate("type", ArgumentType.TEXT).addAlias("t").finalize_();
 	static {	// Fill parameters in certain arguments and finalize.
 		for (ZoneFlag flag : ZoneFlag.values())
 			arg_zoneflags.addParameter(flag.getName().toLowerCase());
 		arg_zoneflags.finalize_();
 		
-		/* for (LobbyType type : LobbyType.values())
+		/*for (LobbyType type : LobbyType.values())
 			arg_lobbytype.addParameter(type.getName().toLowerCase());
-		arg_lobbytype.finalize_(); */
+		arg_lobbytype.finalize_();*/
 		
 		for (SpawnType type : SpawnType.values())
 			arg_pointtype.addParameter(type.getName().toLowerCase());
@@ -105,17 +105,32 @@ public class CommandUtil
 		for (Team team : Team.values())
 		{
 			arg_team.addParameter(team.getName(false).toLowerCase());
-			arg_team.addParameter(team.getName(true).toLowerCase());
 		}
 		arg_team.finalize_();
 	}
 	
 	
-	public static final SubcommandTemplate scmd_info	= new SubcommandTemplate(arg_info).finalize_();
-	public static final SubcommandTemplate scmd_list	= new SubcommandTemplate(arg_list).addArgument(arg_page).finalize_();
-	public static final SubcommandTemplate scmd_select	= new SubcommandTemplate(arg_select).finalize_();
-	public static final SubcommandTemplate scmd_delete	= new SubcommandTemplate(arg_delete).finalize_();
-
+	public static final SubcommandTemplate scmd_args		= new SubcommandTemplate(arg_args).finalize_();
+	public static final SubcommandTemplate scmd_help		= new SubcommandTemplate(arg_help).finalize_();
+	public static final SubcommandTemplate scmd_info		= new SubcommandTemplate(arg_info).finalize_();
+	public static final SubcommandTemplate scmd_list		= new SubcommandTemplate(arg_list).addArgument(arg_page).finalize_();
+	public static final SubcommandTemplate scmd_select		= new SubcommandTemplate(arg_select).finalize_();
+	public static final SubcommandTemplate scmd_create		= new SubcommandTemplate(arg_create).addArgument(arg_name).finalize_();
+	public static final SubcommandTemplate scmd_delete		= new SubcommandTemplate(arg_delete).finalize_();
+	public static final SubcommandTemplate scmd_setspawn	= new SubcommandTemplate(arg_setspawn).finalize_();
+	public static final SubcommandTemplate scmd_redefine	= new SubcommandTemplate(arg_redefine).finalize_();
+	public static final SubcommandTemplate scmd_range		= new SubcommandTemplate(arg_range).finalize_();
+	public static final SubcommandTemplate scmd_tp			= new SubcommandTemplate(arg_tp).addArgument(arg_player).finalize_();
+	public static final SubcommandTemplate scmd_open		= new SubcommandTemplate(arg_open).finalize_();
+	public static final SubcommandTemplate scmd_close		= new SubcommandTemplate(arg_close).finalize_();
+	public static final SubcommandTemplate scmd_issues		= new SubcommandTemplate(arg_issues).finalize_();
+	public static final SubcommandTemplate scmd_lspoints	= new SubcommandTemplate(arg_lspoints).addArgument(arg_page).finalize_();
+	public static final SubcommandTemplate scmd_lszones		= new SubcommandTemplate(arg_lszones).addArgument(arg_page).finalize_();
+	public static final SubcommandTemplate scmd_zoneflags	= new SubcommandTemplate(arg_zoneflags).finalize_();
+	public static final SubcommandTemplate scmd_set			= new SubcommandTemplate(arg_set).finalize_();
+	public static final SubcommandTemplate scmd_load		= new SubcommandTemplate(arg_load).finalize_();
+	public static final SubcommandTemplate scmd_save		= new SubcommandTemplate(arg_save).finalize_();
+	
 	private static HashMap<String, CommandTemplate> command_templates;
 	public static final CommandTemplate cmd_mlobby	= new CommandTemplate("mlobby")
 			.addAlias("lobby")
@@ -132,74 +147,61 @@ public class CommandUtil
 			.addSubcommand(new SubcommandTemplate(arg_lsload).finalize_())
 			.addSubcommand(new SubcommandTemplate(arg_addload).addArgument(arg_team).finalize_())
 			.addSubcommand(new SubcommandTemplate(arg_remload).addArgument(arg_team).finalize_())
-			.addSubcommand(new SubcommandTemplate(arg_setspawn).finalize_())
-			.addSubcommand(new SubcommandTemplate(arg_range).finalize_())
-			.addSubcommand(new SubcommandTemplate(arg_tp).addArgument(arg_player).finalize_())
-			.addSubcommand(new SubcommandTemplate(arg_open).finalize_())
-			.addSubcommand(new SubcommandTemplate(arg_close).finalize_());
+			.addSubcommand(scmd_setspawn)
+			.addSubcommand(scmd_range)
+			.addSubcommand(scmd_tp)
+			.addSubcommand(scmd_open)
+			.addSubcommand(scmd_close);
 	public static final CommandTemplate cmd_mmap	= new CommandTemplate("mmap")
 			.addAlias("map")
 			.addAlias("mhmap")
-			.addArgument(arg_info)
-			.addArgument(arg_issues)
-			.addArgument(arg_select)
-			.addArgument(arg_list)
-			.addArgument(arg_lspoints)
-			.addArgument(arg_lszones)
-			.addArgument(arg_page)
-			.addArgument(arg_world)
-			.addArgument(arg_create)
-			.addArgument(arg_delete)
-			.addArgument(arg_name)
-			.addArgument(arg_setspawn)
-			.addArgument(arg_tp);
+			.addSubcommand(scmd_info)
+			.addSubcommand(scmd_issues)
+			.addSubcommand(scmd_select)
+			.addSubcommand(new SubcommandTemplate(arg_list).addArgument(arg_world).finalize_())
+			.addSubcommand(scmd_lspoints)
+			.addSubcommand(scmd_lszones)
+			.addSubcommand(scmd_create)
+			.addSubcommand(scmd_delete)
+			.addSubcommand(scmd_tp);
 	public static final CommandTemplate cmd_mzone	= new CommandTemplate("mzone")
 			.addAlias("zone")
 			.addAlias("mhzone")
-			.addArgument(arg_info)
-			.addArgument(arg_select)
-			.addArgument(arg_list)
-			.addArgument(arg_page)
-			.addArgument(arg_create)
-			.addArgument(arg_delete)
-			.addArgument(arg_name)
-			.addArgument(arg_zoneflags)
-			.addArgument(arg_redefine);
+			.addSubcommand(scmd_info)
+			.addSubcommand(scmd_select)
+			.addSubcommand(scmd_list)
+			.addSubcommand(scmd_create)
+			.addSubcommand(scmd_delete)
+			.addSubcommand(scmd_zoneflags)
+			.addSubcommand(scmd_redefine);
 	public static final CommandTemplate cmd_mpoint	= new CommandTemplate("mpoint")
 			.addAlias("point")
 			.addAlias("mhpoint")
-			.addArgument(arg_info)
-			.addArgument(arg_select)
-			.addArgument(arg_player)
-			.addArgument(arg_list)
-			.addArgument(arg_page)
-			.addArgument(arg_create)
-			.addArgument(arg_delete)
-			.addArgument(arg_name)
-			.addArgument(arg_pointtype)
-			.addArgument(arg_redefine)
-			.addArgument(arg_tp)
-			.addArgument(arg_range);
+			.addSubcommand(scmd_info)
+			.addSubcommand(scmd_select)
+			.addSubcommand(scmd_list)
+			.addSubcommand(new SubcommandTemplate(arg_create).addArgument(arg_name).addArgument(arg_pointtype).finalize_())
+			.addSubcommand(scmd_delete)
+			.addSubcommand(scmd_redefine)
+			.addSubcommand(scmd_tp)
+			.addSubcommand(scmd_range);
 	public static final CommandTemplate cmd_mworld	= new CommandTemplate("mworld")
 			.addAlias("world")
 			.addAlias("mhworld")
-			.addArgument(arg_info)
-			.addArgument(arg_list)
-			.addArgument(arg_page)
-			.addArgument(arg_issues)
-			.addArgument(arg_lsmaps)
-			.addArgument(arg_tp)
-			.addArgument(arg_world)
-			.addArgument(arg_setspawn);
+			.addSubcommand(new SubcommandTemplate(arg_info).addArgument(arg_world).finalize_())
+			.addSubcommand(scmd_list)
+			.addSubcommand(new SubcommandTemplate(arg_issues).addArgument(arg_world).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_lsmaps).addArgument(arg_world).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_tp).addArgument(arg_world).finalize_())
+			.addSubcommand(scmd_setspawn);
 	public static final CommandTemplate cmd_msettings = new CommandTemplate("msettings")
 			.addAlias("settings")
 			.addAlias("mhsettings")
 			.addAlias("mset")
 			.addAlias("set")
 			.addAlias("mhset")
-			.addArgument(arg_list)
-			.addArgument(arg_page)
-			.addArgument(arg_set);
+			.addSubcommand(scmd_list)
+			.addSubcommand(scmd_set);
 	public static final CommandTemplate cmd_mloadout= new CommandTemplate("mloadout")
 			.addAlias("loadout")
 			.addAlias("load")
@@ -209,20 +211,16 @@ public class CommandUtil
 			.addAlias("mhloadouts")
 			.addAlias("mload")
 			.addAlias("mhload")
-			.addArgument(arg_info)
-			.addArgument(arg_select)
-			.addArgument(arg_list)
-			.addArgument(arg_page)
-			.addArgument(arg_create)
-			.addArgument(arg_delete)
-			.addArgument(arg_name)
-			.addArgument(arg_load)
-			.addArgument(arg_save)
-			.addArgument(arg_lspotions)
-			.addArgument(arg_addpotion)
-			.addArgument(arg_rempotion)
-			.addArgument(arg_potiontype)
-			.addArgument(arg_duration);
+			.addSubcommand(scmd_info)
+			.addSubcommand(scmd_select)
+			.addSubcommand(scmd_list)
+			.addSubcommand(scmd_create)
+			.addSubcommand(scmd_delete)
+			.addSubcommand(scmd_load)
+			.addSubcommand(scmd_save)
+			.addSubcommand(new SubcommandTemplate(arg_lspotions).addArgument(arg_page).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_addpotion).addArgument(arg_potiontype).addArgument(arg_duration).finalize_())
+			.addSubcommand(new SubcommandTemplate(arg_rempotion).addArgument(arg_potiontype).finalize_());
 	static {	// Store references to command templates in hashmap and add global arguments
 		command_templates = new HashMap<String, CommandTemplate>();
 		command_templates.put(cmd_mlobby.getName(), cmd_mlobby);
@@ -234,7 +232,7 @@ public class CommandUtil
 		command_templates.put(cmd_mloadout.getName(), cmd_mloadout);
 		
 		for (CommandTemplate cmd : command_templates.values())
-			cmd.addArgument(arg_help).addArgument(arg_args).finalize_();
+			cmd.addSubcommand(scmd_help).addSubcommand(scmd_args).finalize_();
 	}
 	
 	
@@ -340,7 +338,7 @@ public class CommandUtil
 		page--;
 		
 		// Assemble list of settings
-		args = cmd.getTemplate().getArguments();
+		args = cmd.getCommandTemplate().getArguments();
  
 		if (!all)
 		{

@@ -7,18 +7,20 @@ public class Subcommand
 	//////////////// Properties ////////////////
 	private final String name;
 	private final String label;
-	private final CommandTemplate template;
+	private final CommandTemplate cmd_template;
+	private final SubcommandTemplate template;
 	private HashMap<String, Argument> arguments;
 	
 	
 	//////////////// Constructors ////////////////
-	public Subcommand(String cmd_name, String cmd_label, CommandTemplate template)
+	public Subcommand(String cmd_name, String cmd_label, CommandTemplate cmd_template, SubcommandTemplate template)
 	{
 		if (cmd_name == null || cmd_label == null)
 			throw new IllegalArgumentException("Argument cannot be null.");
 		
 		this.name = cmd_name;
 		this.label = cmd_label;
+		this.cmd_template = cmd_template;
 		this.template = template;
 		this.arguments = new HashMap<String, Argument>();
 	}
@@ -85,7 +87,11 @@ public class Subcommand
 	{
 		return this.arguments.size();
 	}
-	public CommandTemplate getTemplate()
+	public CommandTemplate getCommandTemplate()
+	{
+		return this.cmd_template;
+	}
+	public SubcommandTemplate getTemplate()
 	{
 		return this.template;
 	}

@@ -1,6 +1,8 @@
 package com.deaboy.manhunt.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -8,8 +10,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
+import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
+import com.deaboy.manhunt.loadouts.Loadout;
+import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.World;
 
 /**
  * This class takes the Manhunt command and determines where it should be redirected.
@@ -151,8 +159,11 @@ public class CommandSwitchboard implements CommandExecutor, TabCompleter
 	{
 		List<String> list;
 		CommandTemplate command;
-		List<ArgumentTemplate> subcommands;
-		ArgumentTemplate subcommand;
+		List<SubcommandTemplate> subcommands;
+		SubcommandTemplate subcommand;
+		ArgumentTemplate argument;
+		int argument_index = -1;
+		int subcommand_index = -1;
 		
 		list = new ArrayList<String>();
 		
@@ -163,44 +174,189 @@ public class CommandSwitchboard implements CommandExecutor, TabCompleter
 		if (command == null)
 			return null;
 		
-		subcommands = new ArrayList<ArgumentTemplate>();
-		for (ArgumentTemplate argument : command.getArguments())
-		{
-			if (argument.isSubcommand())
-			{
-				subcommands.add(argument);
-			}
-		}
+		subcommands = new ArrayList<SubcommandTemplate>(command.getSubcommands());
 		
-		
-		if (args[args.length-1].startsWith("-") && !args[args.length-1].contains(" ")) // Complete the argument
+		// Get the last subcommand and argument used
+		subcommand = null;
+		argument = null;
+		for (int i = args.length - 2; i >= 0 && subcommand == null; i--)
 		{
-			for (ArgumentTemplate template : command.getArguments())
+			if (args[i].startsWith("-"))
 			{
-				list.add("-" + template.getName());
-			}
-		}
-		else	// Could be the name of a zone, map, etc.
-		{
-			// Get the last subcommand used
-			subcommand = null;
-			for (int i = args.length - 2; i >= 0 && subcommand == null; i--)
-			{
-				if (args[i].startsWith("-"))
+				for (SubcommandTemplate sub : subcommands)
 				{
-					for (ArgumentTemplate sub : subcommands)
+					if (sub.getRootArgument().matches(args[i].substring(1)))
 					{
-						if (sub.matches(args[i].substring(1)))
+						subcommand = sub;
+						subcommand_index = i;
+						break;
+					}
+				}
+			}
+		}
+		if (subcommand != null)
+		{
+			for (int i = args.length -2; i >= 0 && argument == null; i--)
+			{
+				if (subcommand.getRootArgument().matches(args[i].substring(1)))
+				{
+					argument = subcommand.getRootArgument();
+					argument_index = i;
+				}
+				else
+				{
+					for (ArgumentTemplate arg : subcommand.getArguments())
+					{
+						if (arg.matches(args[i].substring(1)))
 						{
-							subcommand = sub;
+							argument = arg;
+							argument_index = i;
 							break;
 						}
 					}
 				}
 			}
-			if (subcommand == null)
+		}
+		
+		if (args[args.length-1].startsWith("-") && !args[args.length-1].contains(" ")) // Complete the argument
+		{
+			if (subcommand != null)
 			{
-				return null;
+				for (ArgumentTemplate template : subcommand.getArguments())
+				{
+					if (args[args.length-1].equals("-") || template.getName().startsWith(args[args.length-1].substring(1)))
+					{
+						list.add("-" + template.getName());
+					}
+					else
+					{
+						// Gotta be more specific and take aliases into account
+						List<String> aliases = template.getAliases();
+						aliases.add(template.getName());
+						// Sort by length so as to return the shortest possibility every time
+						Collections.sort(aliases, new Comparator<String>()
+						{
+							public int compare(String o1, String o2)
+							{
+								return o1.length() - o2.length();
+							}
+						});
+						for (String a : aliases)
+						{
+							if (a.toLowerCase().startsWith(args[args.length-1].substring(1).toLowerCase()))
+							{
+								list.add("-" + a);
+								break;
+							}
+						}
+					}
+				}
+			}
+			for (SubcommandTemplate template : command.getSubcommands())
+			{
+				if (args[args.length-1].equals("-") || template.getRootArgument().getName().startsWith(args[args.length-1].substring(1)))
+				{
+					list.add("-" + template.getRootArgument().getName());
+				}
+				else
+				{
+					// Gotta be more specific and take aliases into account
+					List<String> aliases = template.getRootArgument().getAliases();
+					aliases.add(template.getRootArgument().getName());
+					// Sort by length so as to return the shortest possibility every time
+					Collections.sort(aliases, new Comparator<String>()
+					{
+						public int compare(String o1, String o2)
+						{
+							return o1.length() - o2.length();
+						}
+					});
+					for (String a : aliases)
+					{
+						if (a.toLowerCase().startsWith(args[args.length-1].substring(1).toLowerCase()))
+						{
+							list.add("-" + a);
+							break;
+						}
+					}
+				}
+			}
+		}
+		else if (subcommand != null)	// Could be the name of a zone, map, etc.
+		{
+			if (command == CommandUtil.cmd_mlobby)
+			{
+				if (subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2
+					|| subcommand.getRootArgument() == CommandUtil.arg_join && (argument == CommandUtil.arg_name && args.length - argument_index == 2
+																				|| args.length - subcommand_index == 2))
+				{
+					for (Lobby lobby : Manhunt.getLobbies())
+					{
+						list.add(lobby.getName());
+					}
+				}
+				else if (subcommand.getRootArgument() == CommandUtil.arg_create && argument == CommandUtil.arg_lobbytype && args.length - argument_index == 2)
+				{
+					int i = Manhunt.getRegisteredLobbyClasses().size();
+					for (int j = 0; j < i; j++)
+					{
+						list.add(j + "");
+					}
+				}
+				else if (subcommand.getRootArgument() == CommandUtil.arg_tp && (argument == CommandUtil.arg_player && args.length - argument_index == 2 || args.length - subcommand_index == 2))
+				{
+					for (Player player : Bukkit.getOnlinePlayers())
+					{
+						list.add(player.getName());
+					}
+				}
+				else if (subcommand.getRootArgument() == CommandUtil.arg_addmap && args.length - subcommand_index == 2
+						|| subcommand.getRootArgument() == CommandUtil.arg_remmap && args.length - subcommand_index == 2)
+				{
+					for (World world : Manhunt.getWorlds())
+					{
+						for (Map map : world.getMaps())
+						{
+							list.add(map.getFullName());
+						}
+					}
+				}
+				else if (subcommand.getRootArgument() == CommandUtil.arg_addload && args.length - subcommand_index == 2
+						|| subcommand.getRootArgument() == CommandUtil.arg_remload && args.length - subcommand_index == 2)
+				{
+					for (Loadout loadout : Manhunt.getAllLoadouts())
+					{
+						list.add(loadout.getName());
+					}
+				}
+				else if ((subcommand.getRootArgument() == CommandUtil.arg_addload || subcommand.getRootArgument() == CommandUtil.arg_remload) && argument == CommandUtil.arg_team)
+				{
+					list.addAll(CommandUtil.arg_team.getParameters());
+				}
+			}
+			else if (command == CommandUtil.cmd_mmap)
+			{
+				
+			}
+			else if (command == CommandUtil.cmd_mzone)
+			{
+				
+			}
+			else if (command == CommandUtil.cmd_mpoint)
+			{
+				
+			}
+			else if (command == CommandUtil.cmd_mworld)
+			{
+				
+			}
+			else if (command == CommandUtil.cmd_msettings)
+			{
+					
+			}
+			else if (command == CommandUtil.cmd_mloadout)
+			{
+				
 			}
 		}
 		
@@ -208,21 +364,22 @@ public class CommandSwitchboard implements CommandExecutor, TabCompleter
 		// Remove anything that doesn't match
 		for (int i = 0; i < list.size(); i++)
 		{
-			while (i < list.size() && !list.get(i).startsWith(args[args.length-1]))
+			while (i < list.size() && !list.get(i).toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 			{
 				list.remove(i);
 			}
 		}
 		
 		
-		// If any elements contain spaces, wrap argument in quotes.
+		// If any elements contain spaces, wrap in quotes
 		for (int i = 0; i < list.size(); i++)
 		{
-			if (!list.get(i).startsWith("-") && list.get(i).contains(" "))
+			if (list.get(i).contains(" "))
 			{
-				list.set(i, list.get(i).replace(' ', '_'));
+				list.set(i, "\"" + list.get(i) + "\"");
 			}
 		}
+		
 		
 		return list;
 	}

@@ -334,7 +334,7 @@ public abstract class WorldCommands
 		if (cmd.containsArgument(CommandUtil.arg_world))
 			worldname = cmd.getArgument(CommandUtil.arg_world).getParameter();
 		else
-			worldname = cmd.getArgument(CommandUtil.arg_issues).getParameter();
+			worldname = cmd.getArgument(CommandUtil.arg_lsmaps).getParameter();
 
 		if (worldname == null && !(sender instanceof Player))
 		{

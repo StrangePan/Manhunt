@@ -30,7 +30,7 @@ public class SubcommandTemplate
 		if (locked)
 			return this;
 		
-		if (argument != null && !this.arguments.contains(argument))
+		if (argument != null && !this.arguments.contains(argument) && argument != this.argument)
 		{
 			this.arguments.add(argument);
 		}

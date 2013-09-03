@@ -12,7 +12,7 @@ public class Command extends Subcommand
 	//////////////// Constructors ////////////////
 	public Command(String name, String label, CommandTemplate template)
 	{
-		super(name, label, template);
+		super(name, label, template, null);
 		this.subcommands = new ArrayList<Subcommand>();
 	}
 	
@@ -51,6 +51,7 @@ public class Command extends Subcommand
 		
 		String arg = new String();
 		Subcommand subcommand = null;
+		SubcommandTemplate subcommandtemp = null;
 		Argument argument;
 		List<String> arguments = new ArrayList<String>();
 		String temp = new String();
@@ -83,22 +84,14 @@ public class Command extends Subcommand
 			{
 				if (!arg.isEmpty())
 				{
-					for (ArgumentTemplate argtemp : template.getArguments())
+					boolean cont = false;
+					if (subcommandtemp != null)
 					{
-						if (argtemp.matches(arg))
+						for (ArgumentTemplate argtemp : subcommandtemp.getArguments())
 						{
-							argument = Argument.fromTemplate(argtemp, arg, arguments);
-							if (argument.isSubcommand())
+							if (argtemp.matches(arg))
 							{
-								if (subcommand != null)
-								{
-									command.addSubcommand(subcommand);
-								}
-								subcommand = new Subcommand(command.getName(), command.getLabel(), template);
-								subcommand.addArgument(argument);
-							}
-							else
-							{
+								argument = Argument.fromTemplate(argtemp, arg, arguments);
 								if (subcommand != null)
 								{
 									subcommand.addArgument(argument);
@@ -107,10 +100,30 @@ public class Command extends Subcommand
 								{
 									command.addArgument(argument);
 								}
+								cont = true;
+								break;
 							}
-							break;
 						}
 					}
+					
+					if (subcommandtemp == null || !cont)
+					{
+						for (SubcommandTemplate subtemp : template.getSubcommands())
+						{
+							if (subtemp.getRootArgument().matches(arg))
+							{
+								subcommandtemp = subtemp;
+								argument = Argument.fromTemplate(subtemp.getRootArgument(), arg, arguments);
+								if (subcommand != null)
+								{
+									command.addSubcommand(subcommand);
+								}
+								subcommand = new Subcommand(command.getName(), command.getLabel(), template, subtemp);
+								subcommand.addArgument(argument);
+							}
+						}
+					}
+					
 				}
 				arg = a.substring(1);
 				arguments.clear();
@@ -123,22 +136,14 @@ public class Command extends Subcommand
 		}
 		if (!arg.isEmpty())
 		{
-			for (ArgumentTemplate argtemp : template.getArguments())
+			boolean cont = false;
+			if (subcommandtemp != null)
 			{
-				if (argtemp.matches(arg))
+				for (ArgumentTemplate argtemp : subcommandtemp.getArguments())
 				{
-					argument = Argument.fromTemplate(argtemp, arg, arguments);
-					if (argument.isSubcommand())
+					if (argtemp.matches(arg))
 					{
-						if (subcommand != null)
-						{
-							command.addSubcommand(subcommand);
-						}
-						subcommand = new Subcommand(command.getName(), command.getLabel(), template);
-						subcommand.addArgument(argument);
-					}
-					else
-					{
+						argument = Argument.fromTemplate(argtemp, arg, arguments);
 						if (subcommand != null)
 						{
 							subcommand.addArgument(argument);
@@ -147,8 +152,27 @@ public class Command extends Subcommand
 						{
 							command.addArgument(argument);
 						}
+						cont = true;
+						break;
 					}
-					break;
+				}
+			}
+			
+			if (subcommandtemp == null || !cont)
+			{
+				for (SubcommandTemplate subtemp : template.getSubcommands())
+				{
+					if (subtemp.getRootArgument().matches(arg))
+					{
+						subcommandtemp = subtemp;
+						argument = Argument.fromTemplate(subtemp.getRootArgument(), arg, arguments);
+						if (subcommand != null)
+						{
+							command.addSubcommand(subcommand);
+						}
+						subcommand = new Subcommand(command.getName(), command.getLabel(), template, subtemp);
+						subcommand.addArgument(argument);
+					}
 				}
 			}
 		}

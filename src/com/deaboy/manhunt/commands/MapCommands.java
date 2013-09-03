@@ -623,38 +623,18 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		if (cmd.containsArgument(CommandUtil.arg_name))
+		if (CommandUtil.getSelectedZone(sender) == null)
 		{
-			zonename = cmd.getArgument(CommandUtil.arg_name).getParameter();
-			if (zonename == null || zonename.isEmpty())
-			{
-				sender.sendMessage(ChatColor.RED + "Invalid parameter usage: -" + cmd.getArgument(CommandUtil.arg_name).getLabel());
-				sender.sendMessage(ChatColor.GRAY + " Parameter usage: -name <name>");
-				return false;
-			}
-			else if (CommandUtil.getSelectedMap(sender).getZone(zonename) == null)
-			{
-				sender.sendMessage(ChatColor.RED + "No zone with that name exists in the selected map.");
-				sender.sendMessage(ChatColor.GRAY + " To see available zones, use /mzone -list [all] [-page <page>]");
-				sender.sendMessage(ChatColor.GRAY + " To select a different map, use /mmap -s <mapname>");
-				return false;
-			}
+			sender.sendMessage(ChatColor.RED + "You have not selected a zone to delete.");
+			return false;
 		}
 		else
 		{
-			if (CommandUtil.getSelectedZone(sender) == null)
-			{
-				sender.sendMessage(ChatColor.RED + "You have not selected a zone to delete.");
-				return false;
-			}
-			else
-			{
-				zonename = CommandUtil.getSelectedZone(sender).getName();
-			}
+			zonename = CommandUtil.getSelectedZone(sender).getName();
 		}
 		
-		sender.sendMessage(ChatColor.GREEN + "Zone '" + zonename + "' removed from map '" + CommandUtil.getSelectedMap(sender).getName() +"'");
 		CommandUtil.getSelectedMap(sender).removeZone(zonename);
+		sender.sendMessage(ChatColor.GREEN + "Zone '" + zonename + "' removed from map '" + CommandUtil.getSelectedMap(sender).getName() +"'");
 		return true;
 	}
 	private static boolean flagzone(CommandSender sender, Subcommand cmd)
