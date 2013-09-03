@@ -1336,7 +1336,10 @@ public class Manhunt implements Closeable, Listener
 		if (playerIsLocked(e.getPlayer().getName()) && !ManhuntUtil.areEqualLocations(getPlayerLockedPosition(e.getPlayer().getName()), e.getPlayer().getLocation(), 0, true))
 		{
 			e.setCancelled(true);
-			e.getPlayer().teleport(getPlayerLockedPosition(e.getPlayer().getName()));
+			Location point = getPlayerLockedPosition(e.getPlayer().getName()).clone();
+			point.setYaw(e.getPlayer().getLocation().getYaw());
+			point.setPitch(e.getPlayer().getLocation().getPitch());
+			e.getPlayer().teleport(point);
 		}
 	}
 	
