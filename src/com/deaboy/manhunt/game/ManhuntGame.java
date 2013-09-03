@@ -240,6 +240,8 @@ public class ManhuntGame extends Game
 		}));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getMap().getPoints(SpawnType.PREY)));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getLobby().getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
+		event.addAction(new LockTeamAction(lobby_id, Team.PREY));
+		event.addAction(new LockTeamAction(lobby_id, Team.HUNTERS));
 		event.addAction(new RunnableAction(new Runnable()	// Give random loadouts to hunters
 		{
 			public void run()
@@ -300,6 +302,8 @@ public class ManhuntGame extends Game
 			
 			event = new ManhuntWorldEvent(getWorld(), time);
 			event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.SETUP); }}));
+			event.addAction(new UnlockTeamAction(lobby_id, Team.PREY));
+			event.addAction(new UnlockTeamAction(lobby_id, Team.HUNTERS));
 			event.addAction(new BroadcastAction(lobby_id, "GO! Use this time to prepare for the hunt!", Team.PREY));
 			event.addAction(new BroadcastAction(lobby_id, "The prey are preparing for the hunt.", Team.HUNTERS));
 			event.addAction(new BroadcastAction(lobby_id, (getWorld().getEnvironment() == Environment.NORMAL ? "The hunt will begin at sundown. (" + getLobby().getSettings().TIME_SETUP.getValue() + " minutes)" : "The hunt will begin in " + getLobby().getSettings().TIME_SETUP.getValue() + " minutes.")));
@@ -338,6 +342,7 @@ public class ManhuntGame extends Game
 				}
 			}));
 			event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(SpawnType.HUNTER)));
+			event.addAction(new LockTeamAction(lobby_id, Team.HUNTERS));
 			timeline.registerEvent(event);
 			
 		}
@@ -369,6 +374,8 @@ public class ManhuntGame extends Game
 		event = new ManhuntWorldEvent(getWorld(), time);
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ setStage(GameStage.HUNT); }}));
 		event.addAction(new RunnableAction(new Runnable(){ public void run(){ for (Player player : getLobby().getOnlinePlayers(Team.HUNTERS, Team.PREY)) player.setExp(1f); }}));
+		event.addAction(new UnlockTeamAction(lobby_id, Team.PREY));
+		event.addAction(new UnlockTeamAction(lobby_id, Team.HUNTERS));
 		event.addAction(new BroadcastAction(lobby_id, "The hunt has begun! The game will end in " + getLobby().getSettings().TIME_LIMIT.getValue() + " minutes."));
 		event.addAction(new BroadcastAction(lobby_id, "Beware! The hunters have been released!", Team.PREY));
 		event.addAction(new BroadcastAction(lobby_id, "Now's your chance! Hunt the prey!", Team.HUNTERS));

@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import com.deaboy.manhunt.Manhunt;
+
 public abstract class HubLobby extends Lobby
 {
 	//////////////// PROPERTIES ////////////////
@@ -48,6 +50,7 @@ public abstract class HubLobby extends Lobby
 		if (!this.players.contains(name))
 		{
 			this.players.add(name);
+			Manhunt.unlockPlayer(name);
 			return true;
 		}
 		else
@@ -90,6 +93,7 @@ public abstract class HubLobby extends Lobby
 		if (this.players.contains(name))
 		{
 			this.players.remove(name);
+			Manhunt.unlockPlayer(name);
 			return true;
 		}
 		else

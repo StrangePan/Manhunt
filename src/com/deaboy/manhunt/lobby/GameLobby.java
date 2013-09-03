@@ -86,6 +86,7 @@ public abstract class GameLobby extends Lobby
 		if (team != null && !teams.containsKey(name))
 		{
 			this.teams.put(name, team);
+			Manhunt.unlockPlayer(name);
 			return true;
 		}
 		else
@@ -145,6 +146,7 @@ public abstract class GameLobby extends Lobby
 		if (this.teams.containsKey(name))
 		{
 			this.teams.remove(name);
+			Manhunt.unlockPlayer(name);
 			return true;
 		}
 		else
@@ -423,6 +425,10 @@ public abstract class GameLobby extends Lobby
 	}
 	private void stopGame()
 	{
+		for (String playername : getPlayerNames())
+		{
+			Manhunt.unlockPlayer(playername);
+		}
 		clearOfflinePlayers();
 		for (Player player : getOnlinePlayers(Team.HUNTERS, Team.PREY, Team.SPECTATORS))
 		{

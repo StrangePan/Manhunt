@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -111,10 +112,12 @@ public class Manhunt implements Closeable, Listener
 	private			HashMap<String, ManhuntMode> player_modes;
 	private			HashMap<String, String> player_maps;
 	private			HashMap<String, Long> player_logoffs;
+	private			HashMap<String, Location> locked_players;
 	private			HashMap<String, World>	worlds;
 	private			HashMap<Long, GameClass> gameclasses;
 	private			HashMap<Long, LobbyClass> lobbyclasses;
 	private			HashMap<String, Selection> selections;
+	
 	
 	private static	WorldEdit			worldedit;
 	private static	WorldEditPlugin		worldeditplugin;
@@ -142,6 +145,7 @@ public class Manhunt implements Closeable, Listener
 		this.player_modes =		new HashMap<String, ManhuntMode>();
 		this.player_maps =		new HashMap<String, String>();
 		this.player_logoffs =	new HashMap<String, Long>();
+		this.locked_players =	new HashMap<String, Location>();
 		this.gameclasses =		new HashMap<Long, GameClass>();
 		this.lobbyclasses = 	new HashMap<Long, LobbyClass>();
 		this.selections =		new HashMap<String, Selection>();
@@ -386,6 +390,7 @@ public class Manhunt implements Closeable, Listener
 		player_lobbies.remove(name);
 		player_maps.remove(name);
 		player_modes.remove(name);
+		locked_players.remove(name);
 	}
 	private long getNextLobbyId()
 	{
@@ -824,6 +829,45 @@ public class Manhunt implements Closeable, Listener
 	public static void forgetPlayer(String playername)
 	{
 		Manhunt.getInstance().removePlayer(playername);
+	}
+	
+	
+	//////////////// LOCKED PLAYERS ////////
+	public static void lockPlayer(Player player)
+	{
+		if (player != null && player.isOnline())
+		{
+			getInstance().locked_players.put(player.getName(), player.getLocation());
+		}
+	}
+	public static void unlockPlayer(String playername)
+	{
+		if (getInstance().locked_players.containsKey(playername))
+		{
+			getInstance().locked_players.remove(playername);
+		}
+	}
+	public static boolean playerIsLocked(String playername)
+	{
+		if (playername != null)
+		{
+			return getInstance().locked_players.containsKey(playername);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public static Location getPlayerLockedPosition(String playername)
+	{
+		if (playername != null && getInstance().locked_players.containsKey(playername))
+		{
+			return getInstance().locked_players.get(playername);
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	
@@ -1284,6 +1328,15 @@ public class Manhunt implements Closeable, Listener
 		else
 		{
 			return;
+		}
+	}
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent e)
+	{
+		if (playerIsLocked(e.getPlayer().getName()) && !ManhuntUtil.areEqualLocations(getPlayerLockedPosition(e.getPlayer().getName()), e.getPlayer().getLocation(), 0, true))
+		{
+			e.setCancelled(true);
+			e.getPlayer().teleport(getPlayerLockedPosition(e.getPlayer().getName()));
 		}
 	}
 	
