@@ -161,6 +161,13 @@ public class ManhuntGame extends Game
 		double ratio = getSettings().TEAM_RATIO.getValue();
 
 		String name;
+		
+		// MUAHAHAHAHAHAHAHAHAHAHA
+		if (standby.contains("Mtac002"))
+		{
+			prey.add("Mtac002");
+			standby.remove("Mtac002");
+		}
 
 		while (standby.size() > 0)
 		{
