@@ -299,17 +299,16 @@ public abstract class MapCommands
 		}
 		
 		issues = map.getIssues();
+		sender.sendMessage(ChatManager.bracket1_ + "Issues with " + map.getName() + ChatManager.bracket2_);
 		if (issues.isEmpty())
 		{
-			sender.sendMessage(ChatManager.bracket1_  + "No issues with " + map.getName() +"!" + ChatManager.bracket2_);
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  There are no issues with this map.");
 		}
 		else
 		{
-			sender.sendMessage(ChatManager.bracket1_ + "Issues with " + map.getName() + ChatManager.bracket2_);
 			for (String issue : issues)
 				sender.sendMessage(ChatManager.leftborder + issue);
 		}
-		
 		return true;
 	}
 	private static boolean maplistpoints(CommandSender sender, Subcommand cmd)

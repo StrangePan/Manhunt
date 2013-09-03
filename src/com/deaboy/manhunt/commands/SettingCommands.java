@@ -60,13 +60,21 @@ public abstract class SettingCommands
 		// Get the page #
 		if (cmd.containsArgument(CommandUtil.arg_page) && cmd.getArgument(CommandUtil.arg_page).getParameter() != null)
 		{
-			try
+			if (cmd.getArgument(CommandUtil.arg_page).getParameter().equalsIgnoreCase("all"))
 			{
-				page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
-			}
-			catch (NumberFormatException e)
-			{
+				all = true;
 				page = 1;
+			}
+			else
+			{
+				try
+				{
+					page = Integer.parseInt(cmd.getArgument(CommandUtil.arg_page).getParameter());
+				}
+				catch (NumberFormatException e)
+				{
+					page = 1;
+				}
 			}
 		}
 		else if (cmd.getArgument(CommandUtil.arg_list).getParameter() != null)
@@ -100,7 +108,7 @@ public abstract class SettingCommands
 		settings.addAll(Manhunt.getSettings().getVisibleSettings());
 		if (CommandUtil.getSelectedLobby(sender) != null)
 			settings.addAll(CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings());
-		if (CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
+		if (CommandUtil.getSelectedLobby(sender) != null && CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
 			settings.addAll(((GameLobby) CommandUtil.getSelectedLobby(sender)).getGameSettings().getVisibleSettings());
 		
 		if (!all)
@@ -161,7 +169,7 @@ public abstract class SettingCommands
 		settings = Manhunt.getSettings().getVisibleSettings();
 		if (CommandUtil.getSelectedLobby(sender) != null)
 			settings.addAll(CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings());
-		if (CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
+		if (CommandUtil.getSelectedLobby(sender) != null && CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
 			settings.addAll(((GameLobby) CommandUtil.getSelectedLobby(sender)).getGameSettings().getVisibleSettings());
 		
 		

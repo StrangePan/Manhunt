@@ -11,13 +11,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.chat.ChatManager;
 import com.deaboy.manhunt.loadouts.Loadout;
+import com.deaboy.manhunt.lobby.GameLobby;
 import com.deaboy.manhunt.lobby.Lobby;
+import com.deaboy.manhunt.lobby.LobbyType;
 import com.deaboy.manhunt.map.Map;
+import com.deaboy.manhunt.map.Spawn;
 import com.deaboy.manhunt.map.World;
+import com.deaboy.manhunt.map.Zone;
+import com.deaboy.manhunt.settings.Setting;
 
 /**
  * This class takes the Manhunt command and determines where it should be redirected.
@@ -284,80 +290,149 @@ public class CommandSwitchboard implements CommandExecutor, TabCompleter
 		}
 		else if (subcommand != null)	// Could be the name of a zone, map, etc.
 		{
-			if (command == CommandUtil.cmd_mlobby)
+			// Return list of LOBBIES
+			if (command == CommandUtil.cmd_mlobby && (subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2
+													|| subcommand.getRootArgument() == CommandUtil.arg_join && (argument == CommandUtil.arg_name && args.length - argument_index == 2
+																												|| args.length - subcommand_index == 2)))
 			{
-				if (subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2
-					|| subcommand.getRootArgument() == CommandUtil.arg_join && (argument == CommandUtil.arg_name && args.length - argument_index == 2
-																				|| args.length - subcommand_index == 2))
+				for (Lobby lobby : Manhunt.getLobbies())
 				{
-					for (Lobby lobby : Manhunt.getLobbies())
+					list.add(lobby.getName());
+				}
+			}
+			
+			// Return list of LOBBY CLASSES
+			else if (command == CommandUtil.cmd_mlobby && (subcommand.getRootArgument() == CommandUtil.arg_create && argument == CommandUtil.arg_lobbytype && args.length - argument_index == 2))
+			{
+				int i = Manhunt.getRegisteredLobbyClasses().size();
+				for (int j = 0; j < i; j++)
+				{
+					list.add(j + "");
+				}
+			}
+			
+			// Return list of ONLINE PLAYERS
+			else if ((command == CommandUtil.cmd_mlobby || command == CommandUtil.cmd_mmap || command == CommandUtil.cmd_mpoint || command == CommandUtil.cmd_mworld) && (subcommand.getRootArgument() == CommandUtil.arg_tp && (argument == CommandUtil.arg_player && args.length - argument_index == 2 || args.length - subcommand_index == 2)))
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					list.add(player.getName());
+				}
+			}
+			
+			// Return list of WORLDS
+			else if (command == CommandUtil.cmd_mmap && subcommand.getRootArgument() == CommandUtil.arg_list && argument == CommandUtil.arg_world && args.length - argument_index == 2
+					|| command == CommandUtil.cmd_mworld && subcommand.getRootArgument() == CommandUtil.arg_tp && argument == CommandUtil.arg_world && args.length - argument_index == 2
+					|| command == CommandUtil.cmd_mworld && (subcommand.getRootArgument() == CommandUtil.arg_issues || subcommand.getRootArgument() == CommandUtil.arg_info) && (argument == CommandUtil.arg_world && args.length - argument_index == 2 || args.length - subcommand_index == 2))
+			{
+				for (World world : Manhunt.getWorlds())
+				{
+					list.add(world.getName());
+				}
+			}
+			
+			// Return list of MAPS
+			else if (command == CommandUtil.cmd_mlobby && (subcommand.getRootArgument() == CommandUtil.arg_addmap && args.length - subcommand_index == 2
+															|| subcommand.getRootArgument() == CommandUtil.arg_remmap && args.length - subcommand_index == 2)
+					|| command == CommandUtil.cmd_mmap && subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2)
+			{
+				for (World world : Manhunt.getWorlds())
+				{
+					for (Map map : world.getMaps())
 					{
-						list.add(lobby.getName());
+						list.add(map.getFullName());
 					}
 				}
-				else if (subcommand.getRootArgument() == CommandUtil.arg_create && argument == CommandUtil.arg_lobbytype && args.length - argument_index == 2)
+			}
+			
+			// Return a list of ZONES
+			else if (command == CommandUtil.cmd_mzone && subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2)
+			{
+				if (CommandUtil.getSelectedMap(sender) != null)
 				{
-					int i = Manhunt.getRegisteredLobbyClasses().size();
-					for (int j = 0; j < i; j++)
+					for (Zone zone : CommandUtil.getSelectedMap(sender).getZones())
 					{
-						list.add(j + "");
+						list.add(zone.getName());
 					}
 				}
-				else if (subcommand.getRootArgument() == CommandUtil.arg_tp && (argument == CommandUtil.arg_player && args.length - argument_index == 2 || args.length - subcommand_index == 2))
+			}
+			
+			// Return list of ZONE FLAGS
+			else if (command == CommandUtil.cmd_mzone && subcommand.getRootArgument() == CommandUtil.arg_zoneflags && argument == CommandUtil.arg_zoneflags)
+			{
+				list.addAll(CommandUtil.arg_zoneflags.getParameters());
+			}
+			
+			// Return list of POINTS
+			else if (command == CommandUtil.cmd_mpoint && subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2)
+			{
+				if (CommandUtil.getSelectedMap(sender) != null)
 				{
-					for (Player player : Bukkit.getOnlinePlayers())
+					for (Spawn point : CommandUtil.getSelectedMap(sender).getPoints())
 					{
-						list.add(player.getName());
+						list.add(point.getName());
 					}
 				}
-				else if (subcommand.getRootArgument() == CommandUtil.arg_addmap && args.length - subcommand_index == 2
-						|| subcommand.getRootArgument() == CommandUtil.arg_remmap && args.length - subcommand_index == 2)
+			}
+			
+			// Return list of POINT TYPES
+			else if (command == CommandUtil.cmd_mpoint && subcommand.getRootArgument() == CommandUtil.arg_create && argument == CommandUtil.arg_pointtype && args.length - argument_index == 2)
+			{
+				list.addAll(CommandUtil.arg_pointtype.getParameters());
+			}
+			
+			// Return list of LOADOUTS
+			else if (command == CommandUtil.cmd_mlobby && (subcommand.getRootArgument() == CommandUtil.arg_addload && args.length - subcommand_index == 2 || subcommand.getRootArgument() == CommandUtil.arg_remload && args.length - subcommand_index == 2)
+					|| command == CommandUtil.cmd_mloadout && subcommand.getRootArgument() == CommandUtil.arg_select && args.length - subcommand_index == 2)
+			{
+				for (Loadout loadout : Manhunt.getAllLoadouts())
 				{
-					for (World world : Manhunt.getWorlds())
+					list.add(loadout.getName());
+				}
+			}
+			
+			// Return list of TEAMS
+			else if (command == CommandUtil.cmd_mlobby && (subcommand.getRootArgument() == CommandUtil.arg_addload || subcommand.getRootArgument() == CommandUtil.arg_remload) && argument == CommandUtil.arg_team)
+			{
+				list.addAll(CommandUtil.arg_team.getParameters());
+			}
+			
+			// Return list of SETTINGS
+			else if (command == CommandUtil.cmd_msettings && subcommand.getRootArgument() == CommandUtil.arg_set && args.length - subcommand_index == 2)
+			{
+				for (Setting setting : Manhunt.getSettings().getVisibleSettings())
+				{
+					list.add(setting.getLabel());
+				}
+				if (CommandUtil.getSelectedLobby(sender) != null)
+				{
+					for (Setting setting : CommandUtil.getSelectedLobby(sender).getSettings().getVisibleSettings())
 					{
-						for (Map map : world.getMaps())
-						{
-							list.add(map.getFullName());
-						}
+						list.add(setting.getLabel());
 					}
 				}
-				else if (subcommand.getRootArgument() == CommandUtil.arg_addload && args.length - subcommand_index == 2
-						|| subcommand.getRootArgument() == CommandUtil.arg_remload && args.length - subcommand_index == 2)
+				if (CommandUtil.getSelectedLobby(sender) != null && CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME)
 				{
-					for (Loadout loadout : Manhunt.getAllLoadouts())
+					for (Setting setting : ((GameLobby) CommandUtil.getSelectedLobby(sender)).getGameSettings().getVisibleSettings())
 					{
-						list.add(loadout.getName());
+						list.add(setting.getLabel());
 					}
 				}
-				else if ((subcommand.getRootArgument() == CommandUtil.arg_addload || subcommand.getRootArgument() == CommandUtil.arg_remload) && argument == CommandUtil.arg_team)
+			}
+			
+			// Return list of POTION EFFECT TYPES
+			else if (command == CommandUtil.cmd_mloadout && (subcommand.getRootArgument() == CommandUtil.arg_addpotion || subcommand.getRootArgument() == CommandUtil.arg_rempotion) && (argument == CommandUtil.arg_potiontype && args.length - argument_index == 2 || args.length - subcommand_index == 2))
+			{
+				for (PotionEffectType type : PotionEffectType.values())
 				{
-					list.addAll(CommandUtil.arg_team.getParameters());
+					if (type != null)
+					{
+						list.add(type.getName().toLowerCase());
+					}
 				}
 			}
-			else if (command == CommandUtil.cmd_mmap)
-			{
-				
-			}
-			else if (command == CommandUtil.cmd_mzone)
-			{
-				
-			}
-			else if (command == CommandUtil.cmd_mpoint)
-			{
-				
-			}
-			else if (command == CommandUtil.cmd_mworld)
-			{
-				
-			}
-			else if (command == CommandUtil.cmd_msettings)
-			{
-					
-			}
-			else if (command == CommandUtil.cmd_mloadout)
-			{
-				
-			}
+			
+			
 		}
 		
 		

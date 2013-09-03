@@ -173,26 +173,32 @@ public abstract class WorldCommands
 		Player player;
 		String playername;
 		
-		playername = cmd.getArgument(CommandUtil.arg_tp).getParameter();
+		
+		if (cmd.containsArgument(CommandUtil.arg_player) || cmd.getArgument(CommandUtil.arg_tp).getParameter() != null)
+		{
+			playername = cmd.containsArgument(CommandUtil.arg_player) ? cmd.getArgument(CommandUtil.arg_player).getParameter() : cmd.getArgument(CommandUtil.arg_tp).getParameter();
+			player = Bukkit.getPlayer(playername);
+			if (player == null)
+			{
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + '\'' + playername + '\'' + ChatManager.color + " is not online.");
+				return false;
+			}
+		}
+		else if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+		else
+		{
+			sender.sendMessage(ChatManager.leftborder + "You must select a player to teleport.");
+			sender.sendMessage(ChatManager.leftborder + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_tp).getLabel() + " <player>");
+			return false;	
+		}
+		
 		if (cmd.containsArgument(CommandUtil.arg_world))
+		{
 			worldname = cmd.getArgument(CommandUtil.arg_world).getParameter();
-		else
-			worldname = null;
-		
-		if ((worldname == null || playername == null) && !(sender instanceof Player))
-		{
-			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must specify which player to send to which world's spawn.");
-			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_tp).getLabel() + " <playername> -" + CommandUtil.arg_world + " <worldname>");
-			return false;
-		}
-		
-		if (worldname == null)
-		{
-			world = ((Player) sender).getWorld();
-		}
-		else
-		{
-			world = Bukkit.getWorld(worldname);
+			world = Manhunt.getWorld(worldname).getWorld();
 			if (world == null)
 			{
 				sender.sendMessage(ChatManager.leftborder + worldname + " is " + ChatColor.RED + "not a valid world.");
@@ -200,19 +206,15 @@ public abstract class WorldCommands
 				return false;
 			}
 		}
-		
-		if (playername == null)
+		else if (sender instanceof Player)
 		{
-			player = ((Player) sender);
+			world = ((Player) sender).getWorld();
 		}
 		else
 		{
-			player = Bukkit.getPlayer(playername);
-			if (player == null)
-			{
-				sender.sendMessage(ChatManager.leftborder + "Player '" + playername + "' is " + ChatColor.RED + "not online.");
-				return false;
-			}
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "You must specify a world for teleporting.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_tp).getLabel() + " <playername> -" + CommandUtil.arg_world + " <worldname>");
+			return false;
 		}
 		
 		player.teleport(ManhuntUtil.safeTeleport(world.getSpawnLocation()));
@@ -263,7 +265,6 @@ public abstract class WorldCommands
 		if (issues.isEmpty())
 		{
 			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  There are no issues with this world.");
-			return false;
 		}
 		else
 		{
@@ -272,8 +273,8 @@ public abstract class WorldCommands
 			{
 				sender.sendMessage(ChatManager.leftborder + mapname + ChatColor.RED + " has some issues!");
 			}
-			return true;
 		}
+		return true;
 		
 	}
 	private static boolean worldinfo(CommandSender sender, Subcommand cmd)
