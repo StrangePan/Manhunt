@@ -769,8 +769,6 @@ public abstract class LobbyCommands
 	{
 		Lobby lobby;
 		List<String> mapnames;
-		int success;
-		int fail;
 		Map map;
 		World world;
 		
@@ -778,8 +776,8 @@ public abstract class LobbyCommands
 		
 		if (lobby == null)
 		{
-			sender.sendMessage(ChatColor.RED + "Please select the lobby you wish to add maps to.");
-			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobbyname>");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please select the lobby you wish to add maps to.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobbyname>");
 			return false;
 		}
 		
@@ -793,13 +791,11 @@ public abstract class LobbyCommands
 		}
 		
 		mapnames = new ArrayList<String>();
-		success = 0;
-		fail = 0;
 		
 		if (cmd.getArgument(CommandUtil.arg_addmap).getParameters().isEmpty())
 		{
-			sender.sendMessage(ChatColor.RED + "Please list the maps you want to add.");
-			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_addmap).getLabel() + " <map1> [map2] [map3]...");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please list the maps you want to add.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_addmap).getLabel() + " <map1> [map2] [map3]...");
 			return false;
 		}
 		
@@ -821,44 +817,30 @@ public abstract class LobbyCommands
 			map = Manhunt.getMap(mapname);
 			if (map == null)
 			{
-				sender.sendMessage(ChatColor.RED + "The map '" + mapname + "' does not exist.");
-				fail++;
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "The map '" + mapname + "' does not exist.");
 				continue;
 			}
 			else if (!(lobby instanceof GameLobby))
 			{
-				sender.sendMessage(ChatColor.RED + lobby.getName() + " is not a game lobby.");;
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + lobby.getName() + " is not a game lobby.");;
 				return false;
 			}
 			else if (((GameLobby) lobby).getMaps().contains(map))
 			{
-				sender.sendMessage(ChatColor.YELLOW + "Lobby already contains '" + mapname + "'.");
-				fail++;
+				sender.sendMessage(ChatManager.leftborder + ChatColor.YELLOW + "Lobby already contains '" + mapname + "'.");
 				continue;
 			}
 			
 			((GameLobby) lobby).registerMap(map);
-			sender.sendMessage(ChatColor.GREEN + "Added map '" + mapname + "' to lobby '" + lobby.getName() + "'.");
-			success++;
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GREEN + "Added map '" + mapname + "' to lobby '" + lobby.getName() + "'.");
 		}
 		
-		sender.sendMessage((success == 0 ? ChatColor.RED + "No maps added to" : fail == 0 ? ChatColor.GREEN + "Successfully added maps to" : ChatColor.YELLOW + "Some maps were added to") + " " + lobby.getName() + "." + ChatColor.GRAY + "  (" + success + " added, " + fail + " failed)");
-		
-		if (success == 0)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return true;
 	}
 	private static boolean removemaplobby(CommandSender sender, Subcommand cmd)
 	{
 		Lobby lobby;
 		List<String> mapnames;
-		int success;
-		int fail;
 		Map map;
 		World world;
 		
@@ -866,8 +848,8 @@ public abstract class LobbyCommands
 		
 		if (lobby == null)
 		{
-			sender.sendMessage(ChatColor.RED + "Please select the lobby you wish to remove maps from.");
-			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobbyname>");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please select the lobby you wish to remove maps from.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + CommandUtil.arg_select.getName() + " <lobbyname>");
 			return false;
 		}
 		
@@ -881,13 +863,11 @@ public abstract class LobbyCommands
 		}
 		
 		mapnames = new ArrayList<String>();
-		success = 0;
-		fail = 0;
 		
 		if (cmd.getArgument(CommandUtil.arg_remmap).getParameters().isEmpty())
 		{
-			sender.sendMessage(ChatColor.RED + "Please list the maps you want to remove.");
-			sender.sendMessage(ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_remmap).getLabel() + " <map1> [map2] [map3]...");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Please list the maps you want to remove.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GRAY + "  Example: /" + cmd.getLabel() + " -" + cmd.getArgument(CommandUtil.arg_remmap).getLabel() + " <map1> [map2] [map3]...");
 			return false;
 		}
 		
@@ -909,37 +889,25 @@ public abstract class LobbyCommands
 			map = Manhunt.getMap(mapname);
 			if (map == null)
 			{
-				sender.sendMessage(ChatColor.RED + "The map '" + mapname + "' does not exist.");
-				fail++;
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "The map '" + mapname + "' does not exist.");
 				continue;
 			}
 			else if(!(lobby instanceof GameLobby))
 			{
-				sender.sendMessage(ChatColor.RED + lobby.getName() + " is not a game lobby.");
+				sender.sendMessage(ChatManager.leftborder + ChatColor.RED + lobby.getName() + " is not a game lobby.");
 				return false;
 			}
 			else if (!((GameLobby) lobby).getMaps().contains(map))
 			{
-				sender.sendMessage(ChatColor.YELLOW + "Lobby already does not contain '" + mapname + "'.");
-				fail++;
+				sender.sendMessage(ChatManager.leftborder + ChatColor.YELLOW + "Lobby already does not contain '" + mapname + "'.");
 				continue;
 			}
 			
 			((GameLobby) lobby).unregisterMap(map);
-			sender.sendMessage(ChatColor.GREEN + "Removed map '" + mapname + "' from lobby '" + lobby.getName() + "'.");
-			success++;
+			sender.sendMessage(ChatManager.leftborder + ChatColor.GREEN + "Removed map '" + mapname + "' from lobby '" + lobby.getName() + "'.");
 		}
 		
-		sender.sendMessage((success == 0 ? ChatColor.RED + "No maps removed from" : fail == 0 ? ChatColor.GREEN + "Successfully removed maps from" : ChatColor.YELLOW + "Some maps were removed from") + " " + lobby.getName() + "." + ChatColor.GRAY + "  (" + success + " removed, " + fail + " failed)");
-		
-		if (success == 0)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return true;
 	}
 	private static boolean listloadoutslobby(CommandSender sender, Subcommand cmd)
 	{

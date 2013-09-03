@@ -185,7 +185,13 @@ public abstract class SettingCommands
 
 		if (setting == null)
 		{
-			sender.sendMessage(ChatColor.RED + "That setting does not exist, or is not visible.");
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "That setting does not exist, or is not visible.");
+			return true;
+		}
+		if (CommandUtil.getSelectedLobby(sender) != null && CommandUtil.getSelectedLobby(sender).getType() == LobbyType.GAME && ((GameLobby) CommandUtil.getSelectedLobby(sender)).gameIsRunning()
+				&& (CommandUtil.getSelectedLobby(sender).getSettings().containsSetting(setting.getLabel()) || ((GameLobby) CommandUtil.getSelectedLobby(sender)).getGameSettings().containsSetting(setting.getLabel())))
+		{
+			sender.sendMessage(ChatManager.leftborder + ChatColor.RED + "Lobby and game settings cannot be changed while the game is running.");
 			return true;
 		}
 		
