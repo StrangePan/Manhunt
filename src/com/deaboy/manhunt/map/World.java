@@ -62,10 +62,16 @@ public interface World
 	public void addMap(String label, Map map);
 	
 	/**
-	 * Removes a map from this world.
+	 * Deletes a map from this world.
 	 * @param map
 	 */
-	public void removeMap(String label);
+	public void deleteMap(String label);
+	
+	/**
+	 * Deletes a map from this world.
+	 * @param map
+	 */
+	public void deleteMap(Map map);
 	
 	/**
 	 * Removes all maps from this world.

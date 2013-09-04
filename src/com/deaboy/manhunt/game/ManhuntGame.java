@@ -246,7 +246,7 @@ public class ManhuntGame extends Game
 			}
 		}));
 		event.addAction(new TeleportTeamAction(lobby_id, Team.PREY, getMap().getPoints(SpawnType.PREY)));
-		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getLobby().getSettings().TIME_SETUP.getValue() > 0 ? SpawnType.SETUP : SpawnType.HUNTER)));
+		event.addAction(new TeleportTeamAction(lobby_id, Team.HUNTERS, getMap().getPoints(getLobby().getSettings().TIME_SETUP.getValue() == 0 && getMap().getPoints(SpawnType.HUNTER).size() > 0 ? SpawnType.HUNTER : SpawnType.PREY)));
 		event.addAction(new LockTeamAction(lobby_id, Team.PREY));
 		event.addAction(new LockTeamAction(lobby_id, Team.HUNTERS));
 		event.addAction(new RunnableAction(new Runnable()	// Give random loadouts to hunters

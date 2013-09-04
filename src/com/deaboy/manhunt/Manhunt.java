@@ -906,6 +906,7 @@ public class Manhunt implements Closeable, Listener
 	{
 		if (map != null && map.getWorld().getMaps().contains(map))
 		{
+			// First make sure the map isn't in use
 			for (Lobby lobby : getLobbies())
 			{
 				if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).containsMap(map) && ((GameLobby) lobby).gameIsRunning() && ((GameLobby) lobby).getCurrentMap() != map)
@@ -913,6 +914,7 @@ public class Manhunt implements Closeable, Listener
 					return false;
 				}
 			}
+			// Unregister the map from all lobbies
 			for (Lobby lobby : getLobbies())
 			{
 				if (lobby.getType() == LobbyType.GAME && ((GameLobby) lobby).containsMap(map))
@@ -920,6 +922,8 @@ public class Manhunt implements Closeable, Listener
 					((GameLobby) lobby).unregisterMap(map);
 				}
 			}
+			// Remove the map from its world
+			map.getWorld().deleteMap(map.getName());
 			return true;
 		}
 		else

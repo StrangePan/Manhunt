@@ -108,11 +108,20 @@ public class ManhuntWorld implements World
 	}
 	
 	@Override
-	public void removeMap(String label)
+	public void deleteMap(String label)
 	{
 		if (maps.containsKey(label))
 		{
 			maps.remove(label);
+		}
+	}
+	
+	@Override
+	public void deleteMap(Map map)
+	{
+		if (map != null && map.getWorld() == this)
+		{
+			deleteMap(map.getName());
 		}
 	}
 	

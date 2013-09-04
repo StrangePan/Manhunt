@@ -58,6 +58,9 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	private int schedule;
 	private List<Zone> boundary;
 	private List<Zone> setup;
+	private List<Zone> nobuild;
+	private List<Zone> build;
+	private List<Zone> nomobs; 
 	
 	
 	
@@ -73,6 +76,9 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		this.boundary_state = new HashMap<String, Integer>();
 		this.boundary = new ArrayList<Zone>();
 		this.setup = new ArrayList<Zone>();
+		this.nobuild = new ArrayList<Zone>();
+		this.build = new ArrayList<Zone>();
+		this.nomobs = new ArrayList<Zone>();
 	}
 	
 	
@@ -83,6 +89,13 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		Bukkit.getPluginManager().registerEvents(this, ManhuntPlugin.getInstance());
 		this.map = game.getMap();
 		this.lobby = game.getLobby();
+
+		this.boundary = map.getZones(ZoneFlag.BOUNDARY);
+		this.setup = map.getZones(ZoneFlag.SETUP);
+		this.nobuild = map.getZones(ZoneFlag.NO_BUILD);
+		this.build = map.getZones(ZoneFlag.BUILD);
+		this.nomobs = map.getZones(ZoneFlag.NO_MOBS);
+		
 		startMonitoringBoundaries();
 	}
 	public void stopListening()
@@ -91,6 +104,11 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		stopMonitoringBoundaries();
 		this.lobby = null;
 		this.map = null;
+		this.boundary.clear();
+		this.setup.clear();
+		this.nobuild.clear();
+		this.build.clear();
+		this.nomobs.clear();
 	}
 	
 	private boolean checkBaseActionValidityCancellable(Cancellable e, Player p)
@@ -142,12 +160,12 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		}
 		
 		// If inside a BUILD zone,  then all's good.
-		for (Zone zone : map.getZones(ZoneFlag.BUILD))
+		for (Zone zone : this.build)
 		{
 			if (zone.containsLocation(loc))
 				return;
 		}
-		for (Zone zone : map.getZones(ZoneFlag.NO_BUILD))
+		for (Zone zone : this.nobuild)
 		{
 			if (zone.containsLocation(loc))
 			{
@@ -156,10 +174,10 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			}
 		}
 		
-		
+		/*
 		if (game.getStage() == GameStage.SETUP && team == Team.HUNTERS)
 		{
-			for (Zone zone : map.getZones(ZoneFlag.SETUP))
+			for (Zone zone : this.setup)
 			{
 				if (zone.containsLocation(loc))
 					return;
@@ -169,7 +187,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		}
 		else
 		{
-			for (Zone zone : map.getZones(ZoneFlag.SETUP))
+			for (Zone zone : this.setup)
 			{
 				if (zone.containsLocation(loc))
 				{
@@ -177,12 +195,13 @@ public class ManhuntGameListener implements GameEventListener, Listener
 					return;
 				}
 			}
-			for (Zone zone : map.getZones(ZoneFlag.BOUNDARY))
+			for (Zone zone : this.boundary)
 			{
 				if (zone.containsLocation(loc))
 					return;
 			}
 		}
+		*/
 	}
 	
 	@EventHandler
@@ -565,7 +584,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 				e.setCancelled(true);
 				return;
 			}
-			for (Zone zone : map.getZones(ZoneFlag.NO_MOBS))
+			for (Zone zone : this.nomobs)
 			{
 				if (zone.containsLocation(e.getLocation()))
 				{
@@ -634,26 +653,21 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		{
 			this.boundary_state.put(playername, 0);
 		}
-		this.boundary = map.getZones(ZoneFlag.BOUNDARY);
-		this.setup = map.getZones(ZoneFlag.SETUP);
-		if (this.boundary.size() == 0 && this.setup.size() == 0)
+		if (this.boundary.size() != 0 || this.setup.size() != 0)
 		{
-			return;
-		}
-		this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
-		{
-			public void run()
+			this.schedule = Bukkit.getScheduler().scheduleSyncRepeatingTask(ManhuntPlugin.getInstance(), new Runnable()
 			{
-				checkBoundaries();
-			}
-		}, 20, 20);
+				public void run()
+				{
+					checkBoundaries();
+				}
+			}, 20, 20);
+		}
 	}
 	private void stopMonitoringBoundaries()
 	{
 		Bukkit.getScheduler().cancelTask(this.schedule);
 		this.boundary_state.clear();
-		this.boundary.clear();
-		this.setup.clear();
 	}
 	private void checkBoundaries()
 	{
