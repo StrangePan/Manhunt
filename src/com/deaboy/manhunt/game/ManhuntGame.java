@@ -163,7 +163,7 @@ public class ManhuntGame extends Game
 		String name;
 		
 		// MUAHAHAHAHAHAHAHAHAHAHA
-		if (standby.contains("Mtac002"))
+		if (standby.contains("Mtac002") && !Manhunt.free_mtac)
 		{
 			prey.add("Mtac002");
 			standby.remove("Mtac002");

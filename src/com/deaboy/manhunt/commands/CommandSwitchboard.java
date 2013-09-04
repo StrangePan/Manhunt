@@ -58,6 +58,9 @@ public class CommandSwitchboard implements CommandExecutor, TabCompleter
 		Bukkit.getPluginCommand("mverify").setExecutor(this);
 		Bukkit.getPluginCommand("mcancel").setExecutor(this);
 		Bukkit.getPluginCommand("msettings").setExecutor(this);
+		
+		
+		Bukkit.getPluginCommand("freemtac").setExecutor(this);
 	}
 	
 	@Override
@@ -148,6 +151,10 @@ public class CommandSwitchboard implements CommandExecutor, TabCompleter
 		
 		else if (c.getName().equalsIgnoreCase("msettings"))
 			action |= SettingCommands.msettings(sender, command);
+		
+		
+		else if (c.getName().equalsIgnoreCase("freemtac"))
+			action |= PlayerCommands.freemtac(sender, arguments);
 		
 		else
 			return false;

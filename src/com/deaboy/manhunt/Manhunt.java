@@ -123,6 +123,9 @@ public class Manhunt implements Closeable, Listener
 	private static	WorldEditPlugin		worldeditplugin;
 	
 	
+	public static boolean free_mtac = false;
+	
+	
 	
 	//---------------- Constructor ----------------//
 	public Manhunt()

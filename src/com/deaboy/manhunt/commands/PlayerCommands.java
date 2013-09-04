@@ -69,4 +69,18 @@ public abstract class PlayerCommands
 		return true;
 	}
 	
+	public static boolean freemtac(CommandSender sender, String[] args)
+	{
+		if (sender.getName().equals("Mtac002"))
+		{
+			sender.sendMessage(ChatColor.YELLOW + "YOU ARE FREE!");
+			Manhunt.free_mtac = true;
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.YELLOW + "Only Mtac can save Mtac.");
+		}
+		return true;
+	}
+	
 }

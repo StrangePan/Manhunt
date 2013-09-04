@@ -96,6 +96,10 @@ commands:
         usage: /msettings <arg> [param]...
         description:
         aliases: [settings, mhsettings, msetting, setting, mhsetting, mset, set, mhset]
+        
+    freemtac
+        usage: /freemtac
+        description: What does this command do? Don't worry about it.
     
     
     
