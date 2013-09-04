@@ -62,6 +62,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	private List<Zone> build;
 	private List<Zone> nomobs; 
 	
+	private HashMap<String, Location> locations;
 	
 	
 	
@@ -79,6 +80,8 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		this.nobuild = new ArrayList<Zone>();
 		this.build = new ArrayList<Zone>();
 		this.nomobs = new ArrayList<Zone>();
+		
+		this.locations = new HashMap<String, Location>();
 	}
 	
 	
@@ -728,6 +731,19 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		}
 		
 		
+		if (within)
+		{
+			this.locations.put(player.getName(), player.getLocation());
+		}
+		else if (this.locations.containsKey(player.getName()))
+		{
+			player.teleport(this.locations.get(player.getName()));
+			player.sendMessage(ChatColor.RED + "You've hit a map boundary!");
+		}
+		
+		
+		
+		/*
 		if (!this.boundary_state.containsKey(player.getName()))
 		{
 			this.boundary_state.put(player.getName(), 0);
@@ -783,6 +799,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 				lobby.playerForfeit(player.getName());
 			}
 		}
+		*/
 	}
 	
 	
