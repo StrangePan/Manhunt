@@ -3,7 +3,6 @@ package com.deaboy.manhunt.timeline;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.deaboy.manhunt.Manhunt;
@@ -17,17 +16,14 @@ public class TeleportTeamAction implements Action
 
 	private final long lobby_id;
 	private final Team team;
-	private final List<Location> locations;
+	private final List<Spawn> locations;
 	
 	
 	public TeleportTeamAction(long lobby_id, Team team, List<Spawn> spawns)
 	{
-		this.locations = new ArrayList<Location>();
-		
+		this.locations = new ArrayList<Spawn>(spawns);
 		this.lobby_id = lobby_id;
 		this.team = team;
-		for (Spawn spawn : spawns)
-			this.locations.add(spawn.getLocation());
 	}
 	
 	
@@ -40,7 +36,8 @@ public class TeleportTeamAction implements Action
 			{
 				if (p.isOnline())
 				{
-					p.teleport(ManhuntUtil.safeTeleport(locations.get((int) (Math.random() * locations.size()))));
+					p.teleport(ManhuntUtil.safeTeleport(locations.get((int) (Math.random() * locations.size())).getRandomLocation()));
+					// TODO Make less random
 				}
 			}
 		}

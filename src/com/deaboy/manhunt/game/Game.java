@@ -53,6 +53,7 @@ public abstract class Game implements Closeable, Listener
 	{
 		return (GameLobby) Manhunt.getLobby(lobby_id);
 	}
+	public abstract long getGameTicksRemaining();
 	
 	
 	//////////////// Setters ////////////////

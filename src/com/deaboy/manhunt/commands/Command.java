@@ -63,20 +63,30 @@ public class Command extends Subcommand
 				temp += ' ' + a;
 				if (temp.endsWith("\""))
 				{
-					arguments.add(temp.substring(1, temp.length()-1));
+					if (temp.equals("\"\""))
+					{
+						arguments.add("");
+					}
+					else
+					{
+						arguments.add(temp.substring(1, temp.length()-1));
+					}
 					temp = "";
-				}
-				else
-				{
-					temp += ' ';
 				}
 			}
 			else if (a.startsWith("\""))
 			{
 				temp = a;
-				if (temp.endsWith("\""))
+				if (temp.endsWith("\"") && temp.length() > 1)
 				{
-					arguments.add(temp.substring(1, temp.length()-1));
+					/*if (temp.equals("\"\""))
+					{
+						arguments.add("");
+					}
+					else
+					{*/
+						arguments.add(temp.substring(1, temp.length()-1));
+					//}
 					temp = "";
 				}
 			}

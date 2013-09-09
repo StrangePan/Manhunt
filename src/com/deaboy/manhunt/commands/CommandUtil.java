@@ -339,6 +339,10 @@ public class CommandUtil
 		
 		// Assemble list of settings
 		args = cmd.getCommandTemplate().getArguments();
+		for (SubcommandTemplate sub : cmd.getCommandTemplate().getSubcommands())
+		{
+			args.add(sub.getRootArgument());
+		}
  
 		if (!all)
 		{

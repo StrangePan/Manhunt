@@ -1315,7 +1315,7 @@ public class Manhunt implements Closeable, Listener
 		if (e.isCancelled() || !(e.getTarget() instanceof Player))
 			return;
 		
-		if (getPlayerLobby((Player) e.getTarget()).getType() != LobbyType.GAME || !((GameLobby) getPlayerLobby((Player) e.getTarget())).gameIsRunning())
+		if (getPlayerLobby((Player) e.getTarget()) == null || getPlayerLobby((Player) e.getTarget()).getType() != LobbyType.GAME || !((GameLobby) getPlayerLobby((Player) e.getTarget())).gameIsRunning())
 		{
 			e.setCancelled(true);
 			return;
@@ -1327,13 +1327,9 @@ public class Manhunt implements Closeable, Listener
 		if (e.isCancelled() || !(e.getEntity() instanceof Player))
 			return;
 		
-		if (getPlayerLobby((Player) e.getEntity()).getType() != LobbyType.GAME || !((GameLobby) getPlayerLobby((Player) e.getEntity())).gameIsRunning())
+		if (getPlayerLobby((Player) e.getEntity()) == null || getPlayerLobby((Player) e.getEntity()).getType() != LobbyType.GAME || !((GameLobby) getPlayerLobby((Player) e.getEntity())).gameIsRunning())
 		{
 			e.setCancelled(true);
-			return;
-		}
-		else
-		{
 			return;
 		}
 	}

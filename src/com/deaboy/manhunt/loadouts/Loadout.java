@@ -300,7 +300,7 @@ public class Loadout
 		{
 			if (effect.getDuration() < 0)
 			{
-				int duration = (Manhunt.getPlayerLobby(player) != null && Manhunt.getPlayerLobby(player).getType() == LobbyType.GAME && ((GameLobby) Manhunt.getPlayerLobby(player)).gameIsRunning() ? (((GameLobby) Manhunt.getPlayerLobby(player)).getSettings().TIME_LIMIT.getValue()*60 + ((GameLobby) Manhunt.getPlayerLobby(player)).getSettings().TIME_SETUP.getValue()*60) : 60);
+				int duration = (Manhunt.getPlayerLobby(player) != null && Manhunt.getPlayerLobby(player).getType() == LobbyType.GAME && ((GameLobby) Manhunt.getPlayerLobby(player)).gameIsRunning() ? (int) (((GameLobby) Manhunt.getPlayerLobby(player)).getGameTicksRemaining() / 20) : 60);
 				duration++;
 				duration *= 20;
 				player.addPotionEffect(new PotionEffect(effect.getType(), duration, effect.getAmplifier(), false));

@@ -191,6 +191,18 @@ public class ManhuntGameLobby extends GameLobby
 	
 	
 	//---------------- GAMES ----------------//
+	@Override
+	public long getGameTicksRemaining()
+	{
+		if (this.getGame() != null)
+		{
+			return this.getGame().getGameTicksRemaining();
+		}
+		else
+		{
+			return -1L;
+		}
+	}
 	
 	
 	//---------------- SETTINGS ----------------//

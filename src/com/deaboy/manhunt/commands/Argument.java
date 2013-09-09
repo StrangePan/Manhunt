@@ -29,7 +29,7 @@ public class Argument
 	// Setters
 	public boolean addParameter(String parameter)
 	{
-		if (parameter == null || parameter.isEmpty())
+		if (parameter == null)
 		{
 			return false;
 		}

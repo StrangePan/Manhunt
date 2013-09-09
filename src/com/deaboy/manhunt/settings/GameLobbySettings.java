@@ -13,9 +13,6 @@ public class GameLobbySettings extends LobbySettings
 	public final IntegerSetting 	OFFLINE_TIMEOUT;
 	
 	public final IntegerSetting 	TIME_INTERMISSION;
-	public final IntegerSetting 	TIME_SETUP;
-	public final IntegerSetting 	TIME_LIMIT;
-	public final BooleanSetting 	FRIENDLY_FIRE;
 	public final BooleanSetting 	ALL_TALK;
 	public final BooleanSetting 	HOSTILE_MOBS;
 	public final BooleanSetting 	PASSIVE_MOBS;
@@ -32,9 +29,6 @@ public class GameLobbySettings extends LobbySettings
 		addSetting(OFFLINE_TIMEOUT =	new IntegerSetting("timeout", 30, "Seconds before players are disqualified.", "Players will be immediately disqualified."), true);
 		
 		addSetting(TIME_INTERMISSION =	new IntegerSetting("intermission", 3, "Minutes between Manhunt games.", ""), true);
-		addSetting(TIME_SETUP =		new IntegerSetting("setuptime", 10, "Minutes the prey have to prepare.", "There is no setup time."), true);
-		addSetting(TIME_LIMIT =			new IntegerSetting("timelimit", 60, "Minutes that the hunt will last.", "The game will never end."), true );
-		addSetting(FRIENDLY_FIRE =	new BooleanSetting("friendlyfire", false, "Teammates can damage each other.", "Teammates cannot kill each other."), true);
 		addSetting(ALL_TALK =		new BooleanSetting("alltalk", false, "Teams can communicate with each other.", "Teams cannot see each other's chat."), true);
 		addSetting(HOSTILE_MOBS =	new BooleanSetting("hostilemobs", true, "Hostile mobs are enabled.", "Hostile mobs are disabled."), true);
 		addSetting(PASSIVE_MOBS =	new BooleanSetting("passivemobs", true, "Passive mobs are enabled.", "Passive mobs are disabled."), true);

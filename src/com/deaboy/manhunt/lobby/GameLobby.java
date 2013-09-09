@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public abstract class GameLobby extends Lobby
 	private HashMap<String, Team> teams;
 	private List<String> prey_loadouts;
 	private List<String> hunter_loadouts;
+	private long time_startgame;
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
@@ -48,6 +50,7 @@ public abstract class GameLobby extends Lobby
 		this.teams = new HashMap<String, Team>();
 		this.prey_loadouts = new ArrayList<String>();
 		this.hunter_loadouts = new ArrayList<String>();
+		this.time_startgame = -1L;
 	}
 	public GameLobby(long id, File file, String name, Location loc)
 	{
@@ -58,6 +61,7 @@ public abstract class GameLobby extends Lobby
 		this.teams = new HashMap<String, Team>();
 		this.prey_loadouts = new ArrayList<String>();
 		this.hunter_loadouts = new ArrayList<String>();
+		this.time_startgame = -1L;
 	}
 	
 	
@@ -442,6 +446,10 @@ public abstract class GameLobby extends Lobby
 			Amber.stopRecordingWorld(getCurrentMap().getWorld().getWorld());
 			Amber.startRestoringWorld(getCurrentMap().getWorld().getWorld(), ManhuntPlugin.getInstance());
 		}
+		if (getSettings().TIME_INTERMISSION.getValue() > 0)
+		{
+			this.time_startgame = new Date().getTime() + getSettings().TIME_INTERMISSION.getValue() * 60 * 20;
+		}
 	}
 	public boolean setGameClass(GameClass gameclass)
 	{
@@ -455,10 +463,14 @@ public abstract class GameLobby extends Lobby
 		
 		broadcast(ChatManager.leftborder + "Game has been changed to " + ChatColor.DARK_BLUE + gameclass.getName());
 		Manhunt.log('[' + getName() + "] Game changed to " + gameclass.getName());
-		loadFiles();
 		saveFiles();
 		return true;
 	}
+	public long getGameStartTime()
+	{
+		return this.time_startgame;
+	}
+	public abstract long getGameTicksRemaining();
 	
 	
 	//---------------- MAPS ----------------//

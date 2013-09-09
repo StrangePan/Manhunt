@@ -418,7 +418,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 			}
 		}
 		
-		if (damager != damagee && damager_team == damagee_team && lobby.getSettings().FRIENDLY_FIRE.getValue() == false)
+		if (damager != damagee && damager_team == damagee_team && game.getSettings().FRIENDLY_FIRE.getValue() == false)
 		{
 			e.setCancelled(true);
 			return;
@@ -652,6 +652,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	private void startMonitoringBoundaries()
 	{
 		this.boundary_state.clear();
+		this.locations.clear();
 		for (String playername : lobby.getPlayerNames(Team.HUNTERS, Team.PREY))
 		{
 			this.boundary_state.put(playername, 0);
@@ -671,6 +672,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 	{
 		Bukkit.getScheduler().cancelTask(this.schedule);
 		this.boundary_state.clear();
+		this.locations.clear();
 	}
 	private void checkBoundaries()
 	{
