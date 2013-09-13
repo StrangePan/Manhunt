@@ -56,6 +56,28 @@ public class Command extends Subcommand
 		List<String> arguments = new ArrayList<String>();
 		String temp = new String();
 		
+		if (args.length > 0)
+		{
+			for (SubcommandTemplate subtemp : template.getSubcommands())
+			{
+				if (subtemp.getRootArgument().matches(args[0].substring(1)))
+				{
+					subcommandtemp = subtemp;
+					break;
+				}
+			}
+			if (subcommandtemp == null && template.getDefaultSubcommand() != null)
+			{
+				subcommandtemp = template.getDefaultSubcommand();
+				subcommand = new Subcommand(subcommandtemp.getRootArgument().getName(), subcommandtemp.getRootArgument().getName(), template, subcommandtemp);
+				arg = subcommandtemp.getRootArgument().getName();
+			}
+			else
+			{
+				subcommandtemp = null;
+			}
+		}
+		
 		for (String a : args)
 		{
 			if (!temp.isEmpty())

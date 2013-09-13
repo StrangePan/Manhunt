@@ -200,6 +200,7 @@ public class CommandUtil
 			.addAlias("mset")
 			.addAlias("set")
 			.addAlias("mhset")
+			.setDefaultSubcommand(scmd_set)
 			.addSubcommand(scmd_list)
 			.addSubcommand(scmd_set);
 	public static final CommandTemplate cmd_mloadout= new CommandTemplate("mloadout")

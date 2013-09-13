@@ -7,6 +7,7 @@ public class CommandTemplate
 {
 	// Properties
 	private String name;
+	private SubcommandTemplate default_subcommand;
 	private List<String> aliases;
 	private List<ArgumentTemplate> arguments;
 	private List<SubcommandTemplate> subcommands;
@@ -22,6 +23,7 @@ public class CommandTemplate
 	public CommandTemplate()
 	{
 		this.name = new String();
+		this.default_subcommand = null;
 		this.aliases = new ArrayList<String>();
 		this.arguments = new ArrayList<ArgumentTemplate>();
 		this.subcommands = new ArrayList<SubcommandTemplate>();
@@ -36,6 +38,13 @@ public class CommandTemplate
 			return this;
 		if (name != null && !name.isEmpty())
 			this.name = name;
+		return this;
+	}
+	public CommandTemplate setDefaultSubcommand(SubcommandTemplate template)
+	{
+		if (locked)
+			return this;
+		this.default_subcommand = template;
 		return this;
 	}
 	public CommandTemplate addAlias(String alias)
@@ -126,6 +135,10 @@ public class CommandTemplate
 	public String getName()
 	{
 		return this.name;
+	}
+	public SubcommandTemplate getDefaultSubcommand()
+	{
+		return this.default_subcommand;
 	}
 	public List<String> getAliases()
 	{
