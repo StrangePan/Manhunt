@@ -14,6 +14,7 @@ public class SimpleEffect
 	
 	
 	//---------------- Public Methods ----------------//
+	@SuppressWarnings("deprecation")
 	public PotionEffect toPotionEffect()
 	{
 		return new PotionEffect(PotionEffectType.getById(type), duration, amplifier, ambient == 0 ? false : true);
@@ -22,6 +23,7 @@ public class SimpleEffect
 	
 	
 	//---------------- Public Static Methods ----------------//
+	@SuppressWarnings("deprecation")
 	public static SimpleEffect fromPotionEffect(PotionEffect effect)
 	{
 		SimpleEffect model = new SimpleEffect();

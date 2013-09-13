@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
@@ -657,7 +658,7 @@ public abstract class LobbyCommands
 			return false;
 		}
 		
-		((Player) sender).teleport(ManhuntUtil.safeTeleport(lobby.getSpawnLocation()));
+		((Player) sender).teleport(ManhuntUtil.safeTeleport(lobby.getSpawnLocation()), TeleportCause.COMMAND);
 		sender.sendMessage(ChatManager.leftborder + "Teleported to " + lobby.getName());
 		return true;
 	}

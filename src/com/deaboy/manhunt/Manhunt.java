@@ -1263,6 +1263,7 @@ public class Manhunt implements Closeable, Listener
 		playerChat(e.getPlayer(), e.getMessage());
 		e.setCancelled(true);
 	}
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerClick(PlayerInteractEvent e)
 	{
@@ -1272,7 +1273,7 @@ public class Manhunt implements Closeable, Listener
 		if (e.getAction() != Action.LEFT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 		
-		if (e.getPlayer().getItemInHand().getTypeId() != getSettings().SELECTION_TOOL.getValue())
+		if (e.getPlayer().getItemInHand().getType().getId() != getSettings().SELECTION_TOOL.getValue())
 			return;
 		
 		if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit"))

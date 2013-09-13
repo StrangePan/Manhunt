@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
@@ -260,7 +261,7 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		player.teleport(map.getSpawnLocation());
+		player.teleport(map.getSpawnLocation(), TeleportCause.COMMAND);
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + map.getName());
 		if (player != sender)
 		{
@@ -1087,7 +1088,7 @@ public abstract class MapCommands
 			return false;
 		}
 		
-		player.teleport(ManhuntUtil.safeTeleport(point.getLocation()));
+		player.teleport(ManhuntUtil.safeTeleport(point.getLocation()), TeleportCause.COMMAND);
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + point.getName() + ".");
 		if (player != sender)
 		{

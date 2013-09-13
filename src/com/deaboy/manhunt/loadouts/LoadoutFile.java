@@ -199,6 +199,7 @@ public class LoadoutFile
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void save(Loadout loadout)
 	{
 		// Allocate Memory

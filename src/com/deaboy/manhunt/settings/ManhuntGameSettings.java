@@ -17,6 +17,7 @@ public class ManhuntGameSettings extends SettingsPack
 	
 	
 	//////////////// CONSTRUCTORS ////////////////
+	@SuppressWarnings("deprecation")
 	public ManhuntGameSettings()
 	{
 		addSetting(FINDER_COOLDOWN =new IntegerSetting("findercooldown", 60, "Seconds until the Prey Finder is recharged.", "The Prey Finder has no cooldown."), true);

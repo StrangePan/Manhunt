@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.deaboy.manhunt.Manhunt;
 import com.deaboy.manhunt.ManhuntUtil;
@@ -217,7 +218,7 @@ public abstract class WorldCommands
 			return false;
 		}
 		
-		player.teleport(ManhuntUtil.safeTeleport(world.getSpawnLocation()));
+		player.teleport(ManhuntUtil.safeTeleport(world.getSpawnLocation()), TeleportCause.COMMAND);
 		player.sendMessage(ChatManager.leftborder + "Teleported to " + world.getName() + "'s spawn.");
 		if (player != sender)
 			sender.sendMessage(ChatManager.leftborder + "Sent " + player.getName() + " to " + world.getName() + "'s spawn.");

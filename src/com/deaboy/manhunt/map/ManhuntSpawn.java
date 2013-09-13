@@ -114,7 +114,7 @@ public class ManhuntSpawn implements Spawn
 			double distance = Math.random() * range;
 			
 			loc.setX(loc.getX() + Math.cos(angle) * distance);
-			loc.setZ(loc.getY() + Math.sin(angle) * distance);
+			loc.setZ(loc.getZ() + Math.sin(angle) * distance);
 			
 			return loc;
 		}

@@ -240,6 +240,7 @@ public class ManhuntGameListener implements GameEventListener, Listener
 		checkBlockActionValidity(e, e.getPlayer(), e.getBlockClicked().getRelative(e.getBlockFace()).getLocation());
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public final void onFinderActivate(PlayerInteractEvent e)
 	{
