@@ -80,20 +80,43 @@ public class Command extends Subcommand
 		
 		for (String a : args)
 		{
+			StringBuilder ab = new StringBuilder(a);
+			// Handle escaped characters.
+			for (int i = 0; i < ab.length(); i++)
+			{
+				if (ab.charAt(i) == '\\')
+					ab.deleteCharAt(i);
+				if (i == ab.length())
+					ab.append(' ');
+			}
+			a = ab.toString();
+			
 			if (!temp.isEmpty())
 			{
-				temp += ' ' + a;
-				if (temp.endsWith("\""))
+				if (temp.startsWith("\""))
 				{
-					if (temp.equals("\"\""))
+					temp += ' ' + a;
+					if (temp.endsWith("\""))
 					{
-						arguments.add("");
+						if (temp.equals("\"\""))
+						{
+							arguments.add("");
+						}
+						else
+						{
+							arguments.add(temp.substring(1, temp.length()-1));
+						}
+						temp = "";
 					}
-					else
+				}
+				else
+				{
+					temp += a;
+					if (!a.endsWith(" "))
 					{
-						arguments.add(temp.substring(1, temp.length()-1));
+						arguments.add(temp);
+						temp = "";
 					}
-					temp = "";
 				}
 			}
 			else if (a.startsWith("\""))
@@ -111,6 +134,10 @@ public class Command extends Subcommand
 					//}
 					temp = "";
 				}
+			}
+			else if (a.endsWith(" "))
+			{
+				temp += a;
 			}
 			else if (a.startsWith("-"))
 			{
