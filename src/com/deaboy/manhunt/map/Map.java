@@ -125,7 +125,7 @@ public interface Map
 	 * @param flags Array of zone flags to apply to this zone
 	 * @return The newly created zone or null if it didn't work.
 	 */
-	public Zone createZone(String name, Location corner1, Location corner2, ZoneFlag...flags);
+	public Zone createZone(String name, Location corner1, Location corner2, boolean ignoreY, ZoneFlag...flags);
 	/**
 	 * Creates and adds a new zone to the map.
 	 * @param type The type of zone
@@ -134,7 +134,7 @@ public interface Map
 	 * @param flags List of flags to apply to this zone
 	 * @return The newly created zone or null if it didn't work.
 	 */
-	public Zone createZone(String name, Location corner1, Location corner2, List<ZoneFlag> flags);
+	public Zone createZone(String name, Location corner1, Location corner2, boolean ignoreY, List<ZoneFlag> flags);
 	/**
 	 * Removes a zone from the map.
 	 * @param name The name of the zone to remove.

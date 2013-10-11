@@ -73,6 +73,7 @@ public class CommandUtil
 	public static final ArgumentTemplate arg_set	= new ArgumentTemplate("set", ArgumentType.TEXT).addAlias("s").finalize_();
 	public static final ArgumentTemplate arg_load	= new ArgumentTemplate("load", ArgumentType.FLAG).addAlias("ld").finalize_();
 	public static final ArgumentTemplate arg_save	= new ArgumentTemplate("save", ArgumentType.FLAG).addAlias("sv").finalize_();
+	public static final ArgumentTemplate arg_ignorey		= new ArgumentTemplate("ignorey", ArgumentType.RADIO).addAlias("y").addParameter("true").addParameter("t").addParameter("yes").addParameter("y").addParameter("false").addParameter("f").addParameter("no").addParameter("n").finalize_();
 	public static final ArgumentTemplate arg_lspotions		= new ArgumentTemplate("listpotions", ArgumentType.TEXT).addAlias("listp").addAlias("lspotions").addAlias("lsp").addAlias("potions").finalize_();
 	public static final ArgumentTemplate arg_addpotion		= new ArgumentTemplate("addpotion", ArgumentType.TEXT).addAlias("addpot").addAlias("addp").addAlias("potion+").addAlias("pot+").finalize_();
 	public static final ArgumentTemplate arg_rempotion		= new ArgumentTemplate("removepotion", ArgumentType.TEXT).addAlias("rempotion").addAlias("rempot").addAlias("remp").addAlias("potion-").addAlias("pot-").finalize_();
@@ -116,9 +117,11 @@ public class CommandUtil
 	public static final SubcommandTemplate scmd_list		= new SubcommandTemplate(arg_list).addArgument(arg_page).finalize_();
 	public static final SubcommandTemplate scmd_select		= new SubcommandTemplate(arg_select).finalize_();
 	public static final SubcommandTemplate scmd_create		= new SubcommandTemplate(arg_create).addArgument(arg_name).finalize_();
+	public static final SubcommandTemplate scmd_createzone	= new SubcommandTemplate(arg_create).addArgument(arg_name).addArgument(arg_ignorey).finalize_();
 	public static final SubcommandTemplate scmd_delete		= new SubcommandTemplate(arg_delete).finalize_();
 	public static final SubcommandTemplate scmd_setspawn	= new SubcommandTemplate(arg_setspawn).finalize_();
 	public static final SubcommandTemplate scmd_redefine	= new SubcommandTemplate(arg_redefine).finalize_();
+	public static final SubcommandTemplate scmd_redefzone	= new SubcommandTemplate(arg_redefine).addArgument(arg_ignorey).finalize_();
 	public static final SubcommandTemplate scmd_range		= new SubcommandTemplate(arg_range).finalize_();
 	public static final SubcommandTemplate scmd_tp			= new SubcommandTemplate(arg_tp).addArgument(arg_player).finalize_();
 	public static final SubcommandTemplate scmd_open		= new SubcommandTemplate(arg_open).finalize_();
@@ -170,10 +173,10 @@ public class CommandUtil
 			.addSubcommand(scmd_info)
 			.addSubcommand(scmd_select)
 			.addSubcommand(scmd_list)
-			.addSubcommand(scmd_create)
+			.addSubcommand(scmd_createzone)
 			.addSubcommand(scmd_delete)
 			.addSubcommand(scmd_zoneflags)
-			.addSubcommand(scmd_redefine);
+			.addSubcommand(scmd_redefzone);
 	public static final CommandTemplate cmd_mpoint	= new CommandTemplate("mpoint")
 			.addAlias("point")
 			.addAlias("mhpoint")

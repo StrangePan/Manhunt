@@ -208,15 +208,15 @@ public class ManhuntMap implements Map
 		}
 	}
 	@Override
-	public Zone createZone(String name, Location corner1, Location corner2, List<ZoneFlag> flags)
+	public Zone createZone(String name, Location corner1, Location corner2, boolean ignoreY, List<ZoneFlag> flags)
 	{
 		ZoneFlag[] f = new ZoneFlag[flags.size()];
 		for (int i = 0; i < flags.size(); i++)
 			f[i] = flags.get(i);
-		return createZone(name, corner1, corner2, f);
+		return createZone(name, corner1, corner2, ignoreY, f);
 	}
 	@Override
-	public Zone createZone(String name, Location corner1, Location corner2, ZoneFlag...flags)
+	public Zone createZone(String name, Location corner1, Location corner2, boolean ignoreY, ZoneFlag...flags)
 	{
 		Zone zone;
 		
@@ -244,7 +244,7 @@ public class ManhuntMap implements Map
 				return null;
 		}
 		
-		zone = new ManhuntZone(name, corner1, corner2);
+		zone = new ManhuntZone(name, corner1, corner2, ignoreY);
 		
 		for (ZoneFlag flag : flags)
 			zone.setFlag(flag, true);

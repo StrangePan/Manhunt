@@ -590,7 +590,13 @@ public abstract class MapCommands
 			zonename += i;
 		}
 		
-		zone = map.createZone(zonename, primarycorner, secondarycorner);
+		zone = map.createZone(zonename, primarycorner, secondarycorner, cmd.containsArgument(CommandUtil.arg_ignorey)
+					&& (cmd.getArgument(CommandUtil.arg_ignorey).getParameter() == null
+					|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().isEmpty()
+					|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("true")
+					|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("t")
+					|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("yes")
+					|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("y")));
 		if (zone == null)
 		{
 			sender.sendMessage(ChatColor.RED + "There was an error creating the zone.");
@@ -601,10 +607,10 @@ public abstract class MapCommands
 			sender.sendMessage(ChatColor.GREEN + "Zone '" + zone.getName() + "' successfully created in map '" + map.getName() + "'");
 			sender.sendMessage(ChatColor.GRAY + " ["
 					+ zone.getPrimaryCorner().getBlockX() + ", "
-					+ zone.getPrimaryCorner().getBlockY() + ", "
+					+ (zone.getIgnoreY() ? 0 : zone.getPrimaryCorner().getBlockY()) + ", "
 					+ zone.getPrimaryCorner().getBlockZ() + "]  ["
 					+ zone.getSecondaryCorner().getBlockX() + ", "
-					+ zone.getSecondaryCorner().getBlockY() + ", "
+					+ (zone.getIgnoreY() ? zone.getWorld().getMaxHeight() : zone.getSecondaryCorner().getBlockY()) + ", "
 					+ zone.getSecondaryCorner().getBlockZ() + "]  ("
 					+ zone.getVolume() + " blocks)");
 			CommandUtil.setSelectedZone(sender, zone);
@@ -698,6 +704,22 @@ public abstract class MapCommands
 		primary = Manhunt.getPlayerSelectionPrimaryCorner((Player) sender);
 		secondary = Manhunt.getPlayerSelectionSecondaryCorner((Player) sender);
 		
+		if (cmd.containsArgument(CommandUtil.arg_ignorey))
+		{
+			if (cmd.getArgument(CommandUtil.arg_ignorey).getParameter() == null
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().isEmpty()
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("true")
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("t")
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("yes")
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("y"))
+				zone.setIgnoreY(true);
+			else if (cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("false")
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("f")
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("no")
+				|| cmd.getArgument(CommandUtil.arg_ignorey).getParameter().equalsIgnoreCase("n"))
+				zone.setIgnoreY(false);
+		}
+		
 		if (primary == null || secondary == null || !Manhunt.getPlayerSelectionValid((Player) sender))
 		{
 			sender.sendMessage(ChatColor.RED + "Please select a region first.");
@@ -709,10 +731,10 @@ public abstract class MapCommands
 		sender.sendMessage(ChatColor.GREEN + "Zone redefined with the following coordinates:");
 		sender.sendMessage(ChatColor.GRAY + " ["
 				+ zone.getPrimaryCorner().getBlockX() + ", "
-				+ zone.getPrimaryCorner().getBlockY() + ", "
+				+ (zone.getIgnoreY() ? 0 : zone.getPrimaryCorner().getBlockY()) + ", "
 				+ zone.getPrimaryCorner().getBlockZ() + "]  ["
 				+ zone.getSecondaryCorner().getBlockX() + ", "
-				+ zone.getSecondaryCorner().getBlockY() + ", "
+				+ (zone.getIgnoreY() ? zone.getWorld().getMaxHeight() : zone.getSecondaryCorner().getBlockY()) + ", "
 				+ zone.getSecondaryCorner().getBlockZ() + "]  ("
 				+ zone.getVolume() + " blocks)");
 		return true;
