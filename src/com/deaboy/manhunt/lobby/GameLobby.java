@@ -440,8 +440,18 @@ public abstract class GameLobby extends Lobby
 		if (getSettings().USE_AMBER.getValue())
 		{
 			Amber.stopRecordingWorld(getCurrentMap().getWorld().getWorld());
-			Amber.startRestoringWorld(getCurrentMap().getWorld().getWorld(), ManhuntPlugin.getInstance());
+			Amber.startRestoringWorld(getCurrentMap().getWorld().getWorld(), ManhuntPlugin.getInstance(), new Runnable()
+			{
+				public void run()
+				{
+					onWorldRestore();
+				}
+			});
 		}
+	}
+	protected void onWorldRestore()
+	{
+		getCurrentMap().getWorld().getWorld().setTime(1000);
 	}
 	public boolean setGameClass(GameClass gameclass)
 	{
@@ -791,6 +801,7 @@ public abstract class GameLobby extends Lobby
 	{
 		return LobbyType.GAME;
 	}
+	
 	
 	
 }

@@ -319,11 +319,13 @@ public class ManhuntGameLobby extends GameLobby
 					prey = getOnlinePlayerNames(Team.PREY).size();
 					standby = getOnlinePlayerNames(Team.STANDBY).size();
 					
-					if (hunters + prey + standby < getSettings().MIN_PLAYERS.getValue())
+					int needed = getSettings().MIN_PLAYERS.getValue() - hunters - prey - standby;
+					
+					if (needed > 0)
 					{
 						// Delay the intermission if not enough players
 						broadcast(ChatManager.leftborder + ChatColor.RED + "Unable to start game.");
-						broadcast(ChatManager.leftborder + "  Not enough players to start. " + (getSettings().MIN_PLAYERS.getValue() - hunters - prey - standby) + " more players are needed.");
+						broadcast(ChatManager.leftborder + "  Not enough players to start. " + needed + " more player" + (needed > 1 ? "s" : "") + " are needed.");
 						time_startgame = -2L;
 					}
 					else if (standby == 0 && (hunters == 0 || prey == 0))

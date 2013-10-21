@@ -183,7 +183,7 @@ public class LoadoutCommands
 					break;
 				}
 			}
-			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + loadout.getName() + "   " + ChatColor.GRAY + "Items: " + (loadout.getContentCount() + loadout.getArmorContentCount()) + (!used ? "  Unused" : ""));
+			sender.sendMessage(ChatManager.leftborder + ChatColor.WHITE + loadout.getName() + "   " + ChatColor.GRAY + "Items: " + (loadout.getContentCount() + loadout.getArmorContentCount()) + "  Potions: " + loadout.getEffects().size() + (!used ? "  Unused" : ""));
 		}
 		return true;
 	}
@@ -431,7 +431,7 @@ public class LoadoutCommands
 		else if (cmd.getArgument(CommandUtil.arg_addpotion).getParameter() != null)
 		{
 			type_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameter();
-			if (cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 2)
+			if (cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 2 || cmd.getArgument(CommandUtil.arg_addpotion).getParameters().size() > 1 && cmd.containsArgument(CommandUtil.arg_duration))
 			{
 				amplifier_string = cmd.getArgument(CommandUtil.arg_addpotion).getParameters().get(1);
 			}

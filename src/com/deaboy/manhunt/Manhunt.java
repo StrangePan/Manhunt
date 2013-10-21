@@ -15,6 +15,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -1376,7 +1377,10 @@ public class Manhunt implements Closeable, Listener
 			l.saveFiles();
 		
 		for (World w : getInstance().worlds.values())
+		{
 			w.save();
+			((CraftWorld) w.getWorld()).getHandle().isStatic = false;
+		}
 
 		HandlerList.unregisterAll(this);
 		
